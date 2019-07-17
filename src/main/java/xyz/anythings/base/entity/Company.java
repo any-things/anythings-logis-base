@@ -1,6 +1,6 @@
 package xyz.anythings.base.entity;
 
-import xyz.anythings.sys.util.OrmUtil;
+import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.elidom.dbist.annotation.Column;
 import xyz.elidom.dbist.annotation.GenerationRule;
 import xyz.elidom.dbist.annotation.Ignore;
@@ -309,7 +309,7 @@ public class Company extends xyz.elidom.orm.entity.basic.UserTimeStampHook {
 	 * @return
 	 */
 	public static Company findByCode(String comCd, boolean exceptionWhenEmpty) {
-		Query query = OrmUtil.newConditionForExecution();
+		Query query = AnyOrmUtil.newConditionForExecution();
 		query.addFilter("comCd", comCd);
 		Company company = BeanUtil.get(IQueryManager.class).selectByCondition(Company.class, query);
 

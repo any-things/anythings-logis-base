@@ -1,6 +1,6 @@
 package xyz.anythings.base.entity;
 
-import xyz.anythings.sys.util.OrmUtil;
+import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.elidom.dbist.annotation.Column;
 import xyz.elidom.dbist.annotation.GenerationRule;
 import xyz.elidom.dbist.annotation.Index;
@@ -192,7 +192,7 @@ public class WorkZone extends xyz.elidom.orm.entity.basic.DomainTimeStampHook {
 	 */
 	public static WorkZone find(Long domainId, String regionCd, String workZoneCd, boolean withLock, boolean insertIfEmpty) {
 		IQueryManager queryMgr = BeanUtil.get(IQueryManager.class);
-		Query condition = OrmUtil.newConditionForExecution(domainId);
+		Query condition = AnyOrmUtil.newConditionForExecution(domainId);
 		if(ValueUtil.isNotEmpty(regionCd)) condition.setFilter("regionCd", regionCd);
 		if(ValueUtil.isNotEmpty(workZoneCd)) condition.setFilter("zoneCd", workZoneCd);
 		WorkZone workZone = withLock ? queryMgr.selectByConditionWithLock(WorkZone.class, condition) : queryMgr.selectByCondition(WorkZone.class, condition);

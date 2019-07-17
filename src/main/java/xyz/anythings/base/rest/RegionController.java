@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import xyz.anythings.base.entity.Region;
-import xyz.anythings.sys.util.OrmUtil;
+import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.dbist.dml.Query;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
@@ -107,7 +107,7 @@ public class RegionController extends AbstractRestService {
 	@RequestMapping(value = "/{id}/zones", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Search Zone list by RegionId")
 	public List<String> searchZoneList(@PathVariable("id") String id) {
-		Query condition = OrmUtil.newConditionForExecution(Domain.currentDomainId());
+		Query condition = AnyOrmUtil.newConditionForExecution(Domain.currentDomainId());
 		condition.addFilter("regionCd", id);
 		Region region = this.queryManager.selectByCondition(Region.class, condition);
 		

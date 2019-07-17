@@ -3,7 +3,7 @@ package xyz.anythings.base.entity;
 import java.util.List;
 import java.util.Map;
 
-import xyz.anythings.sys.util.OrmUtil;
+import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.elidom.dbist.annotation.Column;
 import xyz.elidom.dbist.annotation.GenerationRule;
 import xyz.elidom.dbist.annotation.Index;
@@ -342,7 +342,7 @@ public class Location extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	 * @return
 	 */
 	public static Location findByLocCdWithLock(Long domainId, String locCd, boolean exceptionWhenEmpty) {
-		Query condition = OrmUtil.newConditionForExecution(domainId);
+		Query condition = AnyOrmUtil.newConditionForExecution(domainId);
 		condition.addFilter("locCd", locCd);
 		Location loc = BeanUtil.get(IQueryManager.class).selectByConditionWithLock(Location.class, condition);
 
@@ -362,7 +362,7 @@ public class Location extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	 * @return
 	 */
 	public static Location findByLocCd(Long domainId, String locCd, boolean exceptionWhenEmpty) {
-		Query condition = OrmUtil.newConditionForExecution(domainId);
+		Query condition = AnyOrmUtil.newConditionForExecution(domainId);
 		condition.addFilter("locCd", locCd);
 		Location loc = BeanUtil.get(IQueryManager.class).selectByCondition(Location.class, condition);
 
@@ -423,7 +423,7 @@ public class Location extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	 * @return
 	 */
 	public static Location findByMpiCd(Long domainId, String mpiCd, boolean withLock, boolean exceptionWhenEmpty) {
-		Query condition = OrmUtil.newConditionForExecution(domainId);
+		Query condition = AnyOrmUtil.newConditionForExecution(domainId);
 		condition.addFilter("mpiCd", mpiCd);
 		IQueryManager queryMgr = BeanUtil.get(IQueryManager.class);
 		Location loc = withLock ? 

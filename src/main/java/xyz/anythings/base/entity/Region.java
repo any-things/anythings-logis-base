@@ -2,7 +2,7 @@ package xyz.anythings.base.entity;
 
 import java.util.List;
 
-import xyz.anythings.sys.util.OrmUtil;
+import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.elidom.dbist.annotation.Column;
 import xyz.elidom.dbist.annotation.GenerationRule;
 import xyz.elidom.dbist.annotation.Index;
@@ -226,7 +226,7 @@ public class Region extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	 * @return
 	 */
 	public static Region findByRegionCd(Long domainId, String regionCd, boolean exceptionWhenEmpty) {
-		Query query = OrmUtil.newConditionForExecution(domainId);
+		Query query = AnyOrmUtil.newConditionForExecution(domainId);
 		Region region = null;
 		
 		if(ValueUtil.isNotEqual(regionCd, "NA")) {
@@ -254,7 +254,7 @@ public class Region extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	 * @return
 	 */
 	public static Region findRegionByChuteNo(Long domainId, String chuteNo) {
-		Query query = OrmUtil.newConditionForExecution(domainId);
+		Query query = AnyOrmUtil.newConditionForExecution(domainId);
 		query.addFilter("chuteNo", chuteNo);
 		return BeanUtil.get(IQueryManager.class).selectByCondition(Region.class, query);
 	}
@@ -268,7 +268,7 @@ public class Region extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	 * @return
 	 */
 	public static String findChuteNoByRegionCd(Long domainId, String regionCd, boolean exceptionWhenEmpty) {
-		Query query = OrmUtil.newConditionForExecution(domainId, 1, 1, "chute_no");
+		Query query = AnyOrmUtil.newConditionForExecution(domainId, 1, 1, "chute_no");
 		query.addFilter("regionCd", regionCd);
 		Region region = BeanUtil.get(IQueryManager.class).selectByCondition(Region.class, query);
 		
@@ -288,7 +288,7 @@ public class Region extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	 * @return
 	 */
 	public static Region findWithLock(Long domainId, String regionCd, boolean exceptionWhenEmpty) {
-		Query condition = OrmUtil.newConditionForExecution(domainId);
+		Query condition = AnyOrmUtil.newConditionForExecution(domainId);
 		condition.addFilter("regionCd", regionCd);
 		Region region = BeanUtil.get(IQueryManager.class).selectByConditionWithLock(Region.class, condition);
 

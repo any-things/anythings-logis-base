@@ -1,6 +1,6 @@
 package xyz.anythings.base.entity;
 
-import xyz.anythings.sys.util.OrmUtil;
+import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.elidom.dbist.annotation.Column;
 import xyz.elidom.dbist.annotation.GenerationRule;
 import xyz.elidom.dbist.annotation.Index;
@@ -74,7 +74,7 @@ public class Bucket extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	 * @return
 	 */
 	public static Bucket findByBucketCd(Long domainId, String bucketCd, boolean exceptionWhenEmpty) {
-		Query query = OrmUtil.newConditionForExecution(domainId);
+		Query query = AnyOrmUtil.newConditionForExecution(domainId);
 		query.addFilter("bucketCd", bucketCd);
 		Bucket bucket = BeanUtil.get(IQueryManager.class).selectByCondition(Bucket.class, query);
 		
