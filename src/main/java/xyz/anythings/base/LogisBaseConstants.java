@@ -71,6 +71,10 @@ public class LogisBaseConstants extends AnyConstants {
 	/**
 	 * 작업 상태 - WAIT, INPUT, PICKING, CANCEL
 	 */
+	public static final List<String> JOB_STATUS_WIP = ValueUtil.newStringList(JobProcess.JOB_STATUS_WAIT, JobProcess.JOB_STATUS_INPUT, JobProcess.JOB_STATUS_PICKING);
+	/**
+	 * 작업 상태 - WAIT, INPUT, PICKING, CANCEL
+	 */
 	public static final List<String> JOB_STATUS_WIPC = ValueUtil.newStringList(JobProcess.JOB_STATUS_WAIT, JobProcess.JOB_STATUS_INPUT, JobProcess.JOB_STATUS_PICKING, JobProcess.JOB_STATUS_CANCEL);
 	/**
 	 * 작업 상태 - WAIT, INPUT, PICKING, FINISH, CANCEL
