@@ -2,7 +2,6 @@ package xyz.anythings.base.service.api;
 
 import java.util.List;
 
-import groovyjarjarasm.asm.util.Printer;
 import xyz.anythings.base.entity.BoxResult;
 import xyz.anythings.base.entity.JobProcess;
 import xyz.anythings.base.entity.Location;
@@ -174,9 +173,9 @@ public interface ILogisConfigurableService {
 	 * @param domainid
 	 * @param command
 	 * @param printCount
-	 * @param printer
+	 * @param printerIdOrName TODO Printer 엔티티 사용 가능한 방법 고민
 	 */
-	public void printBarcodeLabel(Long domainId, String command, int printCount, Printer printer);
+	public void printBarcodeLabel(Long domainId, String command, int printCount, String printerIdOrName);
 	
 	/**
 	 * 거래명세서 인쇄
