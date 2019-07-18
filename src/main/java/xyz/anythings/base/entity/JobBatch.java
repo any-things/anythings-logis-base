@@ -371,79 +371,6 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.DomainStampHook {
 		return ValueUtil.isEqualIgnoreCase(jobType, this.jobType);
 	}
 
-	/**
-	 * 복사된 배치인지 체크
-	 *
-	 * @return
-	 */
-	public boolean isCloneBatch() {
-		if(this.isDpsBatch() || this.isQpsBatch()) {
-			return false;
-		}
-
-		// 클론 아이디가 없으면 false
-		if(ValueUtil.isEmpty(this.getCloneGroupId())) {
-			return false;
-
-		// 배치 아이디와 클론 아이디가 같으면 false
-		} else if(ValueUtil.isEqualIgnoreCase(this.getId(), this.getCloneGroupId())) {
-			return false;
-
-		// 주문 테이블을 조회
-		} else {
-			String sql = "select count(1) from tb_if_order where domain_id = :domainId and batch_id = :batchId and rownum = 1";
-			Map<String,Object> paramMap = ValueUtil.newMap("domainId,batchId", this.domainId, this.id);
-			return BeanUtil.get(IQueryManager.class).selectBySql(sql, paramMap, Integer.class) == 0;
-		}
-	}
-
-	/**
-	 * 복사된 작업에 대한 마스터 배치인지 체크
-	 *
-	 * @return
-	 */
-	public boolean isCloneBatchMaster() {
-		if(this.isDpsBatch() || this.isQpsBatch()) {
-			return false;
-		}
-
-		// 클론 아이디가 없으면 false
-		if(ValueUtil.isEmpty(this.getCloneGroupId())) {
-			return false;
-
-		// 배치 아이디와 클론 아이디가 같으면 true
-		} else if(ValueUtil.isEqualIgnoreCase(this.getId(), this.getCloneGroupId())) {
-			return true;
-
-		} else {
-			return false;
-		}
-	}
-
-	/**
-	 * 작업 배치에 대한 진행율을 조회한다.
-	 */
-	public void selectBatchProgress() {
-		String sql = "select nvl(sum(real_picked_qty), 0) as progress_cnt from tb_process where domain_id = :domainId and (13 = :domainId or job_batch_seq = :jobBatchSeq) and batch_id = :batchId";
-		Map<String,Object> paramMap = ValueUtil.newMap("domainId,jobBatchSeq,batchId", this.domainId, this.jobBatchSeq, this.id);
-		int progressCnt = BeanUtil.get(IQueryManager.class).selectBySql(sql, paramMap, Integer.class);
-
-		if(progressCnt == 0 || this.mpsTotalCnt == 0) {
-			this.setProgressRate(0f);
-		} else {
-			this.setProgressRate(Float.parseFloat(String.format("%.2f",(((float)progressCnt / (float)this.mpsTotalCnt) * 100))));
-		}
-	}
-
-	/**
-	 * DPS인 경우 작업 배치당 호기가 여러 개 매핑이 가능하므로 작업 배치당 호기 정보를 설정한다.
-	 */
-	public void setJobRegionInfo() {
-		String sql = "select region_nm from tb_job_batch_region where domain_id = :domainId and batch_id = :batchId";
-		Map<String,Object> paramMap = ValueUtil.newMap("domainId,batchId", this.domainId, this.id);
-		List<String> assignRegions = BeanUtil.get(IQueryManager.class).selectListBySql(sql, paramMap, String.class, 0, 0);
-		this.setRegionNm(ValueUtil.listToString(assignRegions));
-	}
 
 	/**
 	 * ID로 JobBatch 조회 후 리턴
@@ -541,26 +468,6 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.DomainStampHook {
 
 		return mainBatch;
 	}
-
-	/**
-	 * 작업 중인 Batch에서 메인 배치 또는 작업배치 찾기
-	 *
-	 * @param domainId
-	 * @return
-	 */
-	public static JobBatch getRunningBatch(Long domainId) {
-		Query condition = AnyOrmUtil.newConditionForExecution(domainId);
-		condition.addFilter("status", JobBatch.STATUS_RUNNING);
-		List<JobBatch> result = BeanUtil.get(IQueryManager.class).selectList(JobBatch.class, condition);
-		
-		if(result.size() > 1) {
-			return JobBatch.getMainBatch(result);
-		} else if(result.size() == 1) {
-			return result.get(0);
-		} else {
-			return null;
-		}
-	}
 	
 	/**
 	 * 조건에 따른 주문 가공 데이터 건수를 조회하여 리턴
@@ -621,4 +528,97 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.DomainStampHook {
 		return BeanUtil.get(IQueryManager.class).selectListBySql(sql, params, PreprocessStatus.class, 0, 0);
 	}*/
 
+	/**
+	 * 복사된 배치인지 체크
+	 *
+	 * @return
+	 */
+	public boolean isCloneBatch() {
+		if(this.isDpsBatch() || this.isQpsBatch()) {
+			return false;
+		}
+
+		// 클론 아이디가 없으면 false
+		if(ValueUtil.isEmpty(this.getCloneGroupId())) {
+			return false;
+
+		// 배치 아이디와 클론 아이디가 같으면 false
+		} else if(ValueUtil.isEqualIgnoreCase(this.getId(), this.getCloneGroupId())) {
+			return false;
+
+		// 주문 테이블을 조회
+		} else {
+			String sql = "select count(1) from tb_if_order where domain_id = :domainId and batch_id = :batchId and rownum = 1";
+			Map<String,Object> paramMap = ValueUtil.newMap("domainId,batchId", this.domainId, this.id);
+			return BeanUtil.get(IQueryManager.class).selectBySql(sql, paramMap, Integer.class) == 0;
+		}
+	}
+
+	/**
+	 * 복사된 작업에 대한 마스터 배치인지 체크
+	 *
+	 * @return
+	 */
+	public boolean isCloneBatchMaster() {
+		if(this.isDpsBatch() || this.isQpsBatch()) {
+			return false;
+		}
+
+		// 클론 아이디가 없으면 false
+		if(ValueUtil.isEmpty(this.getCloneGroupId())) {
+			return false;
+
+		// 배치 아이디와 클론 아이디가 같으면 true
+		} else if(ValueUtil.isEqualIgnoreCase(this.getId(), this.getCloneGroupId())) {
+			return true;
+
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * 작업 배치에 대한 진행율을 조회한다.
+	 */
+	public void selectBatchProgress() {
+		String sql = "select nvl(sum(real_picked_qty), 0) as progress_cnt from tb_process where domain_id = :domainId and (13 = :domainId or job_batch_seq = :jobBatchSeq) and batch_id = :batchId";
+		Map<String,Object> paramMap = ValueUtil.newMap("domainId,jobBatchSeq,batchId", this.domainId, this.jobBatchSeq, this.id);
+		int progressCnt = BeanUtil.get(IQueryManager.class).selectBySql(sql, paramMap, Integer.class);
+
+		if(progressCnt == 0 || this.mpsTotalCnt == 0) {
+			this.setProgressRate(0f);
+		} else {
+			this.setProgressRate(Float.parseFloat(String.format("%.2f",(((float)progressCnt / (float)this.mpsTotalCnt) * 100))));
+		}
+	}
+
+	/**
+	 * DPS인 경우 작업 배치당 호기가 여러 개 매핑이 가능하므로 작업 배치당 호기 정보를 설정한다.
+	 */
+	public void setJobRegionInfo() {
+		String sql = "select region_nm from tb_job_batch_region where domain_id = :domainId and batch_id = :batchId";
+		Map<String,Object> paramMap = ValueUtil.newMap("domainId,batchId", this.domainId, this.id);
+		List<String> assignRegions = BeanUtil.get(IQueryManager.class).selectListBySql(sql, paramMap, String.class, 0, 0);
+		this.setRegionNm(ValueUtil.listToString(assignRegions));
+	}
+	
+	/**
+	 * 작업 중인 Batch에서 메인 배치 또는 작업배치 찾기
+	 *
+	 * @param domainId
+	 * @return
+	 */
+	public static JobBatch getRunningBatch(Long domainId) {
+		Query condition = AnyOrmUtil.newConditionForExecution(domainId);
+		condition.addFilter("status", JobBatch.STATUS_RUNNING);
+		List<JobBatch> result = BeanUtil.get(IQueryManager.class).selectList(JobBatch.class, condition);
+		
+		if(result.size() > 1) {
+			return JobBatch.getMainBatch(result);
+		} else if(result.size() == 1) {
+			return result.get(0);
+		} else {
+			return null;
+		}
+	}
 }

@@ -17,6 +17,21 @@ import xyz.anythings.base.service.model.InspectionItem;
 public interface IInspectionService {
 	
 	/**
+	 * 출고 검수 후 액션 처리
+	 * 
+	 * @param domainId
+	 * @param boxResultId
+	 */
+	public void inspectionAction(Long domainId, String boxResultId);
+	
+	/**
+	 * 출고 검수 후 액션 처리
+	 * 
+	 * @param box
+	 */
+	public void inspectionAction(BoxResult box);
+	
+	/**
 	 * 투입 박스 유형 (박스, 버킷)에 따라 박스 조회
 	 * 
 	 * @param domainId

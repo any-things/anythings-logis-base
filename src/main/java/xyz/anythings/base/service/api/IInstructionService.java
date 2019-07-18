@@ -49,6 +49,14 @@ public interface IInstructionService {
 	public int instructBatch(JobBatch batch, List<Region> regionList);
 	
 	/**
+	 * 토털 피킹 지시
+	 * 
+	 * @param batch
+	 * @param regionList
+	 */
+	public void instructTotalpicking(JobBatch batch, List<Region> regionList);
+	
+	/**
 	 * 호기 복사 - 특정 호기의 로케이션 할당 정보를 다른 호기에 그대로 복사 (소스 호기에서 타겟 호기로 할당 정보 복사) 
 	 * 
 	 * @param batch

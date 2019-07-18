@@ -21,15 +21,18 @@ public interface IStockService {
 
 	/**
 	 * 로케이션 재고 조회
-	 *  
+	 * 
+	 * @param domainId
 	 * @param locCd
 	 * @return
 	 */
 	public Stock findStockByLocation(Long domainId, String locCd);
 	/**
 	 * 로케이션 재고 조회
-	 *  
+	 * 
+	 * @param domainId
 	 * @param locCd
+	 * @param skuCd
 	 * @return
 	 */
 	public Stock findStockByLocation(Long domainId, String locCd,String skuCd);
@@ -114,7 +117,10 @@ public interface IStockService {
 	 * 재고 조정 처리 
 	 * 
 	 * @param domainId
-	 * @param msgObj
+	 * @param stockTakingId
+	 * @param mpiCd
+	 * @param reqEaQty
+	 * @param resEaQty
 	 */
 	public void adjustStock(Long domainId, String stockTakingId, String mpiCd, int reqEaQty, int resEaQty);
 

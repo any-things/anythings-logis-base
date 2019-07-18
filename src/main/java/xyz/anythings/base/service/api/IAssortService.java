@@ -12,6 +12,7 @@ import xyz.anythings.base.entity.JobProcess;
 import xyz.anythings.base.entity.Location;
 import xyz.anythings.base.entity.Region;
 import xyz.anythings.base.entity.SKU;
+import xyz.anythings.base.service.model.IAssortSetting;
 import xyz.anythings.base.service.model.JobParams;
 import xyz.anythings.base.service.model.MiddleClass;
 import xyz.anythings.base.service.model.TabletInputSeq;
@@ -91,7 +92,28 @@ public interface IAssortService extends ILogisBaseService {
 	 * 
 	 * @return
 	 */
-	public ILogisConfigurableService getLogisConfigurableService();
+	//public ILogisConfigurableService getLogisConfigurableService();
+	
+	/**
+	 * 1-2. 분류 모듈 정보 : 작업 유형에 따른 분류 모듈별 설정
+	 * 
+	 * @return
+	 */
+	public IAssortSetting getAssortSettings();
+	
+	/**
+	 * 1-3. 모듈별 박싱 처리 서비스
+	 *  
+	 * @return
+	 */
+	public IBoxingService getBoxingService();
+	
+	/**
+	 * 1-4. 모듈별 실적 전송 서비스
+	 * 
+	 * @return
+	 */
+	public IResultSendService getResultSendService();
 	
 	/**
 	 * 2. 중분류 
