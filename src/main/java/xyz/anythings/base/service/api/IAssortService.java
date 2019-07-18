@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import xyz.anythings.base.entity.BoxResult;
+import xyz.anythings.base.entity.Gateway;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.JobInputSeq;
 import xyz.anythings.base.entity.JobProcess;
@@ -408,8 +409,7 @@ public interface IAssortService extends ILogisBaseService {
 	 * @param batch
 	 * @param gatewayCd
 	 */
-	//public void restoreMpiOn(JobBatch batch, Gateway gw);
-	public void restoreMpiOn(JobBatch batch, String gatewayCd);
+	public void restoreMpiOn(JobBatch batch, Gateway gw);
 	
 	/**
 	 * 6-6. 표시기 : 호기별, 작업 존 별 작업 리스트 조회 후 표시기 재점등
