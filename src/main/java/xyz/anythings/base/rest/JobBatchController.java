@@ -282,20 +282,20 @@ public class JobBatchController extends AbstractRestService {
 		// 1. 파라미터 체크
 		Long domainId = Domain.currentDomainId();
 		
-		if(ValueUtil.isEqualIgnoreCase(dcCd, AnyConstants.NOT_AVAILABLE)) {
+		if(ValueUtil.isEqualIgnoreCase(dcCd, AnyConstants.NOT_AVAILABLE_STRING)) {
 			dcCd = null;
 		}
 		
-		if(ValueUtil.isEqualIgnoreCase(comCd, AnyConstants.NOT_AVAILABLE)) {
+		if(ValueUtil.isEqualIgnoreCase(comCd, AnyConstants.NOT_AVAILABLE_STRING)) {
 			comCd = null;
 		}
 		
-		if(ValueUtil.isEqualIgnoreCase(jobDate, AnyConstants.NOT_AVAILABLE)) {
+		if(ValueUtil.isEqualIgnoreCase(jobDate, AnyConstants.NOT_AVAILABLE_STRING)) {
 			jobDate = null;
 		}
 		
 		Integer batchSeq = null;
-		if(!ValueUtil.isEqualIgnoreCase(batchSeqStr, AnyConstants.NOT_AVAILABLE)) {
+		if(!ValueUtil.isEqualIgnoreCase(batchSeqStr, AnyConstants.NOT_AVAILABLE_STRING)) {
 			batchSeq = ValueUtil.toInteger(batchSeqStr);
 		}
 		

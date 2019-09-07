@@ -248,7 +248,7 @@ public class LogisBaseConstants extends AnyConstants {
 	 */
 	public static String checkSideCdForQuery(Long domainId, String sideCd) {
 		if(isDeviceSideCdEnabled(domainId)) {
-			if(ValueUtil.isNotEmpty(sideCd) && (ValueUtil.isEqualIgnoreCase(sideCd, AnyConstants.NULL_STRING) || ValueUtil.isEqualIgnoreCase(sideCd, SIDE_TOTAL) || ValueUtil.isEqualIgnoreCase(sideCd, AnyConstants.ALL_CAPITAL_STR))) {
+			if(ValueUtil.isNotEmpty(sideCd) && (ValueUtil.isEqualIgnoreCase(sideCd, AnyConstants.NULL_STRING) || ValueUtil.isEqualIgnoreCase(sideCd, SIDE_TOTAL) || ValueUtil.isEqualIgnoreCase(sideCd, AnyConstants.ALL_CAP_STRING))) {
 				return null;
 			} else if(ValueUtil.isEmpty(sideCd)) {
 				return null;
