@@ -13,22 +13,23 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import xyz.anythings.base.entity.JobOrder;
-import xyz.elidom.dbist.dml.Page;
+import xyz.anythings.base.entity.Shop;
+
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
 import xyz.elidom.orm.system.annotation.service.ServiceDesc;
 import xyz.elidom.sys.system.service.AbstractRestService;
+import xyz.elidom.dbist.dml.Page;
 
 @RestController
 @Transactional
 @ResponseStatus(HttpStatus.OK)
-@RequestMapping("/rest/job_order")
-@ServiceDesc(description = "JobOrder Service API")
-public class JobOrderController extends AbstractRestService {
+@RequestMapping("/rest/shops")
+@ServiceDesc(description = "Shop Service API")
+public class ShopController extends AbstractRestService {
 
 	@Override
 	protected Class<?> entityClass() {
-		return JobOrder.class;
+		return Shop.class;
 	}
 
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -43,7 +44,7 @@ public class JobOrderController extends AbstractRestService {
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Find one by ID")
-	public JobOrder findOne(@PathVariable("id") String id) {
+	public Shop findOne(@PathVariable("id") String id) {
 		return this.getOne(this.entityClass(), id);
 	}
 
@@ -53,38 +54,29 @@ public class JobOrderController extends AbstractRestService {
 		return this.isExistOne(this.entityClass(), id);
 	}
 
-	@RequestMapping(value = "/check_import", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiDesc(description = "Check Before Import")
-	public List<JobOrder> checkImport(@RequestBody List<JobOrder> list) {
-		for (JobOrder item : list) {
-			this.checkForImport(JobOrder.class, item);
-		}
-
-		return list;
-	}
-
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
 	@ApiDesc(description = "Create")
-	public JobOrder create(@RequestBody JobOrder input) {
+	public Shop create(@RequestBody Shop input) {
 		return this.createOne(input);
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Update")
-	public JobOrder update(@PathVariable("id") String id, @RequestBody JobOrder input) {
+	public Shop update(@PathVariable("id") String id, @RequestBody Shop input) {
 		return this.updateOne(input);
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Delete")
 	public void delete(@PathVariable("id") String id) {
-		this.deleteOne(this.getClass(), id);
+		this.deleteOne(this.entityClass(), id);
 	}
 
 	@RequestMapping(value = "/update_multiple", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Create, Update or Delete multiple at one time")
-	public Boolean multipleUpdate(@RequestBody List<JobOrder> list) {
+	public Boolean multipleUpdate(@RequestBody List<Shop> list) {
 		return this.cudMultipleData(this.entityClass(), list);
 	}
+
 }

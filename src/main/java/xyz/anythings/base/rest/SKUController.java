@@ -52,16 +52,6 @@ public class SKUController extends AbstractRestService {
 	public Boolean isExist(@PathVariable("id") String id) {
 		return this.isExistOne(this.entityClass(), id);
 	}
-	
-	@RequestMapping(value = "/check_import", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiDesc(description = "Check Before Import")
-	public List<SKU> checkImport(@RequestBody List<SKU> list) {
-		for (SKU item : list) {
-			this.checkForImport(SKU.class, item);
-		}
-		
-		return list;
-	}
 
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
@@ -79,7 +69,7 @@ public class SKUController extends AbstractRestService {
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Delete")
 	public void delete(@PathVariable("id") String id) {
-		this.deleteOne(this.getClass(), id);
+		this.deleteOne(this.entityClass(), id);
 	}
 
 	@RequestMapping(value = "/update_multiple", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -87,58 +77,5 @@ public class SKUController extends AbstractRestService {
 	public Boolean multipleUpdate(@RequestBody List<SKU> list) {
 		return this.cudMultipleData(this.entityClass(), list);
 	}
-	
-	/*@RequestMapping(value = "/receive/ready/{com_cd}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiDesc(description = "Ready to Receive From Parent System")
-	public Map<String, Object> readyToReceive(@PathVariable("com_cd") String comCd) {
-		Long domainId = Domain.currentDomainId();
-		
-		Map<String, Object> retVal = ValueUtil.newMap("com_cd", comCd);
-		IfSkuReceiver skuReceiver = this.receiverFactory.getSkuReceiver(domainId);
-		IfSkuBarcodeReceiver skuBarcodeReceiver = this.receiverFactory.getSkuBarcodeReceiver(domainId);
-		List<String> comCdList = ValueUtil.newStringList(comCd);
-		
-		int skuCount = (skuReceiver == null) ? 0 : skuReceiver.getReceiveCount(domainId, comCdList);
-		int skuBcrCount = (skuBarcodeReceiver == null) ? 0 : skuBarcodeReceiver.getReceiveCount(domainId, comCdList);
-		
-		boolean skuWeightReceiveFlag = ValueUtil.toBoolean(SettingUtil.getValue(ConfigConstants.MPS_MASTER_SKU_WEIGHT_IF_ENABLED, MpsConstants.FALSE_STRING));
-		if(skuWeightReceiveFlag) {
-			IfSkuWeightReceiver skuWeightReceiver = this.receiverFactory.getSkuWeightReceiver(domainId);
-			int weightCount = (skuWeightReceiver == null) ? 0 : skuWeightReceiver.getReceiveCount(domainId, comCdList);
-			retVal.put("weight_count", weightCount);
-		}
-		
-		retVal.put("sku_count", skuCount);
-		retVal.put("barcd_count", skuBcrCount);
-		return retVal;
-	}
-	
-	@RequestMapping(value = "/receive/start/{com_cd}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiDesc(description = "Receive (Interface) From Parent System")
-	public Map<String, Object> startToReceive(@PathVariable("com_cd") String comCd) {
-		Long domainId = Domain.currentDomainId();
-		List<String> comCdList = ValueUtil.newStringList(comCd);
-		
-		IfSkuReceiver skuReceiver = this.receiverFactory.getSkuReceiver(domainId);
-		Object skuCount = skuReceiver.receiveData(domainId, comCdList);
-		Map<String, Object> retVal = ValueUtil.newMap("result,sku_count", SysConstants.OK_STRING, skuCount);
-		
-		IfSkuBarcodeReceiver skuBarcodeReceiver = this.receiverFactory.getSkuBarcodeReceiver(domainId);
-		if(skuBarcodeReceiver != null) {
-			Object barcdCount = skuBarcodeReceiver.receiveData(domainId, comCdList);
-			retVal.put("barcd_count", barcdCount);
-		}
-		
-		boolean skuWeightReceiveFlag = ValueUtil.toBoolean(SettingUtil.getValue(ConfigConstants.MPS_MASTER_SKU_WEIGHT_IF_ENABLED, MpsConstants.FALSE_STRING));
-		if(skuWeightReceiveFlag) {
-			IfSkuWeightReceiver skuWeightReceiver = this.receiverFactory.getSkuWeightReceiver(domainId);
-			if(skuWeightReceiver != null) {
-				Object weightCount = skuWeightReceiver.receiveData(domainId, comCdList);
-				retVal.put("weight_count", weightCount);
-			}
-		}
-		
-		return retVal;
-	}*/
 
 }

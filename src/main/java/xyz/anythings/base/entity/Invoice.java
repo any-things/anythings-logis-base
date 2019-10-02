@@ -6,22 +6,22 @@ import xyz.elidom.dbist.annotation.Index;
 import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.Table;
 
-@Table(name = "tb_invoice_no", idStrategy = GenerationRule.NONE, indexes = {
-	@Index(name = "ix_invoice_no_0", columnList = "com_cd,used_flag")
+@Table(name = "invoices", idStrategy = GenerationRule.UUID, uniqueFields="id", indexes = {
+	@Index(name = "ix_invoices_0", columnList = "id", unique = true)
 })
-public class InvoiceNo extends xyz.elidom.orm.entity.basic.DomainTimeStampHook {
+public class Invoice extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	/**
 	 * SerialVersion UID
 	 */
-	private static final long serialVersionUID = 518736599435304360L;
+	private static final long serialVersionUID = 976170137378999303L;
 
 	@PrimaryKey
 	@Column (name = "id", nullable = false, length = 40)
 	private String id;
 
-	@Column (name = "com_cd", length = 32)
+	@Column (name = "com_cd", length = 30)
 	private String comCd;
-	
+
 	@Column (name = "used_flag", length = 1)
 	private Boolean usedFlag;
   

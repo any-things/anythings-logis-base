@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import xyz.anythings.base.entity.Bucket;
+import xyz.anythings.base.entity.Area;
 import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
 import xyz.elidom.orm.system.annotation.service.ServiceDesc;
@@ -22,13 +22,13 @@ import xyz.elidom.sys.system.service.AbstractRestService;
 @RestController
 @Transactional
 @ResponseStatus(HttpStatus.OK)
-@RequestMapping("/rest/bucket")
-@ServiceDesc(description = "Bucket Service API")
-public class BucketController extends AbstractRestService {
+@RequestMapping("/rest/areas")
+@ServiceDesc(description = "Area Service API")
+public class AreaController extends AbstractRestService {
 
 	@Override
 	protected Class<?> entityClass() {
-		return Bucket.class;
+		return Area.class;
 	}
 
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -43,7 +43,7 @@ public class BucketController extends AbstractRestService {
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Find one by ID")
-	public Bucket findOne(@PathVariable("id") String id) {
+	public Area findOne(@PathVariable("id") String id) {
 		return this.getOne(this.entityClass(), id);
 	}
 
@@ -53,38 +53,28 @@ public class BucketController extends AbstractRestService {
 		return this.isExistOne(this.entityClass(), id);
 	}
 
-	@RequestMapping(value = "/check_import", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiDesc(description = "Check Before Import")
-	public List<Bucket> checkImport(@RequestBody List<Bucket> list) {
-		for (Bucket item : list) {
-			this.checkForImport(Bucket.class, item);
-		}
-
-		return list;
-	}
-
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
 	@ApiDesc(description = "Create")
-	public Bucket create(@RequestBody Bucket input) {
+	public Area create(@RequestBody Area input) {
 		return this.createOne(input);
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Update")
-	public Bucket update(@PathVariable("id") String id, @RequestBody Bucket input) {
+	public Area update(@PathVariable("id") String id, @RequestBody Area input) {
 		return this.updateOne(input);
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Delete")
 	public void delete(@PathVariable("id") String id) {
-		this.deleteOne(this.getClass(), id);
+		this.deleteOne(this.entityClass(), id);
 	}
 
 	@RequestMapping(value = "/update_multiple", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Create, Update or Delete multiple at one time")
-	public Boolean multipleUpdate(@RequestBody List<Bucket> list) {
+	public Boolean multipleUpdate(@RequestBody List<Area> list) {
 		return this.cudMultipleData(this.entityClass(), list);
 	}
 

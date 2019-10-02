@@ -1,7 +1,6 @@
 package xyz.anythings.base.rest;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,23 +13,23 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import xyz.anythings.base.entity.Location;
-import xyz.elidom.dbist.dml.Page;
+import xyz.anythings.base.entity.TrayBox;
+
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
 import xyz.elidom.orm.system.annotation.service.ServiceDesc;
 import xyz.elidom.sys.system.service.AbstractRestService;
-import xyz.elidom.util.ValueUtil;
+import xyz.elidom.dbist.dml.Page;
 
 @RestController
 @Transactional
 @ResponseStatus(HttpStatus.OK)
-@RequestMapping("/rest/location")
-@ServiceDesc(description = "Location Service API")
-public class LocationController extends AbstractRestService {
+@RequestMapping("/rest/tray_boxes")
+@ServiceDesc(description = "TrayBox Service API")
+public class TrayBoxController extends AbstractRestService {
 
 	@Override
 	protected Class<?> entityClass() {
-		return Location.class;
+		return TrayBox.class;
 	}
 
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -45,7 +44,7 @@ public class LocationController extends AbstractRestService {
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Find one by ID")
-	public Location findOne(@PathVariable("id") String id) {
+	public TrayBox findOne(@PathVariable("id") String id) {
 		return this.getOne(this.entityClass(), id);
 	}
 
@@ -54,44 +53,29 @@ public class LocationController extends AbstractRestService {
 	public Boolean isExist(@PathVariable("id") String id) {
 		return this.isExistOne(this.entityClass(), id);
 	}
-	
-	@RequestMapping(value = "/check_import", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiDesc(description = "Check Before Import")
-	public List<Location> checkImport(@RequestBody List<Location> list) {
-		for (Location item : list) {
-			Map<String, Object> condition = ValueUtil.newMap("LOC_CD", item.getLocCd());
-			Location result = this.queryManager.selectByCondition(Location.class, condition);
-			if(result != null) {
-				item.setId(result.getId());
-			}
-		}
-		
-		return list;
-	}
-	
-	
+
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
 	@ApiDesc(description = "Create")
-	public Location create(@RequestBody Location input) {
+	public TrayBox create(@RequestBody TrayBox input) {
 		return this.createOne(input);
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Update")
-	public Location update(@PathVariable("id") String id, @RequestBody Location input) {
+	public TrayBox update(@PathVariable("id") String id, @RequestBody TrayBox input) {
 		return this.updateOne(input);
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Delete")
 	public void delete(@PathVariable("id") String id) {
-		this.deleteOne(this.getClass(), id);
+		this.deleteOne(this.entityClass(), id);
 	}
 
 	@RequestMapping(value = "/update_multiple", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Create, Update or Delete multiple at one time")
-	public Boolean multipleUpdate(@RequestBody List<Location> list) {
+	public Boolean multipleUpdate(@RequestBody List<TrayBox> list) {
 		return this.cudMultipleData(this.entityClass(), list);
 	}
 

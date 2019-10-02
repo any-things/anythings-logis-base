@@ -73,7 +73,6 @@ public class ModuleProperties implements IModuleProperties {
 	@Value("${anythings.logis.base.rabbitQueue:not_use}")
 	private String rabbitQueue;
 
-	
 	/**
 	 * Project Name
 	 * @return

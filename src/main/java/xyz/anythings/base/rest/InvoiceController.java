@@ -1,7 +1,6 @@
 package xyz.anythings.base.rest;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,24 +13,22 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import xyz.anythings.base.entity.Gateway;
+import xyz.anythings.base.entity.Invoice;
 import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
 import xyz.elidom.orm.system.annotation.service.ServiceDesc;
-import xyz.elidom.sys.entity.Domain;
 import xyz.elidom.sys.system.service.AbstractRestService;
-import xyz.elidom.sys.util.ValueUtil;
 
 @RestController
 @Transactional
 @ResponseStatus(HttpStatus.OK)
-@RequestMapping("/rest/gateway")
-@ServiceDesc(description = "Gateway Service API")
-public class GatewayController extends AbstractRestService {
+@RequestMapping("/rest/invoices")
+@ServiceDesc(description = "Invoice Service API")
+public class InvoiceController extends AbstractRestService {
 
 	@Override
 	protected Class<?> entityClass() {
-		return Gateway.class;
+		return Invoice.class;
 	}
 
 	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -46,7 +43,7 @@ public class GatewayController extends AbstractRestService {
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Find one by ID")
-	public Gateway findOne(@PathVariable("id") String id) {
+	public Invoice findOne(@PathVariable("id") String id) {
 		return this.getOne(this.entityClass(), id);
 	}
 
@@ -55,48 +52,30 @@ public class GatewayController extends AbstractRestService {
 	public Boolean isExist(@PathVariable("id") String id) {
 		return this.isExistOne(this.entityClass(), id);
 	}
-	
-	@RequestMapping(value = "/check_import", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiDesc(description = "Check Before Import")
-	public List<Gateway> checkImport(@RequestBody List<Gateway> list) {
-		for (Gateway item : list) {
-			this.checkForImport(Gateway.class, item);
-		}
-		
-		return list;
-	}
 
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
 	@ApiDesc(description = "Create")
-	public Gateway create(@RequestBody Gateway input) {
+	public Invoice create(@RequestBody Invoice input) {
 		return this.createOne(input);
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Update")
-	public Gateway update(@PathVariable("id") String id, @RequestBody Gateway input) {
+	public Invoice update(@PathVariable("id") String id, @RequestBody Invoice input) {
 		return this.updateOne(input);
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Delete")
 	public void delete(@PathVariable("id") String id) {
-		this.deleteOne(this.getClass(), id);
+		this.deleteOne(this.entityClass(), id);
 	}
 
 	@RequestMapping(value = "/update_multiple", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Create, Update or Delete multiple at one time")
-	public Boolean multipleUpdate(@RequestBody List<Gateway> list) {
+	public Boolean multipleUpdate(@RequestBody List<Invoice> list) {
 		return this.cudMultipleData(this.entityClass(), list);
-	}
-	
-	@RequestMapping(value = "/search_by_region/{region_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiDesc(description = "Search Gateways By RegionCd")
-	public List<Gateway> searchByRegion(@PathVariable("region_cd") String regionCd) {
-		String sql = "select * from tb_gateway where domain_id = :domainId and zone_cd in (select gw_zone_cd from tb_location where domain_id = :domainId and region_cd = :regionCd)";
-		Map<String, Object> params = ValueUtil.newMap("domainId,regionCd", Domain.currentDomainId(), regionCd);
-		return this.queryManager.selectListBySql(sql, params, Gateway.class, 0, 0);
 	}
 
 }

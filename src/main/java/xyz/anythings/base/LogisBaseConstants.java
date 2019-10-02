@@ -2,7 +2,6 @@ package xyz.anythings.base;
 
 import java.util.List;
 
-import xyz.anythings.base.entity.JobProcess;
 import xyz.anythings.sys.AnyConstants;
 import xyz.elidom.sys.util.SettingUtil;
 import xyz.elidom.util.ValueUtil;
@@ -60,31 +59,30 @@ public class LogisBaseConstants extends AnyConstants {
 	 */
 	public static final String JOB_TYPE_QPS = "QPS";
 	
-	/**
-	 * 작업 상태 - PICKING, FINISH
-	 */
-	public static final List<String> JOB_STATUS_PF = ValueUtil.newStringList(JobProcess.JOB_STATUS_PICKING, JobProcess.JOB_STATUS_FINISH);
-	/**
-	 * 작업 상태 - PICKING, INPUT
-	 */	
-	public static final List<String> JOB_STATUS_PI = ValueUtil.newStringList(JobProcess.JOB_STATUS_INPUT, JobProcess.JOB_STATUS_PICKING);
-	/**
-	 * 작업 상태 - WAIT, INPUT, CANCEL
-	 */
-	public static final List<String> JOB_STATUS_WIC = ValueUtil.newStringList(JobProcess.JOB_STATUS_WAIT, JobProcess.JOB_STATUS_INPUT, JobProcess.JOB_STATUS_CANCEL);
-	/**
-	 * 작업 상태 - WAIT, INPUT, PICKING, CANCEL
-	 */
-	public static final List<String> JOB_STATUS_WIP = ValueUtil.newStringList(JobProcess.JOB_STATUS_WAIT, JobProcess.JOB_STATUS_INPUT, JobProcess.JOB_STATUS_PICKING);
-	/**
-	 * 작업 상태 - WAIT, INPUT, PICKING, CANCEL
-	 */
-	public static final List<String> JOB_STATUS_WIPC = ValueUtil.newStringList(JobProcess.JOB_STATUS_WAIT, JobProcess.JOB_STATUS_INPUT, JobProcess.JOB_STATUS_PICKING, JobProcess.JOB_STATUS_CANCEL);
-	/**
-	 * 작업 상태 - WAIT, INPUT, PICKING, FINISH, CANCEL
-	 */
-	public static final List<String> JOB_STATUS_WIPFC = ValueUtil.newStringList(JobProcess.JOB_STATUS_WAIT, JobProcess.JOB_STATUS_INPUT, JobProcess.JOB_STATUS_PICKING, JobProcess.JOB_STATUS_FINISH, JobProcess.JOB_STATUS_CANCEL);
-
+//	/**
+//	 * 작업 상태 - PICKING, FINISH
+//	 */
+//	public static final List<String> JOB_STATUS_PF = ValueUtil.newStringList(JobProcess.JOB_STATUS_PICKING, JobProcess.JOB_STATUS_FINISH);
+//	/**
+//	 * 작업 상태 - PICKING, INPUT
+//	 */	
+//	public static final List<String> JOB_STATUS_PI = ValueUtil.newStringList(JobProcess.JOB_STATUS_INPUT, JobProcess.JOB_STATUS_PICKING);
+//	/**
+//	 * 작업 상태 - WAIT, INPUT, CANCEL
+//	 */
+//	public static final List<String> JOB_STATUS_WIC = ValueUtil.newStringList(JobProcess.JOB_STATUS_WAIT, JobProcess.JOB_STATUS_INPUT, JobProcess.JOB_STATUS_CANCEL);
+//	/**
+//	 * 작업 상태 - WAIT, INPUT, PICKING, CANCEL
+//	 */
+//	public static final List<String> JOB_STATUS_WIP = ValueUtil.newStringList(JobProcess.JOB_STATUS_WAIT, JobProcess.JOB_STATUS_INPUT, JobProcess.JOB_STATUS_PICKING);
+//	/**
+//	 * 작업 상태 - WAIT, INPUT, PICKING, CANCEL
+//	 */
+//	public static final List<String> JOB_STATUS_WIPC = ValueUtil.newStringList(JobProcess.JOB_STATUS_WAIT, JobProcess.JOB_STATUS_INPUT, JobProcess.JOB_STATUS_PICKING, JobProcess.JOB_STATUS_CANCEL);
+//	/**
+//	 * 작업 상태 - WAIT, INPUT, PICKING, FINISH, CANCEL
+//	 */
+//	public static final List<String> JOB_STATUS_WIPFC = ValueUtil.newStringList(JobProcess.JOB_STATUS_WAIT, JobProcess.JOB_STATUS_INPUT, JobProcess.JOB_STATUS_PICKING, JobProcess.JOB_STATUS_FINISH, JobProcess.JOB_STATUS_CANCEL);
 	
 	/**
 	 * 로케이션 단위의 작업 박싱 완료 상태 : BOXED

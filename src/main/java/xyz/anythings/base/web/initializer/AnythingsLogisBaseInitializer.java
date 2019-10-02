@@ -42,15 +42,20 @@ public class AnythingsLogisBaseInitializer {
 	private ModuleConfigSet configSet;
 
 	@EventListener({ ContextRefreshedEvent.class })
-	public void ready(ContextRefreshedEvent event) {
-		this.logger.info("Anythings Logistics Base module initializing ready...");
-		this.configSet.addConfig(this.module.getName(), this.module);
-		this.scanServices();		
+	public void refresh(ContextRefreshedEvent event) {
+		this.logger.info("Anythings Logistics Base module refreshing...");
+		
+		this.logger.info("Anythings Logistics Base module refreshed!");
 	}
 	
 	@EventListener({ApplicationReadyEvent.class})
-    void contextRefreshedEvent(ApplicationReadyEvent event) {
-		this.logger.info("Anythings Logistics Base module initializing started...");		
+    void ready(ApplicationReadyEvent event) {
+		this.logger.info("Anythings Logistics Base module initializing...");
+		
+		this.configSet.addConfig(this.module.getName(), this.module);
+		this.scanServices();
+		
+		this.logger.info("Anythings Logistics Base module initialized!");
     }
 	
 	/**
