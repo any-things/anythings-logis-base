@@ -68,12 +68,6 @@ public class ModuleProperties implements IModuleProperties {
 	private String scanEntityPackage;
 	
 	/**
-	 * 모듈에서 사용할 rabbitmq 큐 명칭 
-	 */
-	@Value("${anythings.logis.base.rabbitQueue:not_use}")
-	private String rabbitQueue;
-
-	/**
 	 * Project Name
 	 * @return
 	 */
@@ -114,10 +108,6 @@ public class ModuleProperties implements IModuleProperties {
 	
 	public String getProjectName() {
 		return this.projectName;
-	}
-
-	public String getRabbitQueue() {
-		return this.rabbitQueue;
 	}
 
 	@Override
