@@ -22,10 +22,10 @@ public class IndConfig extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "ind_config_set_id", nullable = false, length = 40)
 	private String indConfigSetId;
 
-	@Column (name = "category", length = 50)
+	@Column (name = "category", length = 100)
 	private String category;
 
-	@Column (name = "name", nullable = false, length = 30)
+	@Column (name = "name", nullable = false, length = 40)
 	private String name;
 
 	@Column (name = "description", length = 100)
@@ -34,7 +34,7 @@ public class IndConfig extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "value", length = 50)
 	private String value;
 
-	@Column (name = "remark")
+	@Column (name = "remark", length = 255)
 	private String remark;
 
 	@Column (name = "config", length = 4000)
