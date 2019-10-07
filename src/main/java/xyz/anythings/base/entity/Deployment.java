@@ -1,19 +1,16 @@
 package xyz.anythings.base.entity;
 
-import xyz.elidom.dbist.annotation.Index;
 import xyz.elidom.dbist.annotation.Column;
 import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.GenerationRule;
 import xyz.elidom.dbist.annotation.Table;
 
-@Table(name = "deployments", idStrategy = GenerationRule.UUID, uniqueFields="targetType,targetId,version", indexes = {
-	@Index(name = "ix_deployments_0", columnList = "target_type,target_id,version", unique = true)
-})
+@Table(name = "deployments", idStrategy = GenerationRule.UUID)
 public class Deployment extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	/**
 	 * SerialVersion UID
 	 */
-	private static final long serialVersionUID = 937652593380614640L;
+	private static final long serialVersionUID = 139716252076979474L;
 
 	@PrimaryKey
 	@Column (name = "id", nullable = false, length = 40)
@@ -27,9 +24,6 @@ public class Deployment extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	@Column (name = "version", nullable = false, length = 15)
 	private String version;
-
-	@Column (name = "status", nullable = false, length = 10)
-	private String status;
 
 	@Column (name = "scheduled_at", nullable = false, length = 22)
 	private String scheduledAt;
@@ -51,6 +45,9 @@ public class Deployment extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	@Column (name = "force_flag", length = 1)
 	private Boolean forceFlag;
+
+	@Column (name = "status", length = 10)
+	private String status;
 
 	@Column (name = "file_data")
 	private String fileData;
@@ -85,14 +82,6 @@ public class Deployment extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setVersion(String version) {
 		this.version = version;
-	}
-
-	public String getStatus() {
-		return status;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
 	}
 
 	public String getScheduledAt() {
@@ -149,6 +138,14 @@ public class Deployment extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setForceFlag(Boolean forceFlag) {
 		this.forceFlag = forceFlag;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 	public String getFileData() {
