@@ -24,6 +24,9 @@ public class Stock extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	@Column (name = "cell_cd", nullable = false, length = 30)
 	private String cellCd;
+	
+	@Column (name = "bin_index", length = 5)
+	private Integer binIndex;
 
 	@Column (name = "com_cd", nullable = false, length = 30)
 	private String comCd;
@@ -57,6 +60,9 @@ public class Stock extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	@Column (name = "active_flag", length = 1)
 	private Boolean activeFlag;
+	
+	@Column (name = "expired_at", length = 20)
+	private String expiredAt;
 
 	@Column (name = "status", length = 10)
 	private String status;
@@ -83,6 +89,14 @@ public class Stock extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setCellCd(String cellCd) {
 		this.cellCd = cellCd;
+	}
+	
+	public Integer getBinIndex() {
+		return binIndex;
+	}
+
+	public void setBinIndex(Integer binIndex) {
+		this.binIndex = binIndex;
 	}
 
 	public String getComCd() {
@@ -171,6 +185,14 @@ public class Stock extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setActiveFlag(Boolean activeFlag) {
 		this.activeFlag = activeFlag;
+	}
+
+	public String getExpiredAt() {
+		return expiredAt;
+	}
+
+	public void setExpiredAt(String expiredAt) {
+		this.expiredAt = expiredAt;
 	}
 
 	public String getStatus() {

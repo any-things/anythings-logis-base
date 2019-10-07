@@ -30,6 +30,9 @@ public class TrayBox extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	@Column (name = "tray_color", length = 10)
 	private String trayColor;
+	
+	@Column (name = "bin_count", length = 12)
+	private Integer binCount;
 
 	@Column (name = "status", length = 10)
 	private String status;
@@ -72,6 +75,14 @@ public class TrayBox extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setTrayColor(String trayColor) {
 		this.trayColor = trayColor;
+	}
+
+	public Integer getBinCount() {
+		return binCount;
+	}
+
+	public void setBinCount(Integer binCount) {
+		this.binCount = binCount;
 	}
 
 	public String getStatus() {

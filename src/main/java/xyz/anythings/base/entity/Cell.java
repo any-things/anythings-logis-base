@@ -30,6 +30,9 @@ public class Cell extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	@Column (name = "wms_cell_cd", length = 30)
 	private String wmsCellCd;
+	
+	@Column (name = "bin_count", length = 12)
+	private Integer binCount;
 
 	@Column (name = "station_cd", length = 30)
 	private String stationCd;
@@ -93,6 +96,14 @@ public class Cell extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setWmsCellCd(String wmsCellCd) {
 		this.wmsCellCd = wmsCellCd;
+	}
+
+	public Integer getBinCount() {
+		return binCount;
+	}
+
+	public void setBinCount(Integer binCount) {
+		this.binCount = binCount;
 	}
 
 	public String getStationCd() {
