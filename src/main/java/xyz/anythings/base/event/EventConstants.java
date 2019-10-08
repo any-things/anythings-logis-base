@@ -26,13 +26,9 @@ public class EventConstants {
 	 */
 	public static final short EVENT_STEP_BEFORE = 1;
 	/**
-	 * 이벤트 메인 처리 
-	 */
-	public static final short EVENT_STEP_MAIN = 2;
-	/**
 	 * 이벤트 후 처리 
 	 */
-	public static final short EVENT_STEP_AFTER = 3;
+	public static final short EVENT_STEP_AFTER = 2;
 	
 	
 	
@@ -40,22 +36,15 @@ public class EventConstants {
 	/** BatchReceiveEvent ================       **/
 	
 	/**
-	 * 배치 수신 서머리 정보 수집전 validation확인 및 params 셋팅  
-	 */
-	public static final short EVENT_RECEIVE_TYPE_RECEIPT_VALID = 11;
-	/**
 	 * 배치 수신 서머리 정보 수집 타입
 	 */
-	public static final short EVENT_RECEIVE_TYPE_RECEIPT = 12;
-
+	public static final short EVENT_RECEIVE_TYPE_RECEIPT = 10;
 	
-	/**
-	 * 배치 수신 전 validation확인 및 params 셋팅  
-	 */
-	public static final short EVENT_RECEIVE_TYPE_RECEIVE_VALID = 21;
 	/**
 	 * 배치 수신 타입
 	 */
-	public static final short EVENT_RECEIVE_TYPE_RECEIVE = 22;
+	public static final short EVENT_RECEIVE_TYPE_RECEIVE = 20;
+	
+	
 	
 }
