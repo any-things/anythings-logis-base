@@ -13,29 +13,32 @@ public class Cell extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	/**
 	 * SerialVersion UID
 	 */
-	private static final long serialVersionUID = 838774393921017730L;
+	private static final long serialVersionUID = 489777465475485570L;
 
 	@PrimaryKey
 	@Column (name = "id", nullable = false, length = 40)
 	private String id;
 
-	@Column (name = "rack_cd", nullable = false, length = 30)
-	private String rackCd;
+	@Column (name = "station_cd", length = 30)
+	private String stationCd;
 
-	@Column (name = "cell_nm", length = 40)
-	private String cellNm;
+	@Column (name = "equip_type", nullable = false, length = 20)
+	private String equipType;
+
+	@Column (name = "equip_cd", nullable = false, length = 30)
+	private String equipCd;
 
 	@Column (name = "cell_cd", nullable = false, length = 30)
 	private String cellCd;
 
+	@Column (name = "cell_nm", length = 40)
+	private String cellNm;
+
 	@Column (name = "wms_cell_cd", length = 30)
 	private String wmsCellCd;
-	
+
 	@Column (name = "bin_count", length = 12)
 	private Integer binCount;
-
-	@Column (name = "station_cd", length = 30)
-	private String stationCd;
 
 	@Column (name = "equip_zone", length = 30)
 	private String equipZone;
@@ -66,20 +69,28 @@ public class Cell extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.id = id;
 	}
 
-	public String getRackCd() {
-		return rackCd;
+	public String getStationCd() {
+		return stationCd;
 	}
 
-	public void setRackCd(String rackCd) {
-		this.rackCd = rackCd;
+	public void setStationCd(String stationCd) {
+		this.stationCd = stationCd;
 	}
 
-	public String getCellNm() {
-		return cellNm;
+	public String getEquipType() {
+		return equipType;
 	}
 
-	public void setCellNm(String cellNm) {
-		this.cellNm = cellNm;
+	public void setEquipType(String equipType) {
+		this.equipType = equipType;
+	}
+
+	public String getEquipCd() {
+		return equipCd;
+	}
+
+	public void setEquipCd(String equipCd) {
+		this.equipCd = equipCd;
 	}
 
 	public String getCellCd() {
@@ -88,6 +99,14 @@ public class Cell extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setCellCd(String cellCd) {
 		this.cellCd = cellCd;
+	}
+
+	public String getCellNm() {
+		return cellNm;
+	}
+
+	public void setCellNm(String cellNm) {
+		this.cellNm = cellNm;
 	}
 
 	public String getWmsCellCd() {
@@ -104,14 +123,6 @@ public class Cell extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setBinCount(Integer binCount) {
 		this.binCount = binCount;
-	}
-
-	public String getStationCd() {
-		return stationCd;
-	}
-
-	public void setStationCd(String stationCd) {
-		this.stationCd = stationCd;
 	}
 
 	public String getEquipZone() {

@@ -6,8 +6,14 @@ import xyz.elidom.dbist.annotation.Index;
 import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.Table;
 
-@Table(name = "stocks", idStrategy = GenerationRule.UUID, uniqueFields="domainId,rackCd,cellCd,comCd,skuCd", indexes = {
-	@Index(name = "ix_stocks_0", columnList = "domain_id,rack_cd,cell_cd,com_cd,sku_cd", unique = true)
+/**
+ * 재고 관리
+ * 
+ * @author shortstop
+ */
+@Table(name = "stocks", idStrategy = GenerationRule.UUID, uniqueFields="domainId,equipType,equipCd,cellCd,binIndex,comCd,skuCd", indexes = {
+	@Index(name = "ix_stocks_0", columnList = "domain_id,equip_type,equip_cd,cell_cd,bin_index,com_cd,sku_cd", unique = true),
+	@Index(name = "ix_stocks_1", columnList = "domain_id,cell_cd")
 })
 public class Stock extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	/**
@@ -19,8 +25,11 @@ public class Stock extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "id", nullable = false, length = 40)
 	private String id;
 
-	@Column (name = "rack_cd", nullable = false, length = 30)
-	private String rackCd;
+	@Column(name = "equip_type", nullable = false, length = 20)
+	private String equipType;
+
+	@Column(name = "equip_cd", nullable = false, length = 30)
+	private String equipCd;
 
 	@Column (name = "cell_cd", nullable = false, length = 30)
 	private String cellCd;
@@ -28,7 +37,7 @@ public class Stock extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "bin_index", length = 5)
 	private Integer binIndex;
 
-	@Column (name = "com_cd", nullable = false, length = 30)
+	@Column (name = "com_cd", length = 30)
 	private String comCd;
 
 	@Column (name = "sku_cd", length = 30)
@@ -75,12 +84,20 @@ public class Stock extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.id = id;
 	}
 
-	public String getRackCd() {
-		return rackCd;
+	public String getEquipType() {
+		return equipType;
 	}
 
-	public void setRackCd(String rackCd) {
-		this.rackCd = rackCd;
+	public void setEquipType(String equipType) {
+		this.equipType = equipType;
+	}
+
+	public String getEquipCd() {
+		return equipCd;
+	}
+
+	public void setEquipCd(String equipCd) {
+		this.equipCd = equipCd;
 	}
 
 	public String getCellCd() {

@@ -2,10 +2,18 @@ package xyz.anythings.base.entity;
 
 import xyz.elidom.dbist.annotation.Column;
 import xyz.elidom.dbist.annotation.GenerationRule;
+import xyz.elidom.dbist.annotation.Index;
 import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.Table;
 
-@Table(name = "stock_adjusts", idStrategy = GenerationRule.UUID)
+/**
+ * 재고 조사 상세 - 재고 조정
+ * 
+ * @author shortstop
+ */
+@Table(name = "stock_adjusts", idStrategy = GenerationRule.UUID, indexes = {
+	@Index(name = "ix_stock_adjusts_0", columnList = "domain_id,stocktaking_id") 
+})
 public class StockAdjust extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	/**
 	 * SerialVersion UID
@@ -19,11 +27,11 @@ public class StockAdjust extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "stocktaking_id", nullable = false, length = 40)
 	private String stocktakingId;
 
-	@Column (name = "rack_cd", nullable = false, length = 30)
-	private String rackCd;
-
 	@Column (name = "cell_cd", nullable = false, length = 30)
 	private String cellCd;
+	
+	@Column (name = "bin_index", length = 5)
+	private Integer binIndex;
 
 	@Column (name = "com_cd", nullable = false, length = 30)
 	private String comCd;
@@ -56,20 +64,20 @@ public class StockAdjust extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.stocktakingId = stocktakingId;
 	}
 
-	public String getRackCd() {
-		return rackCd;
-	}
-
-	public void setRackCd(String rackCd) {
-		this.rackCd = rackCd;
-	}
-
 	public String getCellCd() {
 		return cellCd;
 	}
 
 	public void setCellCd(String cellCd) {
 		this.cellCd = cellCd;
+	}
+
+	public Integer getBinIndex() {
+		return binIndex;
+	}
+
+	public void setBinIndex(Integer binIndex) {
+		this.binIndex = binIndex;
 	}
 
 	public String getComCd() {

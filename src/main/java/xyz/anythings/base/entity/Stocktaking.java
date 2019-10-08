@@ -6,8 +6,13 @@ import xyz.elidom.dbist.annotation.Index;
 import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.Table;
 
-@Table(name = "stocktakings", idStrategy = GenerationRule.UUID, uniqueFields="domainId,jobDate,jobSeq,rackCd", indexes = {
-	@Index(name = "ix_stocktakings_0", columnList = "domain_id,job_date,job_seq,rack_cd", unique = true)
+/**
+ * 재고 실사
+ * 
+ * @author shortstop
+ */
+@Table(name = "stocktakings", idStrategy = GenerationRule.UUID, uniqueFields = "domainId,jobDate,jobSeq,equipType,equipCd", indexes = {
+	@Index(name = "ix_stocktakings_0", columnList = "domain_id,job_date,job_seq,equip_type,equip_cd", unique = true) 
 })
 public class Stocktaking extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	/**
@@ -16,24 +21,27 @@ public class Stocktaking extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	private static final long serialVersionUID = 796043866203911286L;
 
 	@PrimaryKey
-	@Column (name = "id", nullable = false, length = 40)
+	@Column(name = "id", nullable = false, length = 40)
 	private String id;
 
-	@Column (name = "job_date", nullable = false, length = 10)
+	@Column(name = "job_date", nullable = false, length = 10)
 	private String jobDate;
 
-	@Column (name = "job_seq", nullable = false, length = 12)
+	@Column(name = "job_seq", nullable = false, length = 12)
 	private Integer jobSeq;
 
-	@Column (name = "rack_cd", nullable = false, length = 30)
-	private String rackCd;
+	@Column(name = "equip_type", nullable = false, length = 20)
+	private String equipType;
 
-	@Column (name = "status", length = 10)
+	@Column(name = "equip_cd", nullable = false, length = 30)
+	private String equipCd;
+
+	@Column(name = "status", length = 10)
 	private String status;
 
-	@Column (name = "remark", length = 1000)
+	@Column(name = "remark", length = 1000)
 	private String remark;
-  
+
 	public String getId() {
 		return id;
 	}
@@ -58,12 +66,20 @@ public class Stocktaking extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.jobSeq = jobSeq;
 	}
 
-	public String getRackCd() {
-		return rackCd;
+	public String getEquipType() {
+		return equipType;
 	}
 
-	public void setRackCd(String rackCd) {
-		this.rackCd = rackCd;
+	public void setEquipType(String equipType) {
+		this.equipType = equipType;
+	}
+
+	public String getEquipCd() {
+		return equipCd;
+	}
+
+	public void setEquipCd(String equipCd) {
+		this.equipCd = equipCd;
 	}
 
 	public String getStatus() {
@@ -80,5 +96,5 @@ public class Stocktaking extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setRemark(String remark) {
 		this.remark = remark;
-	}	
+	}
 }

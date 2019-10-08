@@ -2,10 +2,19 @@ package xyz.anythings.base.entity;
 
 import xyz.elidom.dbist.annotation.Column;
 import xyz.elidom.dbist.annotation.GenerationRule;
+import xyz.elidom.dbist.annotation.Index;
 import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.Table;
 
-@Table(name = "stock_hists", idStrategy = GenerationRule.UUID)
+/**
+ * 재고 이력
+ * 
+ * @author shortstop
+ */
+@Table(name = "stock_hists", idStrategy = GenerationRule.UUID, indexes = {
+	@Index(name = "ix_stock_hists_0", columnList = "domain_id,cell_cd,bin_index,sku_cd"),
+	@Index(name = "ix_stock_hists_1", columnList = "domain_id,cell_cd,sku_cd,tran_cd")
+})
 public class StockHist extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	/**
 	 * SerialVersion UID
@@ -18,6 +27,9 @@ public class StockHist extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	@Column (name = "cell_cd", nullable = false, length = 30)
 	private String cellCd;
+	
+	@Column (name = "bin_index", length = 5)
+	private Integer binIndex;
 
 	@Column (name = "com_cd", nullable = false, length = 30)
 	private String comCd;
@@ -54,6 +66,14 @@ public class StockHist extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setCellCd(String cellCd) {
 		this.cellCd = cellCd;
+	}
+
+	public Integer getBinIndex() {
+		return binIndex;
+	}
+
+	public void setBinIndex(Integer binIndex) {
+		this.binIndex = binIndex;
 	}
 
 	public String getComCd() {
