@@ -6,14 +6,14 @@ import xyz.elidom.dbist.annotation.Index;
 import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.Table;
 
-@Table(name = "job_config_set", idStrategy = GenerationRule.UUID, uniqueFields="domainId,comCd,jobType,equipCd,confSetCd", indexes = {
-	@Index(name = "ix_job_config_set_0", columnList = "domain_id,com_cd,job_type,equip_cd,conf_set_cd", unique = true)
+@Table(name = "job_config_set", idStrategy = GenerationRule.UUID, uniqueFields="domainId,comCd,stageCd,jobType,equipType,equipCd,confSetCd", indexes = {
+	@Index(name = "ix_job_config_set_0", columnList = "domain_id,com_cd,stage_cd,job_type,equip_type,equip_cd,conf_set_cd", unique = true)
 })
 public class JobConfigSet extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	/**
 	 * SerialVersion UID
 	 */
-	private static final long serialVersionUID = 418231215296846766L;
+	private static final long serialVersionUID = 120567157056908571L;
 
 	@PrimaryKey
 	@Column (name = "id", nullable = false, length = 40)
@@ -22,8 +22,14 @@ public class JobConfigSet extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "com_cd", length = 30)
 	private String comCd;
 
+	@Column (name = "stage_cd", length = 30)
+	private String stageCd;
+
 	@Column (name = "job_type", length = 20)
 	private String jobType;
+
+	@Column (name = "equip_type", length = 20)
+	private String equipType;
 
 	@Column (name = "equip_cd", length = 30)
 	private String equipCd;
@@ -56,12 +62,28 @@ public class JobConfigSet extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.comCd = comCd;
 	}
 
+	public String getStageCd() {
+		return stageCd;
+	}
+
+	public void setStageCd(String stageCd) {
+		this.stageCd = stageCd;
+	}
+
 	public String getJobType() {
 		return jobType;
 	}
 
 	public void setJobType(String jobType) {
 		this.jobType = jobType;
+	}
+
+	public String getEquipType() {
+		return equipType;
+	}
+
+	public void setEquipType(String equipType) {
+		this.equipType = equipType;
 	}
 
 	public String getEquipCd() {

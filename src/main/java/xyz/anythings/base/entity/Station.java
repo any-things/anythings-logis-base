@@ -28,11 +28,14 @@ public class Station extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "station_nm", length = 40)
 	private String stationNm;
 
-	@Column (name = "station_type", length = 30)
+	@Column (name = "station_type", length = 20)
 	private String stationType;
 
 	@Column (name = "printer_cd", length = 30)
 	private String printerCd;
+	
+	@Column (name = "worker_id", length = 32)
+	private String workerId;
 
 	public String getId() {
 		return id;
@@ -80,6 +83,14 @@ public class Station extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setPrinterCd(String printerCd) {
 		this.printerCd = printerCd;
+	}
+
+	public String getWorkerId() {
+		return workerId;
+	}
+
+	public void setWorkerId(String workerId) {
+		this.workerId = workerId;
 	}
 
 }

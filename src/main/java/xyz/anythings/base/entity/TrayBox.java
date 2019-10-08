@@ -25,7 +25,7 @@ public class TrayBox extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "tray_nm", nullable = false, length = 100)
 	private String trayNm;
 
-	@Column (name = "tray_type", length = 30)
+	@Column (name = "tray_type", length = 20)
 	private String trayType;
 
 	@Column (name = "tray_color", length = 10)

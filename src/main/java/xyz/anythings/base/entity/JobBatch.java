@@ -48,7 +48,7 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "stage_cd", length = 30)
 	private String stageCd;
 
-	@Column (name = "equip_type", length = 30)
+	@Column (name = "equip_type", length = 20)
 	private String equipType;
 
 	@Column (name = "equip_cd", length = 30)

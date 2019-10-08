@@ -112,7 +112,7 @@ public class OrderLabel extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "dlv_channel", length = 50)
 	private String dlvChannel;
 
-	@Column (name = "dlv_type", length = 50)
+	@Column (name = "dlv_type", length = 20)
 	private String dlvType;
 
 	@Column (name = "pass_stop_cd", length = 30)
