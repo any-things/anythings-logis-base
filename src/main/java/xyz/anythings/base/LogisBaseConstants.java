@@ -27,79 +27,145 @@ public class LogisBaseConstants extends AnyConstants {
 	public static final String SIDE_TOTAL = "T";
 
 	/**
-	 * MPS Job Type : DAS
+	 * MPS Job Type : DAS - 일반 DAS
 	 */
 	public static final String JOB_TYPE_DAS = "DAS";
 	/**
-	 * MPS Job Type : DAS 2차 분류 타입
+	 * MPS Job Type : DAS2 - 소터와 연동하는 2차 분류 DAS
 	 */
 	public static final String JOB_TYPE_DAS2 = "DAS2";
 	/**
-	 * MPS Job Type : DAS 2차 분류 싱글 슈트 타입
+	 * MPS Job Type : DAS3 - 단수/단포 DAS
 	 */
 	public static final String JOB_TYPE_DAS3 = "DAS3";
 	/**
-	 * MPS Job Type : RTN
+	 * MPS Job Type : RTN - 일반 반품 
 	 */
 	public static final String JOB_TYPE_RTN = "RTN";
 	/**
-	 * MPS Job Type : RTN3 (무오더 반품)
+	 * MPS Job Type : RTN2 - 소터와 연동하는 2차 분류 반품
+	 */
+	public static final String JOB_TYPE_RTN2 = "RTN2";
+	/**
+	 * MPS Job Type : RTN3 - 무오더 반품
 	 */
 	public static final String JOB_TYPE_RTN3 = "RTN3";
 	/**
-	 * MPS Job Type : DPS
+	 * MPS Job Type : DPS - 일반 DPS
 	 */
 	public static final String JOB_TYPE_DPS = "DPS";
 	/**
-	 * MPS Job Type : DPS 2차 분류 타입
+	 * MPS Job Type : DPS2 - 2차 분류 타입 DPS
 	 */
 	public static final String JOB_TYPE_DPS2 = "DPS2";
+	/**
+	 * MPS Job Type : DPS3 - 단수/단포 DPS
+	 */
+	public static final String JOB_TYPE_DPS3 = "DPS3";
 	/**
 	 * MPS Job Type : QPS
 	 */
 	public static final String JOB_TYPE_QPS = "QPS";
 	
-//	/**
-//	 * 작업 상태 - PICKING, FINISH
-//	 */
-//	public static final List<String> JOB_STATUS_PF = ValueUtil.newStringList(JobProcess.JOB_STATUS_PICKING, JobProcess.JOB_STATUS_FINISH);
-//	/**
-//	 * 작업 상태 - PICKING, INPUT
-//	 */	
-//	public static final List<String> JOB_STATUS_PI = ValueUtil.newStringList(JobProcess.JOB_STATUS_INPUT, JobProcess.JOB_STATUS_PICKING);
-//	/**
-//	 * 작업 상태 - WAIT, INPUT, CANCEL
-//	 */
-//	public static final List<String> JOB_STATUS_WIC = ValueUtil.newStringList(JobProcess.JOB_STATUS_WAIT, JobProcess.JOB_STATUS_INPUT, JobProcess.JOB_STATUS_CANCEL);
-//	/**
-//	 * 작업 상태 - WAIT, INPUT, PICKING, CANCEL
-//	 */
-//	public static final List<String> JOB_STATUS_WIP = ValueUtil.newStringList(JobProcess.JOB_STATUS_WAIT, JobProcess.JOB_STATUS_INPUT, JobProcess.JOB_STATUS_PICKING);
-//	/**
-//	 * 작업 상태 - WAIT, INPUT, PICKING, CANCEL
-//	 */
-//	public static final List<String> JOB_STATUS_WIPC = ValueUtil.newStringList(JobProcess.JOB_STATUS_WAIT, JobProcess.JOB_STATUS_INPUT, JobProcess.JOB_STATUS_PICKING, JobProcess.JOB_STATUS_CANCEL);
-//	/**
-//	 * 작업 상태 - WAIT, INPUT, PICKING, FINISH, CANCEL
-//	 */
-//	public static final List<String> JOB_STATUS_WIPFC = ValueUtil.newStringList(JobProcess.JOB_STATUS_WAIT, JobProcess.JOB_STATUS_INPUT, JobProcess.JOB_STATUS_PICKING, JobProcess.JOB_STATUS_FINISH, JobProcess.JOB_STATUS_CANCEL);
+	/**
+	 * 공통 대기 상태 : Waiting
+	 */
+	public static final String COMMON_STATUS_WAIT = "W";
+	/**
+	 * 공통 완료 상태 : Completed
+	 */
+	public static final String COMMON_STATUS_FINISHED = "F";
+	/**
+	 * 공통 진행 상태 : Running
+	 */
+	public static final String COMMON_STATUS_RUNNING = "R";
+	/**
+	 * 공통 에러 상태 : Error
+	 */
+	public static final String COMMON_STATUS_ERROR = "E";
+	/**
+	 * 공통 취소 상태 : Canceled
+	 */
+	public static final String COMMON_STATUS_CANCEL = "C";
 	
+	/**
+	 * 작업 대기 상태 : Waiting
+	 */
+	public static final String JOB_STATUS_WAIT = "W";
+	/**
+	 * 작업 투입 상태 : Input
+	 */
+	public static final String JOB_STATUS_INPUT = "I";	
+	/**
+	 * 작업 피킹 상태 : Picking
+	 */
+	public static final String JOB_STATUS_PICKING = "P";
+	/**
+	 * 작업 완료 상태 : Finished
+	 */
+	public static final String JOB_STATUS_FINISH = "F";
+	/**
+	 * 박싱 완료 상태 : Boxed
+	 */
+	public static final String JOB_STATUS_BOXED = "B";
+	/**
+	 * 검수 완료 상태 : Examinated
+	 */
+	public static final String JOB_STATUS_EXAMINATED = "E";	
+	/**
+	 * 실적 보고 완료 상태 : Reported
+	 */
+	public static final String JOB_STATUS_REPORTED = "R";
+	/**
+	 * 작업 취소 상태 : Canceled
+	 */
+	public static final String JOB_STATUS_CANCEL = "C";
+	/**
+	 * 주문 취소 상태 : Deleted
+	 */
+	public static final String JOB_STATUS_DELETED = "D";
+	
+	/**
+	 * 작업 상태 - PICKING, FINISH
+	 */
+	public static final List<String> JOB_STATUS_PF = ValueUtil.newStringList(JOB_STATUS_PICKING, JOB_STATUS_FINISH);
+	/**
+	 * 작업 상태 - WAIT, INPUT, CANCEL
+	 */
+	public static final List<String> JOB_STATUS_WIC = ValueUtil.newStringList(JOB_STATUS_WAIT, JOB_STATUS_INPUT, JOB_STATUS_CANCEL);
+	/**
+	 * 작업 상태 - WAIT, INPUT, PICKING, CANCEL
+	 */
+	public static final List<String> JOB_STATUS_WIPC = ValueUtil.newStringList(JOB_STATUS_WAIT, JOB_STATUS_INPUT, JOB_STATUS_PICKING, JOB_STATUS_CANCEL);
+	/**
+	 * 작업 상태 - INPUT, PICKING, CANCEL
+	 */
+	public static final List<String> JOB_STATUS_IPC = ValueUtil.newStringList(JOB_STATUS_INPUT, JOB_STATUS_PICKING, JOB_STATUS_CANCEL);
+	/**
+	 * 작업 상태 - WAIT, INPUT, PICKING, FINISH, CANCEL
+	 */
+	public static final List<String> JOB_STATUS_WIPFC = ValueUtil.newStringList(JOB_STATUS_WAIT, JOB_STATUS_INPUT, JOB_STATUS_PICKING, JOB_STATUS_FINISH, JOB_STATUS_CANCEL);
+	/**
+	 * 작업 상태 - FINISH, BOXED, EXAMINED, REPORTED
+	 */
+	public static final List<String> JOB_STATUS_FBER = ValueUtil.newStringList(JOB_STATUS_FINISH, JOB_STATUS_BOXED, JOB_STATUS_EXAMINATED, JOB_STATUS_REPORTED);
+		
 	/**
 	 * 로케이션 단위의 작업 박싱 완료 상태 : BOXED
 	 */
-	public static final String LOCATION_JOB_STATUS_BOXED = "BOXED";
+	public static final String CELL_JOB_STATUS_BOXED = "BOXED";
 	/**
 	 * 로케이션 단위의 작업 완료 후 Fullbox가 필요한 상태 : ENDING
 	 */
-	public static final String LOCATION_JOB_STATUS_END = "ENDING";
+	public static final String CELL_JOB_STATUS_END = "ENDING";
 	/**
 	 * 로케이션 단위의 작업 최종 완료 상태 : ENDED
 	 */
-	public static final String LOCATION_JOB_STATUS_ENDED = "ENDED";
+	public static final String CELL_JOB_STATUS_ENDED = "ENDED";
 	/**
 	 * 로케이션 단위의 작업 최종 완료, 완료 중 상태
 	 */
-	public static final List<String> LOCATION_JOB_STATUS_END_LIST = ValueUtil.newStringList(LOCATION_JOB_STATUS_BOXED, LOCATION_JOB_STATUS_END);
+	public static final List<String> CELL_JOB_STATUS_END_LIST = ValueUtil.newStringList(CELL_JOB_STATUS_BOXED, CELL_JOB_STATUS_END);
 		
 	/**
 	 * 색상 - RED
@@ -123,9 +189,19 @@ public class LogisBaseConstants extends AnyConstants {
 	public static final List<String> MPI_COLOR_LIST = ValueUtil.newStringList(COLOR_RED, COLOR_GREEN, COLOR_BLUE, COLOR_YELLOW);
 	
 	/**
-	 * 호기 사이드 코드 명 - REGION_SIDE
+	 * 랙 사이드 코드 명 - RACK_SIDE
 	 */
-	public static final String CODE_NAME_REGION_SIDE = "REGION_SIDE";
+	public static final String CODE_NAME_RACK_SIDE = "RACK_SIDE";
+	
+	/**
+	 * 설비 상태 정상
+	 */
+	public static final String EQUIP_STATUS_OK = "1";
+	/**
+	 * 설비 상태 고장
+	 */
+	public static final String EQUIP_STATUS_BREAK_DOWN = "2";
+
 	
 	/**
 	 * 작업 유형이 DAS 작업 타입인지 체크 
@@ -168,6 +244,16 @@ public class LogisBaseConstants extends AnyConstants {
 	}
 	
 	/**
+	 * 작업 유형이 2차 분류 반품 작업 타입인지 체크 
+	 * 
+	 * @param jobType
+	 * @return
+	 */
+	public static boolean isRtn2JobType(String jobType) {
+		return ValueUtil.isEqualIgnoreCase(JOB_TYPE_RTN2, jobType);
+	}
+	
+	/**
 	 * 작업 유형이 무오더 반품 작업 타입인지 체크 
 	 * 
 	 * @param jobType
@@ -188,13 +274,23 @@ public class LogisBaseConstants extends AnyConstants {
 	}
 	
 	/**
-	 * 작업 유형이 DPS2 작업 타입인지 체크
+	 * 작업 유형이 2차 분류 DPS 작업 타입인지 체크
 	 * 
 	 * @param jobType
 	 * @return
 	 */
 	public static boolean isDps2JobType(String jobType) {
 		return ValueUtil.isEqualIgnoreCase(JOB_TYPE_DPS2, jobType);
+	}
+	
+	/**
+	 * 작업 유형이 단수/단포 DPS 작업 타입인지 체크
+	 * 
+	 * @param jobType
+	 * @return
+	 */
+	public static boolean isDps3JobType(String jobType) {
+		return ValueUtil.isEqualIgnoreCase(JOB_TYPE_DPS3, jobType);
 	}
 	
 	/**
@@ -224,7 +320,7 @@ public class LogisBaseConstants extends AnyConstants {
 	 * @return
 	 */
 	public static boolean isB2CJobType(String jobType) {
-		return isDpsJobType(jobType) || isQpsJobType(jobType) || isDps2JobType(jobType);
+		return isDpsJobType(jobType) || isDps2JobType(jobType) || isDps3JobType(jobType) || isQpsJobType(jobType);
 	}
 	
 	/**
@@ -265,6 +361,6 @@ public class LogisBaseConstants extends AnyConstants {
 	 * @return
 	 */
 	public static boolean isDeviceSideCdEnabled(Long domainId) {
-		return ValueUtil.toBoolean(SettingUtil.getValue(domainId, LogisBaseConfigConstants.MPS_MOBILE_SIDE_CD_ENABLED, AnyConstants.FALSE_STRING));
+		return ValueUtil.toBoolean(SettingUtil.getValue(domainId, LogisBaseConfigConstants.LOGIS_MOBILE_SIDE_CD_ENABLED, AnyConstants.FALSE_STRING));
 	}
 }
