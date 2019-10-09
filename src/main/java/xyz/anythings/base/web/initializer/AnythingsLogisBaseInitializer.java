@@ -11,6 +11,12 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import xyz.anythings.base.config.ModuleProperties;
+import xyz.anythings.base.query.store.BatchQueryStore;
+import xyz.anythings.base.query.store.ConfigQueryStore;
+import xyz.anythings.base.query.store.IndicatorQueryStore;
+import xyz.anythings.base.query.store.InstructionQueryStore;
+import xyz.anythings.base.query.store.PreprocessQueryStore;
+import xyz.elidom.orm.IQueryManager;
 import xyz.elidom.sys.config.ModuleConfigSet;
 import xyz.elidom.sys.system.service.api.IEntityFieldCache;
 import xyz.elidom.sys.system.service.api.IServiceFinder;
@@ -40,6 +46,24 @@ public class AnythingsLogisBaseInitializer {
 	
 	@Autowired
 	private ModuleConfigSet configSet;
+	
+	@Autowired
+	private IQueryManager queryManager;
+	
+	@Autowired
+	private BatchQueryStore batchQueryStore;
+	
+	@Autowired
+	private ConfigQueryStore configQueryStore;
+	
+	@Autowired
+	private IndicatorQueryStore indicatorQueryStore;
+	
+	@Autowired
+	private InstructionQueryStore instructionQueryStore;
+	
+	@Autowired
+	private PreprocessQueryStore preprocessQueryStore;
 
 	@EventListener({ ContextRefreshedEvent.class })
 	public void refresh(ContextRefreshedEvent event) {
@@ -54,6 +78,7 @@ public class AnythingsLogisBaseInitializer {
 		
 		this.configSet.addConfig(this.module.getName(), this.module);
 		this.scanServices();
+		this.initQueryStores();
 		
 		this.logger.info("Anythings Logistics Base module initialized!");
     }
@@ -64,5 +89,17 @@ public class AnythingsLogisBaseInitializer {
 	private void scanServices() {
 		this.entityFieldCache.scanEntityFieldsByBasePackage(this.module.getBasePackage());
 		this.restFinder.scanServicesByPackage(this.module.getName(), this.module.getBasePackage());
+	}
+	
+	/**
+	 * 쿼리 스토어 초기화
+	 */
+	private void initQueryStores() {
+		String dbType = this.queryManager.getDbType();
+		this.batchQueryStore.initQueryStore(dbType);
+		this.configQueryStore.initQueryStore(dbType);
+		this.indicatorQueryStore.initQueryStore(dbType);
+		this.instructionQueryStore.initQueryStore(dbType);
+		this.preprocessQueryStore.initQueryStore(dbType);
 	}
 }
