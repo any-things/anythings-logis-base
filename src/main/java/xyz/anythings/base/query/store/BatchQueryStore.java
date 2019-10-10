@@ -12,6 +12,15 @@ import org.springframework.stereotype.Component;
 public class BatchQueryStore extends AbstractQueryStore {
 
 	/**
+	 * 창고 전체의 최근 3개월 작업 진행율 쿼리
+	 * 
+	 * @return
+	 */
+	public String getLatestMonthlyRateQuery() {
+		return this.getQueryByPath("batch/LatestMonthlyRate");
+	}
+	
+	/**
 	 * 스테이지 별 일일 작업 진행율 쿼리
 	 * 
 	 * @return

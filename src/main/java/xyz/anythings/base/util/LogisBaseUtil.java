@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 import xyz.anythings.base.entity.JobBatch;
+import xyz.anythings.base.query.store.EtcQueryStore;
 import xyz.elidom.dbist.dml.Query;
 import xyz.elidom.orm.IQueryManager;
 import xyz.elidom.sys.SysConstants;
@@ -62,8 +63,8 @@ public class LogisBaseUtil {
 	 */
 	public static Date currentDbTime() {
 		IQueryManager queryMgr = BeanUtil.get(IQueryManager.class);
-		// TODO 멀티 데이터베이스 지원
-		return queryMgr.selectBySql("select sysdate from dual", new HashMap<String, Object>(1), Date.class);
+		String query = BeanUtil.get(EtcQueryStore.class).getCurrentTimeQuery();
+		return queryMgr.selectBySql(query, new HashMap<String, Object>(1), Date.class);
 	}
 	
 	/**

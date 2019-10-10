@@ -8,6 +8,7 @@ import net.sf.common.util.ResourceUtils;
 import xyz.anythings.base.query.IQueryPathHelper;
 import xyz.elidom.exception.server.ElidomRuntimeException;
 import xyz.elidom.sys.SysConstants;
+import xyz.elidom.util.ValueUtil;
 
 /**
  * 쿼리 스토어 추상 클래스
@@ -37,7 +38,7 @@ public class AbstractQueryStore implements IQueryPathHelper {
 	@Override
 	public void initQueryStore(String databaseType) {
 		this.databaseType = databaseType;
-		this.basePath = "xyz/anythings/base/query/" + this.databaseType + SysConstants.DASH;
+		this.basePath = "xyz/anythings/base/query/" + this.databaseType + SysConstants.SLASH;
 		this.defaultBasePath = "xyz/anythings/base/query/ansi/"; 
 	}
 
@@ -95,11 +96,19 @@ public class AbstractQueryStore implements IQueryPathHelper {
 	 * @return
 	 */
 	protected String _getQueryByPath(String fullpath) {
+		String ql = null;
+		
 		try {
-			return ResourceUtils.readText(fullpath);
+			ql = ResourceUtils.readText(fullpath);
 		} catch (IOException e) {
 			throw new ElidomRuntimeException("Failed to get query by path", e.getMessage());
-		}		
+		}
+		
+		if(ValueUtil.isEmpty(ql)) {
+			throw new ElidomRuntimeException("Query of path [" + fullpath + "] is empty");
+		}
+		
+		return ql;
 	}
 
 }
