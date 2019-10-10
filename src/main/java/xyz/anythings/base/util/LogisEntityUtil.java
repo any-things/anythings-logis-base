@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.poi.ss.formula.functions.T;
 
+import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.dbist.dml.Query;
 import xyz.elidom.exception.server.ElidomValidationException;
@@ -30,7 +31,8 @@ public class LogisEntityUtil extends EntityUtil {
 	 * @param id
 	 * @return
 	 */
-	public static T findEntityById(boolean exceptionWhenEmpty, Class<T> clazz, String id) {
+	@SuppressWarnings("hiding")
+	public static <T> T findEntityById(boolean exceptionWhenEmpty, Class<T> clazz, String id) {
 		T obj = BeanUtil.get(IQueryManager.class).select(clazz, id);
 		
 		if(obj == null) {
@@ -48,7 +50,8 @@ public class LogisEntityUtil extends EntityUtil {
 	 * @param id
 	 * @return
 	 */
-	public static T findEntityByIdWithLock(boolean exceptionWhenEmpty, Class<T> clazz, String id) {
+	@SuppressWarnings("hiding")
+	public static <T> T findEntityByIdWithLock(boolean exceptionWhenEmpty, Class<T> clazz, String id) {
 		T obj = BeanUtil.get(IQueryManager.class).selectWithLock(clazz, id);
 		
 		if(obj == null) {
@@ -68,8 +71,9 @@ public class LogisEntityUtil extends EntityUtil {
 	 * @param codeValue
 	 * @return
 	 */
-	public static T findEntityByCode(Long domainId, boolean exceptionWhenEmpty, Class<T> clazz, String codeName, String codeValue) {
-		Query query = LogisBaseUtil.newConditionForExecution(domainId);
+	@SuppressWarnings("hiding")
+	public static <T> T findEntityByCode(Long domainId, boolean exceptionWhenEmpty, Class<T> clazz, String codeName, String codeValue) {
+		Query query = AnyOrmUtil.newConditionForExecution(domainId);
 		query.addFilter(codeName, codeValue);
 		T obj = BeanUtil.get(IQueryManager.class).selectByCondition(clazz, query);
 		
@@ -90,8 +94,9 @@ public class LogisEntityUtil extends EntityUtil {
 	 * @param codeValue
 	 * @return
 	 */
-	public static T findEntityByCodeWithLock(Long domainId, boolean exceptionWhenEmpty, Class<T> clazz, String codeName, String codeValue) {
-		Query query = LogisBaseUtil.newConditionForExecution(domainId);
+	@SuppressWarnings("hiding")
+	public static <T> T findEntityByCodeWithLock(Long domainId, boolean exceptionWhenEmpty, Class<T> clazz, String codeName, String codeValue) {
+		Query query = AnyOrmUtil.newConditionForExecution(domainId);
 		query.addFilter(codeName, codeValue);
 		T obj = BeanUtil.get(IQueryManager.class).selectByConditionWithLock(clazz, query);
 		
@@ -112,7 +117,8 @@ public class LogisEntityUtil extends EntityUtil {
 	 * @param fieldValues
 	 * @return
 	 */
-	public static T findEntityBy(Long domainId, boolean exceptionWhenEmpty, Class<T> clazz, String fieldNames, Object ... fieldValues) {
+	@SuppressWarnings("hiding")
+	public static <T> T findEntityBy(Long domainId, boolean exceptionWhenEmpty, Class<T> clazz, String fieldNames, Object ... fieldValues) {
 		return findEntityBy(domainId, exceptionWhenEmpty, clazz, null, fieldNames, fieldValues);
 	}
 	
@@ -127,8 +133,9 @@ public class LogisEntityUtil extends EntityUtil {
 	 * @param fieldValues
 	 * @return
 	 */
-	public static T findEntityBy(Long domainId, boolean exceptionWhenEmpty, Class<T> clazz, String selectFields, String fieldNames, Object ... fieldValues) {
-		Query condition = LogisBaseUtil.newConditionForExecution(domainId);
+	@SuppressWarnings("hiding")
+	public static <T> T findEntityBy(Long domainId, boolean exceptionWhenEmpty, Class<T> clazz, String selectFields, String fieldNames, Object ... fieldValues) {
+		Query condition = AnyOrmUtil.newConditionForExecution(domainId);
 
 		if(ValueUtil.isNotEmpty(selectFields)) {
 			condition.addSelect(selectFields.split(SysConstants.COMMA));
@@ -179,7 +186,7 @@ public class LogisEntityUtil extends EntityUtil {
 	 * @return
 	 */
 	public static List<T> searchEntitiesBy(Long domainId, boolean exceptionWhenEmpty, Class<T> clazz, String selectFields, String fieldNames, Object ... fieldValues) {
-		Query condition = LogisBaseUtil.newConditionForExecution(domainId);
+		Query condition = AnyOrmUtil.newConditionForExecution(domainId);
 
 		if(ValueUtil.isNotEmpty(selectFields)) {
 			condition.addSelect(selectFields.split(SysConstants.COMMA));
@@ -214,7 +221,7 @@ public class LogisEntityUtil extends EntityUtil {
 	 * @return
 	 */
 	public List<T> searchDetails(Long domainId, Class<T> clazz, String masterField, String masterId) {
-		Query condition = LogisBaseUtil.newConditionForExecution(domainId);
+		Query condition = AnyOrmUtil.newConditionForExecution(domainId);
 		condition.addFilter(masterField, masterId);
 		return BeanUtil.get(IQueryManager.class).selectList(clazz, condition);
 	}
@@ -249,7 +256,7 @@ public class LogisEntityUtil extends EntityUtil {
 	 * @return
 	 */
 	public static Page<T> searchPagesBy(Long domainId, Class<T> clazz, int limit, int page, String selectFields, String fieldNames, Object ... fieldValues) {
-		Query condition = LogisBaseUtil.newConditionForExecution(domainId, limit, page);
+		Query condition = AnyOrmUtil.newConditionForExecution(domainId, limit, page);
 
 		if(ValueUtil.isNotEmpty(selectFields)) {
 			condition.addSelect(selectFields.split(SysConstants.COMMA));

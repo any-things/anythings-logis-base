@@ -13,12 +13,20 @@ import xyz.anythings.base.entity.SKU;
 public interface ISkuSearchService {
 	
 	/**
-	 * 작업 배치 스코프에서 스캔한 상품 코드로 상품 정보 조회시 어떤 필드들을 대상으로 조회할 것인지 SKU 필드명 배열 - 설정으로 부터 읽는다.
+	 * 작업 배치 스코프에서 스캔한 상품 코드로 상품 정보 조회시 조회 조건 필드 리스트 - 설정에서 조회
 	 * 
 	 * @param batch 작업 배치
 	 * @return
 	 */
-	public String[] getSkuFieldsToSearch(JobBatch batch);
+	public String[] getSkuSearchConditionFields(JobBatch batch);
+	
+	/**
+	 * 작업 배치 스코프에서 스캔한 상품 코드로 상품 정보 조회시 조회할 필드 리스트 - 설정에서 조회
+	 *  
+	 * @param batch
+	 * @return
+	 */
+	public String getSkuSearchSelectFields(JobBatch batch);
 	
 	/**
 	 * 작업 배치 소속 분류 작업 중에 작업자가 상품 코드 혹은 상품 바코드 정보를 스캔했을 때 유효성 체크
