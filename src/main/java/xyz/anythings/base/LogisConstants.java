@@ -3,6 +3,7 @@ package xyz.anythings.base;
 import java.util.List;
 
 import xyz.anythings.sys.AnyConstants;
+import xyz.anythings.sys.ConfigConstants;
 import xyz.elidom.sys.util.SettingUtil;
 import xyz.elidom.util.ValueUtil;
 
@@ -361,6 +362,6 @@ public class LogisConstants extends AnyConstants {
 	 * @return
 	 */
 	public static boolean isDeviceSideCdEnabled(Long domainId) {
-		return ValueUtil.toBoolean(SettingUtil.getValue(domainId, LogisConfigConstants.DEVICE_SIDE_CD_ENABLED, AnyConstants.FALSE_STRING));
+		return ValueUtil.toBoolean(SettingUtil.getValue(domainId, ConfigConstants.DEVICE_SIDE_ENABLED, AnyConstants.FALSE_STRING));
 	}
 }

@@ -33,7 +33,7 @@ public class BaseSkuSearchService extends AbstractQueryService implements ISkuSe
 	@Override
 	public String[] getSkuSearchConditionFields(JobBatch batch) {
 		// TODO batch로 설정을 찾는 것으로 수정
-		String config = SettingUtil.getValue(ConfigConstants.SKU_FIELDS_TO_SEARCH, "skuCd,skuBarcd");
+		String config = SettingUtil.getValue(ConfigConstants.SKU_CONDITION_FIELDS_TO_SEARCH, "skuCd,skuBarcd");
 		return config.split(LogisConstants.COMMA);
 	}
 	
