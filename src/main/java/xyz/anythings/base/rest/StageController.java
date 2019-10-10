@@ -2,6 +2,9 @@ package xyz.anythings.base.rest;
 
 import java.util.List;
 
+import org.springframework.context.event.EventListener;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +17,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import xyz.anythings.base.entity.Stage;
+import xyz.anythings.comm.rabbitmq.event.MwLogisQueueListEvent;
+import xyz.anythings.comm.rabbitmq.event.model.LogisQueueNameModel;
 import xyz.elidom.dbist.dml.Page;
+import xyz.elidom.dbist.dml.Query;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
 import xyz.elidom.orm.system.annotation.service.ServiceDesc;
 import xyz.elidom.sys.system.service.AbstractRestService;
@@ -77,5 +83,26 @@ public class StageController extends AbstractRestService {
 	public Boolean multipleUpdate(@RequestBody List<Stage> list) {
 		return this.cudMultipleData(this.entityClass(), list);
 	}
-
+	
+	
+	@EventListener(condition = "#event.isExecuted() == false")
+	@Order(Ordered.LOWEST_PRECEDENCE)
+	public void getRabbitMqInitData(MwLogisQueueListEvent event) {
+		// Stage 엔티티의 테이블명 가져오기 
+		String tableName = this.queryManager.getDml().getTable(this.entityClass()).getName();
+		
+		// 조회 조건 셋팅 
+		Query condition = new Query();
+		condition.addSelect("areaCd","stageCd","domainId");
+		
+		// domainId 가 0 이 아니면 조회 조건 설정 
+		if(event.getDomainId() != 0) {
+			condition.addFilter("domainId", event.getDomainId());
+		}
+		
+		// 조회 
+		List<LogisQueueNameModel> result = this.queryManager.selectList(tableName, condition, LogisQueueNameModel.class);
+		event.setInitQueueNames(result);
+		event.setExecuted(true);
+	}
 }
