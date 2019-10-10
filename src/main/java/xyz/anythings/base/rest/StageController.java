@@ -1,7 +1,9 @@
 package xyz.anythings.base.rest;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -18,12 +20,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import xyz.anythings.base.entity.Stage;
 import xyz.anythings.comm.rabbitmq.event.MwLogisQueueListEvent;
+import xyz.anythings.comm.rabbitmq.event.MwQueueManageEvent;
+import xyz.anythings.comm.rabbitmq.event.model.IQueueNameModel;
 import xyz.anythings.comm.rabbitmq.event.model.LogisQueueNameModel;
+import xyz.anythings.sys.event.EventPublisher;
 import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.dbist.dml.Query;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
 import xyz.elidom.orm.system.annotation.service.ServiceDesc;
+import xyz.elidom.sys.entity.Domain;
 import xyz.elidom.sys.system.service.AbstractRestService;
+import xyz.elidom.util.ValueUtil;
 
 @RestController
 @Transactional
@@ -31,6 +38,9 @@ import xyz.elidom.sys.system.service.AbstractRestService;
 @RequestMapping("/rest/stages")
 @ServiceDesc(description = "Stage Service API")
 public class StageController extends AbstractRestService {
+
+	@Autowired
+	private EventPublisher eventPublisher;
 
 	@Override
 	protected Class<?> entityClass() {
@@ -81,13 +91,53 @@ public class StageController extends AbstractRestService {
 	@RequestMapping(value = "/update_multiple", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Create, Update or Delete multiple at one time")
 	public Boolean multipleUpdate(@RequestBody List<Stage> list) {
+		//스테이지 정보 변경 분에 대하여 mw에 반영 
+		this.setMwQueueList(list);
 		return this.cudMultipleData(this.entityClass(), list);
+	}
+	
+	/**
+	 * 스테이지 정보 변경 분에 대해 mw 반영 
+	 * @param list
+	 */
+	private void setMwQueueList(List<Stage> list) {
+		// 현재 도메인 검색 
+		Domain domain = Domain.currentDomain();
+		
+		// 도메인에 siteCd 가 있을 경우에만 MW 이벤트 발생 
+		if(ValueUtil.isNotEmpty(domain.getMwSiteCd())) {
+			// 스테이지 내용 변경 분에 대한 rabbitmq 에서의 이벤트 처리 리스트 
+			List<IQueueNameModel> queueModels = new ArrayList<IQueueNameModel>();
+			
+			for(Stage stage : list) {
+				// Update 는 기존 Queue 이름에 대한 조회가 필요 
+				if(stage.getCudFlag_().equalsIgnoreCase("u")) {
+					Stage befStage = this.findOne(stage.getId());
+					
+					// AreaCd 또는 StageCd 가 변경 되면 이벤트 발생  
+					if(ValueUtil.isNotEqual(befStage.getAreaCd(), stage.getAreaCd()) 
+						|| ValueUtil.isNotEqual(befStage.getStageCd(), stage.getStageCd())) {
+						
+						String befQueueName = domain.getMwSiteCd() + '/' + befStage.getAreaCd() + '/' + befStage.getStageCd();
+						queueModels.add(new LogisQueueNameModel(domain.getId(), stage.getCudFlag_(), domain.getMwSiteCd(),befQueueName , stage.getAreaCd(), stage.getStageCd()));
+					}
+					
+				} else {
+					queueModels.add(new LogisQueueNameModel(domain.getId(), stage.getCudFlag_(), domain.getMwSiteCd(), null, stage.getAreaCd(), stage.getStageCd()));
+				}
+			}
+			
+			if(queueModels.size() > 0 ) {
+				MwQueueManageEvent event = new MwQueueManageEvent(domain.getId(), queueModels);
+				eventPublisher.publishEvent(event);
+			}
+		}		
 	}
 	
 	
 	@EventListener(condition = "#event.isExecuted() == false")
 	@Order(Ordered.LOWEST_PRECEDENCE)
-	public void getRabbitMqInitData(MwLogisQueueListEvent event) {
+	public void getRabbitMqVhostQueueList(MwLogisQueueListEvent event) {
 		// Stage 엔티티의 테이블명 가져오기 
 		String tableName = this.queryManager.getDml().getTable(this.entityClass()).getName();
 		
