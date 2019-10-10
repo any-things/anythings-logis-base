@@ -17,6 +17,35 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	 */
 	private static final long serialVersionUID = 594615629904242255L;
 
+	/**
+	 * I/F 데이터 수신 중 상태 : RECEIVING
+	 */
+	public static final String STATUS_RECEIVE = "RECEIVING";
+	/**
+	 * 대기 상태 : WAIT
+	 */
+	public static final String STATUS_WAIT = "WAIT";
+	/**
+	 * 작업 지시 가능 상태 : READY
+	 */
+	public static final String STATUS_READY = "READY";
+	/**
+	 * 작업 지시 가능 상태 : READY
+	 */
+	public static final String STATUS_MERGED = "MERGED";
+	/**
+	 * 진행 상태 : RUNNING
+	 */
+	public static final String STATUS_RUNNING = "RUN";
+	/**
+	 * 완료 상태 : END
+	 */
+	public static final String STATUS_END = "END";
+	/**
+	 * 주문 취소 상태 : CANCEL
+	 */
+	public static final String STATUS_CANCEL = "CANCEL";
+	
 	@PrimaryKey
 	@Column (name = "id", nullable = false, length = 40)
 	private String id;

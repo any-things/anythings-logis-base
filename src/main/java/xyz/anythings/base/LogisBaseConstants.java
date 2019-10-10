@@ -361,6 +361,6 @@ public class LogisBaseConstants extends AnyConstants {
 	 * @return
 	 */
 	public static boolean isDeviceSideCdEnabled(Long domainId) {
-		return ValueUtil.toBoolean(SettingUtil.getValue(domainId, LogisBaseConfigConstants.LOGIS_MOBILE_SIDE_CD_ENABLED, AnyConstants.FALSE_STRING));
+		return ValueUtil.toBoolean(SettingUtil.getValue(domainId, LogisBaseConfigConstants.DEVICE_SIDE_CD_ENABLED, AnyConstants.FALSE_STRING));
 	}
 }

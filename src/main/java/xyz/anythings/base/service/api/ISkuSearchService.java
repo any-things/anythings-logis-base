@@ -1,187 +1,183 @@
-//package xyz.anythings.base.service.api;
-//
-//import java.util.List;
-//
-//import xyz.anythings.base.entity.JobBatch;
-//import xyz.anythings.base.entity.SKU;
-//
-///**
-// * SKU 검색 / 조회 서비스 API
-// * 
-// * @author shortstop
-// */
-//public interface ISkuSearchService {
-//	
-//	/**
-//	 * 스캔한 상품 코드로 상품 정보 조회시 어떤 필드들을 대상으로 조회할 것인지 SKU 필드명 배열 - 설정으로 부터 읽는다.
-//	 * 
-//	 * @param domainId
-//	 * @return
-//	 */
-//	public String[] getSkuFieldsToFind(Long domainId);
-//	
-//	/**
-//	 * 상품 코드, 상품 바코드, 박스 바코드 정보를 validation check
-//	 * 
-//	 * @param domainId
-//	 * @param skuCd
-//	 * @return
-//	 */
-//	public String validateSkuCd(Long domainId, String skuCd);
-//	
-//	/**
-//	 * skuCd로 SKU 정보를 상위 시스템으로 부터 수신
-//	 *  
-//	 * @param domainId
-//	 * @param skuCd
-//	 * @param comCdList
-//	 * @return
-//	 */
-//	// public int receiveSkuBySkuCd(Long domainId, String skuCd, List<String> comCdList);
-//
-//	/**
-//	 * 소분류를 위한 상품 리스트 조회
-//	 * 
-//	 * @param domainId
-//	 * @param batchGroupId
-//	 * @param skuCd
-//	 * @return
-//	 */
-//	public List<SKU> searchSkuListForPicking(Long domainId, String comCd, String batchId,String zoneCd,String skuCd);
-//	
-//	/**
-//	 * 중분류를 위한 상품 리스트 조회
-//	 * 
-//	 * @param domainId
-//	 * @param batchGroupId
-//	 * @param skuCd
-//	 * @return
-//	 */
-//	public List<SKU> searchSkuListForMiddleAssorting(Long domainId, String batchGroupId, String skuCd);
-//	
-//	/**
-//	 * 고객사 코드, skuCd로 SKU 조회
-//	 * 
-//	 * @param comCd
-//	 * @param skuCd
-//	 * @param exceptionFlag
-//	 * @return
-//	 */
-//	public SKU findByCode(String comCd, String skuCd, boolean exceptionFlag);
-//	
-//	/**
-//	 * 고객사 코드, skuCd, skuBarcd로 SKU 조회
-//	 * 
-//	 * @param comCd
-//	 * @param skuCd
-//	 * @param skuBarcd
-//	 * @param exceptionFlag
-//	 * @return
-//	 */
-//	public SKU findByCode(String comCd, String skuCd, String skuBarcd, boolean exceptionFlag);
-//	
-//	/**
-//	 * 고객사 코드, 박스 바코드로 SKU 조회
-//	 * 
-//	 * @param comCd
-//	 * @param boxBarcd
-//	 * @param exceptionFlag
-//	 * @return
-//	 */
-//	public SKU findByBoxBarcd(String comCd, String boxBarcd, boolean exceptionFlag);
-//
-//	/**
-//	 * domainId, batch, skuCd로 부터 상품 조회
-//	 * 보통 조회 결과가 하나이겠지만 두 개 이상도 가능하다.  
-//	 * 
-//	 * @param batch
-//	 * @param skuCd
-//	 * @return
-//	 */
-//	public List<SKU> searchSkuList(JobBatch batch, String skuCd);
-//	
-//	/**
-//	 * 작업배치가 할당되지 않은 경우 domainId, skuCd로 부터 상품 조회
-//	 * 보통 조회 결과가 하나이겠지만 두 개 이상도 가능하다.  
-//	 * 
-//	 * @param batch
-//	 * @param skuCd
-//	 * @return
-//	 */
-//	public List<SKU> searchSkuList(String skuCd);
-//	
-//	/**
-//	 * 고객사 코드없이 skuCd로만 조회 
-//	 * 
-//	 * @param batch
-//	 * @param skuCd
-//	 * @param exceptionFlag
-//	 * @return
-//	 */
-//	public List<SKU> searchByCode(JobBatch batch, String skuCd, boolean exceptionFlag);
-//	
-//	/**
-//	 * 고객사 코드, skuCd로 상품 리스트 조회
-//	 * 
-//	 * @param domainId
-//	 * @param comCd
-//	 * @param skuCd
-//	 * @param exceptionFlag
-//	 * @return
-//	 */
-//	public List<SKU> searchByCode(Long domainId, String comCd, String skuCd, boolean exceptionFlag);
-//	
-//	/**
-//	 * SKU 중량 조회 
-//	 * 
-//	 * @param comCd
-//	 * @param skuCd
-//	 * @param exceptionFlag
-//	 * @return
-//	 */
-//	public Float findSkuWeight(String comCd, String skuCd, boolean exceptionFlag);
-//	
-//	/**
-//	 * SKU 중량 kg/g 형태로 조회
-//	 * 
-//	 * @param comCd
-//	 * @param skuCd
-//	 * @param toUnit
-//	 * @param exceptionFlag
-//	 * @return
-//	 */
-//	public Float findSkuWeight(String comCd, String skuCd, String toUnit, boolean exceptionFlag);
-//	
-//	/**
-//	 * SKU 중량을 조회하여 toUnit (kg/g) 형태로 리턴
-//	 * 
-//	 * @param comCd
-//	 * @param skuCd
-//	 * @param toUnit
-//	 * @param exceptionFlag
-//	 * @return
-//	 */
-//	public Float findSkuRealWeight(String comCd, String skuCd, String toUnit, boolean exceptionFlag);
-//	
-//	/**
-//	 * SKU 계측 중량과 마스터 중량을 조회하여 SKU 형태로 리턴
-//	 * 
-//	 * @param comCd
-//	 * @param skuCd
-//	 * @param toUnit
-//	 * @param exceptionFlag
-//	 * @return
-//	 */
-//	public SKU findSkuWtAndRealWt(String comCd, String skuCd, String toUnit, boolean exceptionFlag);
-//	
-//	/**
-//	 * 상품 정보 조회
-//	 * 
-//	 * @param exceptionFlag
-//	 * @param selectFields
-//	 * @param paramNames
-//	 * @param paramValues
-//	 * @return
-//	 */
-//	public SKU findSKU(boolean exceptionFlag, String selectFields, String paramNames, Object ... paramValues);
-//}
+package xyz.anythings.base.service.api;
+
+import java.util.List;
+
+import xyz.anythings.base.entity.JobBatch;
+import xyz.anythings.base.entity.SKU;
+
+/**
+ * 분류 처리를 위한 SKU 검색 / 조회 서비스 API
+ * 
+ * @author shortstop
+ */
+public interface ISkuSearchService {
+	
+	/**
+	 * 작업 배치 스코프에서 스캔한 상품 코드로 상품 정보 조회시 어떤 필드들을 대상으로 조회할 것인지 SKU 필드명 배열 - 설정으로 부터 읽는다.
+	 * 
+	 * @param batch 작업 배치
+	 * @return
+	 */
+	public String[] getSkuFieldsToSearch(JobBatch batch);
+	
+	/**
+	 * 작업 배치 소속 분류 작업 중에 작업자가 상품 코드 혹은 상품 바코드 정보를 스캔했을 때 유효성 체크
+	 * 
+	 * @param batch 작업 배치
+	 * @param skuCd 상품 코드 혹은 상품 바코드 등
+	 * @return
+	 */
+	public String validateSkuCd(JobBatch batch, String skuCd);
+	
+	/**
+	 * 작업 배치 그룹 범위 내에서 상품 코드 혹은 상품 바코드로 상품 리스트 조회 - 보통 조회 결과가 하나이겠지만 고객사가 다른 동일 SKU가 존재할 수 있어서 두 개 이상도 가능하다
+	 * 
+	 * @param batch 작업 배치
+	 * @param skuCd 상품 코드 혹은 상품 바코드 등
+	 * @param todoOnly 처리한 것은 제외하고 처리할 대상 상품에 대해서만 조회할 지 여부
+	 * @param exceptionWhenEmpty 상품이 존재하지 않은 경우 예외 발생 여부
+	 * @return
+	 */
+	public List<SKU> searchListInBatchGroup(JobBatch batch, String skuCd, boolean todoOnly, boolean exceptionWhenEmpty);
+	
+	/**
+	 * 작업 배치 그룹 범위 내에서 고객사 코드와 상품 코드 혹은 상품 바코드로 상품 리스트 조회 - 보통 조회 결과가 하나이겠지만 고객사가 다른 동일 SKU가 존재할 수 있어서 두 개 이상도 가능하다
+	 * 
+	 * @param batch 작업 배치
+	 * @param comCd 고객사 코드
+	 * @param skuCd 상품 코드 혹은 상품 바코드 등
+	 * @param todoOnly 처리한 것은 제외하고 처리할 대상 상품에 대해서만 조회할 지 여부
+	 * @param exceptionWhenEmpty 상품이 존재하지 않은 경우 예외 발생 여부
+	 * @return
+	 */
+	public List<SKU> searchListInBatchGroup(JobBatch batch, String comCd, String skuCd, boolean todoOnly, boolean exceptionWhenEmpty);
+	
+	/**
+	 * 작업 배치 범위 내에서 상품 코드 혹은 상품 바코드로 상품 리스트 조회 - 보통 조회 결과가 하나이겠지만 고객사가 다른 동일 SKU가 존재할 수 있어서 두 개 이상도 가능하다
+	 * 
+	 * @param batch 작업 배치
+	 * @param skuCd 상품 코드 혹은 상품 바코드 등
+	 * @param todoOnly 처리한 것은 제외하고 처리할 대상 상품에 대해서만 조회할 지 여부
+	 * @param exceptionWhenEmpty 상품이 존재하지 않은 경우 예외 발생 여부
+	 * @return
+	 */
+	public List<SKU> searchListInBatch(JobBatch batch, String skuCd, boolean todoOnly, boolean exceptionWhenEmpty);
+	
+	/**
+	 * 작업 배치 범위 내에서 고객사 코드와 상품 코드 혹은 상품 바코드로 상품 리스트 조회 - 보통 조회 결과가 하나이겠지만 고객사가 다른 동일 SKU가 존재할 수 있어서 두 개 이상도 가능하다
+	 * 
+	 * @param batch 작업 배치 
+	 * @param comCd 고객사 코드
+	 * @param skuCd 상품 코드 혹은 상품 바코드 등
+	 * @param todoOnly 처리한 것은 제외하고 처리할 대상 상품에 대해서만 조회할 지 여부
+	 * @param exceptionWhenEmpty 상품이 존재하지 않은 경우 예외 발생 여부
+	 * @return
+	 */
+	public List<SKU> searchListInBatch(JobBatch batch, String comCd, String skuCd, boolean todoOnly, boolean exceptionWhenEmpty);
+	
+	/**
+	 * 작업 배치 및 작업 스테이션 범위 내에서 고객사 코드와 상품 코드 혹은 상품 바코드로 상품 리스트 조회 - 보통 조회 결과가 하나이겠지만 고객사가 다른 동일 SKU가 존재할 수 있어서 두 개 이상도 가능하다
+	 * 
+	 * @param batch 작업 배치
+	 * @param stationCd 작업 스테이션 코드 
+	 * @param comCd 고객사 코드
+	 * @param skuCd 상품 코드 혹은 상품 바코드 등
+	 * @param todoOnly 처리한 것은 제외하고 처리할 대상 상품에 대해서만 조회할 지 여부
+	 * @param exceptionWhenEmpty 상품이 존재하지 않은 경우 예외 발생 여부
+	 * @return
+	 */
+	public List<SKU> searchListInBatch(JobBatch batch, String stationCd, String comCd, String skuCd, boolean todoOnly, boolean exceptionWhenEmpty);
+	
+	/**
+	 * SKU 키(고객사 코드, 상품 코드)로 창고 내 SKU 조회
+	 * 
+	 * @param domainId
+	 * @param comCd 고객사 코드
+	 * @param skuCd 상품 코드 Only
+	 * @param exceptionFlag
+	 * @return
+	 */
+	public SKU findSku(Long domainId, String comCd, String skuCd, boolean exceptionFlag);
+	
+	/**
+	 * 창고 내 고객사 코드, 상품 코드, 상품 바코드로 SKU 조회
+	 * 
+	 * @param domainId
+	 * @param comCd 고객사 코드
+	 * @param skuCd 상품 코드 Only
+	 * @param skuBarcd 상품 바코드 Only
+	 * @param exceptionFlag
+	 * @return
+	 */
+	public SKU findSku(Long domainId, String comCd, String skuCd, String skuBarcd, boolean exceptionFlag);
+	
+	/**
+	 * 고객사 코드, 박스 바코드로 SKU 조회
+	 * 
+	 * @param domainId
+	 * @param comCd 고객사 코드
+	 * @param boxBarcd 박스 바코드
+	 * @param exceptionFlag
+	 * @return
+	 */
+	public SKU findSkuByBoxBarcd(Long domainId, String comCd, String boxBarcd, boolean exceptionFlag);
+	
+	/**
+	 * 조회 조건으로 SKU 조회
+	 * 
+	 * @param domainId
+	 * @param exceptionFlag
+	 * @param selectFields
+	 * @param paramNames
+	 * @param paramValues
+	 * @return
+	 */
+	public SKU findSKU(Long domainId, boolean exceptionFlag, String selectFields, String paramNames, Object ... paramValues);
+	
+	/**
+	 * SKU 중량 조회 
+	 * 
+	 * @param domainId
+	 * @param comCd 고객사 코드
+	 * @param skuCd 상품 코드 Only
+	 * @param exceptionFlag
+	 * @return
+	 */
+	public Float findSkuWeight(Long domainId, String comCd, String skuCd, boolean exceptionFlag);
+	
+	/**
+	 * SKU 중량 kg/g 형태로 조회
+	 * 
+	 * @param domainId
+	 * @param comCd 고객사 코드
+	 * @param skuCd 상품 코드 Only
+	 * @param toUnit 중량 단위 g or kg
+	 * @param exceptionFlag
+	 * @return
+	 */
+	public Float findSkuWeight(Long domainId, String comCd, String skuCd, String toUnit, boolean exceptionFlag);
+	
+	/**
+	 * SKU의 중량 관련 모든 정보를 SKU 오브젝트 형태로 리턴
+	 * 
+	 * @param domainId
+	 * @param comCd 고객사 코드
+	 * @param skuCd 상품 코드 Only
+	 * @param exceptionFlag
+	 * @return
+	 */
+	public SKU getSkuWeight(Long domainId, String comCd, String skuCd, boolean exceptionFlag);
+	
+	/**
+	 * SKU의 중량 관련 모든 정보를 중량 단위 toUnit을 적용하여 SKU 오브젝트 형태로 리턴 
+	 * 
+	 * @param domainId
+	 * @param comCd 고객사 코드
+	 * @param skuCd 상품 코드 Only
+	 * @param toUnit 중량 단위 g or kg
+	 * @param exceptionFlag
+	 * @return
+	 */
+	public SKU getSkuWeight(Long domainId, String comCd, String skuCd, String toUnit, boolean exceptionFlag);
+	
+}

@@ -30,6 +30,24 @@ public class BatchQueryStore extends AbstractQueryStore {
 	}
 	
 	/**
+	 * 작업 배치 그룹 범위 안에 있는 작업 데이터 중에서 넘어온 배치 정보와 상품 정보로 부터 SKU 정보를 조회
+	 * 
+	 * @return
+	 */
+	public String getSearchSkuInBatchGroupQuery() {
+		return this.getQueryByPath("batch/SearchSkuInBatchGroup");
+	}
+	
+	/**
+	 * 작업 배치 범위 안에 있는 작업 데이터 중에서 넘어온 배치 정보와 상품 정보로 부터 SKU 정보를 조회
+	 * 
+	 * @return
+	 */
+	public String getSearchSkuInBatchQuery() {
+		return this.getQueryByPath("batch/SearchSkuInBatch");
+	}
+	
+	/**
 	 * 배치 그룹내 배치에 대해서 끝나지 않은 정보가 있는지 체크
 	 * 
 	 * @return
