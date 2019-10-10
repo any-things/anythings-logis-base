@@ -5,7 +5,7 @@ package xyz.anythings.base;
  *
  * @author shortstop
  */
-public class LogisBaseConfigConstants extends xyz.anythings.sys.ConfigConstants {
+public class LogisConfigConstants extends xyz.anythings.sys.ConfigConstants {
 
 	/**
 	 * Mobile 장비의 작업 위치 (앞,뒤,앞/뒤,전체 등) 정보를 사용할 지 여부

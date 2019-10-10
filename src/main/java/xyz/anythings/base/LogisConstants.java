@@ -11,7 +11,7 @@ import xyz.elidom.util.ValueUtil;
  * 
  * @author shortstop
  */
-public class LogisBaseConstants extends AnyConstants {
+public class LogisConstants extends AnyConstants {
 
 	/**
 	 * 사이드 F : 앞
@@ -361,6 +361,6 @@ public class LogisBaseConstants extends AnyConstants {
 	 * @return
 	 */
 	public static boolean isDeviceSideCdEnabled(Long domainId) {
-		return ValueUtil.toBoolean(SettingUtil.getValue(domainId, LogisBaseConfigConstants.DEVICE_SIDE_CD_ENABLED, AnyConstants.FALSE_STRING));
+		return ValueUtil.toBoolean(SettingUtil.getValue(domainId, LogisConfigConstants.DEVICE_SIDE_CD_ENABLED, AnyConstants.FALSE_STRING));
 	}
 }

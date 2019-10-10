@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
-import xyz.anythings.base.LogisBaseConstants;
+import xyz.anythings.base.LogisConstants;
 import xyz.anythings.base.LogisUnitConstants;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.SKU;
@@ -34,7 +34,7 @@ public class BaseSkuSearchService extends AbstractQueryService implements ISkuSe
 	public String[] getSkuSearchConditionFields(JobBatch batch) {
 		// TODO batch로 설정을 찾는 것으로 수정
 		String config = SettingUtil.getValue(ConfigConstants.SKU_FIELDS_TO_SEARCH, "skuCd,skuBarcd");
-		return config.split(LogisBaseConstants.COMMA);
+		return config.split(LogisConstants.COMMA);
 	}
 	
 	@Override
@@ -70,7 +70,7 @@ public class BaseSkuSearchService extends AbstractQueryService implements ISkuSe
 		String sql = BeanUtil.get(BatchQueryStore.class).getSearchSkuInBatchGroupQuery();
 		Map<String, Object> params = ValueUtil.newMap("domainId,batchGroupId,comCd", batch.getDomainId(), batch.getBatchGroupId(), comCd);
 		if(todoOnly) {
-			params.put(SysConstants.ENTITY_FIELD_STATUS, LogisBaseConstants.JOB_STATUS_WIPC);
+			params.put(SysConstants.ENTITY_FIELD_STATUS, LogisConstants.JOB_STATUS_WIPC);
 		}
 		
 		for(String skuCodeField : skuCodeFields) {
@@ -98,7 +98,7 @@ public class BaseSkuSearchService extends AbstractQueryService implements ISkuSe
 		String sql = BeanUtil.get(BatchQueryStore.class).getSearchSkuInBatchQuery();
 		Map<String, Object> params = ValueUtil.newMap("domainId,batchId,comCd", batch.getDomainId(), batch.getId(), comCd);
 		if(todoOnly) {
-			params.put(SysConstants.ENTITY_FIELD_STATUS, LogisBaseConstants.JOB_STATUS_WIPC);
+			params.put(SysConstants.ENTITY_FIELD_STATUS, LogisConstants.JOB_STATUS_WIPC);
 		}
 		
 		for(String skuCodeField : skuCodeFields) {
