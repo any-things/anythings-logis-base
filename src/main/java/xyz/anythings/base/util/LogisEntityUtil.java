@@ -7,7 +7,6 @@ import org.apache.poi.ss.formula.functions.T;
 import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.dbist.dml.Query;
-import xyz.elidom.exception.server.ElidomValidationException;
 import xyz.elidom.orm.IQueryManager;
 import xyz.elidom.sys.SysConstants;
 import xyz.elidom.sys.util.EntityUtil;
@@ -144,7 +143,7 @@ public class LogisEntityUtil extends EntityUtil {
  		String[] keyArr = fieldNames.split(SysConstants.COMMA);
 
 		if (keyArr.length != fieldValues.length) {
-			throw new IllegalArgumentException("keys count and values count mismatch!");
+			throw ThrowUtil.newMismatchMapKeyValue();
 		}
 
 		for (int i = 0; i < keyArr.length; i++) {
@@ -154,7 +153,7 @@ public class LogisEntityUtil extends EntityUtil {
 		T obj = BeanUtil.get(IQueryManager.class).selectByCondition(clazz, condition);
 		
 		if(obj == null && exceptionWhenEmpty) {
-			throw new ElidomValidationException("Not found record!");
+			throw ThrowUtil.newNotFoundRecord("terms.menu." + clazz.getName());
 		}
 
 		return obj;
@@ -195,7 +194,7 @@ public class LogisEntityUtil extends EntityUtil {
  		String[] keyArr = fieldNames.split(SysConstants.COMMA);
 
 		if (keyArr.length != fieldValues.length) {
-			throw new IllegalArgumentException("keys count and values count mismatch!");
+			throw ThrowUtil.newMismatchMapKeyValue();
 		}
 
 		for (int i = 0; i < keyArr.length; i++) {
@@ -205,7 +204,7 @@ public class LogisEntityUtil extends EntityUtil {
 		List<T> list = BeanUtil.get(IQueryManager.class).selectList(clazz, condition);
 		
 		if(ValueUtil.isEmpty(list) && exceptionWhenEmpty) {
-			throw new ElidomValidationException("Not found record!");
+			throw ThrowUtil.newNotFoundRecord("terms.menu." + clazz.getName());
 		}
 
 		return list;
@@ -265,7 +264,7 @@ public class LogisEntityUtil extends EntityUtil {
  		String[] keyArr = fieldNames.split(SysConstants.COMMA);
 
 		if (keyArr.length != fieldValues.length) {
-			throw new IllegalArgumentException("keys count and values count mismatch!");
+			throw ThrowUtil.newMismatchMapKeyValue();
 		}
 
 		for (int i = 0; i < keyArr.length; i++) {

@@ -2,7 +2,6 @@ package xyz.anythings.base.util;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.UUID;
 
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.query.store.EtcQueryStore;
@@ -25,24 +24,6 @@ public class LogisBaseUtil {
 	 * 배치 ID 생성을 위한 날짜 포맷
 	 */
 	private static final String DATE_FORMAT_FOR_BATCH_ID = "yyMMddHHmmssSSS";
-	
-	/**
-	 * 32 바이트 길이의 GUID를 생성하여 리턴
-	 * 
-	 * @return
-	 */
-	public static String newUuid32() {
-		return UUID.randomUUID().toString().replace(SysConstants.DASH, SysConstants.EMPTY_STRING);
-	}
-	
-	/**
-	 * 36 바이트 길이의 GUID를 생성하여 리턴
-	 * 
-	 * @return
-	 */
-	public static String newUuid36() {
-		return UUID.randomUUID().toString();
-	}
 	
 	/**
 	 * 데이터베이스 현재 시간

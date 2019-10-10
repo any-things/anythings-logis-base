@@ -69,27 +69,6 @@ public class LogisConstants extends AnyConstants {
 	public static final String JOB_TYPE_QPS = "QPS";
 	
 	/**
-	 * 공통 대기 상태 : Waiting
-	 */
-	public static final String COMMON_STATUS_WAIT = "W";
-	/**
-	 * 공통 완료 상태 : Completed
-	 */
-	public static final String COMMON_STATUS_FINISHED = "F";
-	/**
-	 * 공통 진행 상태 : Running
-	 */
-	public static final String COMMON_STATUS_RUNNING = "R";
-	/**
-	 * 공통 에러 상태 : Error
-	 */
-	public static final String COMMON_STATUS_ERROR = "E";
-	/**
-	 * 공통 취소 상태 : Canceled
-	 */
-	public static final String COMMON_STATUS_CANCEL = "C";
-	
-	/**
 	 * 작업 대기 상태 : Waiting
 	 */
 	public static final String JOB_STATUS_WAIT = "W";
