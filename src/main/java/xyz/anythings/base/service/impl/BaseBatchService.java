@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
+import xyz.anythings.base.entity.BatchReceipt;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.service.api.IBatchService;
 import xyz.anythings.sys.service.AbstractQueryService;
@@ -17,6 +18,18 @@ import xyz.anythings.sys.service.AbstractQueryService;
 @Component
 public class BaseBatchService extends AbstractQueryService implements IBatchService {
 
+	@Override
+	public BatchReceipt readyToReceive(Long domainId, String areaCd, String stageCd, String comCd, String jobDate, Object ... params) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public BatchReceipt startToReceive(BatchReceipt receiptSummary) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 	@Override
 	public String newJobBatchId(Long domainId, String stageCd, Object... params) {
 		// TODO Auto-generated method stub
@@ -36,7 +49,7 @@ public class BaseBatchService extends AbstractQueryService implements IBatchServ
 	}
 
 	@Override
-	public JobBatch findRunningBatch(Long domainId, String stageCd) {
+	public JobBatch findRunningBatch(Long domainId, String stageCd, String equipType, String equipCd) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -54,13 +67,19 @@ public class BaseBatchService extends AbstractQueryService implements IBatchServ
 	}
 
 	@Override
+	public void isPossibleCloseBatch(JobBatch batch, boolean closeForcibly) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
 	public int closeBatch(JobBatch batch, boolean forcibly) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	public void isPossibleCloseBatch(JobBatch batch, boolean closeForcibly) {
+	public void isPossibleCloseBatchGroup(Long domainId, String batchGroupId, boolean closeForcibly) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -72,7 +91,7 @@ public class BaseBatchService extends AbstractQueryService implements IBatchServ
 	}
 
 	@Override
-	public void isPossibleCloseBatchGroup(Long domainId, String batchGroupId, boolean closeForcibly) {
+	public void isPossibleCancelBatch(JobBatch batch) {
 		// TODO Auto-generated method stub
 		
 	}

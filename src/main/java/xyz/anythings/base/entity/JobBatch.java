@@ -106,6 +106,12 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	@Column (name = "progress_rate", length = 19)
 	private Float progressRate;
+	
+	@Column (name = "input_workers", length = 12)
+	private Integer inputWorkers;
+	
+	@Column (name = "uph", length = 19)
+	private Float uph;
 
 	@Column (name = "instructed_at", type = xyz.elidom.dbist.annotation.ColumnType.DATETIME)
 	private Date instructedAt;
@@ -277,6 +283,22 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setProgressRate(Float progressRate) {
 		this.progressRate = progressRate;
+	}
+
+	public Integer getInputWorkers() {
+		return inputWorkers;
+	}
+
+	public void setInputWorkers(Integer inputWorkers) {
+		this.inputWorkers = inputWorkers;
+	}
+
+	public Float getUph() {
+		return uph;
+	}
+
+	public void setUph(Float uph) {
+		this.uph = uph;
 	}
 
 	public Date getInstructedAt() {

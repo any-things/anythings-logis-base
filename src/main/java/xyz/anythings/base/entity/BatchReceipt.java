@@ -6,6 +6,11 @@ import xyz.elidom.dbist.annotation.Index;
 import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.Table;
 
+/**
+ * 주문 수신 요약 마스터
+ * 
+ * @author shortstop
+ */
 @Table(name = "batch_receipts", idStrategy = GenerationRule.UUID, indexes = {
 	@Index(name = "ix_batch_receipts_0", columnList = "domain_id,com_cd,job_date,job_seq")
 })

@@ -5,10 +5,17 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
+import xyz.anythings.base.entity.BatchReceipt;
 import xyz.anythings.base.entity.JobBatch;
 
 /**
  * 배치 작업 서비스 API
+ * 	1. 주문 수신
+ *  2. 배치 작업 ID 생성
+ *  3. 스테이지 별, 배치별 진행률 조회 
+ *  4. 스테이지, 일자, 설비별 등의 조건으로 진행 중인 배치 조회
+ *  5. 배치 마감, 배치 그룹 마감
+ *  6. 배치 취소
  * 
  * @author shortstop
  */
@@ -16,11 +23,33 @@ import xyz.anythings.base.entity.JobBatch;
 public interface IBatchService {
 	
 	/**
+	 * 상위 시스템으로 부터 구역, 스테이지, 고객사, 작업 일자로 배치 및 주문 수신을 위한 정보를 조회하여 리턴 
+	 * - 사용자가 수신 받을 배치가 있는지 확인한 후 수신하도록 하기 위함  
+	 * 
+	 * @param domainId 도메인 ID
+	 * @param areaCd 구역 코드 
+	 * @param stageCd 스테이지 코드 
+	 * @param comCd 고객사 코
+	 * @param jobDate 작업 일자
+	 * @param params 기타 파라미터
+	 * @return
+	 */
+	public BatchReceipt readyToReceive(Long domainId, String areaCd, String stageCd, String comCd, String jobDate, Object ... params);
+	
+	/**
+	 * 상위 시스템으로 부터 배치, 주문을 수신
+	 * 
+	 * @param receiptSummary
+	 * @return
+	 */
+	public BatchReceipt startToReceive(BatchReceipt receiptSummary);
+	
+	/**
 	 * 새로운 배치 ID를 생성
 	 * 
-	 * @param domainId
-	 * @param stageCd
-	 * @param params
+	 * @param domainId 도메인 ID
+	 * @param stageCd 구역 코드
+	 * @param params 기타 파라미터
 	 * @return
 	 */
 	public String newJobBatchId(Long domainId, String stageCd, Object ... params);
@@ -29,6 +58,7 @@ public interface IBatchService {
 	 * 해당 일자의 현재 작업 진행율을 모두 조회
 	 * 
 	 * @param domainId
+	 * @param stageCd
 	 * @param jobDate
 	 * @return
 	 */
@@ -42,16 +72,18 @@ public interface IBatchService {
 	public Map<String, Object> batchProgressRate(JobBatch batch);
 	
 	/**
-	 * 작업 중인 Batch에서 메인 배치 또는 작업배치 찾기
+	 * 스테이지 내 설비 별로 진행 중인 작업 배치 찾기
 	 * 
 	 * @param domainId
 	 * @param stageCd
+	 * @param equipType
+	 * @param equipCd
 	 * @return
 	 */
-	public JobBatch findRunningBatch(Long domainId, String stageCd);
+	public JobBatch findRunningBatch(Long domainId, String stageCd, String equipType, String equipCd);
 	
 	/**
-	 * 진행 중인 작업 배치 리스트 조회 
+	 * 스테이지 내 일자내 진행 중인 작업 배치 리스트 조회 
 	 * 
 	 * @param domainId
 	 * @param stageCd
@@ -62,7 +94,7 @@ public interface IBatchService {
 	public List<JobBatch> searchRunningBatchList(Long domainId, String stageCd, String jobType, String jobDate);
 	
 	/**
-	 * 진행 중인 작업 대표 배치 리스트 조회 
+	 * 스테이지 내 일자내 진행 중인 메인 배치 리스트 조회 
 	 * 
 	 * @param domainId
 	 * @param stageCd
@@ -71,6 +103,15 @@ public interface IBatchService {
 	 * @return
 	 */
 	public List<JobBatch> searchRunningMainBatchList(Long domainId, String stageCd, String jobType, String jobDate);
+	
+	/**
+	 * 작업 배치 마감이 가능한 지 여부 체크 
+	 * 
+	 * @param batch 작업 배치
+	 * @param closeForcibly 강제 마감 여부
+	 * @return 작업 배치 마감 가능 여부
+	 */
+	public void isPossibleCloseBatch(JobBatch batch, boolean closeForcibly);
 	
 	/**
 	 * 작업 배치 작업 마감 
@@ -82,13 +123,14 @@ public interface IBatchService {
 	public int closeBatch(JobBatch batch, boolean forcibly);
 	
 	/**
-	 * 작업 배치 마감이 가능한 지 여부 체크 
+	 * 배치 그룹 마감이 가능한 지 여부 체크 
 	 * 
-	 * @param batch 작업 배치
-	 * @param closeForcibly 강제 종료 여부
+	 * @param domainId 도메인 ID
+	 * @param batchGroupId 작업 배치 그룹 ID
+	 * @param closeForcibly 강제 마감 여부
 	 * @return 작업 배치 마감 가능 여부
 	 */
-	public void isPossibleCloseBatch(JobBatch batch, boolean closeForcibly);
+	public void isPossibleCloseBatchGroup(Long domainId, String batchGroupId, boolean closeForcibly);
 	
 	/**
 	 * 배치 그룹 마감 
@@ -101,20 +143,18 @@ public interface IBatchService {
 	public int closeBatchGroup(Long domainId, String batchGroupId, boolean forcibly);
 	
 	/**
-	 * 배치 그룹 마감이 가능한 지 여부 체크 
+	 * 작업 배치 취소가 가능한 지 여부 체크 
 	 * 
-	 * @param domainId 도메인 ID
-	 * @param batchGroupId 작업 배치 그룹 ID
-	 * @param closeForcibly 강제 종료 여부
+	 * @param batch 작업 배치
 	 * @return 작업 배치 마감 가능 여부
 	 */
-	public void isPossibleCloseBatchGroup(Long domainId, String batchGroupId, boolean closeForcibly);
+	public void isPossibleCancelBatch(JobBatch batch);
 	
 	/**
 	 * 배치 취소
 	 * 
 	 * @param batch
-	 * @return 취소된 주문 건수
+	 * @return
 	 */
 	public int cancelBatch(JobBatch batch);
 	
