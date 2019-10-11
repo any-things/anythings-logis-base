@@ -7,46 +7,14 @@ import xyz.anythings.base.model.BatchProgressRate;
 
 /**
  * 배치 작업 서비스 API
- * 	1. 주문 수신
- *  2. 배치 작업 ID 생성
- *  3. 스테이지 별, 배치별 진행률 조회 
- *  4. 스테이지, 일자, 설비별 등의 조건으로 진행 중인 배치 조회
- *  5. 배치 마감, 배치 그룹 마감
- *  6. 배치 취소
+ *  1. 배치 작업 ID 생성
+ *  2. 스테이지 별, 배치별 진행률 조회 
+ *  3. 스테이지, 일자, 설비별 등의 조건으로 진행 중인 배치 조회
+ *  4. 배치 마감, 배치 그룹 마감
  * 
  * @author shortstop
  */
 public interface IBatchService {
-	
-	/**
-	 * 상위 시스템으로 부터 구역, 스테이지, 고객사, 작업 일자로 배치 및 주문 수신을 위한 정보를 조회하여 리턴 
-	 * - 사용자가 수신 받을 배치가 있는지 확인한 후 수신하도록 하기 위함  
-	 * 
-	 * @param domainId 도메인 ID
-	 * @param areaCd 구역 코드 
-	 * @param stageCd 스테이지 코드 
-	 * @param comCd 고객사 코
-	 * @param jobDate 작업 일자
-	 * @param params 기타 파라미터
-	 * @return
-	 */
-	//public BatchReceipt readyToReceive(Long domainId, String areaCd, String stageCd, String comCd, String jobDate, Object ... params);
-	
-	/**
-	 * 상위 시스템으로 부터 배치, 주문을 수신
-	 * 
-	 * @param receiptSummary
-	 * @return
-	 */
-	//public BatchReceipt startToReceive(BatchReceipt receiptSummary);
-	
-	/**
-	 * 배치 수신 취소
-	 * 
-	 * @param batch
-	 * @return
-	 */
-	//public int cancelBatch(JobBatch batch);
 	
 	/**
 	 * 새로운 배치 ID를 생성

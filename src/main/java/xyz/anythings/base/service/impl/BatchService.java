@@ -17,24 +17,6 @@ import xyz.anythings.sys.service.AbstractQueryService;
 @Component
 public class BatchService extends AbstractQueryService implements IBatchService {
 
-//	@Override
-//	public BatchReceipt readyToReceive(Long domainId, String areaCd, String stageCd, String comCd, String jobDate, Object ... params) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-//
-//	@Override
-//	public BatchReceipt startToReceive(BatchReceipt receiptSummary) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-//	
-//	@Override
-//	public int cancelBatch(JobBatch batch) {
-//		// TODO Auto-generated method stub
-//		return 0;
-//	}
-	
 	@Override
 	public String newJobBatchId(Long domainId, String stageCd, Object... params) {
 		// TODO Auto-generated method stub

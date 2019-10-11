@@ -1,11 +1,11 @@
 package xyz.anythings.base;
 
 /**
- * 각종 단위 관련 상수 정의
+ * 각종 코드 관련 상수 정의
  * 
  * @author shortstop
  */
-public class LogisUnitConstants {
+public class LogisCodeConstants {
 
 	/**
 	 * 무게 단위 : g

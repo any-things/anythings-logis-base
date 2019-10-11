@@ -1,3 +1,4 @@
+package xyz.anythings.base.service.api.sub;
 //package xyz.anythings.base.service.api;
 //
 //import xyz.anythings.base.entity.BoxResult;

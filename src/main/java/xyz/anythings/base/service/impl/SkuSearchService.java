@@ -6,7 +6,7 @@ import java.util.Map;
 import org.springframework.stereotype.Component;
 
 import xyz.anythings.base.LogisConstants;
-import xyz.anythings.base.LogisUnitConstants;
+import xyz.anythings.base.LogisCodeConstants;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.SKU;
 import xyz.anythings.base.query.store.BatchQueryStore;
@@ -174,7 +174,7 @@ public class SkuSearchService extends AbstractQueryService implements ISkuSearch
 		Float weight = (sku == null) ? 0.0f : sku.getSkuWt();
 
 		if(ValueUtil.isNotEmpty(weight) && weight > 0.0f) {
-			weight = this.convertWeightToUnit(weight, sku.getWtUnit(), LogisUnitConstants.WEIGHT_UNIT_KG);
+			weight = this.convertWeightToUnit(weight, sku.getWtUnit(), LogisCodeConstants.WEIGHT_UNIT_KG);
 		}
 
 		return weight;
@@ -191,7 +191,7 @@ public class SkuSearchService extends AbstractQueryService implements ISkuSearch
 		Float skuWt = sku.getSkuWt();
 		
 		if(ValueUtil.isNotEmpty(skuWt) && skuWt > 0.0f) {
-			skuWt = this.convertWeightToUnit(skuWt, sku.getWtUnit(), LogisUnitConstants.WEIGHT_UNIT_KG);
+			skuWt = this.convertWeightToUnit(skuWt, sku.getWtUnit(), LogisCodeConstants.WEIGHT_UNIT_KG);
 			sku.setSkuWt(skuWt);
 		}
 		
@@ -231,10 +231,10 @@ public class SkuSearchService extends AbstractQueryService implements ISkuSearch
 		if(ValueUtil.isNotEmpty(skuWeight) && skuWeight > 0.0f) {
 			if(!ValueUtil.isEqualIgnoreCase(skuWtUnit, toUnit)) {
 				// 1. KG -> G
-				if(ValueUtil.isEqualIgnoreCase(toUnit, LogisUnitConstants.WEIGHT_UNIT_G)) {
+				if(ValueUtil.isEqualIgnoreCase(toUnit, LogisCodeConstants.WEIGHT_UNIT_G)) {
 					skuWeight = (skuWeight * 1000.0f);
 				// 2. G -> KG
-				} else if(ValueUtil.isEqualIgnoreCase(toUnit, LogisUnitConstants.WEIGHT_UNIT_KG)) {
+				} else if(ValueUtil.isEqualIgnoreCase(toUnit, LogisCodeConstants.WEIGHT_UNIT_KG)) {
 					skuWeight = (skuWeight / 1000.0f);
 				}
 			}

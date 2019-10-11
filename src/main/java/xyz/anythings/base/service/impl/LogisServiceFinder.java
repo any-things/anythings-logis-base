@@ -9,8 +9,11 @@ import org.springframework.stereotype.Component;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.service.api.IBatchService;
 import xyz.anythings.base.service.api.IInstructionService;
+import xyz.anythings.base.service.api.IInvoiceNoService;
 import xyz.anythings.base.service.api.IPreprocessService;
 import xyz.anythings.base.service.api.IReceiveBatchService;
+import xyz.anythings.base.service.api.ISkuSearchService;
+import xyz.anythings.base.service.api.IStockService;
 
 /**
  * 작업 유형에 따른 서비스를 찾아주는 컴포넌트
@@ -34,6 +37,21 @@ public class LogisServiceFinder implements BeanFactoryAware {
 	 */
 	@Autowired
 	private ReceiveBatchService receiveBatchService;
+	/**
+	 * 상품 조회 서비스
+	 */
+	@Autowired
+	private SkuSearchService skuSearchService;
+	/**
+	 * 재고 서비스
+	 */
+	@Autowired
+	private StockService stockService;
+	/**
+	 * 송장 번호 서비스
+	 */
+	@Autowired
+	private InvoiceNoService invoiceNoService;
 
 	@Override
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
@@ -99,6 +117,33 @@ public class LogisServiceFinder implements BeanFactoryAware {
 	public IInstructionService getInstructionService(String jobType) {
 		String instSvcType = jobType.toLowerCase() + "InstructionService";
 		return (IInstructionService)this.beanFactory.getBean(instSvcType);
+	}
+	
+	/**
+	 * 상품 조회 서비스 컴포넌트를 찾아서 리턴
+	 * 
+	 * @return
+	 */
+	public ISkuSearchService getSkuSearchService() {
+		return this.skuSearchService;
+	}
+	
+	/**
+	 * 재고 서비스 컴포넌트를 찾아서 리턴
+	 * 
+	 * @return
+	 */
+	public IStockService getStockService() {
+		return this.stockService;
+	}
+	
+	/**
+	 * 송장 번호 서비스 컴포넌트를 찾아서 리턴
+	 * 
+	 * @return
+	 */
+	public IInvoiceNoService getInvoiceNoService() {
+		return this.invoiceNoService;
 	}
 	
 	/**
