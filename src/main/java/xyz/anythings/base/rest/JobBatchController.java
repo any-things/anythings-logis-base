@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import xyz.anythings.base.entity.BatchReceipt;
 import xyz.anythings.base.entity.JobBatch;
+import xyz.anythings.base.model.BatchProgressRate;
 import xyz.anythings.base.service.api.IBatchService;
+import xyz.anythings.base.service.impl.LogisServiceFinder;
 import xyz.anythings.base.util.LogisEntityUtil;
 import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
@@ -34,6 +36,11 @@ import xyz.elidom.util.ValueUtil;
 @ServiceDesc(description = "JobBatch Service API")
 public class JobBatchController extends AbstractRestService {
 
+	/**
+	 * 물류 서비스 파인더
+	 */
+	@Autowired
+	protected LogisServiceFinder logisServiceFinder;
 	/**
 	 * 작업 배치 서비스
 	 */
@@ -101,7 +108,7 @@ public class JobBatchController extends AbstractRestService {
 	 */
 	@RequestMapping(value = "/daily_progress_rate", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Daily progress rate")
-	public Map<String, Object> dailyProgressRate(
+	public BatchProgressRate dailyProgressRate(
 			@RequestParam(name = "stage_cd", required = true) String stageCd, 
 			@RequestParam(name = "job_date", required = true) String jobDate) {
 		
@@ -116,7 +123,7 @@ public class JobBatchController extends AbstractRestService {
 	 */
 	@RequestMapping(value = "/{id}/progress_rate", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Progress rate of job batch")
-	public Map<String, Object> batchProgressRate(@RequestParam(name = "id", required = true) String id) {
+	public BatchProgressRate batchProgressRate(@RequestParam(name = "id", required = true) String id) {
 		
 		JobBatch batch = LogisEntityUtil.findEntityById(true, JobBatch.class, id);
 		return this.batchService.batchProgressRate(batch);
@@ -222,11 +229,10 @@ public class JobBatchController extends AbstractRestService {
 			@PathVariable("source_batch_id") String sourceBatchId,
 			@PathVariable("main_batch_id") String mainBatchId) {
 		
-		Long domainId = Domain.currentDomainId();
 		// 1. 병합할 메인 배치 정보 조회 
-		JobBatch mainBatch = LogisEntityUtil.findEntityByIdWithLock(true, JobBatch.class, mainBatchId);	
+		// JobBatch mainBatch = LogisEntityUtil.findEntityByIdWithLock(true, JobBatch.class, mainBatchId);	
 		// 2. 병합될 배치 정보 조회 
-		JobBatch sourceBatch = LogisEntityUtil.findEntityByIdWithLock(true, JobBatch.class, sourceBatchId);	
+		// JobBatch sourceBatch = LogisEntityUtil.findEntityByIdWithLock(true, JobBatch.class, sourceBatchId);	
 		// 3. 작업 배치 병합
 		int mergedCnt = 0; //this.instructionService.mergeBatch(mainBatch, sourceBatch);
 		// 4. 결과 리턴

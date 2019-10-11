@@ -1,12 +1,12 @@
 package xyz.anythings.base.service.impl;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
 import xyz.anythings.base.entity.BatchReceipt;
 import xyz.anythings.base.entity.JobBatch;
+import xyz.anythings.base.model.BatchProgressRate;
 import xyz.anythings.base.service.api.IBatchService;
 import xyz.anythings.sys.service.AbstractQueryService;
 
@@ -37,13 +37,13 @@ public class BaseBatchService extends AbstractQueryService implements IBatchServ
 	}
 
 	@Override
-	public Map<String, Object> dailyProgressRate(Long domainId, String stageCd, String jobDate) {
+	public BatchProgressRate dailyProgressRate(Long domainId, String stageCd, String jobDate) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Map<String, Object> batchProgressRate(JobBatch batch) {
+	public BatchProgressRate batchProgressRate(JobBatch batch) {
 		// TODO Auto-generated method stub
 		return null;
 	}

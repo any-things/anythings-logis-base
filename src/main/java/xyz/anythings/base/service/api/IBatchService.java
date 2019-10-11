@@ -1,12 +1,12 @@
 package xyz.anythings.base.service.api;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
 import xyz.anythings.base.entity.BatchReceipt;
 import xyz.anythings.base.entity.JobBatch;
+import xyz.anythings.base.model.BatchProgressRate;
 
 /**
  * 배치 작업 서비스 API
@@ -62,14 +62,14 @@ public interface IBatchService {
 	 * @param jobDate
 	 * @return
 	 */
-	public Map<String, Object> dailyProgressRate(Long domainId, String stageCd, String jobDate);
+	public BatchProgressRate dailyProgressRate(Long domainId, String stageCd, String jobDate);
 	
 	/**
 	 * 작업 배치에 대한 진행율을 조회한다.
 	 * 
 	 * @param batch
 	 */
-	public Map<String, Object> batchProgressRate(JobBatch batch);
+	public BatchProgressRate batchProgressRate(JobBatch batch);
 	
 	/**
 	 * 스테이지 내 설비 별로 진행 중인 작업 배치 찾기
