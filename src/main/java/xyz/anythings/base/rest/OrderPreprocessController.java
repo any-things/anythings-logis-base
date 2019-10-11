@@ -18,8 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import xyz.anythings.base.LogisConstants;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.OrderPreprocess;
-import xyz.anythings.base.service.api.IPreprocessService;
-import xyz.anythings.base.service.impl.LogisServiceFinder;
+import xyz.anythings.base.service.impl.PreprocessService;
 import xyz.anythings.base.util.LogisEntityUtil;
 import xyz.anythings.sys.util.AnyValueUtil;
 import xyz.elidom.dbist.dml.Page;
@@ -41,10 +40,10 @@ import xyz.elidom.util.ValueUtil;
 public class OrderPreprocessController extends AbstractRestService {
 
 	/**
-	 * 물류 서비스 파인더
+	 * 주문 가공 서비스
 	 */
 	@Autowired
-	protected LogisServiceFinder logisServiceFinder;
+	private PreprocessService preprocessService;
 
 	@Override
 	protected Class<?> entityClass() {
@@ -140,9 +139,8 @@ public class OrderPreprocessController extends AbstractRestService {
 		
 		// 5. 작업 배치 조회
 		JobBatch batch = this.checkBatch(batchId);
-		IPreprocessService preprocessSvc = this.logisServiceFinder.getPreprocessService(batch);
 		// 6. 배치에 대한 주문 가공 정보 조회
-		return preprocessSvc.buildPreprocessSet(batch, queryObj);
+		return this.preprocessService.buildPreprocessSet(batch, queryObj);
 	}
 	
 	/**
@@ -169,8 +167,7 @@ public class OrderPreprocessController extends AbstractRestService {
 			throw new ElidomValidationException(MessageUtil.getTerm("terms.text.is_not_wait_state"));
 		}
 		// 3. 물량이 많은 거래처 순으로 자동으로 호기 지정을 한다.
-		IPreprocessService preprocessSvc = this.logisServiceFinder.getPreprocessService(batch);
-		preprocessSvc.assignEquipLevel(batch, equipCds, items, autoAssign);
+		this.preprocessService.assignEquipLevel(batch, equipCds, items, autoAssign);
 		// 4. 결과 리턴
 		return items;
 	}
@@ -195,8 +192,7 @@ public class OrderPreprocessController extends AbstractRestService {
 		// 1. 배치 조회 
 		JobBatch batch = this.checkBatch(batchId, items);
 		// 2. 주문과 셀 매핑.
-		IPreprocessService preprocessSvc = this.logisServiceFinder.getPreprocessService(batch);
-		preprocessSvc.assignSubEquipLevel(batch, equipType, equipCd, items);
+		this.preprocessService.assignSubEquipLevel(batch, equipType, equipCd, items);
 		// 3. 결과 리턴
 		return items;
 	}
@@ -212,8 +208,7 @@ public class OrderPreprocessController extends AbstractRestService {
 	public List<JobBatch> completePreprocess(@PathVariable("id") String batchId) {
 
 		JobBatch batch = this.checkBatch(batchId);
-		IPreprocessService preprocessSvc = this.logisServiceFinder.getPreprocessService(batch);		
-		return preprocessSvc.completePreprocess(batch);
+		return this.preprocessService.completePreprocess(batch);
 	}
 	
 	/**
@@ -229,8 +224,7 @@ public class OrderPreprocessController extends AbstractRestService {
 			@PathVariable("is_equip_reset") boolean isEquipReset) {
 
 		JobBatch batch = this.checkBatch(batchId);
-		IPreprocessService preprocessSvc = this.logisServiceFinder.getPreprocessService(batch);		
-		preprocessSvc.resetPreprocess(batch, isEquipReset);
+		this.preprocessService.resetPreprocess(batch, isEquipReset);
 		return ValueUtil.newMap("result", SysConstants.OK_STRING);
 	}
 	

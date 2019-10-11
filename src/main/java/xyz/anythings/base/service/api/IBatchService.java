@@ -2,9 +2,6 @@ package xyz.anythings.base.service.api;
 
 import java.util.List;
 
-import org.springframework.stereotype.Component;
-
-import xyz.anythings.base.entity.BatchReceipt;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.model.BatchProgressRate;
 
@@ -19,7 +16,6 @@ import xyz.anythings.base.model.BatchProgressRate;
  * 
  * @author shortstop
  */
-@Component
 public interface IBatchService {
 	
 	/**
@@ -34,7 +30,7 @@ public interface IBatchService {
 	 * @param params 기타 파라미터
 	 * @return
 	 */
-	public BatchReceipt readyToReceive(Long domainId, String areaCd, String stageCd, String comCd, String jobDate, Object ... params);
+	//public BatchReceipt readyToReceive(Long domainId, String areaCd, String stageCd, String comCd, String jobDate, Object ... params);
 	
 	/**
 	 * 상위 시스템으로 부터 배치, 주문을 수신
@@ -42,7 +38,15 @@ public interface IBatchService {
 	 * @param receiptSummary
 	 * @return
 	 */
-	public BatchReceipt startToReceive(BatchReceipt receiptSummary);
+	//public BatchReceipt startToReceive(BatchReceipt receiptSummary);
+	
+	/**
+	 * 배치 수신 취소
+	 * 
+	 * @param batch
+	 * @return
+	 */
+	//public int cancelBatch(JobBatch batch);
 	
 	/**
 	 * 새로운 배치 ID를 생성
@@ -149,13 +153,5 @@ public interface IBatchService {
 	 * @return 작업 배치 마감 가능 여부
 	 */
 	public void isPossibleCancelBatch(JobBatch batch);
-	
-	/**
-	 * 배치 취소
-	 * 
-	 * @param batch
-	 * @return
-	 */
-	public int cancelBatch(JobBatch batch);
 	
 }

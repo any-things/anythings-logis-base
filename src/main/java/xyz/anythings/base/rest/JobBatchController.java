@@ -37,10 +37,10 @@ import xyz.elidom.util.ValueUtil;
 public class JobBatchController extends AbstractRestService {
 
 	/**
-	 * 물류 서비스 파인더
+	 * 서비스 파인더
 	 */
 	@Autowired
-	protected LogisServiceFinder logisServiceFinder;
+	private LogisServiceFinder logisServiceFinder;
 	/**
 	 * 작업 배치 서비스
 	 */
@@ -200,7 +200,7 @@ public class JobBatchController extends AbstractRestService {
 			@PathVariable("com_cd") String comCd, 
 			@PathVariable("job_date") String jobDate) {
 		
-		return this.batchService.readyToReceive(Domain.currentDomainId(), areaCd, stageCd, comCd, jobDate);
+		return this.logisServiceFinder.getReceiveBatchService().readyToReceive(Domain.currentDomainId(), areaCd, stageCd, comCd, jobDate);
 	}
 	
 	/**
@@ -213,7 +213,97 @@ public class JobBatchController extends AbstractRestService {
 	@ApiDesc(description = "Start to receive batch orders")
 	public BatchReceipt startReceivingOrders(@RequestBody BatchReceipt summary) {
 
-		return this.batchService.startToReceive(summary);
+		return this.logisServiceFinder.getReceiveBatchService().startToReceive(summary);
+	}
+	
+	/**
+	 * 작업 지시 팝업 시 팝업 화면에 표시를 위해 호출하는 데이터
+	 * 
+	 * @param batchId
+	 * @return
+	 */
+	@RequestMapping(value = "/{id}/instruction_data", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Select batch instruction data")
+	public Map<String, Object> searchInstructionData(@PathVariable("id") String batchId) {
+		
+		// 1. 작업 배치 조회 
+		JobBatch batch = LogisEntityUtil.findEntityByIdWithLock(true, JobBatch.class, batchId);
+		// 2. 작업 지시 데이터 조회
+		return this.logisServiceFinder.getInstructionService(batch).searchInstructionData(batch);
+	}
+	
+	/**
+	 * 작업 지시 처리
+	 * 
+	 * @param batchId
+	 * @param equipList
+	 * @return
+	 */
+	@RequestMapping(value = "/{id}/instruct/batch", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> instructBatch(
+			@PathVariable("id") String batchId, 
+			@RequestBody(required = false) List<?> equipList) {
+		
+		// 1. 작업 배치 조회
+		JobBatch batch = LogisEntityUtil.findEntityByIdWithLock(true, JobBatch.class, batchId);
+		// 2. 작업 지시 
+		int createdCount = this.logisServiceFinder.getInstructionService(batch).instructBatch(batch, equipList);
+		// 3. 작업 지시 결과 리턴
+		return ValueUtil.newMap("result,count", SysConstants.OK_STRING, createdCount);
+	}
+	
+	/**
+	 * 작업 지시 여러 건 처리 
+	 * 
+	 * @param batchList
+	 * @return
+	 */
+	@RequestMapping(value = "/instruct/batches", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> instructBatches(@RequestBody(required = true) List<JobBatch> batchList) {
+		// 1. 작업 지시 처리
+		for(JobBatch batch : batchList) {
+			this.instructBatch(batch.getId(), null);
+		}
+		
+		// 2. 작업 지시 결과 리턴
+		return ValueUtil.newMap("result,count", SysConstants.OK_STRING, batchList.size());
+	}
+	
+	/**
+	 * 토탈 피킹 지시 처리
+	 * 
+	 * @param batchId
+	 * @param equipList
+	 * @return
+	 */
+	@RequestMapping(value = "/{id}/instruct/total_picking", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> instructTotalPicking(
+			@PathVariable("id") String batchId, 
+			@RequestBody(required = false) List<?> equipList) {
+		
+		// 1. 작업 배치 조회
+		JobBatch batch = LogisEntityUtil.findEntityByIdWithLock(true, JobBatch.class, batchId);
+		// 2. 작업 지시 
+		int count = this.logisServiceFinder.getInstructionService(batch).instructTotalpicking(batch, equipList);
+		// 3. 작업 지시 결과 리턴
+		return ValueUtil.newMap("result,count", SysConstants.OK_STRING, count);
+	}
+	
+	/**
+	 * 작업 지시 여러 건 처리 
+	 * 
+	 * @param batchList
+	 * @return
+	 */
+	@RequestMapping(value = "/instruct/total_pickings", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public Map<String, Object> instructTotalPickings(@RequestBody(required = true) List<JobBatch> batchList) {
+		// 1. 작업 지시 처리
+		for(JobBatch batch : batchList) {
+			this.instructTotalPicking(batch.getId(), null);
+		}
+		
+		// 2. 작업 지시 결과 리턴
+		return ValueUtil.newMap("result,count", SysConstants.OK_STRING, batchList.size());
 	}
 	
 	/**
@@ -223,20 +313,38 @@ public class JobBatchController extends AbstractRestService {
 	 * @param mainBatchId
 	 * @return
 	 */
-	@RequestMapping(value = "/merge_batch/{source_batch_id}/{main_batch_id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/{source_batch_id}/instruct/merge_batch/{main_batch_id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Merge batch")
 	public Map<String, Object> mergeBatch(
 			@PathVariable("source_batch_id") String sourceBatchId,
 			@PathVariable("main_batch_id") String mainBatchId) {
 		
 		// 1. 병합할 메인 배치 정보 조회 
-		// JobBatch mainBatch = LogisEntityUtil.findEntityByIdWithLock(true, JobBatch.class, mainBatchId);	
+		JobBatch mainBatch = LogisEntityUtil.findEntityByIdWithLock(true, JobBatch.class, mainBatchId);	
 		// 2. 병합될 배치 정보 조회 
-		// JobBatch sourceBatch = LogisEntityUtil.findEntityByIdWithLock(true, JobBatch.class, sourceBatchId);	
+		JobBatch sourceBatch = LogisEntityUtil.findEntityByIdWithLock(true, JobBatch.class, sourceBatchId);	
 		// 3. 작업 배치 병합
-		int mergedCnt = 0; //this.instructionService.mergeBatch(mainBatch, sourceBatch);
+		int mergedCnt = this.logisServiceFinder.getInstructionService(mainBatch).mergeBatch(mainBatch, sourceBatch);
 		// 4. 결과 리턴
 		return ValueUtil.newMap("result,count", SysConstants.OK_STRING, mergedCnt);
+	}
+	
+	/**
+	 * 작업 지시 취소 
+	 * 
+	 * @param batchId
+	 * @return
+	 */
+	@RequestMapping(value = "/{id}/instruct/cancel", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Cancel batch instruction")
+	public Map<String, Object> cancelInstructionBatch(@PathVariable("id") String batchId) {
+		
+		// 1. 작업 배치 조회 
+		JobBatch batch = LogisEntityUtil.findEntityByIdWithLock(true, JobBatch.class, batchId);
+		// 2. 작업 지시 취소
+		int count = this.logisServiceFinder.getInstructionService(batch).cancelInstructionBatch(batch);
+		// 3. 작업 지시 결과 리턴
+		return ValueUtil.newMap("result,count", SysConstants.OK_STRING, count);		
 	}
 	
 	/**
@@ -246,7 +354,7 @@ public class JobBatchController extends AbstractRestService {
 	 * @return
 	 */
 	@RequestMapping(value = "/{id}/close_batch", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiDesc(description = "Close job batch")
+	@ApiDesc(description = "Close batch")
 	public Map<String, Object> closeBatch(@RequestParam(name = "id", required = true) String id) {
 
 		JobBatch batch = LogisEntityUtil.findEntityByIdWithLock(true, JobBatch.class, id);
@@ -261,7 +369,7 @@ public class JobBatchController extends AbstractRestService {
 	 * @return
 	 */
 	@RequestMapping(value = "/{id}/close_batch_forcibly", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiDesc(description = "Close job batch Forcibly")
+	@ApiDesc(description = "Close batch forcibly")
 	public Map<String, Object> closeBatchForcibly(@PathVariable("id") String id) {
 		
 		// 1. JobBatch 조회 
@@ -279,13 +387,13 @@ public class JobBatchController extends AbstractRestService {
 	 * @return
 	 */
 	@RequestMapping(value = "/{id}/cancel_batch", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiDesc(description = "Cancel Received Batch")
+	@ApiDesc(description = "Cancel received batch")
 	public Map<String, Object> cancelBatch(@PathVariable("id") String id) {
 		
 		// 1. JobBatch 조회 
 		JobBatch batch = LogisEntityUtil.findEntityByIdWithLock(true, JobBatch.class, id);
 		// 2. 작업 배치 마감
-		int count = this.batchService.cancelBatch(batch);
+		int count = this.logisServiceFinder.getReceiveBatchService().cancelBatch(batch);
 		// 3. 작업 배치 수신 취소
 		return ValueUtil.newMap("result,cancel_count", SysConstants.OK_STRING, count);
 	}
@@ -298,7 +406,7 @@ public class JobBatchController extends AbstractRestService {
 	 * @return
 	 */
 	@RequestMapping(value = "/{batch_group_id}/close_batches/by_group", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiDesc(description = "Complete JobBatch Group")
+	@ApiDesc(description = "Complete batch by batch group id")
 	public Map<String, Object> closeBatchesByGroup(
 			@PathVariable("batch_group_id") String batchGroupId, 
 			@RequestParam(name = "forcibly", required = false) boolean forcibly) {

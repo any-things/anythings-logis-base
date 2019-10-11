@@ -88,7 +88,6 @@ public interface IPreprocessService {
 	 * @param equipType
 	 * @param equipCd
 	 * @param items
-	 * @param auto
 	 * @return
 	 */
 	public int assignSubEquipLevel(JobBatch batch, String equipType, String equipCd, List<OrderPreprocess> items);

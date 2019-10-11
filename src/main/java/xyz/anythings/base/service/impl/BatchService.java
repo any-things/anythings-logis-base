@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import xyz.anythings.base.entity.BatchReceipt;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.model.BatchProgressRate;
 import xyz.anythings.base.service.api.IBatchService;
@@ -16,19 +15,25 @@ import xyz.anythings.sys.service.AbstractQueryService;
  * @author shortstop
  */
 @Component
-public class BaseBatchService extends AbstractQueryService implements IBatchService {
+public class BatchService extends AbstractQueryService implements IBatchService {
 
-	@Override
-	public BatchReceipt readyToReceive(Long domainId, String areaCd, String stageCd, String comCd, String jobDate, Object ... params) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public BatchReceipt startToReceive(BatchReceipt receiptSummary) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	@Override
+//	public BatchReceipt readyToReceive(Long domainId, String areaCd, String stageCd, String comCd, String jobDate, Object ... params) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
+//
+//	@Override
+//	public BatchReceipt startToReceive(BatchReceipt receiptSummary) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
+//	
+//	@Override
+//	public int cancelBatch(JobBatch batch) {
+//		// TODO Auto-generated method stub
+//		return 0;
+//	}
 	
 	@Override
 	public String newJobBatchId(Long domainId, String stageCd, Object... params) {
@@ -94,12 +99,6 @@ public class BaseBatchService extends AbstractQueryService implements IBatchServ
 	public void isPossibleCancelBatch(JobBatch batch) {
 		// TODO Auto-generated method stub
 		
-	}
-
-	@Override
-	public int cancelBatch(JobBatch batch) {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 
 }

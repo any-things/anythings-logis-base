@@ -28,7 +28,7 @@ import xyz.elidom.util.ValueUtil;
  * @author shortstop
  */
 @Component("baseSkuSearchService")
-public class BaseSkuSearchService extends AbstractQueryService implements ISkuSearchService {
+public class SkuSearchService extends AbstractQueryService implements ISkuSearchService {
 
 	@Override
 	public String[] getSkuSearchConditionFields(JobBatch batch) {
