@@ -76,6 +76,9 @@ public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "box_pack_id", length = 40)
 	private String boxPackId;
 
+	@Column (name = "box_in_qty", length = 12)
+	private Integer boxInQty;
+	
 	@Column (name = "pick_qty", length = 12)
 	private Integer pickQty;
 
@@ -272,6 +275,14 @@ public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setBoxPackId(String boxPackId) {
 		this.boxPackId = boxPackId;
+	}
+
+	public Integer getBoxInQty() {
+		return boxInQty;
+	}
+
+	public void setBoxInQty(Integer boxInQty) {
+		this.boxInQty = boxInQty;
 	}
 
 	public Integer getPickQty() {

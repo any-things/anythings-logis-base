@@ -5,14 +5,14 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
-import xyz.anythings.base.LogisConstants;
 import xyz.anythings.base.LogisCodeConstants;
+import xyz.anythings.base.LogisConfigConstants;
+import xyz.anythings.base.LogisConstants;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.SKU;
 import xyz.anythings.base.query.store.BatchQueryStore;
 import xyz.anythings.base.service.api.ISkuSearchService;
 import xyz.anythings.base.util.LogisEntityUtil;
-import xyz.anythings.sys.ConfigConstants;
 import xyz.anythings.sys.service.AbstractQueryService;
 import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.elidom.dbist.dml.Query;
@@ -33,21 +33,21 @@ public class SkuSearchService extends AbstractQueryService implements ISkuSearch
 	@Override
 	public String[] getSkuSearchConditionFields(JobBatch batch) {
 		// TODO batch로 설정을 찾는 것으로 수정
-		String config = SettingUtil.getValue(ConfigConstants.SKU_CONDITION_FIELDS_TO_SEARCH, "skuCd,skuBarcd");
+		String config = SettingUtil.getValue(LogisConfigConstants.SKU_CONDITION_FIELDS_TO_SEARCH, "skuCd,skuBarcd");
 		return config.split(LogisConstants.COMMA);
 	}
 	
 	@Override
 	public String getSkuSearchSelectFields(JobBatch batch) {
 		// TODO batch로 설정을 찾는 것으로 수정
-		return SettingUtil.getValue(ConfigConstants.SKU_SELECT_FIELDS_TO_SEARCH, "id,com_cd,sku_cd,sku_nm,sku_barcd,box_barcd,box_in_qty,sku_wt");
+		return SettingUtil.getValue(LogisConfigConstants.SKU_SELECT_FIELDS_TO_SEARCH, "id,com_cd,sku_cd,sku_nm,sku_barcd,box_barcd,box_in_qty,sku_wt");
 	}
 	
 	@Override
 	public String validateSkuCd(JobBatch batch, String skuCd) {
 		skuCd = ValueUtil.isEmpty(skuCd) ? skuCd : skuCd.trim();
 		// TODO 유효성 체크 여부 설정에 따라서 유효성 체크 부분 추가
-		String maxLengthStr = SettingUtil.getValue(ConfigConstants.SKU_BARCODE_MAX_LENGTH);
+		String maxLengthStr = SettingUtil.getValue(LogisConfigConstants.SKU_BARCODE_MAX_LENGTH);
 		
 		if(ValueUtil.isNotEmpty(maxLengthStr)) {
 			int maxLen = ValueUtil.toInteger(maxLengthStr);

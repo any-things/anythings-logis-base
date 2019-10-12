@@ -24,6 +24,9 @@ public class WorkCell extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	@Column (name = "cell_cd", nullable = false, length = 30)
 	private String cellCd;
+	
+	@Column (name = "ind_cd", length = 30)
+	private String IndCd;
 
 	@Column (name = "job_type", length = 20)
 	private String jobType;
@@ -80,6 +83,14 @@ public class WorkCell extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setCellCd(String cellCd) {
 		this.cellCd = cellCd;
+	}
+
+	public String getIndCd() {
+		return IndCd;
+	}
+
+	public void setIndCd(String indCd) {
+		IndCd = indCd;
 	}
 
 	public String getJobType() {

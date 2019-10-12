@@ -155,7 +155,7 @@ public class JobBatchController extends AbstractRestService {
 	 * @param equipCd
 	 * @return
 	 */
-	@RequestMapping(value = "/running_batch/{stage_cd}/{equip_type}/{equip_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/running_batches/{stage_cd}/{equip_type}/{equip_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Find running batch of job batch")
 	public List<JobBatch> findRunningMainBatches(
 			@RequestParam(name = "stage_cd", required = true) String stageCd, 
