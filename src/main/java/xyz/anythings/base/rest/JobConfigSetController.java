@@ -104,5 +104,21 @@ public class JobConfigSetController extends AbstractRestService {
 		this.cudMultipleData(JobConfig.class, list);
 		return this.findJobConfig(id);
 	}
+	
+	@RequestMapping(value = "/copy_template/{template_id}/{new_config_set_id}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseStatus(HttpStatus.CREATED)
+	@ApiDesc(description = "Copy template config set")
+	public JobConfigSet copyJobConfigTemplate(@PathVariable("template_id") String templateId, @PathVariable("new_config_set_id") String newConfigSetId) {
+		// TODO 
+		return null;
+	}
+	
+	// TODO Cache
+	@RequestMapping(value = "/batch_config_set/{batch_id}", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Find config set by batch id")
+	public JobConfigSet batchConfigSet(@PathVariable("batch_id") String batchiId) {
+		// TODO 
+		return null;
+	}
 
 }

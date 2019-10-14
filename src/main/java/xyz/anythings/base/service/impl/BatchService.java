@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+import xyz.anythings.base.entity.IndConfigSet;
 import xyz.anythings.base.entity.JobBatch;
+import xyz.anythings.base.entity.JobConfigSet;
 import xyz.anythings.base.model.BatchProgressRate;
 import xyz.anythings.base.service.api.IBatchService;
 import xyz.anythings.sys.service.AbstractQueryService;
@@ -49,6 +51,18 @@ public class BatchService extends AbstractQueryService implements IBatchService 
 
 	@Override
 	public List<JobBatch> searchRunningMainBatchList(Long domainId, String stageCd, String jobType, String jobDate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public JobConfigSet findJobConfigSet(JobBatch batch) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public IndConfigSet findIndConfigSet(JobBatch batch) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -2,7 +2,9 @@ package xyz.anythings.base.service.api;
 
 import java.util.List;
 
+import xyz.anythings.base.entity.IndConfigSet;
 import xyz.anythings.base.entity.JobBatch;
+import xyz.anythings.base.entity.JobConfigSet;
 import xyz.anythings.base.model.BatchProgressRate;
 
 /**
@@ -75,6 +77,22 @@ public interface IBatchService {
 	 * @return
 	 */
 	public List<JobBatch> searchRunningMainBatchList(Long domainId, String stageCd, String jobType, String jobDate);
+	
+	/**
+	 * 작업 배치에 대한 작업 설정 셋 조회
+	 * 
+	 * @param batch
+	 * @return
+	 */
+	public JobConfigSet findJobConfigSet(JobBatch batch);
+	
+	/**
+	 * 작업 배치에 대한 표시기 설정 셋 조회
+	 * 
+	 * @param batch
+	 * @return
+	 */
+	public IndConfigSet findIndConfigSet(JobBatch batch);
 	
 	/**
 	 * 작업 배치 마감이 가능한 지 여부 체크 
