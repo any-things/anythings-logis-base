@@ -93,6 +93,8 @@ public class IndConfigSetController extends AbstractRestService {
 	public List<IndConfig> findIndConfig(@PathVariable("id") String id) {
 		xyz.elidom.dbist.dml.Query query = new xyz.elidom.dbist.dml.Query();
 		query.addFilter(new Filter("indConfigSetId", id));
+		query.addOrder("category", true);
+		query.addOrder("name", true);
 		return this.queryManager.selectList(IndConfig.class, query);
 	}
 

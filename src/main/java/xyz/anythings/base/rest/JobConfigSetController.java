@@ -93,6 +93,8 @@ public class JobConfigSetController extends AbstractRestService {
 	public List<JobConfig> findJobConfig(@PathVariable("id") String id) {
 		xyz.elidom.dbist.dml.Query query = new xyz.elidom.dbist.dml.Query();
 		query.addFilter(new Filter("jobConfigSetId", id));
+		query.addOrder("category", true);
+		query.addOrder("name", true);
 		return this.queryManager.selectList(JobConfig.class, query);
 	}
 
