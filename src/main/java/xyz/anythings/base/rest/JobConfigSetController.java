@@ -2,8 +2,8 @@ package xyz.anythings.base.rest;
 
 import java.util.List;
 import java.util.Map;
-import xyz.elidom.dbist.dml.Filter;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,13 +15,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import xyz.anythings.base.entity.JobConfigSet;
+import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.JobConfig;
-
+import xyz.anythings.base.entity.JobConfigSet;
+import xyz.anythings.base.service.impl.ConfigSetService;
+import xyz.anythings.base.util.LogisEntityUtil;
+import xyz.elidom.core.entity.CodeDetail;
+import xyz.elidom.dbist.dml.Filter;
+import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
 import xyz.elidom.orm.system.annotation.service.ServiceDesc;
 import xyz.elidom.sys.system.service.AbstractRestService;
-import xyz.elidom.dbist.dml.Page;
 
 @RestController
 @Transactional
@@ -29,6 +33,9 @@ import xyz.elidom.dbist.dml.Page;
 @RequestMapping("/rest/job_config_set")
 @ServiceDesc(description = "JobConfigSet Service API")
 public class JobConfigSetController extends AbstractRestService {
+	
+	@Autowired
+	private ConfigSetService configSetService;
 
 	@Override
 	protected Class<?> entityClass() {
@@ -105,20 +112,37 @@ public class JobConfigSetController extends AbstractRestService {
 		return this.findJobConfig(id);
 	}
 	
-	@RequestMapping(value = "/copy_template/{template_id}/{new_config_set_id}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/{id}/copy", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
 	@ApiDesc(description = "Copy template config set")
-	public JobConfigSet copyJobConfigTemplate(@PathVariable("template_id") String templateId, @PathVariable("new_config_set_id") String newConfigSetId) {
-		// TODO 
-		return null;
+	public JobConfigSet copyConfigSet(@PathVariable("id") String templateId) {
+		return this.configSetService.copyJobConfigSet(templateId);
 	}
 	
-	// TODO Cache
-	@RequestMapping(value = "/batch_config_set/{batch_id}", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiDesc(description = "Find config set by batch id")
-	public JobConfigSet batchConfigSet(@PathVariable("batch_id") String batchiId) {
-		// TODO 
-		return null;
+	@RequestMapping(value = "/build_config_set/{batch_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Build config set by batch id")
+	public JobConfigSet buildBatchConfigSet(@PathVariable("batch_id") String batchiId) {
+		JobBatch batch = LogisEntityUtil.findEntityById(true, JobBatch.class, batchiId);
+		return this.configSetService.buildJobConfigSet(batch);
+	}
+	
+	@RequestMapping(value = "/clear_config_set/{batch_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Clear config set by batch id")
+	public JobConfigSet clearBatchConfigSet(@PathVariable("batch_id") String batchiId) {
+		JobBatch batch = LogisEntityUtil.findEntityById(true, JobBatch.class, batchiId);
+		return this.configSetService.buildJobConfigSet(batch);
+	}
+	
+	@RequestMapping(value = "/config_value/{batch_id}/{config_key}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Config key by batch id")
+	public CodeDetail getConfigValue(@PathVariable("batch_id") String batchiId, @PathVariable("config_key") String configKey) {
+		JobBatch batch = LogisEntityUtil.findEntityById(true, JobBatch.class, batchiId);
+		String value = this.configSetService.getJobConfigValue(batch, configKey);
+		// TODO key, value 오브젝트를 새로 정의
+		CodeDetail item = new CodeDetail();
+		item.setName(configKey);
+		item.setDescription(value);
+		return item;
 	}
 
 }
