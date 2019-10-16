@@ -28,7 +28,7 @@ public class IndConfig extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "name", nullable = false, length = 40)
 	private String name;
 
-	@Column (name = "description", length = 100)
+	@Column (name = "description", length = 255)
 	private String description;
 
 	@Column (name = "value", length = 100)

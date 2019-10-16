@@ -60,6 +60,7 @@ public class ConfigSetService extends AbstractExecutionService implements IConfi
 		// 1. templateConfigSetId로 템플릿 설정을 조회 
 		JobConfigSet sourceSet = LogisEntityUtil.findEntityById(true, JobConfigSet.class, templateConfigSetId);
 		JobConfigSet targetSet = AnyValueUtil.populate(sourceSet, new JobConfigSet(), CONFIG_SET_COPY_FIELDS);
+		targetSet.setConfSetCd(sourceSet.getConfSetCd() + "_copy");
 		this.queryManager.insert(targetSet);
 		// 2. 템플릿 설정 생성
 		this.cloneSourceJobConfigItems(sourceSet, targetSet);
@@ -130,6 +131,7 @@ public class ConfigSetService extends AbstractExecutionService implements IConfi
 		// 1. templateConfigSetId로 템플릿 설정을 조회 
 		IndConfigSet sourceSet = LogisEntityUtil.findEntityById(true, IndConfigSet.class, templateConfigSetId);
 		IndConfigSet targetSet = AnyValueUtil.populate(sourceSet, new IndConfigSet(), CONFIG_SET_COPY_FIELDS);
+		targetSet.setConfSetCd(sourceSet.getConfSetCd() + "_copy");
 		this.queryManager.insert(targetSet);
 		// 2. 템플릿 설정 생성
 		this.cloneSourceIndConfigItems(sourceSet, targetSet);
