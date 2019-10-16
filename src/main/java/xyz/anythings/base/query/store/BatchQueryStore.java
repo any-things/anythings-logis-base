@@ -55,4 +55,10 @@ public class BatchQueryStore extends AbstractQueryStore {
 	public String getCheckCloseBatchGroupQuery() {
 		return this.getQueryByPath("batch/CheckCloseBatchGroup");
 	}
+	
+	
+	/*** BatchReceipt 관련 데이터 쿼리 ***/
+	public String wmsIfToReceiptDataQuery() {
+		return this.getQueryByPath("batch/WmsIfToReceiptData");
+	}
 }

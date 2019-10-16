@@ -96,5 +96,5 @@ public class BatchReceipt extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setStatus(String status) {
 		this.status = status;
-	}	
+	}
 }
