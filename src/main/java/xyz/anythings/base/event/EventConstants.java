@@ -6,18 +6,6 @@ package xyz.anythings.base.event;
  *
  */
 public class EventConstants {
-	/** 인터페이스 타입 ================      **/
-	/**
-	 * 프로시저 호출 
-	 *  : dblink 를 사용하는 경우도 프로시저 작성 
-	 */
-	public static final short IF_TYPE_PROC = 1;
-	
-	/**
-	 * 데이터 소스 
-	 *  TODO : column 매치 ? 
-	 */
-	public static final short IF_TYPE_DSRC = 2;
 	
 	
 	/** BatchRootEvent ================       **/
@@ -45,6 +33,9 @@ public class EventConstants {
 	 */
 	public static final short EVENT_RECEIVE_TYPE_RECEIVE = 20;
 	
-	
+	/**
+	 * 배치 수신 취소 타입 
+	 */
+	public static final short EVENT_RECEIVE_TYPE_CANCEL = 30;
 	
 }

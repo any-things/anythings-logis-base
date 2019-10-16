@@ -2,6 +2,7 @@ package xyz.anythings.base.event.main;
 
 import java.util.Map;
 
+import xyz.anythings.base.event.EventConstants;
 import xyz.anythings.sys.event.model.SysEvent;
 import xyz.elidom.util.ValueUtil;
 
@@ -11,46 +12,32 @@ import xyz.elidom.util.ValueUtil;
  *
  */
 public class BatchRootEvent extends SysEvent{
-
-	/**
-	 * 
-	 * 
-scope_type	범위 유형 : event
-scope_id	범위 ID : event
-category	설정 카테고리 : mps?
-name	설정 키 : event.receive.type.receipt
-                event.receive.type.batch
-                
-description	설정 설명 : 주문 수신 이벤트 처리 방법 
-value	설정 값 : proc / dsrc
-config	설정 메타 데이터(json) : { 'type' : 'proc' , 'procedure' : 'sp_batch_receive' }
-                             { 'type' : 'dsrc' , 'sourceDsrc' : '', 'sourceTable' :'', 'sourceCol':'','rcvTable' : '' ,'rcvCol' : '' , 'completeQry' ?????} 
-	 * 
-	 * 
-	 * 
-	 * 
-	 */
 	
+	/**
+	 * Area 코드 
+	 */
+	protected String areaCd;
 	
-	/** 메인 이벤트는 프로시저 타입에 이벤트 처리를 기본 지원 **/
-	/** TODO : Procedure 에 대한 정보를 데이터로 관리 ?  **/ 
-	/** 프로시저 변경만으로 재사용 가능한 방법은 ?? **/
-	/** scope setting 활용 ?  **/ 
 	/**
-	 * 프로시저 명 
+	 * 스테이지 코드 
 	 */
-	protected String procedureName;
+	protected String stageCd;
+	
 	/**
-	 * 프로시저 파라미터 
+	 * 화주 코드 
 	 */
-	protected Map<String,?> procedureParams;
+	protected String comCd;
+	
+	/**
+	 * 작업 일자 
+	 */
+	protected String jobDate;
 	
 	/**
 	 * 1 . BEFORE 
 	 * 2 . AFTER
 	 */
 	protected short eventStep;
-	
 	
 	/**
 	 * DAS / DPS / SMS / ...... 
@@ -72,47 +59,77 @@ config	설정 메타 데이터(json) : { 'type' : 'proc' , 'procedure' : 'sp_bat
 	 */
 	protected boolean isAfterEventCancel;
 	
-	
 	public BatchRootEvent(short eventStep) {
 		super();
 		this.setEventStep(eventStep);
 		this.setAfterEventCancel(false);
 	}
 	
+	public BatchRootEvent(long domainId, short eventStep) {
+		super(domainId);
+		this.setEventStep(eventStep);
+		this.setAfterEventCancel(false);
+	}
 	
-	protected void setEventStep(short eventStep) {
+	public String getAreaCd() {
+		return areaCd;
+	}
+
+	public void setAreaCd(String areaCd) {
+		this.areaCd = areaCd;
+	}
+
+	public String getStageCd() {
+		return stageCd;
+	}
+
+	public void setStageCd(String stageCd) {
+		this.stageCd = stageCd;
+	}
+
+	public String getComCd() {
+		return comCd;
+	}
+
+	public void setComCd(String comCd) {
+		this.comCd = comCd;
+	}
+
+	public String getJobDate() {
+		return jobDate;
+	}
+
+	public void setJobDate(String jobDate) {
+		this.jobDate = jobDate;
+	}
+
+	public short getEventStep() {
+		return eventStep;
+	}
+
+	public void setEventStep(short eventStep) {
 		this.eventStep = eventStep;
 	}
-	
-	protected short getEventStep() {
-		return this.eventStep;
+
+	public String getBizType() {
+		return bizType;
 	}
 
-
-	public String getProcedureName() {
-		return procedureName;
+	public void setBizType(String bizType) {
+		this.bizType = bizType;
 	}
 
-
-	public void setProcedureName(String procedureName) {
-		this.procedureName = procedureName;
+	public String getJobType() {
+		return jobType;
 	}
 
-
-	public Map<String, ?> getProcedureParams() {
-		return procedureParams;
+	public void setJobType(String jobType) {
+		this.jobType = jobType;
 	}
-
-
-	public void setProcedureParams(Map<String, ?> procedureParams) {
-		this.procedureParams = procedureParams;
-	}
-
 
 	public boolean isAfterEventCancel() {
 		return isAfterEventCancel;
 	}
-
 
 	public void setAfterEventCancel(boolean isAfterEventCancel) {
 		this.isAfterEventCancel = isAfterEventCancel;
@@ -127,4 +144,15 @@ config	설정 메타 데이터(json) : { 'type' : 'proc' , 'procedure' : 'sp_bat
 		return ValueUtil.newMap("", "");
 	}
 	
+	/**
+	 * 이벤트 전/후 처리 결과 셋 가져오기 
+	 * @return
+	 */
+	public Map<String,Object> getEventResultSet() {
+		if(ValueUtil.isEqual(this.getEventStep(), EventConstants.EVENT_STEP_AFTER)) {
+			return ValueUtil.newMap("isExecuted,result", this.isExecuted(), this.getResult());
+		} else {
+			return ValueUtil.newMap("isSkipAfter,result", (this.isExecuted() && this.isAfterEventCancel() ? true:false) , this.getResult());
+		}
+	}
 }
