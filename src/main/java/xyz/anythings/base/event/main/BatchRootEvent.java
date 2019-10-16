@@ -3,6 +3,7 @@ package xyz.anythings.base.event.main;
 import java.util.Map;
 
 import xyz.anythings.base.event.EventConstants;
+import xyz.anythings.sys.event.model.EventResultSet;
 import xyz.anythings.sys.event.model.SysEvent;
 import xyz.elidom.util.ValueUtil;
 
@@ -148,11 +149,18 @@ public class BatchRootEvent extends SysEvent{
 	 * 이벤트 전/후 처리 결과 셋 가져오기 
 	 * @return
 	 */
-	public Map<String,Object> getEventResultSet() {
+	public EventResultSet getEventResultSet() {
+		EventResultSet resultSet = new EventResultSet();
+		
 		if(ValueUtil.isEqual(this.getEventStep(), EventConstants.EVENT_STEP_AFTER)) {
-			return ValueUtil.newMap("isExecuted,result", this.isExecuted(), this.getResult());
+			resultSet.setExecuted(this.isExecuted());
+			resultSet.setResult(this.getResult());
 		} else {
-			return ValueUtil.newMap("isSkipAfter,result", (this.isExecuted() && this.isAfterEventCancel() ? true:false) , this.getResult());
+			resultSet.setAfterEventCancel(this.isExecuted() && this.isAfterEventCancel() ? true:false);
+			resultSet.setExecuted(this.isExecuted());
+			resultSet.setResult(this.getResult());
 		}
+		
+		return resultSet;
 	}
 }

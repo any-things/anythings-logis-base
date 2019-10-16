@@ -1,7 +1,5 @@
 package xyz.anythings.base.service.impl;
 
-import java.util.Map;
-
 import org.springframework.stereotype.Component;
 
 import xyz.anythings.base.entity.BatchReceipt;
@@ -9,8 +7,8 @@ import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.event.EventConstants;
 import xyz.anythings.base.event.main.BatchReceiveEvent;
 import xyz.anythings.base.service.api.IReceiveBatchService;
+import xyz.anythings.sys.event.model.EventResultSet;
 import xyz.anythings.sys.service.AbstractExecutionService;
-import xyz.elidom.util.ValueUtil;
 
 /**
  * 배치 수신 서비스
@@ -35,23 +33,23 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 	public BatchReceipt readyToReceive(Long domainId, String areaCd, String stageCd, String comCd, String jobDate, Object ... params) {
 		
 		// 1. 전처리 이벤트   
-		Map<String,Object> befResult = this.readyToReceiveEvent(EventConstants.EVENT_STEP_BEFORE, domainId, areaCd, stageCd, comCd, jobDate,null, params);
+		EventResultSet befResult = this.readyToReceiveEvent(EventConstants.EVENT_STEP_BEFORE, domainId, areaCd, stageCd, comCd, jobDate,null, params);
 		
 		// 2. 다음 처리 취소 일 경우 결과 리턴 
-		if(ValueUtil.toBoolean(befResult.get("isSkipAfter"))) {
-			return (BatchReceipt)befResult.get("result");
+		if(befResult.isAfterEventCancel()) {
+			return (BatchReceipt)befResult.getResult();
 		}
 		
 		// 3. receipt데이터 생성 
 		BatchReceipt receiptData = this.createBatchReceiptData(domainId, areaCd, stageCd, comCd, jobDate, params);
 		
 		// 4. 후처리 이벤트 
-		Map<String,Object> aftResult = this.readyToReceiveEvent(EventConstants.EVENT_STEP_AFTER, domainId, areaCd, stageCd, comCd, jobDate,receiptData, params);
+		EventResultSet aftResult = this.readyToReceiveEvent(EventConstants.EVENT_STEP_AFTER, domainId, areaCd, stageCd, comCd, jobDate,receiptData, params);
 		
 		// 5. 후처리 이벤트가 실행 되고 리턴 결과가 있으면 해당 결과 리턴 
-		if(ValueUtil.toBoolean(aftResult.get("isExecuted"))) {
-			if(aftResult.get("result") != null ) { 
-				return (BatchReceipt)befResult.get("result");
+		if(aftResult.isExecuted()) {
+			if(aftResult.getResult() != null ) { 
+				return (BatchReceipt)aftResult.getResult();
 			}
 		}
 		return receiptData;
@@ -80,8 +78,10 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 	}
 	
 	
+	/************** 배치 수신 준비  **************/
+	
 	/**
-	 * 배치 수신 준비 이벤트 처리 
+	 * 배치 수신 관련 이벤트 처리 
 	 * @param domainId
 	 * @param areaCd
 	 * @param stageCd
@@ -90,7 +90,7 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 	 * @param params
 	 * @return BatchReceiveEvent
 	 */
-	private Map<String,Object> readyToReceiveEvent(short eventStep, Long domainId, String areaCd, String stageCd, String comCd, String jobDate,BatchReceipt receiptData, Object ... params) {
+	private EventResultSet readyToReceiveEvent(short eventStep, Long domainId, String areaCd, String stageCd, String comCd, String jobDate, BatchReceipt receiptData, Object ... params) {
 		// 1. receipt 이벤트 생성 
 		BatchReceiveEvent receiptEvent 
 				= new BatchReceiveEvent(domainId, EventConstants.EVENT_RECEIVE_TYPE_RECEIPT, eventStep, areaCd, stageCd, comCd, jobDate);
@@ -102,8 +102,23 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 		return receiptEvent.getEventResultSet();
 	}
 	
+	/**
+	 * 배치 수신 준비 데이터 생성 
+	 * @param domainId
+	 * @param areaCd
+	 * @param stageCd
+	 * @param comCd
+	 * @param jobDate
+	 * @param params
+	 * @return
+	 */
 	private BatchReceipt createBatchReceiptData(Long domainId, String areaCd, String stageCd, String comCd, String jobDate, Object ... params) {
 		
 		return null;
 	}
+	
+	
+	/************** 배치 수신  **************/
+
+	/************** 배치 취소  **************/
 }
