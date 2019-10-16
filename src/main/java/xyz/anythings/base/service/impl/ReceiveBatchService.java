@@ -161,24 +161,11 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 	private BatchReceipt createReadyToReceiveData(Long domainId, String areaCd, String stageCd, String comCd, String jobDate, Object ... params) {
 		
 		// 1. 대기 상태 이거나 진행 중인 수신이 있는지 확인 
-		Map<String,Object> paramMap = ValueUtil.newMap("domainId,comCd,areaCd,stageCd,jobDate,status"
-				, domainId,comCd,areaCd,stageCd,jobDate
-				,ValueUtil.newStringList(LogisConstants.COMMON_STATUS_WAIT, LogisConstants.COMMON_STATUS_RUNNING));
-				
-		
-		BatchReceipt receiptData = 
-				this.queryManager.selectBySql(this.batchQueryStore.getBatchReceiptOrderTypeStatusQuery(), paramMap, BatchReceipt.class);
-		
-		// 1.1 대기중 또는 진행중 인 수신 정보 리턴 
-		if(receiptData != null) {
-			receiptData.setItems(LogisEntityUtil.searchDetails(domainId, BatchReceiptItem.class, "batchReceiptId", receiptData.getId()));
-			return receiptData;
-		}
+		BatchReceipt runBatchReceipt = this.checkRunningOrderReceipt(domainId, areaCd, stageCd, comCd, jobDate);
+		if(runBatchReceipt != null) return runBatchReceipt;
 		
 		// 2. WMS IF 테이블에서 수신 대상 데이터 확인 
-		List<BatchReceiptItem> receiptItems = 
-				this.queryManager.selectListBySql(this.batchQueryStore.getWmsIfToReceiptDataQuery(), paramMap, BatchReceiptItem.class,0,0);
-		
+		List<BatchReceiptItem> receiptItems = this.getWmfIfToReceiptItems(domainId, areaCd, stageCd, comCd, jobDate);
 		
 		// 2.1 수신 대상 데이터가 없으면 리턴 
 		if(ValueUtil.isEmpty(receiptItems)) {
@@ -187,10 +174,7 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 		}
 		
 		// 3.1 데이터가 있으면 BatchReceipt JobSeq 데이터 구하기 
-		List<Integer> jobSeqList = 
-				LogisEntityUtil.searchEntitiesBy(domainId, false, Integer.class, "jobSeq", "comCd,areaCd,stageCd,jobDate", comCd,areaCd,stageCd,jobDate);
-		
-		int jobSeq = (ValueUtil.isEmpty(jobSeqList) ? 0 : Collections.max(jobSeqList)) + 1;
+		int jobSeq = this.getBatchReceiptJobSeq(domainId, areaCd, stageCd, comCd, jobDate);
 		
 		// 3.2  BatchReceipt데이터 생성 
 		BatchReceipt batchReceipt = new BatchReceipt();
@@ -210,6 +194,64 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 		return batchReceipt;
 	}
 	
+	/**
+	 * BatchReceipt JobSeq 데이터 구하기 
+	 * @param domainId
+	 * @param areaCd
+	 * @param stageCd
+	 * @param comCd
+	 * @param jobDate
+	 * @return
+	 */
+	private int getBatchReceiptJobSeq(Long domainId, String areaCd, String stageCd, String comCd, String jobDate) {
+		List<Integer> jobSeqList = 
+				LogisEntityUtil.searchEntitiesBy(domainId, false, Integer.class, "jobSeq", "comCd,areaCd,stageCd,jobDate", comCd,areaCd,stageCd,jobDate);
+		
+		return (ValueUtil.isEmpty(jobSeqList) ? 0 : Collections.max(jobSeqList)) + 1;
+	}
+	
+	/**
+	 * 대기 상태 이거나 진행 중인 수신이 있는지 확인 
+	 * @param domainId
+	 * @param areaCd
+	 * @param stageCd
+	 * @param comCd
+	 * @param jobDate
+	 * @return
+	 */
+	private BatchReceipt checkRunningOrderReceipt(Long domainId, String areaCd, String stageCd, String comCd, String jobDate) {
+		Map<String,Object> paramMap = ValueUtil.newMap("domainId,comCd,areaCd,stageCd,jobDate,status"
+				, domainId,comCd,areaCd,stageCd,jobDate
+				,ValueUtil.newStringList(LogisConstants.COMMON_STATUS_WAIT, LogisConstants.COMMON_STATUS_RUNNING));
+				
+		
+		BatchReceipt receiptData = 
+				this.queryManager.selectBySql(this.batchQueryStore.getBatchReceiptOrderTypeStatusQuery(), paramMap, BatchReceipt.class);
+		
+		// 대기중 또는 진행중 인 수신 정보 리턴 
+		if(receiptData != null) {
+			receiptData.setItems(LogisEntityUtil.searchDetails(domainId, BatchReceiptItem.class, "batchReceiptId", receiptData.getId()));
+			return receiptData;
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * WMS IF 테이블에서 수신 대상 데이터 확인
+	 * @param domainId
+	 * @param areaCd
+	 * @param stageCd
+	 * @param comCd
+	 * @param jobDate
+	 * @return
+	 */
+	private List<BatchReceiptItem> getWmfIfToReceiptItems(Long domainId, String areaCd, String stageCd, String comCd, String jobDate){
+		Map<String,Object> paramMap = ValueUtil.newMap("domainId,comCd,areaCd,stageCd,jobDate"
+				, domainId,comCd,areaCd,stageCd,jobDate);
+		
+		return this.queryManager.selectListBySql(this.batchQueryStore.getWmsIfToReceiptDataQuery(), paramMap, BatchReceiptItem.class,0,0);
+	}
 	
 	/************** 배치 수신  **************/
 	
