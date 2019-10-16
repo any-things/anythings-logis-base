@@ -3,9 +3,12 @@ package xyz.anythings.base.entity;
 import xyz.elidom.dbist.annotation.Column;
 import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.GenerationRule;
+import xyz.elidom.dbist.annotation.Index;
 import xyz.elidom.dbist.annotation.Table;
 
-@Table(name = "deployments", idStrategy = GenerationRule.UUID)
+@Table(name = "deployments", idStrategy = GenerationRule.UUID, indexes = {
+	@Index(name = "ix_deployments_0", columnList = "target_type,target_id,version,domainId")
+})
 public class Deployment extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	/**
 	 * SerialVersion UID

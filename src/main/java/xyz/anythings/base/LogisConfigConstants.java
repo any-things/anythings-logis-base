@@ -8,27 +8,7 @@ package xyz.anythings.base;
 public class LogisConfigConstants extends xyz.anythings.sys.ConfigConstants {	
 	
 	/**********************************************************************
-	 * 								1. 기본 Prefix, Suffix
-	 **********************************************************************/
-	/**
-	 * 작업 공통 프리픽스
-	 */
-	public static final String JOB_COMMON_PREFIX = "job.cmm.";
-	/**
-	 * 출고 작업 프리픽스
-	 */
-	public static final String JOB_DAS_PREFIX = "job.das.";
-	/**
-	 * 반품 작업 프리픽스
-	 */
-	public static final String JOB_RTN_PREFIX = "job.rtn.";
-	/**
-	 * B2C 작업 프리픽스
-	 */
-	public static final String JOB_DPS_PREFIX = "job.dps.";
-		
-	/**********************************************************************
-	 * 								2. 인터페이스 관련 설정
+	 * 								1. 인터페이스 관련 설정
 	 **********************************************************************/
 	/**
 	 * 상위 시스템 인터페이스 유형
@@ -112,120 +92,287 @@ public class LogisConfigConstants extends xyz.anythings.sys.ConfigConstants {
 	public static final String IF_RECEIVE_ORDER_TYPE = "if.receive.order.type";
 	
 	/**********************************************************************
-	 * 								3. SKU 조회 관련 설정 
+	 * 								2. SKU 조회 관련 설정 
 	 **********************************************************************/
 	/**
 	 * 바코드 최대 길이 - 상품 스캔시 최대 입력 길이
 	 */
-	public static final String SKU_BARCODE_MAX_LENGTH = "sku.barcode.max.length";
+	public static final String SKU_BARCODE_MAX_LENGTH = "job.cmm.sku.barcode.max.length";
 	/**
 	 * SKU 조회를 위한 코드 필드명 리스트
 	 */
-	public static final String SKU_CONDITION_FIELDS_TO_SEARCH = "sku.search.condition.fields";
+	public static final String SKU_CONDITION_FIELDS_TO_SEARCH = "job.cmm.sku.search.condition.fields";
 	/**
 	 * SKU 조회를 위한 조회 필드명 리스트
 	 */
-	public static final String SKU_SELECT_FIELDS_TO_SEARCH = "sku.search.select.fields";
-	/**
-	 * 서버 사이드에서 상품 유효성 체크 여부
-	 */
-	public static final String VALIDATION_SKUCD_ENABLED = "sku.skucd.validation.enabled";
+	public static final String SKU_SELECT_FIELDS_TO_SEARCH = "job.cmm.sku.search.select.fields";
 	/**
 	 * SKU 중량 단위 - g/kg
 	 */
-	public static final String SKU_WEIGHT_UNIT = "sku.weight.unit";
+	public static final String SKU_WEIGHT_UNIT = "job.cmm.sku.weight.unit";
 	
 	/**********************************************************************
-	 * 								4. 각종 스캔 코드 유효성 체크 
+	 * 								3. 각종 스캔 코드 유효성 체크 
 	 **********************************************************************/
+	/**
+	 * 서버 사이드에서 상품 유효성 체크 여부
+	 */
+	public static final String VALIDATION_SKUCD_ENABLED = "job.cmm.sku.skucd.validation.enabled";
 	/**
 	 * 서버 사이드에서 상품 유효성 체크를 위한 룰
 	 */
-	public static final String VALIDATION_RULE_SKUCD = "server.validate.sku_cd.rule";	
+	public static final String VALIDATION_RULE_SKUCD = "job.cmm.server.validate.sku_cd.rule";	
 	/**
 	 * 서버 사이드에서 박스 ID 유효성 체크를 위한 룰
 	 */
-	public static final String VALIDATION_RULE_BOXID = "server.validate.box_id.rule";
+	public static final String VALIDATION_RULE_BOXID = "job.cmm.server.validate.box_id.rule";
 	/**
 	 * 서버 사이드에서 로케이션 코드 유효성 체크를 위한 룰
 	 */
-	public static final String VALIDATION_RULE_CELLCD = "server.validate.cell_cd.rule";
+	public static final String VALIDATION_RULE_CELLCD = "job.cmm.server.validate.cell_cd.rule";
 	/**
 	 * 서버 사이드에서 표시기 코드 유효성 체크를 위한 룰
 	 */
-	public static final String VALIDATION_RULE_INDCD = "server.validate.ind_cd.rule";
+	public static final String VALIDATION_RULE_INDCD = "job.cmm.server.validate.ind_cd.rule";
 	/**
 	 * 서버 사이드에서 랙 코드 유효성 체크를 위한 룰
 	 */
-	public static final String VALIDATION_RULE_RACKCD = "server.validate.rack_cd.rule";
+	public static final String VALIDATION_RULE_RACKCD = "job.cmm.server.validate.rack_cd.rule";
 	/**
 	 * 서버 사이드에서 송장번호 유효성 체크를 위한 룰
 	 */
-	public static final String VALIDATION_RULE_INVNO = "server.validate.invoice_no.rule";
+	public static final String VALIDATION_RULE_INVNO = "job.cmm.server.validate.invoice_no.rule";
 	
 	/**********************************************************************
-	 * 								5. 디바이스 설정 
+	 * 								4. 주문 설정 
+	 **********************************************************************/
+	/**
+	 * 주문 테이블의 분류 코드(class_cd)와 매핑할 주문 필드명
+	 */
+	public static final String ORDER_CLASS_CD_FIELD = "job.cmm.order.class_cd.field";
+	/**
+	 * 주문 취소시 데이터 삭제 여부
+	 */
+	public static final String ORDER_DELETE_WHEN_ORDER_CANCEL = "job.cmm.order.delete.when.order_cancel";
+	
+	/**********************************************************************
+	 * 								5. 작업 지시 설정 
+	 **********************************************************************/
+	/**
+	 * 작업지시 시점에 표시기에 할당 셀 표시 활성화 여부
+	 */
+	public static final String ASSIGNED_CELL_INDICATION_ENABLED = "job.cmm.assigned-cell.indicator.enabled";
+	
+	/**********************************************************************
+	 * 								6. 투입 모드 설정 
+	 **********************************************************************/
+	/**
+	 * 완박스 투입시 표시기 점등 모드 - 하나씩 점등 / 전체 점등
+	 */
+	public static final String INPUT_IND_ON_MODE = "job.cmm.input.box.ind_on.mode";
+	/**
+	 * 완박스 투입 활성화 여부
+	 */
+	public static final String INPUT_MODE_BOX_ENABLED = "job.cmm.input.mode.box.enabled";
+	/**
+	 * 번들 투입 활성화 여부
+	 */
+	public static final String INPUT_MODE_BUNDLE_ENABLED = "job.cmm.input.mode.bundle.enabled";
+	/**
+	 * 단품 투입 활성화 여부
+	 */
+	public static final String INPUT_MODE_SINGLE_ENABLED = "job.cmm.input.mode.single.enabled";
+	/**
+	 * 단품 투입시 표시기 점등 모드 - 하나씩 점등 / 전체 점등
+	 */
+	public static final String INPUT_SINGLE_IND_ON_ENABLED = "job.cmm.input.single.ind_on.mode";
+	/**
+	 * 투입시 투입 범위
+	 */
+	public static final String INPUT_WORK_SCOPE = "job.cmm.input.work_scope";
+	
+	/**********************************************************************
+	 * 								7. 피킹 설정 
+	 **********************************************************************/
+	/**
+	 * 확정 취소 기능 활성화 여부
+	 */
+	public static final String PICK_CANCEL_ENABLED = "job.cmm.pick.cancel.enabled"; 
+	/**
+	 * 표시기에서 분류 작업 취소시에 '취소' 상태로 관리할 지 여부
+	 */
+	public static final String PICK_CANCEL_STATUS_ENABLED = "job.cmm.pick.cancel.status.enabled";
+	/**
+	 * 상품 투입시 취소된 상품을 조회할 지 여부
+	 */
+	public static final String PICK_INCLUDE_CANCALLED_ENABLED = "job.cmm.pick.include.cancelled.enabled";
+	/**
+	 * 확정 실적 보고 여부
+	 */
+	public static final String PICK_RESULT_REPORT_ENABLED = "job.cmm.pick.result.report.enabled";
+	
+	/**********************************************************************
+	 * 								8. 검수 / 라벨 설정
+	 **********************************************************************/
+	/**
+	 * 출고 검수 활성화 여부
+	 */
+	public static final String INSPECTION_ENABLED = "job.cmm.inspection.enabled";
+	/**
+	 * 중량 체크 여부
+	 */
+	public static final String INSPECTION_WEIGHT_ENABLED = "job.cmm.insepction.weight.enabled";
+	/**
+	 * 출고 검수 후 액션
+	 */
+	public static final String INSPECTION_ACTION = "job.cmm.inspection.action";
+	/**
+	 * 라벨 발행시 한 번에 동일 라벨을 몇 장 발행할 지 설정
+	 */
+	public static final String LABEL_PRINT_COUNT = "job.cmm.label.print.count";
+	/**
+	 * 송장 라벨 발행 방법 (S: 라벨 자체 발행, I: 인터페이스)
+	 */
+	public static final String LABEL_PRINT_METHOD = "job.cmm.label.print.method";
+	/**
+	 * 송장 라벨을 자체 출력시 출력 템플릿 명
+	 */
+	public static final String LABEL_TEMPLATE = "job.cmm.label.template";
+
+	/**********************************************************************
+	 * 								9. 박스 설정 
+	 **********************************************************************/
+	/**
+	 * 박스 처리 후 액션
+	 */
+	public static final String BOX_ACTION = "job.cmm.box.action";
+	/**
+	 * 박스 ID 유일성 보장 범위
+	 */
+	public static final String BOX_ID_UNIQ_SCOPE = "job.cmm.box.box_id.unique.scope";
+	/**
+	 * 박스 취소 기능 활성화 여부
+	 */
+	public static final String BOX_CANCEL_ENABLED = "job.cmm.box.cancel.enabled";	
+	/**
+	 * 옵션에 따라 송장 번호를 다르게 부여
+	 */
+	public static final String BOX_INVOICE_NO_RULE = "job.cmm.box.invoice-no.rule";
+	/**
+	 * 주문 필드 중에 박스 처리시에 출고 분류 코드로 사용할 필드 명
+	 */
+	public static final String BOX_OUT_CLASS_FIELD = "job.cmm.box.out.class.field";
+	/**
+	 * 박스 실적 보고 여부
+	 */
+	public static final String BOX_RESULT_REPORT_ENABLED = "job.cmm.box.result.report.enabled";
+	/**
+	 * 박스 실적 전송 시점
+	 */
+	public static final String BOX_RESULT_REPORT_POINT = "job.cmm.box.result.report.point";
+	/**
+	 * 박스 중량 관리 여부
+	 */
+	public static final String BOX_WEIGHT_ENABLED = "job.cmm.box.weight.enabled";
+	
+	/**********************************************************************
+	 * 								10. 디바이스 설정 
 	 **********************************************************************/
 	/**
 	 * 작업 장비에서 장비 리스트
 	 */
-	public static final String DEVICE_DEVICE_LIST = "device.list";
+	public static final String DEVICE_DEVICE_LIST = "job.cmm.device.list";
 	/**
 	 * 작업 장비에서 작업 위치 (앞,뒤,앞/뒤,전체 등) 정보를 사용할 지 여부
 	 */
-	public static final String DEVICE_SIDE_ENABLED = "device.side.enabled";
+	public static final String DEVICE_SIDE_ENABLED = "job.cmm.device.side.enabled";
 	/**
 	 * 작업 장비에서 작업 스테이션 정보를 사용할 지 여부
 	 */
-	public static final String DEVICE_STATION_ENABLED = "device.station.enabled";
-	/**
-	 * 작업지시 시점에 표시기에 할당 셀 표시 활성화 여부
-	 */
-	public static final String ASSIGNED_CELL_INDICATOR_ENABLED = "assigned-cell.indicator.enabled";
+	public static final String DEVICE_STATION_ENABLED = "job.cmm.device.station.enabled";
 	
-		
 	/**********************************************************************
-	 * 								99. Functions 
+	 * 								11. DAS 설정 
 	 **********************************************************************/
+	/**
+	 * DAS 셀에 할당할 대상 필드 (매장, 상품, 주문번호…)
+	 */
+	public static final String DAS_PREPROCESS_CELL_MAPPING_FIELD = "job.das.preproces.cell.mapping.field";
+	/**
+	 * DAS 설정 - 로케이션과 박스 ID를 매핑하는 시점 - 선 매핑이냐 후 매핑이냐 여부
+	 */
+	public static final String DAS_CELL_BOXID_MAPPING_POINT = "job.das.cell-boxid.mapping.point";
+	/**
+	 * DAS 설정 - KIOSK 중분류 화면에서 표시 수량을 주문 수량으로 표시 할 것인지 분류 처리한 수량을 제외하고 표시 할 것인지 (fix/filter)
+	 */
+	public static final String DAS_MIDDLEASSORT_PCS_FIX = "job.das.middleassort.display.qty.mode";
+	/**
+	 * DAS 설정 - DAS KIOSK 중분류 화면에서 호기 정렬 옵션
+	 */
+	public static final String DAS_MIDDLEASSORT_RACK_SORT_ASEND = "job.das.middleassort.rack.sort.ascending";
+	/**
+	 * DAS 설정 - 키오스크에서 상품 투입시에 상품 중량 체크 여부
+	 */
+	public static final String DAS_INPUT_CHECK_WEIGHT_ENABLED = "job.das.input.check.weight.enabled"; 
+	/**
+	 * DAS 설정 - 표시기에 표시할 릴레이 번호 최대 번호 (최대 번호 이후 다시 1로)
+	 */
+	public static final String DAS_RELAY_JOB_MAX_NO = "job.das.pick.relay.max.no";
 
+	/**********************************************************************
+	 * 								12. 반품 설정 
+	 **********************************************************************/
 	/**
-	 * 작업 공통 Configuration Key를 리턴 
-	 * 
-	 * @param configKey
-	 * @return
+	 * 반품 설정 - 셀 - SKU 매핑 시점 (P:주문가공시, A:분류 시)
 	 */
-	public static final String getJobCommonConfigKey(String configKey) {
-		return JOB_COMMON_PREFIX + configKey;
-	}
-	
+	public static final String RTN_CELL_SKU_MAPPING_POINT = "job.rtn.cell-sku.mapping.point";
 	/**
-	 * 출고 작업 Configuration Key를 리턴
-	 * 
-	 * @param configKey
-	 * @return
+	 * 반품 설정 - 셀에 할당할 대상 필드 (매장, 상품, 주문번호…)
 	 */
-	public static final String getJobDasConfigKey(String configKey) {
-		return JOB_DAS_PREFIX + configKey;
-	}
-	
+	public static final String RTN_PREPROCESS_CELL_MAPPING_FIELD = "job.rtn.preproces.cell.mapping.field";
+
+	/**********************************************************************
+	 * 								13. DPS 설정 
+	 **********************************************************************/
 	/**
-	 * 반품 작업 Configuration Key를 리턴
-	 * 
-	 * @param configKey
-	 * @return
+	 * DPS 설정 - DPS 셀에 할당할 대상 필드 (매장, 상품, 주문번호…)
 	 */
-	public static final String getJobRtnConfigKey(String configKey) {
-		return JOB_RTN_PREFIX + configKey;
-	}
-	
+	public static final String DPS_PREPROCESS_CELL_MAPPING_FIELD = "job.dps.preproces.cell.mapping.field";
 	/**
-	 * B2C 작업 Configuration Key를 리턴
-	 * 
-	 * @param configKey
-	 * @return
+	 * DPS 설정 - 투입 박스 유형 (box / tray)
 	 */
-	public static final String getJobDpsConfigKey(String configKey) {
-		return JOB_DPS_PREFIX + configKey;
-	}
+	public static final String DPS_INPUT_BOX_TYPE = "job.dps.input.box.type";
+	/**
+	 * DPS 설정 - 호기별로 배치 분리 처리 여부
+	 */
+	public static final String DPS_BATCH_SPLIT_BY_RACK_ENABLED = "job.dps.batch.split-by-rack.enabled";
+	/**
+	 * DPS 설정 - 피킹과 동시에 검수 처리할 것인지 여부
+	 */
+	public static final String DPS_PICK_WITH_INSPECTION_ENABLED = "job.dps.pick-with-inspection.enabled";
+	/**
+	 * DPS 설정 - 완박스 바로 출고 대상 분류 여부
+	 */
+	public static final String DPS_PICK_1BOX_ENABLED = "job.dps.pick.1box.enabled";
+	/**
+	 * DPS 설정 - 단수 대상 분류 여부
+	 */
+	public static final String DPS_PICK_1SKU_1PCS_ENABLED = "job.dps.pick.1sku.1pcs.enabled";
+	/**
+	 * DPS 설정 - 단포 대상 분류 여부
+	 */
+	public static final String DPS_PICK_1SKU_NPCS_ENABLED = "job.dps.pick.1sku.npcs.enabled";
+	/**
+	 * DPS 설정 - SKU 물량 Rank 선정 기준 데이터 범위 (일자)
+	 */
+	public static final String DPS_SKU_POPULAR_RANK_CALC_DAYS = "job.dps.sku.popula.rank.calc.days";
+	/**
+	 * DPS 설정 - 작업 스테이션에 대기할 박스 최대 개수 (-1이면 무한대)
+	 */
+	public static final String DPS_STATION_WAIT_POOL_COUNT = "job.dps.station.wait-pool.count";
+	/**
+	 * DPS 설정 - 추천 로케이션 사용 여부
+	 */
+	public static final String DPS_SUPPLE_RECOMMEND_CELL_ENABLED = "job.dps.supple.recommend-cell.enabled";
 
 }
