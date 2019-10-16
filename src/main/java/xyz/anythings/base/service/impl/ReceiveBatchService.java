@@ -1,10 +1,15 @@
 package xyz.anythings.base.service.impl;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import xyz.anythings.base.LogisConstants;
 import xyz.anythings.base.entity.BatchReceipt;
+import xyz.anythings.base.entity.BatchReceiptItem;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.event.EventConstants;
 import xyz.anythings.base.event.main.BatchReceiveEvent;
@@ -155,35 +160,54 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 	 */
 	private BatchReceipt createReadyToReceiveData(Long domainId, String areaCd, String stageCd, String comCd, String jobDate, Object ... params) {
 		
-		// 1. 대기 상태 이거나 진행 중인 수신이 있으면 return
-		BatchReceipt receiptData = LogisEntityUtil.findEntityBy(domainId, false, BatchReceipt.class, 
-									"areaCd,stageCd,comCd,jobDate,status", areaCd,stageCd,comCd,jobDate,
-									ValueUtil.newStringList(LogisConstants.COMMON_STATUS_WAIT, LogisConstants.COMMON_STATUS_RUNNING));
+		// 1. 대기 상태 이거나 진행 중인 수신이 있는지 확인 
+		Map<String,Object> paramMap = ValueUtil.newMap("domainId,comCd,areaCd,stageCd,jobDate,status"
+				, domainId,comCd,areaCd,stageCd,jobDate
+				,ValueUtil.newStringList(LogisConstants.COMMON_STATUS_WAIT, LogisConstants.COMMON_STATUS_RUNNING));
+				
 		
+		BatchReceipt receiptData = 
+				this.queryManager.selectBySql(this.batchQueryStore.getBatchReceiptOrderTypeStatusQuery(), paramMap, BatchReceipt.class);
+		
+		// 1.1 대기중 또는 진행중 인 수신 정보 리턴 
 		if(receiptData != null) {
+			receiptData.setItems(LogisEntityUtil.searchDetails(domainId, BatchReceiptItem.class, "batchReceiptId", receiptData.getId()));
 			return receiptData;
 		}
 		
-		
-		// 2.
-		
-		
-		// 3.
+		// 2. WMS IF 테이블에서 수신 대상 데이터 확인 
+		List<BatchReceiptItem> receiptItems = 
+				this.queryManager.selectListBySql(this.batchQueryStore.getWmsIfToReceiptDataQuery(), paramMap, BatchReceiptItem.class,0,0);
 		
 		
-		// TODO
+		// 2.1 수신 대상 데이터가 없으면 리턴 
+		if(ValueUtil.isEmpty(receiptItems)) {
+			// TODO : 메시지 처리 ?
+			return null;
+		}
 		
+		// 3.1 데이터가 있으면 BatchReceipt JobSeq 데이터 구하기 
+		List<Integer> jobSeqList = 
+				LogisEntityUtil.searchEntitiesBy(domainId, false, Integer.class, "jobSeq", "comCd,areaCd,stageCd,jobDate", comCd,areaCd,stageCd,jobDate);
 		
-		// LogisConstants
-		// public static final String COMMON_STATUS_WAIT = "W";
-		// public static final String COMMON_STATUS_FINISHED = "F";
-		// public static final String COMMON_STATUS_RUNNING = "R";
-		// public static final String COMMON_STATUS_ERROR = "E";
-		// public static final String COMMON_STATUS_CANCEL = "C";
+		int jobSeq = (ValueUtil.isEmpty(jobSeqList) ? 0 : Collections.max(jobSeqList)) + 1;
 		
+		// 3.2  BatchReceipt데이터 생성 
+		BatchReceipt batchReceipt = new BatchReceipt();
+		batchReceipt.setComCd(comCd);
+		batchReceipt.setAreaCd(areaCd);
+		batchReceipt.setStageCd(stageCd);
+		batchReceipt.setJobDate(jobDate);
+		batchReceipt.setJobSeq(ValueUtil.toString(jobSeq));
+		batchReceipt.setStatus(LogisConstants.COMMON_STATUS_WAIT);
+	
+		this.queryManager.insert(batchReceipt);
 		
+		// 3.3 BatchReceiptItem 데이터 생성 
+		for(BatchReceiptItem item : receiptItems) item.setBatchReceiptId(batchReceipt.getId());
+		this.queryManager.insertBatch(receiptItems);
 		
-		return null;
+		return batchReceipt;
 	}
 	
 	

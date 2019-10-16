@@ -1,7 +1,10 @@
 package xyz.anythings.base.entity;
 
+import java.util.List;
+
 import xyz.elidom.dbist.annotation.Column;
 import xyz.elidom.dbist.annotation.GenerationRule;
+import xyz.elidom.dbist.annotation.Ignore;
 import xyz.elidom.dbist.annotation.Index;
 import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.Table;
@@ -41,6 +44,9 @@ public class BatchReceipt extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	@Column (name = "status", length = 10)
 	private String status;
+	
+	@Ignore
+	private List<BatchReceiptItem> items;
   
 	public String getId() {
 		return id;
@@ -96,5 +102,13 @@ public class BatchReceipt extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+	
+	public List<BatchReceiptItem> getItems(){
+		return this.items;
+	}
+	
+	public void setItems(List<BatchReceiptItem> items) {
+		this.items = items;
 	}
 }

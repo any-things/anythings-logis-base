@@ -7,9 +7,6 @@ SELECT WMS_BATCH_NO
      , 'ORDER' AS ITEM_TYPE
      , 'W' AS STATUS
      , 0 AS SKIP_FLAG
-     , :domainId AS DOMAIN_ID
-     , :userId AS CREATOR_ID
-     , :userId AS UPDATER_ID
   FROM WMS_IF_ORDERS 
  WHERE COM_CD = :comCd
    AND AREA_CD = :areaCd

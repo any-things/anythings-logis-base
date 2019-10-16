@@ -58,7 +58,20 @@ public class BatchQueryStore extends AbstractQueryStore {
 	
 	
 	/*** BatchReceipt 관련 데이터 쿼리 ***/
-	public String wmsIfToReceiptDataQuery() {
+	/**
+	 * WMS I/F 테이블로 부터 BatchReceipt 데이터를 조회 한다.
+	 * @return
+	 */
+	public String getWmsIfToReceiptDataQuery() {
 		return this.getQueryByPath("batch/WmsIfToReceiptData");
+	}
+	
+	/**
+	 * BatchReceipt 조회
+	 * 상세 Item 에 Order 타입이 있는 Case 
+	 * @return
+	 */
+	public String getBatchReceiptOrderTypeStatusQuery() {
+		return this.getQueryByPath("batch/BatchReceiptOrderTypeStatus");
 	}
 }
