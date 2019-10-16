@@ -36,6 +36,9 @@ public class BatchReceiptItem extends xyz.elidom.orm.entity.basic.ElidomStampHoo
 
 	@Column (name = "stage_cd", length = 30)
 	private String stageCd;
+	
+	@Column (name = "job_type", length = 20)
+	private String jobType;
 
 	@Column (name = "equip_type", length = 20)
 	private String equipType;
