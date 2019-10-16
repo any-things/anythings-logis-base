@@ -1,11 +1,20 @@
 package xyz.anythings.base.entity;
 
+import java.util.List;
+
 import xyz.elidom.dbist.annotation.Column;
 import xyz.elidom.dbist.annotation.GenerationRule;
+import xyz.elidom.dbist.annotation.Ignore;
 import xyz.elidom.dbist.annotation.Index;
 import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.Table;
+import xyz.elidom.util.ValueUtil;
 
+/**
+ * 작업 설정 셋
+ * 
+ * @author shortstop
+ */
 @Table(name = "job_config_set", idStrategy = GenerationRule.UUID, uniqueFields="domainId,comCd,stageCd,jobType,equipType,equipCd,confSetCd", indexes = {
 	@Index(name = "ix_job_config_set_0", columnList = "domain_id,com_cd,stage_cd,job_type,equip_type,equip_cd,conf_set_cd", unique = true)
 })
@@ -45,6 +54,9 @@ public class JobConfigSet extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	@Column (name = "remark", length = 1000)
 	private String remark;
+	
+	@Ignore
+	private List<JobConfig> items;
   
 	public String getId() {
 		return id;
@@ -124,5 +136,44 @@ public class JobConfigSet extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setRemark(String remark) {
 		this.remark = remark;
-	}	
+	}
+
+	public List<JobConfig> getItems() {
+		return items;
+	}
+
+	public void setItems(List<JobConfig> items) {
+		this.items = items;
+	}
+
+	/**
+	 * key로 값을 찾아 리턴
+	 * 
+	 * @param key
+	 * @return
+	 */
+	public String findValue(String key) {
+		if(ValueUtil.isEmpty(this.items)) {
+			for(JobConfig item : items) {
+				if(ValueUtil.isEqualIgnoreCase(key, item.getName())) {
+					return item.getValue();
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * key로 값을 찾아 리턴
+	 * 
+	 * @param key
+	 * @param defaultValue
+	 * @return
+	 */
+	public String findValue(String key, String defaultValue) {
+		String value = this.findValue(key);
+		return ValueUtil.isEmpty(value) ? defaultValue : value;
+	}
+
 }

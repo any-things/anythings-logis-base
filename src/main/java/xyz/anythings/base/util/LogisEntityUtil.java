@@ -169,7 +169,8 @@ public class LogisEntityUtil extends EntityUtil {
 	 * @param fieldValues
 	 * @return
 	 */
-	public static List<T> searchEntitiesBy(Long domainId, boolean exceptionWhenEmpty, Class<T> clazz, String fieldNames, Object ... fieldValues) {
+	@SuppressWarnings("hiding")
+	public static <T> List<T> searchEntitiesBy(Long domainId, boolean exceptionWhenEmpty, Class<T> clazz, String fieldNames, Object ... fieldValues) {
 		return searchEntitiesBy(domainId, exceptionWhenEmpty, clazz, null, fieldNames, fieldValues);
 	}
 	
@@ -184,7 +185,8 @@ public class LogisEntityUtil extends EntityUtil {
 	 * @param fieldValues
 	 * @return
 	 */
-	public static List<T> searchEntitiesBy(Long domainId, boolean exceptionWhenEmpty, Class<T> clazz, String selectFields, String fieldNames, Object ... fieldValues) {
+	@SuppressWarnings("hiding")
+	public static <T> List<T> searchEntitiesBy(Long domainId, boolean exceptionWhenEmpty, Class<T> clazz, String selectFields, String fieldNames, Object ... fieldValues) {
 		Query condition = AnyOrmUtil.newConditionForExecution(domainId);
 
 		if(ValueUtil.isNotEmpty(selectFields)) {
@@ -219,7 +221,8 @@ public class LogisEntityUtil extends EntityUtil {
 	 * @param masterId
 	 * @return
 	 */
-	public List<T> searchDetails(Long domainId, Class<T> clazz, String masterField, String masterId) {
+	@SuppressWarnings("hiding")
+	public static <T> List<T> searchDetails(Long domainId, Class<T> clazz, String masterField, String masterId) {
 		Query condition = AnyOrmUtil.newConditionForExecution(domainId);
 		condition.addFilter(masterField, masterId);
 		return BeanUtil.get(IQueryManager.class).selectList(clazz, condition);
@@ -238,7 +241,8 @@ public class LogisEntityUtil extends EntityUtil {
 	 * @param fieldValues
 	 * @return
 	 */
-	public static Page<T> searchPagesBy(Long domainId, boolean exceptionWhenEmpty, Class<T> clazz, int limit, int page, String fieldNames, Object ... fieldValues) {
+	@SuppressWarnings("hiding")
+	public static <T> Page<T> searchPagesBy(Long domainId, boolean exceptionWhenEmpty, Class<T> clazz, int limit, int page, String fieldNames, Object ... fieldValues) {
 		return searchPagesBy(domainId, exceptionWhenEmpty, clazz, limit, page, null, fieldNames, fieldValues);
 	}
 	
@@ -254,7 +258,8 @@ public class LogisEntityUtil extends EntityUtil {
 	 * @param fieldValues
 	 * @return
 	 */
-	public static Page<T> searchPagesBy(Long domainId, Class<T> clazz, int limit, int page, String selectFields, String fieldNames, Object ... fieldValues) {
+	@SuppressWarnings("hiding")
+	public static <T> Page<T> searchPagesBy(Long domainId, Class<T> clazz, int limit, int page, String selectFields, String fieldNames, Object ... fieldValues) {
 		Query condition = AnyOrmUtil.newConditionForExecution(domainId, limit, page);
 
 		if(ValueUtil.isNotEmpty(selectFields)) {

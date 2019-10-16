@@ -20,11 +20,12 @@ import xyz.anythings.base.entity.IndConfigSet;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.service.impl.ConfigSetService;
 import xyz.anythings.base.util.LogisEntityUtil;
-import xyz.elidom.core.entity.CodeDetail;
+import xyz.anythings.sys.model.KeyValue;
 import xyz.elidom.dbist.dml.Filter;
 import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
 import xyz.elidom.orm.system.annotation.service.ServiceDesc;
+import xyz.elidom.sys.entity.Domain;
 import xyz.elidom.sys.system.service.AbstractRestService;
 
 @RestController
@@ -112,15 +113,22 @@ public class IndConfigSetController extends AbstractRestService {
 		return this.findIndConfig(id);
 	}
 	
+	@RequestMapping(value = "/build_template", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseStatus(HttpStatus.CREATED)
+	@ApiDesc(description = "Build template config set")
+	public IndConfigSet buildTemplateConfigSet() {
+		return this.configSetService.buildTemplateIndConfigSet(Domain.currentDomainId());
+	}
+	
 	@RequestMapping(value = "/{id}/copy", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
 	@ApiDesc(description = "Copy template config set")
-	public IndConfigSet copyConfigSet(@PathVariable("id") String templateId) {
-		return this.configSetService.copyIndConfigSet(templateId);
+	public IndConfigSet copyConfigSet(@PathVariable("id") String sourceConfigSetId) {
+		return this.configSetService.copyIndConfigSet(Domain.currentDomainId(), sourceConfigSetId);
 	}
 	
 	@RequestMapping(value = "/build_config_set/{batch_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiDesc(description = "Find config set by batch id")
+	@ApiDesc(description = "Build config set by batch id")
 	public IndConfigSet buildBatchConfigSet(@PathVariable("batch_id") String batchiId) {
 		JobBatch batch = LogisEntityUtil.findEntityById(true, JobBatch.class, batchiId);
 		return this.configSetService.buildIndConfigSet(batch);
@@ -135,13 +143,10 @@ public class IndConfigSetController extends AbstractRestService {
 	
 	@RequestMapping(value = "/config_value/{batch_id}/{config_key}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Config key by batch id")
-	public CodeDetail getConfigValue(@PathVariable("batch_id") String batchiId, @PathVariable("config_key") String configKey) {
+	public KeyValue getConfigValue(@PathVariable("batch_id") String batchiId, @PathVariable("config_key") String configKey) {
 		JobBatch batch = LogisEntityUtil.findEntityById(true, JobBatch.class, batchiId);
 		String value = this.configSetService.getIndConfigValue(batch, configKey);
-		// TODO key, value 오브젝트를 새로 정의
-		CodeDetail item = new CodeDetail();
-		item.setName(configKey);
-		item.setDescription(value);
-		return item;
+		return new KeyValue(configKey, value);
 	}
+
 }
