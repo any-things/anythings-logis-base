@@ -11,4 +11,25 @@ import org.springframework.stereotype.Component;
 @Component
 public class ConfigQueryStore extends AbstractQueryStore {
 
+
+	/**
+	 * 배치에 해당 하는 Job configsSet 생성
+	 * 
+	 * @return
+	 */
+	public String getBuildJobConfigSetQuery() {
+		return this.getQueryByPath("config/BuildJobConfigSet");
+	}
+	
+	
+	/**
+	 * 배치에 해당 하는 Ind configSet 생성
+	 * 
+	 * @return
+	 */
+	public String getBuildIndConfigSetQuery() {
+		return this.getQueryByPath("config/BuildIndConfigSet");
+	}
+
+	
 }
