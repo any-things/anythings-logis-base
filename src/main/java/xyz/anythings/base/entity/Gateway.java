@@ -7,7 +7,8 @@ import xyz.elidom.dbist.annotation.GenerationRule;
 import xyz.elidom.dbist.annotation.Table;
 
 @Table(name = "gateways", idStrategy = GenerationRule.UUID, uniqueFields="domainId,gwCd", indexes = {
-	@Index(name = "ix_gateways_0", columnList = "domain_id,gw_cd", unique = true)
+	@Index(name = "ix_gateways_0", columnList = "domain_id,gw_cd", unique = true),
+	@Index(name = "ix_gateways_1", columnList = "domain_id,stage_cd")
 })
 public class Gateway extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	/**
@@ -19,6 +20,9 @@ public class Gateway extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "id", nullable = false, length = 40)
 	private String id;
 
+	@Column (name = "stage_cd", nullable = false, length = 30)
+	private String stageCd;
+	
 	@Column (name = "gw_cd", nullable = false, length = 30)
 	private String gwCd;
 
@@ -49,6 +53,14 @@ public class Gateway extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public String getStageCd() {
+		return stageCd;
+	}
+
+	public void setStageCd(String stageCd) {
+		this.stageCd = stageCd;
 	}
 
 	public String getGwCd() {

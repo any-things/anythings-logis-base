@@ -1,11 +1,22 @@
 package xyz.anythings.base.entity;
 
+import xyz.anythings.base.LogisConstants;
 import xyz.elidom.dbist.annotation.Column;
 import xyz.elidom.dbist.annotation.GenerationRule;
+import xyz.elidom.dbist.annotation.Ignore;
+import xyz.elidom.dbist.annotation.Index;
 import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.Table;
+import xyz.elidom.sys.util.ValueUtil;
 
-@Table(name = "job_instances", idStrategy = GenerationRule.UUID)
+@Table(name = "job_instances", idStrategy = GenerationRule.UUID, indexes = {
+	@Index(name = "ix_job_instances_1", columnList = "batch_id,domain_id"),
+	@Index(name = "ix_job_instances_2", columnList = "order_no,batch_id"),
+	@Index(name = "ix_job_instances_3", columnList = "box_id"),
+	@Index(name = "ix_job_instances_4", columnList = "equip_type,equip_cd,cell_cd,batch_id"),
+	@Index(name = "ix_job_instances_5", columnList = "job_date,job_seq,batch_id"),
+	@Index(name = "ix_job_instances_6", columnList = "input_seq,cell_cd,sku_cd,status,batch_id")
+})
 public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	/**
 	 * SerialVersion UID
@@ -108,6 +119,9 @@ public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	@Column (name = "boxed_at", length = 22)
 	private String boxedAt;
+	
+	@Ignore
+	private String gwPath;
   
 	public String getId() {
 		return id;
@@ -363,5 +377,32 @@ public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setBoxedAt(String boxedAt) {
 		this.boxedAt = boxedAt;
-	}	
+	}
+	
+	public String getGwPath() {
+		return gwPath;
+	}
+
+	public void setGwPath(String gwPath) {
+		this.gwPath = gwPath;
+	}
+
+	/**
+	 * 아직 완료되지 않은 작업인지 체크
+	 * 
+	 * @return
+	 */
+	public boolean isTodoJob() {
+		return (ValueUtil.isEmpty(this.status) || ValueUtil.isEqual(this.status, LogisConstants.JOB_STATUS_CANCEL) || ValueUtil.isEqual(this.status, LogisConstants.JOB_STATUS_PICKING) || ValueUtil.isEqual(this.status, LogisConstants.JOB_STATUS_WAIT) || ValueUtil.isEqual(this.status, LogisConstants.JOB_STATUS_INPUT));
+	}
+	
+	/**
+	 * 이미 완료된 작업인지 체크
+	 * 
+	 * @return
+	 */
+	public boolean isDoneJob() {
+		return !this.isTodoJob();
+	}
+
 }
