@@ -1,13 +1,21 @@
 package xyz.anythings.base.entity;
 
+import java.util.Collections;
 import java.util.List;
 
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import xyz.anythings.base.util.LogisEntityUtil;
 import xyz.elidom.dbist.annotation.Column;
 import xyz.elidom.dbist.annotation.GenerationRule;
 import xyz.elidom.dbist.annotation.Ignore;
 import xyz.elidom.dbist.annotation.Index;
 import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.Table;
+import xyz.elidom.orm.IQueryManager;
+import xyz.elidom.util.BeanUtil;
+import xyz.elidom.util.ValueUtil;
 
 /**
  * 주문 수신 요약 마스터
@@ -110,5 +118,42 @@ public class BatchReceipt extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	
 	public void setItems(List<BatchReceiptItem> items) {
 		this.items = items;
+	}
+	
+	
+	/**
+	 * 배치 Receipt 의 현재 상태를 가져온다. 
+	 * @param batchReceipt
+	 * @return
+	 */
+	public String getCurrentStatus() {
+		BatchReceipt checkReceipt = LogisEntityUtil.findEntityById(false, BatchReceipt.class, this.getId());
+		return checkReceipt.getStatus();
+	}
+	
+	/**
+	 * 상태 업데이트 
+	 * @param status
+	 */
+	@Transactional(propagation=Propagation.REQUIRES_NEW) 
+	public void updateStatus(String status) {
+		this.setStageCd(status);
+		BeanUtil.get(IQueryManager.class).update(this, "status");
+	}
+	
+	/**
+	 * BatchReceipt JobSeq 데이터 구하기 
+	 * @param domainId
+	 * @param areaCd
+	 * @param stageCd
+	 * @param comCd
+	 * @param jobDate
+	 * @return
+	 */
+	public static int newBatchReceiptJobSeq(Long domainId, String areaCd, String stageCd, String comCd, String jobDate) {
+		List<Integer> jobSeqList = 
+				LogisEntityUtil.searchEntitiesBy(domainId, false, Integer.class, "jobSeq", "comCd,areaCd,stageCd,jobDate", comCd,areaCd,stageCd,jobDate);
+		
+		return (ValueUtil.isEmpty(jobSeqList) ? 0 : Collections.max(jobSeqList)) + 1;
 	}
 }

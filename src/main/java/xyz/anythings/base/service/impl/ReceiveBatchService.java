@@ -1,23 +1,31 @@
 package xyz.anythings.base.service.impl;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import xyz.anythings.base.LogisConstants;
 import xyz.anythings.base.entity.BatchReceipt;
 import xyz.anythings.base.entity.BatchReceiptItem;
 import xyz.anythings.base.entity.JobBatch;
+import xyz.anythings.base.entity.Order;
 import xyz.anythings.base.event.EventConstants;
 import xyz.anythings.base.event.main.BatchReceiveEvent;
 import xyz.anythings.base.query.store.BatchQueryStore;
 import xyz.anythings.base.service.api.IReceiveBatchService;
+import xyz.anythings.base.util.LogisBaseUtil;
 import xyz.anythings.base.util.LogisEntityUtil;
+import xyz.anythings.sys.AnyConstants;
 import xyz.anythings.sys.event.model.EventResultSet;
 import xyz.anythings.sys.service.AbstractExecutionService;
+import xyz.anythings.sys.util.AnyValueUtil;
+import xyz.elidom.dbist.util.StringJoiner;
+import xyz.elidom.sys.SysConstants;
 import xyz.elidom.util.ValueUtil;
 
 /**
@@ -174,7 +182,7 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 		}
 		
 		// 3.1 데이터가 있으면 BatchReceipt JobSeq 데이터 구하기 
-		int jobSeq = this.getBatchReceiptJobSeq(domainId, areaCd, stageCd, comCd, jobDate);
+		int jobSeq = BatchReceipt.newBatchReceiptJobSeq(domainId, areaCd, stageCd, comCd, jobDate);
 		
 		// 3.2  BatchReceipt데이터 생성 
 		BatchReceipt batchReceipt = new BatchReceipt();
@@ -194,21 +202,7 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 		return batchReceipt;
 	}
 	
-	/**
-	 * BatchReceipt JobSeq 데이터 구하기 
-	 * @param domainId
-	 * @param areaCd
-	 * @param stageCd
-	 * @param comCd
-	 * @param jobDate
-	 * @return
-	 */
-	private int getBatchReceiptJobSeq(Long domainId, String areaCd, String stageCd, String comCd, String jobDate) {
-		List<Integer> jobSeqList = 
-				LogisEntityUtil.searchEntitiesBy(domainId, false, Integer.class, "jobSeq", "comCd,areaCd,stageCd,jobDate", comCd,areaCd,stageCd,jobDate);
-		
-		return (ValueUtil.isEmpty(jobSeqList) ? 0 : Collections.max(jobSeqList)) + 1;
-	}
+
 	
 	/**
 	 * 대기 상태 이거나 진행 중인 수신이 있는지 확인 
@@ -274,8 +268,84 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 	 * @return
 	 */
 	private BatchReceipt startToReceiveData(BatchReceipt batchReceipt, Object ... params) {
-		return null;
+		
+		// 1. receipt 상태 확인 
+		String status = batchReceipt.getCurrentStatus();
+		
+		// 1.1 WAIT 이 아니면 불가 return
+		if(ValueUtil.isNotEqual(status, AnyConstants.COMMON_STATUS_WAIT)) {
+			batchReceipt.setStatus(status);
+			return batchReceipt;
+		} 
+		
+		// 2. 수신 시작
+		// 2.1 상태 업데이트 - 진행중 
+		batchReceipt.updateStatus(AnyConstants.COMMON_STATUS_RUNNING);
+		
+		String[] sourceFields = {"WMS_BATCH_NO", "WCS_BATCH_NO", "JOB_DATE", "JOB_SEQ", "JOB_TYPE", "ORDER_DATE", "ORDER_NO", "ORDER_LINE_NO", "ORDER_DETAIL_ID", "CUST_ORDER_NO", "CUST_ORDER_LINE_NO", "COM_CD", "AREA_CD", "STAGE_CD", "EQUIP_TYPE", "EQUIP_CD", "EQUIP_NM", "SUB_EQUIP_CD", "SHOP_CD", "SHOP_NM", "SKU_CD", "SKU_BARCD", "SKU_NM", "BOX_TYPE_CD", "BOX_IN_QTY", "ORDER_QTY", "PICKED_QTY", "BOXED_QTY", "CANCEL_QTY", "BOX_ID", "INVOICE_ID", "ORDER_TYPE", "CLASS_CD", "PACK_TYPE", "VEHICLE_NO", "LOT_NO", "FROM_ZONE_CD", "FROM_CELL_CD", "TO_ZONE_CD", "TO_CELL_CD"};
+		String[] targetFields = {"WMS_BATCH_NO", "WCS_BATCH_NO", "JOB_DATE", "JOB_SEQ", "JOB_TYPE", "ORDER_DATE", "ORDER_NO", "ORDER_LINE_NO", "ORDER_DETAIL_ID", "CUST_ORDER_NO", "CUST_ORDER_LINE_NO", "COM_CD", "AREA_CD", "STAGE_CD", "EQUIP_TYPE", "EQUIP_CD", "EQUIP_NM", "SUB_EQUIP_CD", "SHOP_CD", "SHOP_NM", "SKU_CD", "SKU_BARCD", "SKU_NM", "BOX_TYPE_CD", "BOX_IN_QTY", "ORDER_QTY", "PICKED_QTY", "BOXED_QTY", "CANCEL_QTY", "BOX_ID", "INVOICE_ID", "ORDER_TYPE", "CLASS_CD", "PACK_TYPE", "VEHICLE_NO", "LOT_NO", "FROM_ZONE_CD", "FROM_CELL_CD", "TO_ZONE_CD", "TO_CELL_CD"};
+		
+		String fieldNames = "COM_CD,AREA_CD,STAGE_CD,WMS_BATCH_NO,IF_FLAG";
+		
+		int jobSeq = JobBatch.getMaxJobSeq(batchReceipt.getDomainId(), batchReceipt.getComCd(), batchReceipt.getAreaCd(), batchReceipt.getAreaCd(), batchReceipt.getJobDate());
+		String batchId = "";
+		
+		boolean isExeptProcess = false;
+		
+		// 2.1 상세 리스트 loop
+		for(BatchReceiptItem item : batchReceipt.getItems()) {
+			// 2.2 skip 이면 pass
+			if(item.getSkipFlag()) continue;
+			
+			// 2.3 배치ID 생성 
+			batchId = LogisBaseUtil.newJobBatchId(batchReceipt.getDomainId());
+			
+			// 2.4 jobSeq 발번 
+			++jobSeq;
+			
+			// 2.5 BatchReceiptItem 상태 업데이트  - 진행 중 
+			item.updateStatus(AnyConstants.COMMON_STATUS_RUNNING, null,null);
+			
+			try {
+				// 2.6 데이터 복사  
+				this.cloneData(batchId,jobSeq, "wms_if_orders", sourceFields, targetFields, fieldNames, item.getComCd(),item.getAreaCd(),item.getStageCd(),item.getWmsBatchNo(),"N");
+				
+				// 2.7 JobBatch 생성 
+				JobBatch batch = new JobBatch();
+				batch.setId(batchId);
+				batch.setWmsBatchNo(item.getWmsBatchNo());
+				batch.setWcsBatchNo(item.getWcsBatchNo());
+				batch.setComCd(item.getComCd());
+				batch.setJobType(item.getJobType());
+				batch.setJobDate(batchReceipt.getJobDate());
+				batch.setJobSeq(jobSeq);
+				batch.setAreaCd(item.getAreaCd());
+				batch.setStageCd(item.getStageCd());
+				batch.setEquipType(item.getEquipType());
+				batch.setEquipCd(item.getEquipCd());
+				batch.setEquipNm(""); // TODO ?????
+				batch.setParentOrderQty(item.getTotalOrders());
+				batch.setParentPcs(item.getTotalPcs());
+				batch.setStatus(LogisConstants.JOB_STATUS_WAIT);
+				
+				this.queryManager.insert(batch);
+				
+				item.updateStatus(AnyConstants.COMMON_STATUS_FINISHED, batchId ,null);
+			} catch(Exception e) {
+				isExeptProcess = true;
+				item.updateStatus(AnyConstants.COMMON_STATUS_ERROR, null, e.getCause().getMessage());
+			}
+		}
+		
+		// 3. 수신 결과 update
+		batchReceipt.updateStatus(isExeptProcess ? AnyConstants.COMMON_STATUS_ERROR : AnyConstants.COMMON_STATUS_FINISHED);
+		
+		return batchReceipt;
 	}
+	
+	
+	
+	
 	
 
 	/************** 배치 취소  **************/
@@ -286,6 +356,7 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 	
 	private int cancelBatchData(JobBatch jobBatch, Object... params) {
 		// TODO
+		// job.cmm.delete.order.when.order_cancel
 		return 0;
 	}
 	
@@ -308,4 +379,63 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 		return receiptEvent.getEventResultSet();
 	}
 
+	
+	/************** 데이터 복사  **************/
+	/**
+	 * 데이터 복제
+	 * @param sourceTable
+	 * @param targetTable
+	 * @param sourceFields
+	 * @param targetFields
+	 * @param fieldNames
+	 * @param fieldValues
+	 * @return
+	 */
+	@Transactional(propagation=Propagation.REQUIRES_NEW) 
+	private void cloneData(String batchId, int jobSeq
+								, String sourceTable
+								, String[] sourceFields, String[] targetFields
+								, String fieldNames, Object ... fieldValues) throws Exception{
+		
+		// 1. 조회 쿼리 생성  
+		StringJoiner qry = new StringJoiner(SysConstants.LINE_SEPARATOR);
+		
+		// 1.1 select 필드 셋팅 
+		qry.add("select ");
+		for(int i = 0 ; i < sourceFields.length ;i++) {
+			qry.add("select " + sourceFields[i] + " as " + targetFields[i]);
+		}
+		
+		// 1.2 테이블 
+		qry.add("  from " + sourceTable);
+		
+		// 1.3 where 조건 생성 
+		StringJoiner whereStr = new StringJoiner(SysConstants.LINE_SEPARATOR);
+		String[] keyArr = fieldNames.split(SysConstants.COMMA);
+		
+		// 1.3.1 치환 가능 하도록 쿼리문 생성 
+		for(String key : keyArr) {
+			whereStr.add(" and " + key + " = :" + key);
+		}
+		qry.add(whereStr.toString());
+		
+		// 2. 조회  
+		Map<String,Object> params = ValueUtil.newMap(fieldNames, fieldValues);
+		List<Order> sourceList = this.queryManager.selectListBySql(qry.toString(), params, Order.class, 0, 0);
+
+		List<Order> targetList = new ArrayList<Order>(sourceList.size());
+		// 3. target 데이터 생성 
+		for(Order sourceItem : sourceList) {
+			Order targetItem = AnyValueUtil.populate(sourceItem, new Order(), targetFields);
+			
+			targetItem.setBatchId(batchId);
+			targetItem.setJobSeq(jobSeq);
+			targetItem.setStatus(LogisConstants.JOB_STATUS_WAIT);
+			targetList.add(targetItem);
+		}
+		
+		// 4. 데이터 insert 
+		this.queryManager.insertBatch(targetList);
+	}
+	
 }

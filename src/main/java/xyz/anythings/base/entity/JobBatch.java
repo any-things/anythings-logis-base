@@ -1,12 +1,16 @@
 package xyz.anythings.base.entity;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
+import xyz.anythings.base.util.LogisEntityUtil;
 import xyz.elidom.dbist.annotation.Column;
 import xyz.elidom.dbist.annotation.GenerationRule;
 import xyz.elidom.dbist.annotation.Index;
 import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.Table;
+import xyz.elidom.util.ValueUtil;
 
 @Table(name = "job_batches", idStrategy = GenerationRule.UUID, uniqueFields="domainId,jobType,jobDate,jobSeq", indexes = {
 	@Index(name = "ix_job_batches_0", columnList = "domain_id,job_type,job_date,job_seq", unique = true)
@@ -331,5 +335,21 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setStatus(String status) {
 		this.status = status;
-	}	
+	}
+	
+	/**
+	 * 현재 잡 시퀀스의 최대 값을 가져온다.
+	 * @param domainId
+	 * @param comCd
+	 * @param areaCd
+	 * @param stageCd
+	 * @param jobDate
+	 * @return
+	 */
+	public static int getMaxJobSeq(Long domainId, String comCd, String areaCd, String stageCd, String jobDate) {
+		List<Integer> jobSeqList = 
+				LogisEntityUtil.searchEntitiesBy(domainId, false, Integer.class, "jobSeq", "comCd,areaCd,stageCd,jobDate", comCd,areaCd,stageCd,jobDate);
+		
+		return (ValueUtil.isEmpty(jobSeqList) ? 0 : Collections.max(jobSeqList));
+	}
 }

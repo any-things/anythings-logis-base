@@ -1,10 +1,16 @@
 package xyz.anythings.base.entity;
 
-import xyz.elidom.dbist.annotation.Index;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import xyz.elidom.dbist.annotation.Column;
-import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.GenerationRule;
+import xyz.elidom.dbist.annotation.Index;
+import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.Table;
+import xyz.elidom.orm.IQueryManager;
+import xyz.elidom.util.BeanUtil;
+import xyz.elidom.util.ValueUtil;
 
 @Table(name = "batch_receipt_items", idStrategy = GenerationRule.UUID, uniqueFields="batchReceiptId,itemType,batchId", indexes = {
 	@Index(name = "ix_batch_receipt_items_0", columnList = "batch_receipt_id,item_type,batch_id", unique = true)
@@ -204,5 +210,31 @@ public class BatchReceiptItem extends xyz.elidom.orm.entity.basic.ElidomStampHoo
 
 	public void setSkipFlag(Boolean skipFlag) {
 		this.skipFlag = skipFlag;
+	}
+	
+	public String getJobType() {
+		return this.jobType;
+	}
+	
+	public void setJobType(String jobType) {
+		this.jobType = jobType;
+	}
+
+	/**
+	 * 상태 업데이트 
+	 * @param status
+	 * @param errMsg
+	 */
+	@Transactional(propagation=Propagation.REQUIRES_NEW)
+	public void updateStatus(String status, String batchId, String errMsg) {
+		this.setStatus(status);
+		this.setMessage(errMsg);
+		
+		if(ValueUtil.isEmpty(batchId)) {
+			BeanUtil.get(IQueryManager.class).update(this, "status", "message");
+		} else {
+			this.setBatchId(batchId);
+			BeanUtil.get(IQueryManager.class).update(this, "batchId", "status", "message");
+		}
 	}	
 }
