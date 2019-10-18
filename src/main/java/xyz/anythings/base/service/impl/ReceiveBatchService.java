@@ -25,6 +25,7 @@ import xyz.anythings.sys.event.model.EventResultSet;
 import xyz.anythings.sys.service.AbstractExecutionService;
 import xyz.anythings.sys.util.AnyValueUtil;
 import xyz.elidom.dbist.util.StringJoiner;
+import xyz.elidom.exception.server.ElidomRuntimeException;
 import xyz.elidom.sys.SysConstants;
 import xyz.elidom.util.ValueUtil;
 
@@ -177,8 +178,7 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 		
 		// 2.1 수신 대상 데이터가 없으면 리턴 
 		if(ValueUtil.isEmpty(receiptItems)) {
-			// TODO : 메시지 처리 ?
-			return null;
+			throw new ElidomRuntimeException("수신할 주문 정보가 없습니다.");
 		}
 		
 		// 3.1 데이터가 있으면 BatchReceipt JobSeq 데이터 구하기 
@@ -274,7 +274,6 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 		
 		// 1.1 WAIT 이 아니면 불가 return
 		if(ValueUtil.isNotEqual(status, AnyConstants.COMMON_STATUS_WAIT)) {
-			batchReceipt.setStatus(status);
 			return batchReceipt;
 		} 
 		
@@ -306,30 +305,17 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 			// 2.5 BatchReceiptItem 상태 업데이트  - 진행 중 
 			item.updateStatus(AnyConstants.COMMON_STATUS_RUNNING, null,null);
 			
+			// 2.6 JobBatch 생성 
+			JobBatch batch = JobBatch.createJobBatch(batchId, jobSeq, batchReceipt, item);
+			
 			try {
-				// 2.6 데이터 복사  
+				// 2.7 데이터 복사  
 				this.cloneData(batchId,jobSeq, "wms_if_orders", sourceFields, targetFields, fieldNames, item.getComCd(),item.getAreaCd(),item.getStageCd(),item.getWmsBatchNo(),"N");
 				
-				// 2.7 JobBatch 생성 
-				JobBatch batch = new JobBatch();
-				batch.setId(batchId);
-				batch.setWmsBatchNo(item.getWmsBatchNo());
-				batch.setWcsBatchNo(item.getWcsBatchNo());
-				batch.setComCd(item.getComCd());
-				batch.setJobType(item.getJobType());
-				batch.setJobDate(batchReceipt.getJobDate());
-				batch.setJobSeq(jobSeq);
-				batch.setAreaCd(item.getAreaCd());
-				batch.setStageCd(item.getStageCd());
-				batch.setEquipType(item.getEquipType());
-				batch.setEquipCd(item.getEquipCd());
-				batch.setEquipNm(""); // TODO ?????
-				batch.setParentOrderQty(item.getTotalOrders());
-				batch.setParentPcs(item.getTotalPcs());
-				batch.setStatus(LogisConstants.JOB_STATUS_WAIT);
+				// 2.8 JobBatch 상태 변경  
+				batch.updateStatus(JobBatch.STATUS_WAIT);
 				
-				this.queryManager.insert(batch);
-				
+				// 2.9 batchReceiptItem 상태 업데이트 
 				item.updateStatus(AnyConstants.COMMON_STATUS_FINISHED, batchId ,null);
 			} catch(Exception e) {
 				isExeptProcess = true;
@@ -342,12 +328,8 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 		
 		return batchReceipt;
 	}
-	
-	
-	
-	
-	
 
+	
 	/************** 배치 취소  **************/
 	
 	private EventResultSet cancelBatchEvent(short eventStep, JobBatch jobBatch, Object ... params) {
@@ -355,11 +337,38 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 				, jobBatch.getAreaCd(), jobBatch.getStageCd(), jobBatch.getComCd(), jobBatch.getJobDate(), null, jobBatch, params);	}
 	
 	private int cancelBatchData(JobBatch jobBatch, Object... params) {
-		// TODO
-		// job.cmm.delete.order.when.order_cancel
-		return 0;
+		
+		// 1. 배치 상태 확인 
+		String currentStatus = jobBatch.getCurrentStatus();
+		
+		// 1.1 대기 상태가 아니면 return
+		if(ValueUtil.isEqual(currentStatus, JobBatch.STATUS_WAIT) == false) {
+			throw new ElidomRuntimeException("작업 대기 상태에서만 취소가 가능 합니다.");
+		}
+		
+		
+		// 2. 설정 값 조회  == 주문 취소시 데이터 유지 여부
+		// TODO : 설정 에서 조회 하도록 수정 job.cmm.delete.order.when.order_cancel  
+		boolean isKeepData = false;
+		
+		if(isKeepData) {
+			return this.cancelBatchKeepData(jobBatch);
+		} else {
+			return this.cancelBatchDeleteData(jobBatch);
+		}
 	}
 	
+	private int cancelBatchKeepData(JobBatch jobBatch) {
+		
+	}
+	
+	private int cancelBatchDeleteData(JobBatch jobBatch) {
+		
+	}
+	
+	private int deleteBatchPreprocessData(JobBatch jobBatch) {
+		
+	}
 	
 	/************** 배치 수신 이벤트 처리  **************/
 	private EventResultSet publishBatchReceiveEvent(short eventType, short eventStep, Long domainId, String areaCd, String stageCd, String comCd, String jobDate, BatchReceipt receiptData, JobBatch jobBatch, Object ... params) {

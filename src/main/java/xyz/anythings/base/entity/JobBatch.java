@@ -4,12 +4,17 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import xyz.anythings.base.util.LogisEntityUtil;
 import xyz.elidom.dbist.annotation.Column;
 import xyz.elidom.dbist.annotation.GenerationRule;
 import xyz.elidom.dbist.annotation.Index;
 import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.Table;
+import xyz.elidom.orm.IQueryManager;
+import xyz.elidom.util.BeanUtil;
 import xyz.elidom.util.ValueUtil;
 
 @Table(name = "job_batches", idStrategy = GenerationRule.UUID, uniqueFields="domainId,jobType,jobDate,jobSeq", indexes = {
@@ -338,6 +343,27 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	}
 	
 	/**
+	 * JobBatch 의 현재 상태를 가져온다. 
+	 * @param batchReceipt
+	 * @return
+	 */
+	public String getCurrentStatus() {
+		JobBatch jobBatch = LogisEntityUtil.findEntityById(false, JobBatch.class, this.getId());
+		this.setStatus(jobBatch.getStageCd());
+		return jobBatch.getStatus();
+	}
+	
+	/**
+	 * 상태 업데이트 
+	 * @param status
+	 */
+	@Transactional(propagation=Propagation.REQUIRES_NEW) 
+	public void updateStatus(String status) {
+		this.setStatus(status);
+		BeanUtil.get(IQueryManager.class).update(this, "status");
+	}
+
+	/**
 	 * 현재 잡 시퀀스의 최대 값을 가져온다.
 	 * @param domainId
 	 * @param comCd
@@ -351,5 +377,38 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 				LogisEntityUtil.searchEntitiesBy(domainId, false, Integer.class, "jobSeq", "comCd,areaCd,stageCd,jobDate", comCd,areaCd,stageCd,jobDate);
 		
 		return (ValueUtil.isEmpty(jobSeqList) ? 0 : Collections.max(jobSeqList));
+	}
+	
+	/**
+	 * JobBatch 데이터 생성 
+	 * @param batchId
+	 * @param jobSeq
+	 * @param batchReceipt
+	 * @param receiptItem
+	 * @return
+	 */
+	@Transactional(propagation=Propagation.REQUIRES_NEW) 
+	public static JobBatch createJobBatch(String batchId, int jobSeq, BatchReceipt batchReceipt, BatchReceiptItem receiptItem) {
+		JobBatch batch = new JobBatch();
+		batch.setId(batchId);
+		batch.setBatchGroupId(batchId);
+		batch.setWmsBatchNo(receiptItem.getWmsBatchNo());
+		batch.setWcsBatchNo(receiptItem.getWcsBatchNo());
+		batch.setComCd(receiptItem.getComCd());
+		batch.setJobType(receiptItem.getJobType());
+		batch.setJobDate(batchReceipt.getJobDate());
+		batch.setJobSeq(jobSeq);
+		batch.setAreaCd(receiptItem.getAreaCd());
+		batch.setStageCd(receiptItem.getStageCd());
+		batch.setEquipType(receiptItem.getEquipType());
+		batch.setEquipCd(receiptItem.getEquipCd());
+		batch.setEquipNm(""); // TODO ?????
+		batch.setParentOrderQty(receiptItem.getTotalOrders());
+		batch.setParentPcs(receiptItem.getTotalPcs());
+		batch.setStatus(JobBatch.STATUS_WAIT);
+		
+		BeanUtil.get(IQueryManager.class).insert(batch);
+		
+		return batch;
 	}
 }

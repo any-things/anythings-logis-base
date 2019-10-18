@@ -128,6 +128,7 @@ public class BatchReceipt extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	 */
 	public String getCurrentStatus() {
 		BatchReceipt checkReceipt = LogisEntityUtil.findEntityById(false, BatchReceipt.class, this.getId());
+		this.setStatus(checkReceipt.getStatus());
 		return checkReceipt.getStatus();
 	}
 	
@@ -137,7 +138,7 @@ public class BatchReceipt extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	 */
 	@Transactional(propagation=Propagation.REQUIRES_NEW) 
 	public void updateStatus(String status) {
-		this.setStageCd(status);
+		this.setStatus(status);
 		BeanUtil.get(IQueryManager.class).update(this, "status");
 	}
 	
