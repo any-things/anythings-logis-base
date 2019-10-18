@@ -226,7 +226,7 @@ public class BatchReceiptItem extends xyz.elidom.orm.entity.basic.ElidomStampHoo
 	 * @param errMsg
 	 */
 	@Transactional(propagation=Propagation.REQUIRES_NEW)
-	public void updateStatus(String status, String batchId, String errMsg) {
+	public void updateStatusImmediately(String status, String batchId, String errMsg) {
 		this.setStatus(status);
 		this.setMessage(errMsg);
 		
