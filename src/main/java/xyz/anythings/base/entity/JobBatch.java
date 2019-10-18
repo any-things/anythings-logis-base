@@ -355,12 +355,26 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	
 	/**
 	 * 상태 업데이트 
+	 * 즉시 반영 
 	 * @param status
 	 */
 	@Transactional(propagation=Propagation.REQUIRES_NEW) 
+	public void updateStatusImmediately(String status) {
+		this.updateStatus(status);
+	}
+	
+	/**
+	 * 상태 업데이트 
+	 * @param status
+	 */
 	public void updateStatus(String status) {
 		this.setStatus(status);
-		BeanUtil.get(IQueryManager.class).update(this, "status");
+		if(ValueUtil.isEqual(JobBatch.STATUS_CANCEL, status)) {
+			this.setJobSeq(0);
+			BeanUtil.get(IQueryManager.class).update(this, "jobSeq", "status");
+		} else {
+			BeanUtil.get(IQueryManager.class).update(this, "status");
+		}
 	}
 
 	/**

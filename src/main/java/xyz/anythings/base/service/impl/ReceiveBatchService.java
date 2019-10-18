@@ -14,6 +14,7 @@ import xyz.anythings.base.entity.BatchReceipt;
 import xyz.anythings.base.entity.BatchReceiptItem;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.Order;
+import xyz.anythings.base.entity.OrderPreprocess;
 import xyz.anythings.base.event.EventConstants;
 import xyz.anythings.base.event.main.BatchReceiveEvent;
 import xyz.anythings.base.query.store.BatchQueryStore;
@@ -23,7 +24,9 @@ import xyz.anythings.base.util.LogisEntityUtil;
 import xyz.anythings.sys.AnyConstants;
 import xyz.anythings.sys.event.model.EventResultSet;
 import xyz.anythings.sys.service.AbstractExecutionService;
+import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.anythings.sys.util.AnyValueUtil;
+import xyz.elidom.dbist.dml.Query;
 import xyz.elidom.dbist.util.StringJoiner;
 import xyz.elidom.exception.server.ElidomRuntimeException;
 import xyz.elidom.sys.SysConstants;
@@ -279,8 +282,9 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 		
 		// 2. 수신 시작
 		// 2.1 상태 업데이트 - 진행중 
-		batchReceipt.updateStatus(AnyConstants.COMMON_STATUS_RUNNING);
+		batchReceipt.updateStatusImmediately(AnyConstants.COMMON_STATUS_RUNNING);
 		
+		// TODO : 데이터 복사 방식 / 컬럼 설정에서 가져오기 
 		String[] sourceFields = {"WMS_BATCH_NO", "WCS_BATCH_NO", "JOB_DATE", "JOB_SEQ", "JOB_TYPE", "ORDER_DATE", "ORDER_NO", "ORDER_LINE_NO", "ORDER_DETAIL_ID", "CUST_ORDER_NO", "CUST_ORDER_LINE_NO", "COM_CD", "AREA_CD", "STAGE_CD", "EQUIP_TYPE", "EQUIP_CD", "EQUIP_NM", "SUB_EQUIP_CD", "SHOP_CD", "SHOP_NM", "SKU_CD", "SKU_BARCD", "SKU_NM", "BOX_TYPE_CD", "BOX_IN_QTY", "ORDER_QTY", "PICKED_QTY", "BOXED_QTY", "CANCEL_QTY", "BOX_ID", "INVOICE_ID", "ORDER_TYPE", "CLASS_CD", "PACK_TYPE", "VEHICLE_NO", "LOT_NO", "FROM_ZONE_CD", "FROM_CELL_CD", "TO_ZONE_CD", "TO_CELL_CD"};
 		String[] targetFields = {"WMS_BATCH_NO", "WCS_BATCH_NO", "JOB_DATE", "JOB_SEQ", "JOB_TYPE", "ORDER_DATE", "ORDER_NO", "ORDER_LINE_NO", "ORDER_DETAIL_ID", "CUST_ORDER_NO", "CUST_ORDER_LINE_NO", "COM_CD", "AREA_CD", "STAGE_CD", "EQUIP_TYPE", "EQUIP_CD", "EQUIP_NM", "SUB_EQUIP_CD", "SHOP_CD", "SHOP_NM", "SKU_CD", "SKU_BARCD", "SKU_NM", "BOX_TYPE_CD", "BOX_IN_QTY", "ORDER_QTY", "PICKED_QTY", "BOXED_QTY", "CANCEL_QTY", "BOX_ID", "INVOICE_ID", "ORDER_TYPE", "CLASS_CD", "PACK_TYPE", "VEHICLE_NO", "LOT_NO", "FROM_ZONE_CD", "FROM_CELL_CD", "TO_ZONE_CD", "TO_CELL_CD"};
 		
@@ -303,7 +307,7 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 			++jobSeq;
 			
 			// 2.5 BatchReceiptItem 상태 업데이트  - 진행 중 
-			item.updateStatus(AnyConstants.COMMON_STATUS_RUNNING, null,null);
+			item.updateStatusImmediately(AnyConstants.COMMON_STATUS_RUNNING, null,null);
 			
 			// 2.6 JobBatch 생성 
 			JobBatch batch = JobBatch.createJobBatch(batchId, jobSeq, batchReceipt, item);
@@ -313,61 +317,126 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 				this.cloneData(batchId,jobSeq, "wms_if_orders", sourceFields, targetFields, fieldNames, item.getComCd(),item.getAreaCd(),item.getStageCd(),item.getWmsBatchNo(),"N");
 				
 				// 2.8 JobBatch 상태 변경  
-				batch.updateStatus(JobBatch.STATUS_WAIT);
+				batch.updateStatusImmediately(JobBatch.STATUS_WAIT);
 				
 				// 2.9 batchReceiptItem 상태 업데이트 
-				item.updateStatus(AnyConstants.COMMON_STATUS_FINISHED, batchId ,null);
+				item.updateStatusImmediately(AnyConstants.COMMON_STATUS_FINISHED, batchId ,null);
 			} catch(Exception e) {
 				isExeptProcess = true;
-				item.updateStatus(AnyConstants.COMMON_STATUS_ERROR, null, e.getCause().getMessage());
+				item.updateStatusImmediately(AnyConstants.COMMON_STATUS_ERROR, null, e.getCause().getMessage());
 			}
 		}
 		
 		// 3. 수신 결과 update
-		batchReceipt.updateStatus(isExeptProcess ? AnyConstants.COMMON_STATUS_ERROR : AnyConstants.COMMON_STATUS_FINISHED);
+		batchReceipt.updateStatusImmediately(isExeptProcess ? AnyConstants.COMMON_STATUS_ERROR : AnyConstants.COMMON_STATUS_FINISHED);
 		
 		return batchReceipt;
 	}
 
 	
 	/************** 배치 취소  **************/
-	
+	/**
+	 * 배치 취소 이벤트 처리 
+	 * @param eventStep
+	 * @param jobBatch
+	 * @param params
+	 * @return
+	 */
 	private EventResultSet cancelBatchEvent(short eventStep, JobBatch jobBatch, Object ... params) {
 		return this.publishBatchReceiveEvent(EventConstants.EVENT_RECEIVE_TYPE_CANCEL, eventStep, jobBatch.getDomainId()
 				, jobBatch.getAreaCd(), jobBatch.getStageCd(), jobBatch.getComCd(), jobBatch.getJobDate(), null, jobBatch, params);	}
 	
+	/**
+	 * 배치 취소 
+	 * @param jobBatch
+	 * @param params
+	 * @return
+	 */
 	private int cancelBatchData(JobBatch jobBatch, Object... params) {
 		
 		// 1. 배치 상태 확인 
 		String currentStatus = jobBatch.getCurrentStatus();
 		
-		// 1.1 대기 상태가 아니면 return
-		if(ValueUtil.isEqual(currentStatus, JobBatch.STATUS_WAIT) == false) {
+		// 1.1  작업 지시 전 취소 가능 
+		if(ValueUtil.isEqual(currentStatus, JobBatch.STATUS_WAIT) 
+				|| ValueUtil.isEqual(currentStatus, JobBatch.STATUS_READY) ) {
 			throw new ElidomRuntimeException("작업 대기 상태에서만 취소가 가능 합니다.");
 		}
-		
 		
 		// 2. 설정 값 조회  == 주문 취소시 데이터 유지 여부
 		// TODO : 설정 에서 조회 하도록 수정 job.cmm.delete.order.when.order_cancel  
 		boolean isKeepData = false;
 		
+		// 3. 상태 변경 
+		jobBatch.updateStatus(JobBatch.STATUS_CANCEL);
+		
 		if(isKeepData) {
-			return this.cancelBatchKeepData(jobBatch);
+			return this.cancelOrderKeepData(jobBatch);
 		} else {
-			return this.cancelBatchDeleteData(jobBatch);
+			return this.cancelOrderDeleteData(jobBatch);
 		}
 	}
 	
-	private int cancelBatchKeepData(JobBatch jobBatch) {
+	/**
+	 * 주문 데이터 삭제 update
+	 * seq = 0
+	 * @param jobBatch
+	 * @return
+	 */
+	private int cancelOrderKeepData(JobBatch jobBatch) {
+		int cnt = 0;
 		
+		// 1. 주문 조회 
+		List<Order> orderList = LogisEntityUtil.searchEntitiesBy(jobBatch.getDomainId(), false, Order.class, "id", "domainId,batchId", jobBatch.getDomainId(), jobBatch.getId());
+		
+		// 2. 취소 상태 , seq = 0 셋팅 
+		for(Order order : orderList) {
+			order.setStatus(LogisConstants.JOB_STATUS_CANCEL);
+			order.setJobSeq(0);
+		}
+		
+		// 3. 배치 update
+		this.queryManager.updateBatch(orderList, "jobSeq","status");
+		
+		cnt += orderList.size();
+		
+		// 4. 주문 가공 데이터 삭제  
+		cnt += this.deleteBatchPreprocessData(jobBatch);
+		return cnt;
 	}
 	
-	private int cancelBatchDeleteData(JobBatch jobBatch) {
+	/**
+	 * 주문 데이터 삭제 
+	 * @param jobBatch
+	 * @return
+	 */
+	private int cancelOrderDeleteData(JobBatch jobBatch) {
+		int cnt = 0;
 		
+		// 1. 삭제 조건 생성 
+		Query condition = AnyOrmUtil.newConditionForExecution(jobBatch.getDomainId());
+		condition.addFilter("batchId", jobBatch.getId());
+		
+		// 2. 삭제 실행
+		cnt+= this.queryManager.deleteList(Order.class, condition);
+		
+		// 3. 주문 가공 데이터 삭제 
+		cnt += this.deleteBatchPreprocessData(jobBatch);
+		return cnt;
 	}
 	
+	/**
+	 * 주문 가공 데이터 삭제 
+	 * @param jobBatch
+	 * @return
+	 */
 	private int deleteBatchPreprocessData(JobBatch jobBatch) {
+		// 1. 삭제 조건 생성 
+		Query condition = AnyOrmUtil.newConditionForExecution(jobBatch.getDomainId());
+		condition.addFilter("batchId", jobBatch.getId());
 		
+		// 2. 삭제 실행
+		return this.queryManager.deleteList(OrderPreprocess.class, condition);
 	}
 	
 	/************** 배치 수신 이벤트 처리  **************/

@@ -137,7 +137,7 @@ public class BatchReceipt extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	 * @param status
 	 */
 	@Transactional(propagation=Propagation.REQUIRES_NEW) 
-	public void updateStatus(String status) {
+	public void updateStatusImmediately(String status) {
 		this.setStatus(status);
 		BeanUtil.get(IQueryManager.class).update(this, "status");
 	}
