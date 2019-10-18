@@ -1,12 +1,13 @@
 package xyz.anythings.base.util;
 
+import java.util.HashMap;
 import java.util.List;
-
-import org.apache.poi.ss.formula.functions.T;
+import java.util.Map;
 
 import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.dbist.dml.Query;
+import xyz.elidom.exception.server.ElidomRuntimeException;
 import xyz.elidom.orm.IQueryManager;
 import xyz.elidom.sys.SysConstants;
 import xyz.elidom.sys.util.EntityUtil;
@@ -30,7 +31,6 @@ public class LogisEntityUtil extends EntityUtil {
 	 * @param id
 	 * @return
 	 */
-	@SuppressWarnings("hiding")
 	public static <T> T findEntityById(boolean exceptionWhenEmpty, Class<T> clazz, String id) {
 		T obj = BeanUtil.get(IQueryManager.class).select(clazz, id);
 		
@@ -49,7 +49,6 @@ public class LogisEntityUtil extends EntityUtil {
 	 * @param id
 	 * @return
 	 */
-	@SuppressWarnings("hiding")
 	public static <T> T findEntityByIdWithLock(boolean exceptionWhenEmpty, Class<T> clazz, String id) {
 		T obj = BeanUtil.get(IQueryManager.class).selectWithLock(clazz, id);
 		
@@ -70,7 +69,6 @@ public class LogisEntityUtil extends EntityUtil {
 	 * @param codeValue
 	 * @return
 	 */
-	@SuppressWarnings("hiding")
 	public static <T> T findEntityByCode(Long domainId, boolean exceptionWhenEmpty, Class<T> clazz, String codeName, String codeValue) {
 		Query query = AnyOrmUtil.newConditionForExecution(domainId);
 		query.addFilter(codeName, codeValue);
@@ -93,7 +91,6 @@ public class LogisEntityUtil extends EntityUtil {
 	 * @param codeValue
 	 * @return
 	 */
-	@SuppressWarnings("hiding")
 	public static <T> T findEntityByCodeWithLock(Long domainId, boolean exceptionWhenEmpty, Class<T> clazz, String codeName, String codeValue) {
 		Query query = AnyOrmUtil.newConditionForExecution(domainId);
 		query.addFilter(codeName, codeValue);
@@ -116,7 +113,6 @@ public class LogisEntityUtil extends EntityUtil {
 	 * @param fieldValues
 	 * @return
 	 */
-	@SuppressWarnings("hiding")
 	public static <T> T findEntityBy(Long domainId, boolean exceptionWhenEmpty, Class<T> clazz, String fieldNames, Object ... fieldValues) {
 		return findEntityBy(domainId, exceptionWhenEmpty, clazz, null, fieldNames, fieldValues);
 	}
@@ -132,7 +128,6 @@ public class LogisEntityUtil extends EntityUtil {
 	 * @param fieldValues
 	 * @return
 	 */
-	@SuppressWarnings("hiding")
 	public static <T> T findEntityBy(Long domainId, boolean exceptionWhenEmpty, Class<T> clazz, String selectFields, String fieldNames, Object ... fieldValues) {
 		Query condition = AnyOrmUtil.newConditionForExecution(domainId);
 
@@ -169,7 +164,6 @@ public class LogisEntityUtil extends EntityUtil {
 	 * @param fieldValues
 	 * @return
 	 */
-	@SuppressWarnings("hiding")
 	public static <T> List<T> searchEntitiesBy(Long domainId, boolean exceptionWhenEmpty, Class<T> clazz, String fieldNames, Object ... fieldValues) {
 		return searchEntitiesBy(domainId, exceptionWhenEmpty, clazz, null, fieldNames, fieldValues);
 	}
@@ -185,7 +179,6 @@ public class LogisEntityUtil extends EntityUtil {
 	 * @param fieldValues
 	 * @return
 	 */
-	@SuppressWarnings("hiding")
 	public static <T> List<T> searchEntitiesBy(Long domainId, boolean exceptionWhenEmpty, Class<T> clazz, String selectFields, String fieldNames, Object ... fieldValues) {
 		Query condition = AnyOrmUtil.newConditionForExecution(domainId);
 
@@ -221,7 +214,6 @@ public class LogisEntityUtil extends EntityUtil {
 	 * @param masterId
 	 * @return
 	 */
-	@SuppressWarnings("hiding")
 	public static <T> List<T> searchDetails(Long domainId, Class<T> clazz, String masterField, String masterId) {
 		Query condition = AnyOrmUtil.newConditionForExecution(domainId);
 		condition.addFilter(masterField, masterId);
@@ -241,7 +233,6 @@ public class LogisEntityUtil extends EntityUtil {
 	 * @param fieldValues
 	 * @return
 	 */
-	@SuppressWarnings("hiding")
 	public static <T> Page<T> searchPagesBy(Long domainId, boolean exceptionWhenEmpty, Class<T> clazz, int limit, int page, String fieldNames, Object ... fieldValues) {
 		return searchPagesBy(domainId, exceptionWhenEmpty, clazz, limit, page, null, fieldNames, fieldValues);
 	}
@@ -258,7 +249,6 @@ public class LogisEntityUtil extends EntityUtil {
 	 * @param fieldValues
 	 * @return
 	 */
-	@SuppressWarnings("hiding")
 	public static <T> Page<T> searchPagesBy(Long domainId, Class<T> clazz, int limit, int page, String selectFields, String fieldNames, Object ... fieldValues) {
 		Query condition = AnyOrmUtil.newConditionForExecution(domainId, limit, page);
 
@@ -277,5 +267,89 @@ public class LogisEntityUtil extends EntityUtil {
 		}
 		
 		return BeanUtil.get(IQueryManager.class).selectPage(clazz, condition);
+	}
+	
+	/**
+	 * sql과 파라미터로 쿼리 리턴
+	 * 
+	 * @param domainId
+	 * @param exceptionWhenEmpty
+	 * @param resultClazz
+	 * @param sql
+	 * @param paramNames
+	 * @param paramValues
+	 * @return
+	 */
+	public static <T> T findItem(Long domainId, boolean exceptionWhenEmpty, Class<T> resultClazz, String sql, String paramNames, Object ... paramValues) {
+		String[] keys = paramNames.split(SysConstants.COMMA);
+		Map<String, Object> params = new HashMap<String, Object>();
+		
+		for(int i = 0 ; i < keys.length ; i++) {
+			params.put(keys[i], paramValues[i]);
+		}
+		
+		return findItem(domainId, exceptionWhenEmpty, resultClazz, sql, params);
+	}
+	
+	/**
+	 * sql과 파라미터로 쿼리 결과를 리턴 
+	 * 
+	 * @param domainId
+	 * @param exceptionWhenEmpty
+	 * @param resultClazz
+	 * @param sql
+	 * @param params
+	 * @return
+	 */
+	public static <T> T findItem(Long domainId, boolean exceptionWhenEmpty, Class<T> resultClazz, String sql, Map<String, Object> params) {
+		T obj = BeanUtil.get(IQueryManager.class).selectBySql(sql, params, resultClazz);
+		
+		if(obj == null && exceptionWhenEmpty) {
+			throw new ElidomRuntimeException("Failed to find item by sql!");
+		}
+		
+		return obj;
+	}
+	
+	/**
+	 * sql과 파라미터로 쿼리 리턴
+	 * 
+	 * @param domainId
+	 * @param exceptionWhenEmpty
+	 * @param resultClazz
+	 * @param sql
+	 * @param paramNames
+	 * @param paramValues
+	 * @return
+	 */
+	public static <T> List<T> searchItems(Long domainId, boolean exceptionWhenEmpty, Class<T> resultClazz, String sql, String paramNames, Object ... paramValues) {
+		String[] keys = paramNames.split(SysConstants.COMMA);
+		Map<String, Object> params = new HashMap<String, Object>();
+		
+		for(int i = 0 ; i < keys.length ; i++) {
+			params.put(keys[i], paramValues[i]);
+		}
+		
+		return searchItems(domainId, exceptionWhenEmpty, resultClazz, sql, params);
+	}
+	
+	/**
+	 * sql과 파라미터로 쿼리 결과를 리턴 
+	 * 
+	 * @param domainId
+	 * @param exceptionWhenEmpty
+	 * @param resultClazz
+	 * @param sql
+	 * @param params
+	 * @return
+	 */
+	public static <T> List<T> searchItems(Long domainId, boolean exceptionWhenEmpty, Class<T> resultClazz, String sql, Map<String, Object> params) {
+		List<T> list = BeanUtil.get(IQueryManager.class).selectListBySql(sql, params, resultClazz, 0, 0);
+		
+		if(ValueUtil.isEmpty(list) && exceptionWhenEmpty) {
+			throw new ElidomRuntimeException("Failed to search items by sql!");
+		}
+		
+		return list;
 	}
 }
