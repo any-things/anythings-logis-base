@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import xyz.anythings.base.entity.Area;
 import xyz.anythings.base.entity.BatchReceipt;
 import xyz.anythings.base.entity.JobBatch;
+import xyz.anythings.base.entity.Stage;
 import xyz.anythings.base.model.BatchProgressRate;
 import xyz.anythings.base.service.api.IBatchService;
 import xyz.anythings.base.service.impl.LogisServiceFinder;
@@ -27,6 +29,7 @@ import xyz.elidom.orm.system.annotation.service.ServiceDesc;
 import xyz.elidom.sys.SysConstants;
 import xyz.elidom.sys.entity.Domain;
 import xyz.elidom.sys.system.service.AbstractRestService;
+import xyz.elidom.util.BeanUtil;
 import xyz.elidom.util.ValueUtil;
 
 @RestController
@@ -199,6 +202,12 @@ public class JobBatchController extends AbstractRestService {
 			@PathVariable("stage_cd") String stageCd,
 			@PathVariable("com_cd") String comCd, 
 			@PathVariable("job_date") String jobDate) {
+		
+		Area area = BeanUtil.get(AreaController.class).findOne(areaCd);
+		areaCd = area.getAreaCd();
+		
+		Stage stage = BeanUtil.get(StageController.class).findOne(stageCd);
+		stageCd = stage.getStageCd();
 		
 		return this.logisServiceFinder.getReceiveBatchService().readyToReceive(Domain.currentDomainId(), areaCd, stageCd, comCd, jobDate);
 	}

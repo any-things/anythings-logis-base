@@ -8,11 +8,13 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import xyz.anythings.base.util.LogisEntityUtil;
+import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.elidom.dbist.annotation.Column;
 import xyz.elidom.dbist.annotation.GenerationRule;
 import xyz.elidom.dbist.annotation.Index;
 import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.Table;
+import xyz.elidom.dbist.dml.Query;
 import xyz.elidom.orm.IQueryManager;
 import xyz.elidom.util.BeanUtil;
 import xyz.elidom.util.ValueUtil;
@@ -387,8 +389,18 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	 * @return
 	 */
 	public static int getMaxJobSeq(Long domainId, String comCd, String areaCd, String stageCd, String jobDate) {
-		List<Integer> jobSeqList = 
-				LogisEntityUtil.searchEntitiesBy(domainId, false, Integer.class, "jobSeq", "comCd,areaCd,stageCd,jobDate", comCd,areaCd,stageCd,jobDate);
+		IQueryManager queryManager = BeanUtil.get(IQueryManager.class);
+		
+		String tableName = queryManager.getDml().getTable(JobBatch.class).getName();
+		
+		Query condition = AnyOrmUtil.newConditionForExecution(domainId);
+		condition.addSelect("jobSeq");
+		condition.addFilter("comCd", comCd);
+		condition.addFilter("areaCd", areaCd);
+		condition.addFilter("stageCd", stageCd);
+		condition.addFilter("jobDate", jobDate);
+		
+		List<Integer> jobSeqList = queryManager.selectList(tableName, condition, Integer.class);
 		
 		return (ValueUtil.isEmpty(jobSeqList) ? 0 : Collections.max(jobSeqList));
 	}
@@ -419,6 +431,8 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		batch.setEquipNm(""); // TODO ?????
 		batch.setParentOrderQty(receiptItem.getTotalOrders());
 		batch.setParentPcs(receiptItem.getTotalPcs());
+		batch.setBatchOrderQty(receiptItem.getTotalOrders());
+		batch.setBatchPcs(receiptItem.getTotalPcs());
 		batch.setStatus(JobBatch.STATUS_WAIT);
 		
 		BeanUtil.get(IQueryManager.class).insert(batch);

@@ -51,7 +51,7 @@ public class LogisBaseUtil {
 			String currentTime = DateUtil.dateTimeStr(new Date(), DATE_FORMAT_FOR_BATCH_ID);
 			newBatchId = domainId + SysConstants.DASH + currentTime;	
 			Query condition = AnyOrmUtil.newConditionForExecution(domainId, SysConstants.ENTITY_FIELD_ID);
-			condition.addFilter("batchId", newBatchId);
+			condition.addFilter("id", newBatchId);
 			count = queryMgr.selectSize(JobBatch.class, condition);
 			
 			if(count > 0) {

@@ -7,12 +7,14 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import xyz.anythings.base.util.LogisEntityUtil;
+import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.elidom.dbist.annotation.Column;
 import xyz.elidom.dbist.annotation.GenerationRule;
 import xyz.elidom.dbist.annotation.Ignore;
 import xyz.elidom.dbist.annotation.Index;
 import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.Table;
+import xyz.elidom.dbist.dml.Query;
 import xyz.elidom.orm.IQueryManager;
 import xyz.elidom.util.BeanUtil;
 import xyz.elidom.util.ValueUtil;
@@ -152,8 +154,18 @@ public class BatchReceipt extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	 * @return
 	 */
 	public static int newBatchReceiptJobSeq(Long domainId, String areaCd, String stageCd, String comCd, String jobDate) {
-		List<Integer> jobSeqList = 
-				LogisEntityUtil.searchEntitiesBy(domainId, false, Integer.class, "jobSeq", "comCd,areaCd,stageCd,jobDate", comCd,areaCd,stageCd,jobDate);
+		IQueryManager queryManager = BeanUtil.get(IQueryManager.class);
+		
+		String tableName = queryManager.getDml().getTable(BatchReceipt.class).getName();
+		
+		Query condition = AnyOrmUtil.newConditionForExecution(domainId);
+		condition.addSelect("jobSeq");
+		condition.addFilter("comCd", comCd);
+		condition.addFilter("areaCd", areaCd);
+		condition.addFilter("stageCd", stageCd);
+		condition.addFilter("jobDate", jobDate);
+		
+		List<Integer> jobSeqList = queryManager.selectList(tableName, condition, Integer.class);
 		
 		return (ValueUtil.isEmpty(jobSeqList) ? 0 : Collections.max(jobSeqList)) + 1;
 	}

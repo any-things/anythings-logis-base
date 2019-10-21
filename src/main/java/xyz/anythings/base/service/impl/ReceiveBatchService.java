@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +31,9 @@ import xyz.elidom.dbist.dml.Query;
 import xyz.elidom.dbist.util.StringJoiner;
 import xyz.elidom.exception.server.ElidomRuntimeException;
 import xyz.elidom.sys.SysConstants;
+import xyz.elidom.sys.entity.Domain;
+import xyz.elidom.sys.system.context.DomainContext;
+import xyz.elidom.util.BeanUtil;
 import xyz.elidom.util.ValueUtil;
 
 /**
@@ -98,19 +102,18 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 			return (BatchReceipt)befResult.getResult();
 		}
 		
-		// 3.배치 주문 수신.
-		BatchReceipt receiptData = this.startToReceiveData(receiptSummary);
+		// 3. receipt 상태 확인 
+		String status = receiptSummary.getCurrentStatus();
 		
-		// 4. 후처리 이벤트 
-		EventResultSet aftResult = this.startToReceiveEvent(EventConstants.EVENT_STEP_AFTER, receiptSummary);
-		
-		// 5. 후처리 이벤트가 실행 되고 리턴 결과가 있으면 해당 결과 리턴 
-		if(aftResult.isExecuted()) {
-			if(aftResult.getResult() != null ) { 
-				return (BatchReceipt)aftResult.getResult();
-			}
+		// 3.1 WAIT 이 아니면 불가 return
+		if(ValueUtil.isNotEqual(status, AnyConstants.COMMON_STATUS_WAIT)) {
+			return receiptSummary;
 		}
-		return receiptData;	
+
+		// 4. 비동기 실행 
+		BeanUtil.get(this.getClass()).asyncReceiveOrderData(receiptSummary);
+		
+		return receiptSummary;
 	}
 	
 	/**
@@ -199,8 +202,14 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 		this.queryManager.insert(batchReceipt);
 		
 		// 3.3 BatchReceiptItem 데이터 생성 
-		for(BatchReceiptItem item : receiptItems) item.setBatchReceiptId(batchReceipt.getId());
+		for(BatchReceiptItem item : receiptItems) {
+			item.setBatchId(LogisBaseUtil.newJobBatchId(batchReceipt.getDomainId()));
+			item.setBatchReceiptId(batchReceipt.getId());
+		}
 		this.queryManager.insertBatch(receiptItems);
+		
+		
+		batchReceipt.setItems(receiptItems);
 		
 		return batchReceipt;
 	}
@@ -264,6 +273,25 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 				, batchReceipt.getAreaCd(), batchReceipt.getStageCd(), batchReceipt.getComCd(), batchReceipt.getJobDate(), batchReceipt, null, params);
 	}
 	
+	
+	@Async
+	public void asyncReceiveOrderData(BatchReceipt batchReceipt) {
+		
+		Domain domain = Domain.find(batchReceipt.getDomainId());
+		DomainContext.setCurrentDomain(domain);
+		
+		try {
+			// 4.배치 주문 수신.
+			BatchReceipt receiptData = this.startToReceiveData(batchReceipt);
+			
+			// 5. 후처리 이벤트 
+			this.startToReceiveEvent(EventConstants.EVENT_STEP_AFTER, receiptData);
+			
+		}finally {
+			DomainContext.unsetAll();
+		}
+	}
+	
 	/**
 	 * 배치, 작업  수신 
 	 * @param batchReceipt
@@ -271,17 +299,8 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 	 * @return
 	 */
 	private BatchReceipt startToReceiveData(BatchReceipt batchReceipt, Object ... params) {
-		
-		// 1. receipt 상태 확인 
-		String status = batchReceipt.getCurrentStatus();
-		
-		// 1.1 WAIT 이 아니면 불가 return
-		if(ValueUtil.isNotEqual(status, AnyConstants.COMMON_STATUS_WAIT)) {
-			return batchReceipt;
-		} 
-		
-		// 2. 수신 시작
-		// 2.1 상태 업데이트 - 진행중 
+		// 1. 수신 시작
+		// 1.1 상태 업데이트 - 진행중 
 		batchReceipt.updateStatusImmediately(AnyConstants.COMMON_STATUS_RUNNING);
 		
 		// TODO : 데이터 복사 방식 / 컬럼 설정에서 가져오기 
@@ -291,7 +310,6 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 		String fieldNames = "COM_CD,AREA_CD,STAGE_CD,WMS_BATCH_NO,IF_FLAG";
 		
 		int jobSeq = JobBatch.getMaxJobSeq(batchReceipt.getDomainId(), batchReceipt.getComCd(), batchReceipt.getAreaCd(), batchReceipt.getAreaCd(), batchReceipt.getJobDate());
-		String batchId = "";
 		
 		boolean isExeptProcess = false;
 		
@@ -300,30 +318,29 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 			// 2.2 skip 이면 pass
 			if(item.getSkipFlag()) continue;
 			
-			// 2.3 배치ID 생성 
-			batchId = LogisBaseUtil.newJobBatchId(batchReceipt.getDomainId());
+			// 2.3 배치ID 생성 asd
 			
 			// 2.4 jobSeq 발번 
 			++jobSeq;
 			
 			// 2.5 BatchReceiptItem 상태 업데이트  - 진행 중 
-			item.updateStatusImmediately(AnyConstants.COMMON_STATUS_RUNNING, null,null);
+			item.updateStatusImmediately(AnyConstants.COMMON_STATUS_RUNNING, null);
 			
 			// 2.6 JobBatch 생성 
-			JobBatch batch = JobBatch.createJobBatch(batchId, jobSeq, batchReceipt, item);
+			JobBatch batch = JobBatch.createJobBatch(item.getBatchId(), jobSeq, batchReceipt, item);
 			
 			try {
 				// 2.7 데이터 복사  
-				this.cloneData(batchId,jobSeq, "wms_if_orders", sourceFields, targetFields, fieldNames, item.getComCd(),item.getAreaCd(),item.getStageCd(),item.getWmsBatchNo(),"N");
+				this.cloneData(item.getBatchId(),jobSeq, "wms_if_orders", sourceFields, targetFields, fieldNames, item.getComCd(),item.getAreaCd(),item.getStageCd(),item.getWmsBatchNo(),"N");
 				
 				// 2.8 JobBatch 상태 변경  
 				batch.updateStatusImmediately(JobBatch.STATUS_WAIT);
 				
 				// 2.9 batchReceiptItem 상태 업데이트 
-				item.updateStatusImmediately(AnyConstants.COMMON_STATUS_FINISHED, batchId ,null);
+				item.updateStatusImmediately(AnyConstants.COMMON_STATUS_FINISHED, null);
 			} catch(Exception e) {
 				isExeptProcess = true;
-				item.updateStatusImmediately(AnyConstants.COMMON_STATUS_ERROR, null, e.getCause().getMessage());
+				item.updateStatusImmediately(AnyConstants.COMMON_STATUS_ERROR, e.getCause().getMessage());
 			}
 		}
 		
@@ -479,9 +496,9 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 		StringJoiner qry = new StringJoiner(SysConstants.LINE_SEPARATOR);
 		
 		// 1.1 select 필드 셋팅 
-		qry.add("select ");
+		qry.add("select 1 ");
 		for(int i = 0 ; i < sourceFields.length ;i++) {
-			qry.add("select " + sourceFields[i] + " as " + targetFields[i]);
+			qry.add(" , " + sourceFields[i] + " as " + targetFields[i]);
 		}
 		
 		// 1.2 테이블 
@@ -491,7 +508,9 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 		StringJoiner whereStr = new StringJoiner(SysConstants.LINE_SEPARATOR);
 		String[] keyArr = fieldNames.split(SysConstants.COMMA);
 		
+		
 		// 1.3.1 치환 가능 하도록 쿼리문 생성 
+		whereStr.add("where 1 = 1 ");
 		for(String key : keyArr) {
 			whereStr.add(" and " + key + " = :" + key);
 		}
@@ -504,7 +523,7 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 		List<Order> targetList = new ArrayList<Order>(sourceList.size());
 		// 3. target 데이터 생성 
 		for(Order sourceItem : sourceList) {
-			Order targetItem = AnyValueUtil.populate(sourceItem, new Order(), targetFields);
+			Order targetItem = AnyValueUtil.populate(sourceItem, new Order());
 			
 			targetItem.setBatchId(batchId);
 			targetItem.setJobSeq(jobSeq);
