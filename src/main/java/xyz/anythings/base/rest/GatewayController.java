@@ -1,6 +1,7 @@
 package xyz.anythings.base.rest;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -17,7 +18,9 @@ import xyz.anythings.base.entity.Gateway;
 import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
 import xyz.elidom.orm.system.annotation.service.ServiceDesc;
+import xyz.elidom.sys.entity.Domain;
 import xyz.elidom.sys.system.service.AbstractRestService;
+import xyz.elidom.sys.util.ValueUtil;
 
 @RestController
 @Transactional
@@ -76,6 +79,14 @@ public class GatewayController extends AbstractRestService {
 	@ApiDesc(description = "Create, Update or Delete multiple at one time")
 	public Boolean multipleUpdate(@RequestBody List<Gateway> list) {
 		return this.cudMultipleData(this.entityClass(), list);
+	}
+	
+	@RequestMapping(value = "/search_by_equip/{equip_type}/{equip_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Search Gateways By EquipTYpe and EquipCd")
+	public List<Gateway> searchByRegion(@PathVariable("equip_type") String equipType, @PathVariable("equip_cd") String equipCd) {
+		String sql = "select g.* from gateways g inner join indicators i on g.domain_id = i.domain_id and g.gw_cd = i.gw_cd inner join cells c on i.domain_id = c.domain_id and i.ind_cd = c.ind_cd where g.domain_id = :domainId and c.equip_type = :equipType and c.equip_cd = :equipCd";
+		Map<String, Object> params = ValueUtil.newMap("domainId,equipType,equipCd", Domain.currentDomainId(), equipType, equipCd);
+		return this.queryManager.selectListBySql(sql, params, Gateway.class, 0, 0);
 	}
 
 }

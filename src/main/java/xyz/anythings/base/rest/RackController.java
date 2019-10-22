@@ -14,11 +14,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import xyz.anythings.base.entity.Rack;
-
+import xyz.anythings.base.util.LogisEntityUtil;
+import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
 import xyz.elidom.orm.system.annotation.service.ServiceDesc;
+import xyz.elidom.sys.entity.Domain;
 import xyz.elidom.sys.system.service.AbstractRestService;
-import xyz.elidom.dbist.dml.Page;
 
 @RestController
 @Transactional
@@ -77,6 +78,14 @@ public class RackController extends AbstractRestService {
 	@ApiDesc(description = "Create, Update or Delete multiple at one time")
 	public Boolean multipleUpdate(@RequestBody List<Rack> list) {
 		return this.cudMultipleData(this.entityClass(), list);
+	}
+	
+	@RequestMapping(value = "/{rack_cd}/stations", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Search stations list by rackCd")
+	public List<String> searchStations(@PathVariable("rack_cd") String rackCd) {
+		Long domainId = Domain.currentDomainId();
+		String sql = "select distinct(station_cd) as zone_cd from cells where domain_id = :domainId and equip_type = 'Rack' and equip_cd = :rackCd order by station_cd asc";
+		return LogisEntityUtil.searchItems(domainId, false, String.class, sql, "domainId,rackCd", domainId, rackCd);
 	}
 
 }
