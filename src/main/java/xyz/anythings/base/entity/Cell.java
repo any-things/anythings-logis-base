@@ -31,9 +31,6 @@ public class Cell extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "cell_cd", nullable = false, length = 30)
 	private String cellCd;
 
-	@Column (name = "cell_nm", length = 40)
-	private String cellNm;
-
 	@Column (name = "wms_cell_cd", length = 30)
 	private String wmsCellCd;
 
@@ -48,6 +45,9 @@ public class Cell extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	@Column (name = "channel_no", length = 40)
 	private String channelNo;
+	
+	@Column (name = "pan_no", length = 40)
+	private String panNo;
 
 	@Column (name = "side_cd", length = 30)
 	private String sideCd;
@@ -101,14 +101,6 @@ public class Cell extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.cellCd = cellCd;
 	}
 
-	public String getCellNm() {
-		return cellNm;
-	}
-
-	public void setCellNm(String cellNm) {
-		this.cellNm = cellNm;
-	}
-
 	public String getWmsCellCd() {
 		return wmsCellCd;
 	}
@@ -147,6 +139,14 @@ public class Cell extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setChannelNo(String channelNo) {
 		this.channelNo = channelNo;
+	}
+
+	public String getPanNo() {
+		return panNo;
+	}
+
+	public void setPanNo(String panNo) {
+		this.panNo = panNo;
 	}
 
 	public String getSideCd() {

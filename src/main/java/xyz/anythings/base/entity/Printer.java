@@ -7,7 +7,8 @@ import xyz.elidom.dbist.annotation.GenerationRule;
 import xyz.elidom.dbist.annotation.Table;
 
 @Table(name = "printers", idStrategy = GenerationRule.UUID, uniqueFields="domainId,printerCd", indexes = {
-	@Index(name = "ix_printers_0", columnList = "domain_id,printer_cd", unique = true)
+	@Index(name = "ix_printers_0", columnList = "domain_id,printer_cd", unique = true),
+	@Index(name = "ix_printers_1", columnList = "domain_id,stage_cd")
 })
 public class Printer extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	/**
@@ -19,6 +20,9 @@ public class Printer extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "id", nullable = false, length = 40)
 	private String id;
 
+	@Column (name = "stage_cd", length = 30)
+	private String stageCd;
+	
 	@Column (name = "printer_cd", nullable = false, length = 30)
 	private String printerCd;
 
@@ -55,6 +59,14 @@ public class Printer extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public String getStageCd() {
+		return stageCd;
+	}
+
+	public void setStageCd(String stageCd) {
+		this.stageCd = stageCd;
 	}
 
 	public String getPrinterCd() {

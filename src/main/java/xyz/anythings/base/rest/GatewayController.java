@@ -84,7 +84,7 @@ public class GatewayController extends AbstractRestService {
 	@RequestMapping(value = "/search_by_equip/{equip_type}/{equip_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Search Gateways By EquipTYpe and EquipCd")
 	public List<Gateway> searchByRegion(@PathVariable("equip_type") String equipType, @PathVariable("equip_cd") String equipCd) {
-		String sql = "select g.* from gateways g inner join indicators i on g.domain_id = i.domain_id and g.gw_cd = i.gw_cd inner join cells c on i.domain_id = c.domain_id and i.ind_cd = c.ind_cd where g.domain_id = :domainId and c.equip_type = :equipType and c.equip_cd = :equipCd";
+		String sql = "select * from gateways where id in (select distinct(g.id) as gw_id from gateways g inner join indicators i on g.domain_id = i.domain_id and g.gw_cd = i.gw_cd inner join cells c on i.domain_id = c.domain_id and i.ind_cd = c.ind_cd where g.domain_id = :domainId and c.equip_type = :equipType and c.equip_cd = :equipCd)";
 		Map<String, Object> params = ValueUtil.newMap("domainId,equipType,equipCd", Domain.currentDomainId(), equipType, equipCd);
 		return this.queryManager.selectListBySql(sql, params, Gateway.class, 0, 0);
 	}
