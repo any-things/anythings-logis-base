@@ -387,8 +387,6 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 		// TODO : 설정 에서 조회 하도록 수정 job.cmm.delete.order.when.order_cancel  
 		boolean isKeepData = false;
 		
-		// 3. 상태 변경 
-		jobBatch.updateStatus(JobBatch.STATUS_CANCEL);
 		
 		if(isKeepData) {
 			return this.cancelOrderKeepData(jobBatch);
@@ -406,21 +404,24 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 	private int cancelOrderKeepData(JobBatch jobBatch) {
 		int cnt = 0;
 		
-		// 1. 주문 조회 
+		// 1. 배치 상태  update 
+		jobBatch.updateStatus(JobBatch.STATUS_CANCEL);
+		
+		// 2. 주문 조회 
 		List<Order> orderList = LogisEntityUtil.searchEntitiesBy(jobBatch.getDomainId(), false, Order.class, "id", "domainId,batchId", jobBatch.getDomainId(), jobBatch.getId());
 		
-		// 2. 취소 상태 , seq = 0 셋팅 
+		// 3. 취소 상태 , seq = 0 셋팅 
 		for(Order order : orderList) {
 			order.setStatus(LogisConstants.JOB_STATUS_CANCEL);
 			order.setJobSeq(0);
 		}
 		
-		// 3. 배치 update
+		// 4. 배치 update
 		this.queryManager.updateBatch(orderList, "jobSeq","status");
 		
 		cnt += orderList.size();
 		
-		// 4. 주문 가공 데이터 삭제  
+		// 5. 주문 가공 데이터 삭제  
 		cnt += this.deleteBatchPreprocessData(jobBatch);
 		return cnt;
 	}
@@ -442,6 +443,10 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 		
 		// 3. 주문 가공 데이터 삭제 
 		cnt += this.deleteBatchPreprocessData(jobBatch);
+		
+		// 4. 배치 삭제 
+		this.queryManager.delete(jobBatch);
+		
 		return cnt;
 	}
 	
