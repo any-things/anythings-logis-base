@@ -1,6 +1,5 @@
 package xyz.anythings.base.entity;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.transaction.annotation.Propagation;
@@ -156,7 +155,6 @@ public class BatchReceipt extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	public static int newBatchReceiptJobSeq(Long domainId, String areaCd, String stageCd, String comCd, String jobDate) {
 		IQueryManager queryManager = BeanUtil.get(IQueryManager.class);
 		
-		String tableName = queryManager.getDml().getTable(BatchReceipt.class).getName();
 		
 		Query condition = AnyOrmUtil.newConditionForExecution(domainId);
 		condition.addSelect("jobSeq");
@@ -164,9 +162,10 @@ public class BatchReceipt extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		condition.addFilter("areaCd", areaCd);
 		condition.addFilter("stageCd", stageCd);
 		condition.addFilter("jobDate", jobDate);
+		condition.addOrder("jobSeq", false);
 		
-		List<Integer> jobSeqList = queryManager.selectList(tableName, condition, Integer.class);
+		List<BatchReceipt> jobSeqList = queryManager.selectList(BatchReceipt.class, condition);
 		
-		return (ValueUtil.isEmpty(jobSeqList) ? 0 : Collections.max(jobSeqList)) + 1;
+		return (ValueUtil.isEmpty(jobSeqList) ? 0 : ValueUtil.toInteger(jobSeqList.get(0).getJobSeq())) + 1;
 	}
 }

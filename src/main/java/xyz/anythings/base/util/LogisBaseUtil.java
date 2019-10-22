@@ -3,6 +3,7 @@ package xyz.anythings.base.util;
 import java.util.Date;
 import java.util.HashMap;
 
+import xyz.anythings.base.entity.BatchReceiptItem;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.query.store.EtcQueryStore;
 import xyz.anythings.sys.util.AnyOrmUtil;
@@ -53,6 +54,37 @@ public class LogisBaseUtil {
 			Query condition = AnyOrmUtil.newConditionForExecution(domainId, SysConstants.ENTITY_FIELD_ID);
 			condition.addFilter("id", newBatchId);
 			count = queryMgr.selectSize(JobBatch.class, condition);
+			
+			if(count > 0) {
+				ThreadUtil.sleep(10);
+			}
+		}
+		
+		return newBatchId;
+	}
+	
+	
+	/**
+	 * 작업 배치 ID 
+	 * 
+	 * @domainId
+	 * @return
+	 */
+	public static synchronized String newReceiptJobBatchId(Long domainId) {
+		String newBatchId = null;
+		IQueryManager queryMgr = BeanUtil.get(IQueryManager.class);
+		int count = 1;
+		
+		while(count > 0) {
+			String currentTime = DateUtil.dateTimeStr(new Date(), DATE_FORMAT_FOR_BATCH_ID);
+			newBatchId = domainId + SysConstants.DASH + currentTime;	
+			Query condBatch = AnyOrmUtil.newConditionForExecution(domainId, SysConstants.ENTITY_FIELD_ID);
+			condBatch.addFilter("id", newBatchId);
+			
+			Query condReceipt = AnyOrmUtil.newConditionForExecution(domainId, SysConstants.ENTITY_FIELD_ID);
+			condReceipt.addFilter("batchId",newBatchId);
+			
+			count = queryMgr.selectSize(JobBatch.class, condBatch) + queryMgr.selectSize(BatchReceiptItem.class, condReceipt);
 			
 			if(count > 0) {
 				ThreadUtil.sleep(10);

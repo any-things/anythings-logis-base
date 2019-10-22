@@ -1,6 +1,5 @@
 package xyz.anythings.base.entity;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -391,18 +390,17 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	public static int getMaxJobSeq(Long domainId, String comCd, String areaCd, String stageCd, String jobDate) {
 		IQueryManager queryManager = BeanUtil.get(IQueryManager.class);
 		
-		String tableName = queryManager.getDml().getTable(JobBatch.class).getName();
-		
 		Query condition = AnyOrmUtil.newConditionForExecution(domainId);
 		condition.addSelect("jobSeq");
 		condition.addFilter("comCd", comCd);
 		condition.addFilter("areaCd", areaCd);
 		condition.addFilter("stageCd", stageCd);
 		condition.addFilter("jobDate", jobDate);
+		condition.addOrder("jobSeq", false);
 		
-		List<Integer> jobSeqList = queryManager.selectList(tableName, condition, Integer.class);
+		List<JobBatch> jobSeqList = queryManager.selectList(JobBatch.class, condition);
 		
-		return (ValueUtil.isEmpty(jobSeqList) ? 0 : Collections.max(jobSeqList));
+		return (ValueUtil.isEmpty(jobSeqList) ? 0 : jobSeqList.get(0).getJobSeq());
 	}
 	
 	/**

@@ -16,6 +16,10 @@ buildscript {
 apply from : 'anythings.gradle'
 
 jar {
+   from('src/main/java') {
+      include '/**/*.sql'
+   }
+
 	manifest {
 		attributes 'Implementation-Title': 'AnyThings Logis Base',
 				   'Implementation-Version': version

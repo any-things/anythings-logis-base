@@ -203,11 +203,11 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 		
 		// 3.3 BatchReceiptItem 데이터 생성 
 		for(BatchReceiptItem item : receiptItems) {
-			item.setBatchId(LogisBaseUtil.newJobBatchId(batchReceipt.getDomainId()));
+			item.setBatchId(LogisBaseUtil.newReceiptJobBatchId(batchReceipt.getDomainId()));
 			item.setBatchReceiptId(batchReceipt.getId());
+			
+			this.queryManager.insert(item);
 		}
-		this.queryManager.insertBatch(receiptItems);
-		
 		
 		batchReceipt.setItems(receiptItems);
 		
