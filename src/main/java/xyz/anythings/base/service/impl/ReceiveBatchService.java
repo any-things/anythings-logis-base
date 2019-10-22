@@ -316,7 +316,10 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 		// 2.1 상세 리스트 loop
 		for(BatchReceiptItem item : batchReceipt.getItems()) {
 			// 2.2 skip 이면 pass
-			if(item.getSkipFlag()) continue;
+			if(item.getSkipFlag()) {
+				item.updateStatusImmediately(AnyConstants.COMMON_STATUS_CANCEL, null);
+				continue;
+			}
 			
 			// 2.3 배치ID 생성 asd
 			
@@ -375,8 +378,8 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 		String currentStatus = jobBatch.getCurrentStatus();
 		
 		// 1.1  작업 지시 전 취소 가능 
-		if(ValueUtil.isEqual(currentStatus, JobBatch.STATUS_WAIT) 
-				|| ValueUtil.isEqual(currentStatus, JobBatch.STATUS_READY) ) {
+		if((ValueUtil.isEqual(currentStatus, JobBatch.STATUS_WAIT) 
+				|| ValueUtil.isEqual(currentStatus, JobBatch.STATUS_READY)) == false ) {
 			throw new ElidomRuntimeException("작업 대기 상태에서만 취소가 가능 합니다.");
 		}
 		

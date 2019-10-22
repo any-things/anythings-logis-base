@@ -13,5 +13,5 @@ SELECT *
                   AND AREA_CD = :areaCd
                   AND STAGE_CD = :stageCd
                   AND STATUS in ( :status )
-                  AND ITEM_TYPE = 'ORDER' )
+                  AND ITEM_TYPE = 'order' )
    AND ROWNUM = 1 
