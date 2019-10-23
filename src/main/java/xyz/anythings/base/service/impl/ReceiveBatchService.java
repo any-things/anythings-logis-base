@@ -22,7 +22,6 @@ import xyz.anythings.base.query.store.BatchQueryStore;
 import xyz.anythings.base.service.api.IReceiveBatchService;
 import xyz.anythings.base.util.LogisBaseUtil;
 import xyz.anythings.base.util.LogisEntityUtil;
-import xyz.anythings.sys.AnyConstants;
 import xyz.anythings.sys.event.model.EventResultSet;
 import xyz.anythings.sys.service.AbstractExecutionService;
 import xyz.anythings.sys.util.AnyOrmUtil;
@@ -106,7 +105,7 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 		String status = receiptSummary.getCurrentStatus();
 		
 		// 3.1 WAIT 이 아니면 불가 return
-		if(ValueUtil.isNotEqual(status, AnyConstants.COMMON_STATUS_WAIT)) {
+		if(ValueUtil.isNotEqual(status, LogisConstants.COMMON_STATUS_WAIT)) {
 			return receiptSummary;
 		}
 
@@ -301,7 +300,7 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 	private BatchReceipt startToReceiveData(BatchReceipt batchReceipt, Object ... params) {
 		// 1. 수신 시작
 		// 1.1 상태 업데이트 - 진행중 
-		batchReceipt.updateStatusImmediately(AnyConstants.COMMON_STATUS_RUNNING);
+		batchReceipt.updateStatusImmediately(LogisConstants.COMMON_STATUS_RUNNING);
 		
 		// TODO : 데이터 복사 방식 / 컬럼 설정에서 가져오기 
 		String[] sourceFields = {"WMS_BATCH_NO", "WCS_BATCH_NO", "JOB_DATE", "JOB_SEQ", "JOB_TYPE", "ORDER_DATE", "ORDER_NO", "ORDER_LINE_NO", "ORDER_DETAIL_ID", "CUST_ORDER_NO", "CUST_ORDER_LINE_NO", "COM_CD", "AREA_CD", "STAGE_CD", "EQUIP_TYPE", "EQUIP_CD", "EQUIP_NM", "SUB_EQUIP_CD", "SHOP_CD", "SHOP_NM", "SKU_CD", "SKU_BARCD", "SKU_NM", "BOX_TYPE_CD", "BOX_IN_QTY", "ORDER_QTY", "PICKED_QTY", "BOXED_QTY", "CANCEL_QTY", "BOX_ID", "INVOICE_ID", "ORDER_TYPE", "CLASS_CD", "PACK_TYPE", "VEHICLE_NO", "LOT_NO", "FROM_ZONE_CD", "FROM_CELL_CD", "TO_ZONE_CD", "TO_CELL_CD"};
@@ -317,7 +316,7 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 		for(BatchReceiptItem item : batchReceipt.getItems()) {
 			// 2.2 skip 이면 pass
 			if(item.getSkipFlag()) {
-				item.updateStatusImmediately(AnyConstants.COMMON_STATUS_CANCEL, null);
+				item.updateStatusImmediately(LogisConstants.COMMON_STATUS_SKIPPED, null);
 				continue;
 			}
 			
@@ -327,7 +326,7 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 			++jobSeq;
 			
 			// 2.5 BatchReceiptItem 상태 업데이트  - 진행 중 
-			item.updateStatusImmediately(AnyConstants.COMMON_STATUS_RUNNING, null);
+			item.updateStatusImmediately(LogisConstants.COMMON_STATUS_RUNNING, null);
 			
 			// 2.6 JobBatch 생성 
 			JobBatch batch = JobBatch.createJobBatch(item.getBatchId(), jobSeq, batchReceipt, item);
@@ -340,15 +339,15 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 				batch.updateStatusImmediately(JobBatch.STATUS_WAIT);
 				
 				// 2.9 batchReceiptItem 상태 업데이트 
-				item.updateStatusImmediately(AnyConstants.COMMON_STATUS_FINISHED, null);
+				item.updateStatusImmediately(LogisConstants.COMMON_STATUS_FINISHED, null);
 			} catch(Exception e) {
 				isExeptProcess = true;
-				item.updateStatusImmediately(AnyConstants.COMMON_STATUS_ERROR, e.getCause().getMessage());
+				item.updateStatusImmediately(LogisConstants.COMMON_STATUS_ERROR, e.getCause().getMessage());
 			}
 		}
 		
 		// 3. 수신 결과 update
-		batchReceipt.updateStatusImmediately(isExeptProcess ? AnyConstants.COMMON_STATUS_ERROR : AnyConstants.COMMON_STATUS_FINISHED);
+		batchReceipt.updateStatusImmediately(isExeptProcess ? LogisConstants.COMMON_STATUS_ERROR : LogisConstants.COMMON_STATUS_FINISHED);
 		
 		return batchReceipt;
 	}
