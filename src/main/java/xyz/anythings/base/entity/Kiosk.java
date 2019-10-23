@@ -37,6 +37,9 @@ public class Kiosk extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	@Column (name = "equip_cd", nullable = false, length = 30)
 	private String equipCd;
+	
+	@Column(name = "side_cd", length = 30)
+	private String sideCd;
 
 	@Column (name = "status", length = 10)
 	private String status;
@@ -100,6 +103,14 @@ public class Kiosk extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.equipCd = equipCd;
 	}
 
+	public String getSideCd() {
+		return sideCd;
+	}
+
+	public void setSideCd(String sideCd) {
+		this.sideCd = sideCd;
+	}
+
 	public String getStatus() {
 		return status;
 	}
@@ -114,5 +125,6 @@ public class Kiosk extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setRemark(String remark) {
 		this.remark = remark;
-	}	
+	}
+
 }

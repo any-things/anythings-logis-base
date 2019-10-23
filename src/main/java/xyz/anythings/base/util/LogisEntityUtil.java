@@ -104,6 +104,20 @@ public class LogisEntityUtil extends EntityUtil {
 	}
 	
 	/**
+	 * clazz 엔티티에 대해서 fieldName, fieldValue으로 락을 걸며 엔티티 조회
+	 *
+	 * @param domainId
+	 * @param exceptionWhenEmpty
+	 * @param clazz
+	 * @param fieldNames
+	 * @param fieldValues
+	 * @return
+	 */
+	public static <T> T findEntityByWithLock(Long domainId, boolean exceptionWhenEmpty, Class<T> clazz, String fieldNames, Object ... fieldValues) {
+		return findEntityBy(domainId, exceptionWhenEmpty, clazz, null, fieldNames, fieldValues);
+	}
+	
+	/**
 	 * clazz 엔티티에 대해서 fieldName, fieldValue으로 엔티티 조회
 	 *
 	 * @param domainId
@@ -129,6 +143,22 @@ public class LogisEntityUtil extends EntityUtil {
 	 * @return
 	 */
 	public static <T> T findEntityBy(Long domainId, boolean exceptionWhenEmpty, Class<T> clazz, String selectFields, String fieldNames, Object ... fieldValues) {
+		return findEntityBy(domainId, exceptionWhenEmpty, false, clazz, selectFields, fieldNames, fieldValues);
+	}
+	
+	/**
+	 * clazz 엔티티에 대해서 fieldName, fieldValue으로 엔티티 조회
+	 * 
+	 * @param domainId
+	 * @param exceptionWhenEmpty
+	 * @param withLock
+	 * @param clazz
+	 * @param selectFields
+	 * @param fieldNames
+	 * @param fieldValues
+	 * @return
+	 */
+	public static <T> T findEntityBy(Long domainId, boolean exceptionWhenEmpty, boolean withLock, Class<T> clazz, String selectFields, String fieldNames, Object ... fieldValues) {
 		Query condition = AnyOrmUtil.newConditionForExecution(domainId);
 
 		if(ValueUtil.isNotEmpty(selectFields)) {
@@ -145,14 +175,15 @@ public class LogisEntityUtil extends EntityUtil {
 			condition.addFilter(keyArr[i], fieldValues[i]);
 		}
 		
-		T obj = BeanUtil.get(IQueryManager.class).selectByCondition(clazz, condition);
+		IQueryManager queryMgr = BeanUtil.get(IQueryManager.class);
+		T obj = withLock ? queryMgr.selectByConditionWithLock(clazz, condition) : queryMgr.selectByCondition(clazz, condition);
 		
 		if(obj == null && exceptionWhenEmpty) {
 			throw ThrowUtil.newNotFoundRecord("terms.menu." + clazz.getName());
 		}
 
 		return obj;
-	}
+	} 
 	
 	/**
 	 * clazz 엔티티에 대해서 fieldName, fieldValue으로 엔티티 검색

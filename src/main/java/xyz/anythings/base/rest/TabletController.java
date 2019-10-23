@@ -2,6 +2,9 @@ package xyz.anythings.base.rest;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,11 +16,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import xyz.anythings.base.LogisConstants;
+import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.Tablet;
+import xyz.anythings.base.util.LogisEntityUtil;
+import xyz.anythings.sys.util.AnyValueUtil;
 import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
 import xyz.elidom.orm.system.annotation.service.ServiceDesc;
+import xyz.elidom.sys.SysConstants;
+import xyz.elidom.sys.entity.Domain;
 import xyz.elidom.sys.system.service.AbstractRestService;
+import xyz.elidom.util.ValueUtil;
 
 @RestController
 @Transactional
@@ -76,6 +86,65 @@ public class TabletController extends AbstractRestService {
 	@ApiDesc(description = "Create, Update or Delete multiple at one time")
 	public Boolean multipleUpdate(@RequestBody List<Tablet> list) {
 		return this.cudMultipleData(this.entityClass(), list);
+	}
+	
+	@RequestMapping(value = "/update/setting", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Update setting")
+	public Tablet updateSetting(
+			HttpServletRequest req, 
+			HttpServletResponse res, 
+			@RequestParam(name = "equip_type", required = true) String equipType,
+			@RequestParam(name = "equip_cd", required = true) String equipCd,
+			@RequestParam(name = "station_cd", required = true) String stationCd) {
+		
+		Long domainId = Domain.currentDomainId();
+		String tabletIp = AnyValueUtil.getRemoteIp(req);
+		String tabletCd = equipCd;
+		
+		if(!this.updatableTabletStatus(domainId, equipType, equipCd, stationCd, tabletIp)) {
+			return null;
+		}
+		
+		JobBatch batch = LogisEntityUtil.findEntityBy(domainId, false, JobBatch.class, "equip_nm", "domainId,equipType,equipCd,status", domainId, equipType, equipCd, JobBatch.STATUS_RUNNING);
+		Tablet tablet = LogisEntityUtil.findEntityBy(domainId, false, Tablet.class, "id,domain_id,tablet_cd,tablet_nm,equip_type,equip_cd,station_cd,status", "domainId,tabletIp", domainId, tabletIp);
+		
+		String tabletNm = (batch == null) ? tabletCd : batch.getEquipNm();
+		if(ValueUtil.isNotEmpty(stationCd)) {
+			tabletCd = tabletCd + SysConstants.DASH + stationCd;
+			tabletNm = tabletNm + SysConstants.DASH + stationCd;
+		}
+		
+		if(tablet == null) {
+			tablet = new Tablet();
+		}
+		
+		if(batch != null) {
+			tablet.setStageCd(batch.getStageCd());
+		}
+		
+		tablet.setTabletCd(tabletCd);
+		tablet.setTabletNm(tabletNm);
+		tablet.setTabletIp(tabletIp);
+		tablet.setEquipType(equipType);
+		tablet.setEquipCd(equipCd);
+		tablet.setStationCd(stationCd);
+		tablet.setStatus(LogisConstants.EQUIP_STATUS_OK);
+		this.queryManager.upsert(tablet);
+		return tablet;
+	}
+	
+	/**
+	 * Tablet 상태 정보 업데이트 가능 여부 체크
+	 * 
+	 * @param domainId
+	 * @param equipType
+	 * @param equipCd
+	 * @param equipZone
+	 * @param tabletIp
+	 * @return
+	 */
+	private boolean updatableTabletStatus(Long domainId, String equipType, String equipCd, String equipZone, String tabletIp) {
+		return !ValueUtil.isEqualIgnoreCase(tabletIp, "127.0.0.1");
 	}
 
 }

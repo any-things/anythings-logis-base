@@ -2,6 +2,9 @@ package xyz.anythings.base.rest;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,11 +16,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import xyz.anythings.base.LogisConstants;
+import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.Kiosk;
+import xyz.anythings.base.util.LogisEntityUtil;
+import xyz.anythings.sys.util.AnyValueUtil;
 import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
 import xyz.elidom.orm.system.annotation.service.ServiceDesc;
+import xyz.elidom.sys.SysConstants;
+import xyz.elidom.sys.entity.Domain;
 import xyz.elidom.sys.system.service.AbstractRestService;
+import xyz.elidom.util.ValueUtil;
 
 @RestController
 @Transactional
@@ -76,6 +86,70 @@ public class KioskController extends AbstractRestService {
 	@ApiDesc(description = "Create, Update or Delete multiple at one time")
 	public Boolean multipleUpdate(@RequestBody List<Kiosk> list) {
 		return this.cudMultipleData(this.entityClass(), list);
+	}
+
+	@RequestMapping(value = "/update/setting", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Update setting")
+	public Kiosk updateSetting(
+			HttpServletRequest req, 
+			HttpServletResponse res, 
+			@RequestParam(name = "equip_type", required = true) String equipType,
+			@RequestParam(name = "equip_cd", required = true) String equipCd, 
+			@RequestParam(name = "side_cd", required = false) String sideCd) {
+		
+		Long domainId = Domain.currentDomainId();
+		String kioskIp = AnyValueUtil.getRemoteIp(req);
+		sideCd = LogisConstants.checkSideCdForQuery(domainId, sideCd);
+		String kioskCd = equipCd;
+		
+		if(!this.updatableKioskStatus(domainId, equipType, equipCd, kioskIp)) {
+			return null;
+		}
+		
+		JobBatch batch = LogisEntityUtil.findEntityBy(domainId, false, JobBatch.class, "equip_nm", "domainId,equipType,equipCd,status", domainId, equipType, equipCd, JobBatch.STATUS_RUNNING);
+		Kiosk kiosk = LogisEntityUtil.findEntityBy(domainId, false, Kiosk.class, "id,domain_id,kiosk_cd,kiosk_nm,equip_type,equip_cd,side_cd,status", "domainId,kioskIp", domainId, kioskIp);
+
+		String kioskNm = (batch == null) ? kioskCd : batch.getEquipNm();
+		if(ValueUtil.isNotEmpty(sideCd)) {
+			kioskCd = kioskCd + SysConstants.DASH + sideCd;
+			kioskNm = kioskNm + SysConstants.DASH + sideCd;
+		}
+		
+		if(kiosk == null) {
+			kiosk = new Kiosk();
+		}
+		
+		if(batch != null) {
+			kiosk.setStageCd(batch.getStageCd());
+		}
+		
+		if(batch != null) {
+			kiosk.setStageCd(batch.getStageCd());
+		}
+		
+		kiosk.setDomainId(domainId);
+		kiosk.setKioskCd(kioskCd);
+		kiosk.setKioskNm(kioskNm);
+		kiosk.setKioskIp(kioskIp);
+		kiosk.setEquipType(equipType);
+		kiosk.setEquipCd(equipCd);
+		kiosk.setSideCd(sideCd);
+		kiosk.setStatus(LogisConstants.EQUIP_STATUS_OK);
+		this.queryManager.upsert(kiosk);
+		return kiosk;
+	}
+	
+	/**
+	 * KIOSK 상태 정보 업데이트 가능 여부 체크
+	 * 
+	 * @param domainId
+	 * @param equipType
+	 * @param equipCd
+	 * @param kioskIp
+	 * @return
+	 */
+	private boolean updatableKioskStatus(Long domainId, String equipType, String equipCd, String kioskIp) {
+		return !ValueUtil.isEqualIgnoreCase(kioskIp, "127.0.0.1");
 	}
 
 }
