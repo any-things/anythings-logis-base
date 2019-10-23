@@ -6,8 +6,8 @@ import xyz.elidom.dbist.annotation.Index;
 import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.Table;
 
-@Table(name = "tablets", idStrategy = GenerationRule.UUID, uniqueFields="domainId,tabletCd", indexes = {
-	@Index(name = "ix_tablets_0", columnList = "domain_id,tablet_cd", unique = true),
+@Table(name = "tablets", idStrategy = GenerationRule.UUID, uniqueFields="domainId,tabletIp", indexes = {
+	@Index(name = "ix_tablets_0", columnList = "domain_id,tablet_ip", unique = true),
 	@Index(name = "ix_tablets_1", columnList = "domain_id,stage_cd")
 })
 public class Tablet extends xyz.elidom.orm.entity.basic.ElidomStampHook {
