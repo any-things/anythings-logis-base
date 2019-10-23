@@ -7,7 +7,8 @@ import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.Table;
 
 @Table(name = "stages", idStrategy = GenerationRule.UUID, uniqueFields="domainId,areaCd,stageCd", indexes = {
-	@Index(name = "ix_stages_0", columnList = "domain_id,area_cd,stage_cd", unique = true)
+	@Index(name = "ix_stages_0", columnList = "domain_id,area_cd,stage_cd", unique = true),
+	@Index(name = "ix_stages_1", columnList = "domain_id,stage_cd", unique = true)
 })
 public class Stage extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	/**
