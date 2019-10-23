@@ -431,7 +431,7 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		batch.setParentPcs(receiptItem.getTotalPcs());
 		batch.setBatchOrderQty(receiptItem.getTotalOrders());
 		batch.setBatchPcs(receiptItem.getTotalPcs());
-		batch.setStatus(JobBatch.STATUS_WAIT);
+		batch.setStatus(JobBatch.STATUS_RECEIVE);
 		
 		BeanUtil.get(IQueryManager.class).insert(batch);
 		

@@ -2,6 +2,7 @@ package xyz.anythings.base.event.main;
 
 import java.util.Map;
 
+import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.event.EventConstants;
 import xyz.anythings.sys.event.model.EventResultSet;
 import xyz.anythings.sys.event.model.SysEvent;
@@ -27,6 +28,8 @@ public class BatchRootEvent extends SysEvent{
 	 * DEFAULT = false
 	 */
 	protected boolean isAfterEventCancel;
+	
+	protected JobBatch jobBatch;
 	
 	public BatchRootEvent(short eventStep) {
 		super();
@@ -54,6 +57,14 @@ public class BatchRootEvent extends SysEvent{
 
 	public void setAfterEventCancel(boolean isAfterEventCancel) {
 		this.isAfterEventCancel = isAfterEventCancel;
+	}
+	
+	public JobBatch getJobBatch() {
+		return this.jobBatch;
+	}
+	
+	public void setJobBatch(JobBatch jobBatch) {
+		this.jobBatch = jobBatch;
 	}
 	
 	/**

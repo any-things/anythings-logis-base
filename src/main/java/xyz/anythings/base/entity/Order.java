@@ -11,6 +11,25 @@ public class Order extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	 * SerialVersion UID
 	 */
 	private static final long serialVersionUID = 166602676775758234L;
+	
+	/**
+	 * 상태 W : 대기 
+	 */
+	public static final String STATUS_WAIT = "W";	
+	
+	/**
+	 * 상태 C : 수신 취소  
+	 */
+	public static final String STATUS_CANCEL = "C";
+	
+	/**
+	 * 상태 I : 작업 지시   
+	 */
+	public static final String STATUS_INSTRUCT = "I";
+	
+	
+
+	
 
 	@PrimaryKey
 	@Column (name = "id", nullable = false, length = 40)

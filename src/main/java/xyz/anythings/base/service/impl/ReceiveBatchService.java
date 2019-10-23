@@ -336,7 +336,7 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 				this.cloneData(item.getBatchId(),jobSeq, "wms_if_orders", sourceFields, targetFields, fieldNames, item.getComCd(),item.getAreaCd(),item.getStageCd(),item.getWmsBatchNo(),"N");
 				
 				// 2.8 JobBatch 상태 변경  
-				batch.updateStatusImmediately(JobBatch.STATUS_WAIT);
+				batch.updateStatusImmediately(LogisConstants.isB2CJobType(batch.getJobType())? JobBatch.STATUS_READY : JobBatch.STATUS_WAIT);
 				
 				// 2.9 batchReceiptItem 상태 업데이트 
 				item.updateStatusImmediately(LogisConstants.COMMON_STATUS_FINISHED, null);
@@ -411,7 +411,7 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 		
 		// 3. 취소 상태 , seq = 0 셋팅 
 		for(Order order : orderList) {
-			order.setStatus(LogisConstants.JOB_STATUS_CANCEL);
+			order.setStatus(Order.STATUS_CANCEL);
 			order.setJobSeq(0);
 		}
 		
@@ -534,7 +534,7 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 			
 			targetItem.setBatchId(batchId);
 			targetItem.setJobSeq(jobSeq);
-			targetItem.setStatus(LogisConstants.JOB_STATUS_WAIT);
+			targetItem.setStatus(Order.STATUS_WAIT);
 			targetList.add(targetItem);
 		}
 		

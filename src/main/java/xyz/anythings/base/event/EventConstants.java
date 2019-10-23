@@ -38,4 +38,17 @@ public class EventConstants {
 	 */
 	public static final short EVENT_RECEIVE_TYPE_CANCEL = 30;
 	
+	
+	/** BatchInstructEvent ================       **/
+	
+	/**
+	 * 배치 작업 지시 
+	 */
+	public static final short EVENT_INSTRUCT_TYPE_START = 10;
+	
+	/**
+	 * 배치 대상 분류 
+	 */
+	public static final short EVENT_INSTRUCT_TYPE_ORDER_TYPE = 20;
+	
 }

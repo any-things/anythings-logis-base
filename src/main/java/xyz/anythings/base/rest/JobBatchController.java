@@ -141,9 +141,9 @@ public class JobBatchController extends AbstractRestService {
 	@RequestMapping(value = "/running_batch/{stage_cd}/{equip_type}/{equip_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Find running batch of job batch")
 	public JobBatch findRunningBatch(
-			@RequestParam(name = "stage_cd", required = true) String stageCd, 
-			@RequestParam(name = "equip_type", required = true) String equipType,
-			@RequestParam(name = "equip_cd", required = true) String equipCd) {
+			@PathVariable(name = "stage_cd") String stageCd, 
+			@PathVariable(name = "equip_type") String equipType,
+			@PathVariable(name = "equip_cd") String equipCd) {
 		
 		return this.batchService.findRunningBatch(Domain.currentDomainId(), stageCd, equipType, equipCd);
 	}
@@ -159,9 +159,9 @@ public class JobBatchController extends AbstractRestService {
 	@RequestMapping(value = "/running_batches/{stage_cd}/{equip_type}/{equip_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Find running batch of job batch")
 	public List<JobBatch> findRunningMainBatches(
-			@RequestParam(name = "stage_cd", required = true) String stageCd, 
-			@RequestParam(name = "equip_type", required = true) String equipType,
-			@RequestParam(name = "equip_cd", required = true) String equipCd) {
+			@PathVariable(name = "stage_cd") String stageCd, 
+			@PathVariable(name = "equip_type") String equipType,
+			@PathVariable(name = "equip_cd") String equipCd) {
 		
 		return this.batchService.searchRunningMainBatchList(Domain.currentDomainId(), stageCd, equipType, equipCd);
 	}
@@ -177,9 +177,9 @@ public class JobBatchController extends AbstractRestService {
 	@RequestMapping(value = "/running_batches/{stage_cd}/{job_type}/{job_date}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Search running batches of job batch")
 	public List<JobBatch> searchRunningBatchList(
-			@RequestParam(name = "stage_cd", required = true) String stageCd, 
-			@RequestParam(name = "job_type", required = true) String jobType,
-			@RequestParam(name = "job_date", required = true) String jobDate) {
+			@PathVariable(name = "stage_cd") String stageCd, 
+			@PathVariable(name = "job_type") String jobType,
+			@PathVariable(name = "job_date") String jobDate) {
 		
 		return this.batchService.searchRunningBatchList(Domain.currentDomainId(), stageCd, jobType, jobDate);
 	}
@@ -255,10 +255,10 @@ public class JobBatchController extends AbstractRestService {
 	 * @param equipList
 	 * @return
 	 */
-	@RequestMapping(value = "/{id}/instruct/batch", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/{id}/instruct/batch", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> instructBatch(
 			@PathVariable("id") String batchId, 
-			@RequestBody(required = false) List<?> equipList) {
+			@RequestBody(required = false) List<String> equipList) {
 		
 		// 1. 작업 배치 조회
 		JobBatch batch = LogisEntityUtil.findEntityByIdWithLock(true, JobBatch.class, batchId);
