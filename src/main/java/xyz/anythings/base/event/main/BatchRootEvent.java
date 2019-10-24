@@ -31,6 +31,8 @@ public class BatchRootEvent extends SysEvent{
 	
 	protected JobBatch jobBatch;
 	
+	protected String jobType;
+	
 	public BatchRootEvent(short eventStep) {
 		super();
 		this.setEventStep(eventStep);
@@ -65,6 +67,14 @@ public class BatchRootEvent extends SysEvent{
 	
 	public void setJobBatch(JobBatch jobBatch) {
 		this.jobBatch = jobBatch;
+	}
+	
+	public String getJobType() {
+		return this.jobType;
+	}
+	
+	public void setJobType(String jobType) {
+		this.jobType = jobType;
 	}
 	
 	/**

@@ -42,13 +42,18 @@ public class EventConstants {
 	/** BatchInstructEvent ================       **/
 	
 	/**
-	 * 배치 작업 지시 
-	 */
-	public static final short EVENT_INSTRUCT_TYPE_START = 10;
-	
-	/**
 	 * 배치 대상 분류 
 	 */
-	public static final short EVENT_INSTRUCT_TYPE_ORDER_TYPE = 20;
+	public static final short EVENT_INSTRUCT_TYPE_ORDER_TYPE = 10;
+	
+	/**
+	 * 배치 작업 지시 
+	 */
+	public static final short EVENT_INSTRUCT_TYPE_INSTRUCT = 20;
+	
+	/**
+	 * 배치 작업 지시 후 박스요청  
+	 */
+	public static final short EVENT_INSTRUCT_TYPE_BOX_REQ = 30;
 	
 }

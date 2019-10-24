@@ -1,7 +1,9 @@
 package xyz.anythings.base.event.main;
 
+import java.util.List;
+
 /**
- * 작업 시작 이벤트 
+ * 작업 지시 이벤트 
  * @author yang
  *
  */
@@ -14,9 +16,15 @@ public class BatchInstructEvent extends BatchRootEvent {
 	 */
 	private short eventType ;
 	
-
-	public BatchInstructEvent(short eventStep) {
-		super(eventStep);
+	/**
+	 * 할당 대상 설비 리스트 
+	 */
+	private List<?> equipList;
+	
+	
+	public BatchInstructEvent(long domainId, short eventType, short eventStep) {
+		super(domainId, eventStep);
+		this.setEventType(eventType);
 	}
 
 	public short getEventType() {
@@ -25,5 +33,13 @@ public class BatchInstructEvent extends BatchRootEvent {
 
 	public void setEventType(short eventType) {
 		this.eventType = eventType;
+	}
+	
+	public List<?> getEquipList(){
+		return this.equipList;
+	}
+	
+	public void setEquipList(List<?> equipList) {
+		this.equipList = equipList;
 	}
 }
