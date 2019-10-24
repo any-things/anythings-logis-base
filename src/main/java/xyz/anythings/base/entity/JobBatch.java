@@ -436,6 +436,7 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		batch.setAreaCd(receiptItem.getAreaCd());
 		batch.setStageCd(receiptItem.getStageCd());
 		batch.setEquipType(receiptItem.getEquipType());
+		batch.setEquipGroup(receiptItem.getEquipGroup());
 		batch.setEquipCd(receiptItem.getEquipCd());
 		batch.setEquipNm(""); // TODO ?????
 		batch.setParentOrderQty(receiptItem.getTotalOrders());

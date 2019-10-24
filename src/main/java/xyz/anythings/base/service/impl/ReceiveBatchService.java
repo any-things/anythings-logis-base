@@ -303,8 +303,8 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 		batchReceipt.updateStatusImmediately(LogisConstants.COMMON_STATUS_RUNNING);
 		
 		// TODO : 데이터 복사 방식 / 컬럼 설정에서 가져오기 
-		String[] sourceFields = {"WMS_BATCH_NO", "WCS_BATCH_NO", "JOB_DATE", "JOB_SEQ", "JOB_TYPE", "ORDER_DATE", "ORDER_NO", "ORDER_LINE_NO", "ORDER_DETAIL_ID", "CUST_ORDER_NO", "CUST_ORDER_LINE_NO", "COM_CD", "AREA_CD", "STAGE_CD", "EQUIP_TYPE", "EQUIP_CD", "EQUIP_NM", "SUB_EQUIP_CD", "SHOP_CD", "SHOP_NM", "SKU_CD", "SKU_BARCD", "SKU_NM", "BOX_TYPE_CD", "BOX_IN_QTY", "ORDER_QTY", "PICKED_QTY", "BOXED_QTY", "CANCEL_QTY", "BOX_ID", "INVOICE_ID", "ORDER_TYPE", "CLASS_CD", "PACK_TYPE", "VEHICLE_NO", "LOT_NO", "FROM_ZONE_CD", "FROM_CELL_CD", "TO_ZONE_CD", "TO_CELL_CD"};
-		String[] targetFields = {"WMS_BATCH_NO", "WCS_BATCH_NO", "JOB_DATE", "JOB_SEQ", "JOB_TYPE", "ORDER_DATE", "ORDER_NO", "ORDER_LINE_NO", "ORDER_DETAIL_ID", "CUST_ORDER_NO", "CUST_ORDER_LINE_NO", "COM_CD", "AREA_CD", "STAGE_CD", "EQUIP_TYPE", "EQUIP_CD", "EQUIP_NM", "SUB_EQUIP_CD", "SHOP_CD", "SHOP_NM", "SKU_CD", "SKU_BARCD", "SKU_NM", "BOX_TYPE_CD", "BOX_IN_QTY", "ORDER_QTY", "PICKED_QTY", "BOXED_QTY", "CANCEL_QTY", "BOX_ID", "INVOICE_ID", "ORDER_TYPE", "CLASS_CD", "PACK_TYPE", "VEHICLE_NO", "LOT_NO", "FROM_ZONE_CD", "FROM_CELL_CD", "TO_ZONE_CD", "TO_CELL_CD"};
+		String[] sourceFields = {"WMS_BATCH_NO", "WCS_BATCH_NO", "JOB_DATE", "JOB_SEQ", "JOB_TYPE", "ORDER_DATE", "ORDER_NO", "ORDER_LINE_NO", "ORDER_DETAIL_ID", "CUST_ORDER_NO", "CUST_ORDER_LINE_NO", "COM_CD", "AREA_CD", "STAGE_CD", "EQUIP_TYPE", "EQUIP_CD", "EQUIP_NM", "SUB_EQUIP_CD", "SHOP_CD", "SHOP_NM", "SKU_CD", "SKU_BARCD", "SKU_NM", "BOX_TYPE_CD", "BOX_IN_QTY", "ORDER_QTY", "PICKED_QTY", "BOXED_QTY", "CANCEL_QTY", "BOX_ID", "INVOICE_ID", "ORDER_TYPE", "CLASS_CD", "PACK_TYPE", "VEHICLE_NO", "LOT_NO", "FROM_ZONE_CD", "FROM_CELL_CD", "TO_ZONE_CD", "TO_CELL_CD", "EQUIP_GROUP"};
+		String[] targetFields = {"WMS_BATCH_NO", "WCS_BATCH_NO", "JOB_DATE", "JOB_SEQ", "JOB_TYPE", "ORDER_DATE", "ORDER_NO", "ORDER_LINE_NO", "ORDER_DETAIL_ID", "CUST_ORDER_NO", "CUST_ORDER_LINE_NO", "COM_CD", "AREA_CD", "STAGE_CD", "EQUIP_TYPE", "EQUIP_CD", "EQUIP_NM", "SUB_EQUIP_CD", "SHOP_CD", "SHOP_NM", "SKU_CD", "SKU_BARCD", "SKU_NM", "BOX_TYPE_CD", "BOX_IN_QTY", "ORDER_QTY", "PICKED_QTY", "BOXED_QTY", "CANCEL_QTY", "BOX_ID", "INVOICE_ID", "ORDER_TYPE", "CLASS_CD", "PACK_TYPE", "VEHICLE_NO", "LOT_NO", "FROM_ZONE_CD", "FROM_CELL_CD", "TO_ZONE_CD", "TO_CELL_CD", "EQUIP_GROUP"};
 		
 		String fieldNames = "COM_CD,AREA_CD,STAGE_CD,WMS_BATCH_NO,IF_FLAG";
 		
@@ -314,24 +314,24 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 		
 		// 2.1 상세 리스트 loop
 		for(BatchReceiptItem item : batchReceipt.getItems()) {
-			// 2.2 skip 이면 pass
-			if(item.getSkipFlag()) {
-				item.updateStatusImmediately(LogisConstants.COMMON_STATUS_SKIPPED, null);
-				continue;
-			}
-			
-			// 2.3 배치ID 생성 asd
-			
-			// 2.4 jobSeq 발번 
-			++jobSeq;
-			
-			// 2.5 BatchReceiptItem 상태 업데이트  - 진행 중 
-			item.updateStatusImmediately(LogisConstants.COMMON_STATUS_RUNNING, null);
-			
-			// 2.6 JobBatch 생성 
-			JobBatch batch = JobBatch.createJobBatch(item.getBatchId(), jobSeq, batchReceipt, item);
-			
 			try {
+				// 2.2 skip 이면 pass
+				if(item.getSkipFlag()) {
+					item.updateStatusImmediately(LogisConstants.COMMON_STATUS_SKIPPED, null);
+					continue;
+				}
+				
+				// 2.3 배치ID 생성 asd
+				
+				// 2.4 jobSeq 발번 
+				++jobSeq;
+				
+				// 2.5 BatchReceiptItem 상태 업데이트  - 진행 중 
+				item.updateStatusImmediately(LogisConstants.COMMON_STATUS_RUNNING, null);
+				
+				// 2.6 JobBatch 생성 
+				JobBatch batch = JobBatch.createJobBatch(item.getBatchId(), jobSeq, batchReceipt, item);
+				
 				// 2.7 데이터 복사  
 				this.cloneData(item.getBatchId(),jobSeq, "wms_if_orders", sourceFields, targetFields, fieldNames, item.getComCd(),item.getAreaCd(),item.getStageCd(),item.getWmsBatchNo(),"N");
 				
@@ -342,7 +342,10 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 				item.updateStatusImmediately(LogisConstants.COMMON_STATUS_FINISHED, null);
 			} catch(Exception e) {
 				isExeptProcess = true;
-				item.updateStatusImmediately(LogisConstants.COMMON_STATUS_ERROR, e.getCause().getMessage());
+				String errMsg = e.getCause().getMessage();
+				errMsg = errMsg.length() > 400 ? errMsg.substring(0,400) : errMsg;
+				
+				item.updateStatusImmediately(LogisConstants.COMMON_STATUS_ERROR, errMsg);
 			}
 		}
 		
