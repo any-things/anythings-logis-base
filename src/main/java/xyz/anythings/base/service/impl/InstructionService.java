@@ -34,8 +34,8 @@ public class InstructionService extends AbstractLogisService {
 	 * @param params
 	 * @return
 	 */
-	public int instructBatch(JobBatch batch, List<?> equipList, Object ... params) {
-		return this.logisServiceFinder.getInstructionService(batch).instructBatch(batch, equipList, params);
+	public int instructBatch(JobBatch batch, List<String> equipIdList, Object ... params) {
+		return this.logisServiceFinder.getInstructionService(batch).instructBatch(batch, equipIdList, params);
 	}
 	
 	/**
@@ -46,8 +46,8 @@ public class InstructionService extends AbstractLogisService {
 	 * @param params
 	 * @return
 	 */
-	public int instructTotalpicking(JobBatch batch, List<?> equipList, Object ... params) {
-		return this.logisServiceFinder.getInstructionService(batch).instructBatch(batch, equipList, params);
+	public int instructTotalpicking(JobBatch batch, List<String> equipIdList, Object ... params) {
+		return this.logisServiceFinder.getInstructionService(batch).instructBatch(batch, equipIdList, params);
 	}
 		
 	/**

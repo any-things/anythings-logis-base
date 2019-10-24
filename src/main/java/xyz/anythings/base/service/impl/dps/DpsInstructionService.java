@@ -36,9 +36,9 @@ public class DpsInstructionService extends AbstractInstructionService implements
 	 * @return
 	 */
 	@Override
-	public int instructBatch(JobBatch jobBatch, List<?> equipList, Object... params) {
+	public int instructBatch(JobBatch jobBatch, List<String> equipIdList, Object... params) {
 		// 1. batch 의 equip_type, group 에 따라 설비 list 를 가져온다 .
-		equipList = this.getBatchEquipList(jobBatch, equipList);
+		List<?> equipList = this.getBatchEquipList(jobBatch, equipIdList);
 		
 		int retCnt = 0;
 		
@@ -55,7 +55,7 @@ public class DpsInstructionService extends AbstractInstructionService implements
 	}
 
 	@Override
-	public int instructTotalpicking(JobBatch batch, List<?> equipList, Object... params) {
+	public int instructTotalpicking(JobBatch batch, List<String> equipIdList, Object... params) {
 //		long domainId = batch.getDomainId();
 		
 		// 1. 대상 분류 전처리 이벤트 
@@ -92,7 +92,6 @@ public class DpsInstructionService extends AbstractInstructionService implements
 	 * @return
 	 */
 	private int instructBatchOrderType(JobBatch jobBatch, List<?> equipList, Object... params) {
-		
 		// 1. 전처리 이벤트   
 		EventResultSet befResult = this.instructBatchOrderTypeEvent(EventConstants.EVENT_STEP_BEFORE, jobBatch, equipList, params);
 		
@@ -127,7 +126,32 @@ public class DpsInstructionService extends AbstractInstructionService implements
 	 * @return
 	 */
 	private int instructBatchStart(JobBatch jobBatch, List<?> equipList, Object... params) {
-		return 0;
+		// 1. 전처리 이벤트   
+		EventResultSet befResult = this.instructBatchStartEvent(EventConstants.EVENT_STEP_BEFORE, jobBatch, equipList, params);
+		
+		// 2. 다음 처리 취소 일 경우 결과 리턴 
+		if(befResult.isAfterEventCancel()) {
+			return ValueUtil.toInteger(befResult.getResult());
+		}
+		
+		int resultCnt = 0;
+		
+		// 3. 작업 지시 
+		// TODO : 설정에 따라
+		//        전체 호기 대상 작업 지시 
+		//        호기별 균등 분할 ( 비율 설정 )
+		
+		// 4. 후처리 이벤트 
+		EventResultSet aftResult = this.instructBatchStartEvent(EventConstants.EVENT_STEP_AFTER, jobBatch, equipList, params);
+		
+		// 5. 후처리 이벤트가 실행 되고 리턴 결과가 있으면 해당 결과 리턴 
+		if(aftResult.isExecuted()) {
+			if(aftResult.getResult() != null ) { 
+				resultCnt += ValueUtil.toInteger(aftResult.getResult());
+			}
+		}
+
+		return resultCnt;
 	}
 	
 	/**
@@ -138,7 +162,30 @@ public class DpsInstructionService extends AbstractInstructionService implements
 	 * @return
 	 */
 	private int instructBatchBoxReq(JobBatch jobBatch, List<?> equipList, Object... params) {
-		return 0;
+		// 1. 전처리 이벤트   
+		EventResultSet befResult = this.instructBatchBoxReqTypeEvent(EventConstants.EVENT_STEP_BEFORE, jobBatch, equipList, params);
+		
+		// 2. 다음 처리 취소 일 경우 결과 리턴 
+		if(befResult.isAfterEventCancel()) {
+			return ValueUtil.toInteger(befResult.getResult());
+		}
+		
+		int resultCnt = 0;
+		
+		// 3. 박스 요청  
+		// TODO : 
+		
+		// 4. 후처리 이벤트 
+		EventResultSet aftResult = this.instructBatchBoxReqTypeEvent(EventConstants.EVENT_STEP_AFTER, jobBatch, equipList, params);
+		
+		// 5. 후처리 이벤트가 실행 되고 리턴 결과가 있으면 해당 결과 리턴 
+		if(aftResult.isExecuted()) {
+			if(aftResult.getResult() != null ) { 
+				resultCnt += ValueUtil.toInteger(aftResult.getResult());
+			}
+		}
+
+		return resultCnt;
 	}
 	
 	

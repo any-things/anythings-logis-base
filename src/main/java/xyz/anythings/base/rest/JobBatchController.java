@@ -289,18 +289,18 @@ public class JobBatchController extends AbstractRestService {
 	 * 토탈 피킹 지시 처리
 	 * 
 	 * @param batchId
-	 * @param equipList
+	 * @param equipIdList
 	 * @return
 	 */
 	@RequestMapping(value = "/{id}/instruct/total_picking", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public Map<String, Object> instructTotalPicking(
 			@PathVariable("id") String batchId, 
-			@RequestBody(required = false) List<?> equipList) {
+			@RequestBody(required = false) List<String> equipIdList) {
 		
 		// 1. 작업 배치 조회
 		JobBatch batch = LogisEntityUtil.findEntityByIdWithLock(true, JobBatch.class, batchId);
 		// 2. 작업 지시 
-		int count = this.logisServiceFinder.getInstructionService(batch).instructTotalpicking(batch, equipList);
+		int count = this.logisServiceFinder.getInstructionService(batch).instructTotalpicking(batch, equipIdList);
 		// 3. 작업 지시 결과 리턴
 		return ValueUtil.newMap("result,count", SysConstants.OK_STRING, count);
 	}

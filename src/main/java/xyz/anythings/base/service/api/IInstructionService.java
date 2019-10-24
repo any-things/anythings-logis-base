@@ -34,7 +34,7 @@ public interface IInstructionService {
 	 * @param params
 	 * @return
 	 */
-	public int instructBatch(JobBatch batch, List<?> equipList, Object ... params);
+	public int instructBatch(JobBatch batch, List<String> equipIdList, Object ... params);
 	
 	/**
 	 * 토털 피킹 지시
@@ -44,7 +44,7 @@ public interface IInstructionService {
 	 * @param params
 	 * @return
 	 */
-	public int instructTotalpicking(JobBatch batch, List<?> equipList, Object ... params);
+	public int instructTotalpicking(JobBatch batch, List<String> equipIdList, Object ... params);
 		
 	/**
 	 * 작업 병합 - 메인 작업 배치에서 선택한 작업 배치를 배치 병합 
