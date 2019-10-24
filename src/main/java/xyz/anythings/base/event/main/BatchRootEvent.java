@@ -93,10 +93,16 @@ public class BatchRootEvent extends SysEvent{
 	public EventResultSet getEventResultSet() {
 		EventResultSet resultSet = new EventResultSet();
 		
-		if(ValueUtil.isEqual(this.getEventStep(), EventConstants.EVENT_STEP_AFTER)) {
+		if(ValueUtil.isEqual(this.getEventStep(), EventConstants.EVENT_STEP_ALONE)) {
+			// 단독 이벤트 
+			resultSet.setExecuted(this.isExecuted());
+			resultSet.setResult(this.getResult());
+		} else if(ValueUtil.isEqual(this.getEventStep(), EventConstants.EVENT_STEP_AFTER)) {
+			// 후 처리 이벤트 
 			resultSet.setExecuted(this.isExecuted());
 			resultSet.setResult(this.getResult());
 		} else {
+			// 전 처리 이벤트 
 			resultSet.setAfterEventCancel(this.isExecuted() && this.isAfterEventCancel() ? true:false);
 			resultSet.setExecuted(this.isExecuted());
 			resultSet.setResult(this.getResult());

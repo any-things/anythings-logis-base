@@ -17,6 +17,10 @@ public class EventConstants {
 	 * 이벤트 후 처리 
 	 */
 	public static final short EVENT_STEP_AFTER = 2;
+	/**
+	 * 이벤트 단독
+	 */
+	public static final short EVENT_STEP_ALONE = 3;
 	
 	
 	
