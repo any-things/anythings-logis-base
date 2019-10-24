@@ -299,6 +299,14 @@ public class Order extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	public void setEquipType(String equipType) {
 		this.equipType = equipType;
 	}
+	
+	public String getEquipGroup() {
+		return equipGroup;
+	}
+	
+	public void setEquipGroup(String equipGroup) {
+		this.equipGroup = equipGroup;
+	}
 
 	public String getEquipCd() {
 		return equipCd;

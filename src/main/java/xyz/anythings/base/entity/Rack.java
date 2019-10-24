@@ -87,6 +87,14 @@ public class Rack extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	public void setStageCd(String stageCd) {
 		this.stageCd = stageCd;
 	}
+	
+	public String getEquipGroup() {
+		return equipGroup;
+	}
+	
+	public void setEquipGroup(String equipGroup) {
+		this.equipGroup = equipGroup;
+	}
 
 	public String getRackCd() {
 		return rackCd;

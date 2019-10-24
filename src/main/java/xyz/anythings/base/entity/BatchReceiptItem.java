@@ -47,6 +47,9 @@ public class BatchReceiptItem extends xyz.elidom.orm.entity.basic.ElidomStampHoo
 
 	@Column (name = "equip_type", length = 20)
 	private String equipType;
+	
+	@Column (name = "equip_group", length = 30)
+	private String equipGroup;
 
 	@Column (name = "equip_cd", length = 30)
 	private String equipCd;
@@ -131,6 +134,14 @@ public class BatchReceiptItem extends xyz.elidom.orm.entity.basic.ElidomStampHoo
 		this.stageCd = stageCd;
 	}
 
+	public String getEquipGroup() {
+		return equipGroup;
+	}
+	
+	public void setEquipGroup(String equipGroup) {
+		this.equipGroup = equipGroup;
+	}
+	
 	public String getEquipType() {
 		return equipType;
 	}
