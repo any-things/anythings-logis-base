@@ -2,10 +2,13 @@ package xyz.anythings.base.entity;
 
 import xyz.elidom.dbist.annotation.Column;
 import xyz.elidom.dbist.annotation.GenerationRule;
+import xyz.elidom.dbist.annotation.Index;
 import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.Table;
 
-@Table(name = "orders", idStrategy = GenerationRule.UUID)
+@Table(name = "orders", idStrategy = GenerationRule.UUID, indexes = {
+	@Index(name = "ix_orders_1", columnList = "batch_id,domain_id,order_no", unique=false)
+})
 public class Order extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	/**
 	 * SerialVersion UID
@@ -23,9 +26,16 @@ public class Order extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	public static final String STATUS_CANCEL = "C";
 	
 	/**
+	 * 상태 T : 대상분류    
+	 */
+	public static final String STATUS_TYPE = "T";
+
+	
+	/**
 	 * 상태 I : 작업 지시   
 	 */
 	public static final String STATUS_INSTRUCT = "I";
+	
 	
 	
 

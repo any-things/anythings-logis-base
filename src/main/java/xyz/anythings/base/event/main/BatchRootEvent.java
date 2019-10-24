@@ -33,6 +33,8 @@ public class BatchRootEvent extends SysEvent{
 	
 	protected String jobType;
 	
+	protected String equipType;
+	
 	public BatchRootEvent(short eventStep) {
 		super();
 		this.setEventStep(eventStep);
@@ -76,6 +78,15 @@ public class BatchRootEvent extends SysEvent{
 	public void setJobType(String jobType) {
 		this.jobType = jobType;
 	}
+	
+	public String getEquipType() {
+		return this.equipType;
+	}
+	
+	public void setEquipType(String equipType) {
+		this.equipType = equipType;
+	}
+
 	
 	/**
 	 * 배치별 셋팅값 불러오기 

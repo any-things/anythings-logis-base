@@ -360,24 +360,24 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 	/**
 	 * 배치 취소 이벤트 처리 
 	 * @param eventStep
-	 * @param jobBatch
+	 * @param batch
 	 * @param params
 	 * @return
 	 */
-	private EventResultSet cancelBatchEvent(short eventStep, JobBatch jobBatch, Object ... params) {
-		return this.publishBatchReceiveEvent(EventConstants.EVENT_RECEIVE_TYPE_CANCEL, eventStep, jobBatch.getDomainId()
-				, jobBatch.getAreaCd(), jobBatch.getStageCd(), jobBatch.getComCd(), jobBatch.getJobDate(), null, jobBatch, params);	}
+	private EventResultSet cancelBatchEvent(short eventStep, JobBatch batch, Object ... params) {
+		return this.publishBatchReceiveEvent(EventConstants.EVENT_RECEIVE_TYPE_CANCEL, eventStep, batch.getDomainId()
+				, batch.getAreaCd(), batch.getStageCd(), batch.getComCd(), batch.getJobDate(), null, batch, params);	}
 	
 	/**
 	 * 배치 취소 
-	 * @param jobBatch
+	 * @param batch
 	 * @param params
 	 * @return
 	 */
-	private int cancelBatchData(JobBatch jobBatch, Object... params) {
+	private int cancelBatchData(JobBatch batch, Object... params) {
 		
 		// 1. 배치 상태 확인 
-		String currentStatus = jobBatch.getCurrentStatus();
+		String currentStatus = batch.getCurrentStatus();
 		
 		// 1.1  작업 지시 전 취소 가능 
 		if((ValueUtil.isEqual(currentStatus, JobBatch.STATUS_WAIT) 
@@ -391,26 +391,26 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 		
 		
 		if(isKeepData) {
-			return this.cancelOrderKeepData(jobBatch);
+			return this.cancelOrderKeepData(batch);
 		} else {
-			return this.cancelOrderDeleteData(jobBatch);
+			return this.cancelOrderDeleteData(batch);
 		}
 	}
 	
 	/**
 	 * 주문 데이터 삭제 update
 	 * seq = 0
-	 * @param jobBatch
+	 * @param batch
 	 * @return
 	 */
-	private int cancelOrderKeepData(JobBatch jobBatch) {
+	private int cancelOrderKeepData(JobBatch batch) {
 		int cnt = 0;
 		
 		// 1. 배치 상태  update 
-		jobBatch.updateStatus(JobBatch.STATUS_CANCEL);
+		batch.updateStatus(JobBatch.STATUS_CANCEL);
 		
 		// 2. 주문 조회 
-		List<Order> orderList = LogisEntityUtil.searchEntitiesBy(jobBatch.getDomainId(), false, Order.class, "id", "domainId,batchId", jobBatch.getDomainId(), jobBatch.getId());
+		List<Order> orderList = LogisEntityUtil.searchEntitiesBy(batch.getDomainId(), false, Order.class, "id", "batchId", batch.getId());
 		
 		// 3. 취소 상태 , seq = 0 셋팅 
 		for(Order order : orderList) {
@@ -424,50 +424,50 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 		cnt += orderList.size();
 		
 		// 5. 주문 가공 데이터 삭제  
-		cnt += this.deleteBatchPreprocessData(jobBatch);
+		cnt += this.deleteBatchPreprocessData(batch);
 		return cnt;
 	}
 	
 	/**
 	 * 주문 데이터 삭제 
-	 * @param jobBatch
+	 * @param batch
 	 * @return
 	 */
-	private int cancelOrderDeleteData(JobBatch jobBatch) {
+	private int cancelOrderDeleteData(JobBatch batch) {
 		int cnt = 0;
 		
 		// 1. 삭제 조건 생성 
-		Query condition = AnyOrmUtil.newConditionForExecution(jobBatch.getDomainId());
-		condition.addFilter("batchId", jobBatch.getId());
+		Query condition = AnyOrmUtil.newConditionForExecution(batch.getDomainId());
+		condition.addFilter("batchId", batch.getId());
 		
 		// 2. 삭제 실행
 		cnt+= this.queryManager.deleteList(Order.class, condition);
 		
 		// 3. 주문 가공 데이터 삭제 
-		cnt += this.deleteBatchPreprocessData(jobBatch);
+		cnt += this.deleteBatchPreprocessData(batch);
 		
 		// 4. 배치 삭제 
-		this.queryManager.delete(jobBatch);
+		this.queryManager.delete(batch);
 		
 		return cnt;
 	}
 	
 	/**
 	 * 주문 가공 데이터 삭제 
-	 * @param jobBatch
+	 * @param batch
 	 * @return
 	 */
-	private int deleteBatchPreprocessData(JobBatch jobBatch) {
+	private int deleteBatchPreprocessData(JobBatch batch) {
 		// 1. 삭제 조건 생성 
-		Query condition = AnyOrmUtil.newConditionForExecution(jobBatch.getDomainId());
-		condition.addFilter("batchId", jobBatch.getId());
+		Query condition = AnyOrmUtil.newConditionForExecution(batch.getDomainId());
+		condition.addFilter("batchId", batch.getId());
 		
 		// 2. 삭제 실행
 		return this.queryManager.deleteList(OrderPreprocess.class, condition);
 	}
 	
 	/************** 배치 수신 이벤트 처리  **************/
-	private EventResultSet publishBatchReceiveEvent(short eventType, short eventStep, Long domainId, String areaCd, String stageCd, String comCd, String jobDate, BatchReceipt receiptData, JobBatch jobBatch, Object ... params) {
+	private EventResultSet publishBatchReceiveEvent(short eventType, short eventStep, Long domainId, String areaCd, String stageCd, String comCd, String jobDate, BatchReceipt receiptData, JobBatch batch, Object ... params) {
 		// 1. 이벤트 생성 
 		BatchReceiveEvent receiptEvent 
 				= new BatchReceiveEvent(domainId, eventType, eventStep);
@@ -475,7 +475,7 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 		receiptEvent.setAreaCd(areaCd);
 		receiptEvent.setStageCd(stageCd);
 		receiptEvent.setJobDate(jobDate);
-		receiptEvent.setJobBatch(jobBatch);
+		receiptEvent.setJobBatch(batch);
 		receiptEvent.setReceiptData(receiptData);
 		receiptEvent.setPayLoad(params);
 		

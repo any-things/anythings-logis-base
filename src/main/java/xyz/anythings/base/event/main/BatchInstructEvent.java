@@ -11,8 +11,9 @@ public class BatchInstructEvent extends BatchRootEvent {
 
 	/**
 	 * 작업 시작 이벤트 타입 
-	 * 10 : EVENT_INSTRUCT_TYPE_START
-	 * 20 : EVENT_INSTRUCT_TYPE_ORDER_TYPE
+	 * 10 : EVENT_INSTRUCT_TYPE_ORDER_TYPE
+	 * 20 : EVENT_INSTRUCT_TYPE_INSTRUCT
+	 * 30 : EVENT_INSTRUCT_TYPE_BOX_REQ
 	 */
 	private short eventType ;
 	

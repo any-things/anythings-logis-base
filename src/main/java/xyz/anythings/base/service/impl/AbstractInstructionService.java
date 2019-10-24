@@ -24,12 +24,12 @@ public class AbstractInstructionService extends AbstractExecutionService{
 	 * @param equipIdList
 	 * @return
 	 */
-	protected List<?> getBatchEquipList(JobBatch jobBatch, List<String> equipIdList){
+	protected List<?> getBatchEquipList(JobBatch batch, List<String> equipIdList){
 		
 		Class<?> masterEntity = null;
 		
 		//1. 설비 타입에 대한 마스터 엔티티 구분 s
-		if(ValueUtil.isEqual(jobBatch.getEquipType(), "Rack")) {
+		if(ValueUtil.isEqual(batch.getEquipType(), "Rack")) {
 			masterEntity = Rack.class;
 		} else {
 			// TODO : 소터 등등등 추가 
@@ -38,16 +38,16 @@ public class AbstractInstructionService extends AbstractExecutionService{
 		
 		// 1. 작업 대상 설비가 있으면 그대로 return 
 		if(ValueUtil.isNotEmpty(equipIdList)){
-			return this.searchEquipByIds(jobBatch.getDomainId(), masterEntity, equipIdList);
+			return this.searchEquipByIds(batch.getDomainId(), masterEntity, equipIdList);
 		}
 		
-		// 2. jobBatch 에 작업 대상 설비 타입 및 코드 가 지정 되어 있으면 
-		if(ValueUtil.isNotEmpty(jobBatch.getEquipCd())) {
-			return this.searchEquipByJobBatchEquipCd(masterEntity, jobBatch);
+		// 2. batch 에 작업 대상 설비 타입 및 코드 가 지정 되어 있으면 
+		if(ValueUtil.isNotEmpty(batch.getEquipCd())) {
+			return this.searchEquipByJobBatchEquipCd(masterEntity, batch);
 		}
 		
-		// 3. jobBatch 에 작업 대상 설비 타입만 지정되어 있으면 
-		return this.searchEquipByJobBatchEquipGroup(masterEntity, jobBatch);
+		// 3. batch 에 작업 대상 설비 타입만 지정되어 있으면 
+		return this.searchEquipByJobBatchEquipGroup(masterEntity, batch);
 	}
 	
 	/************** 배치 작업 지시 이벤트 처리  **************/
@@ -55,25 +55,26 @@ public class AbstractInstructionService extends AbstractExecutionService{
 	/**
 	 * 작업 지시 시작 이벤트 처리 
 	 * @param eventStep
-	 * @param jobBatch
+	 * @param batch
 	 * @return
 	 */
-	protected EventResultSet instructBatchStartEvent(short eventStep, JobBatch jobBatch, List<?> equipList, Object... params) {
-		return this.instructBatchEvent(jobBatch.getDomainId(), EventConstants.EVENT_INSTRUCT_TYPE_INSTRUCT, eventStep, jobBatch, equipList, params);
+	protected EventResultSet instructBatchStartEvent(short eventStep, JobBatch batch, List<?> equipList, Object... params) {
+		return this.instructBatchEvent(batch.getDomainId(), EventConstants.EVENT_INSTRUCT_TYPE_INSTRUCT, eventStep, batch, equipList, params);
 	}
 	
 	/**
 	 * 작업 지시 이벤트 처리 
 	 * @param eventType
 	 * @param eventStep
-	 * @param jobBatch
+	 * @param batch
 	 * @return
 	 */
-	protected EventResultSet instructBatchEvent(long domainId, short eventType, short eventStep, JobBatch jobBatch, List<?> equipList, Object... params) {
+	protected EventResultSet instructBatchEvent(long domainId, short eventType, short eventStep, JobBatch batch, List<?> equipList, Object... params) {
 		// 1. 이벤트 생성 
 		BatchInstructEvent event = new BatchInstructEvent(domainId, eventType, eventStep);
-		event.setJobBatch(jobBatch);
-		event.setJobType(jobBatch.getJobType());
+		event.setJobBatch(batch);
+		event.setJobType(batch.getJobType());
+		event.setEquipType(batch.getEquipType());
 		event.setEquipList(equipList);
 		event.setPayLoad(params);
 		
@@ -97,27 +98,27 @@ public class AbstractInstructionService extends AbstractExecutionService{
 	}
 	
 	/**
-	 * jobBatch equipCd 정보로 설비 마스터 리스트 조회 
+	 * batch equipCd 정보로 설비 마스터 리스트 조회 
 	 * @param clazz
-	 * @param jobBatch
+	 * @param batch
 	 * @return
 	 */
-	private <T> List<T> searchEquipByJobBatchEquipCd(Class<T> clazz, JobBatch jobBatch){
-		return LogisEntityUtil.searchEntitiesBy(jobBatch.getDomainId(), false, clazz, null
+	private <T> List<T> searchEquipByJobBatchEquipCd(Class<T> clazz, JobBatch batch){
+		return LogisEntityUtil.searchEntitiesBy(batch.getDomainId(), false, clazz, null
 				, "areaCd,stageCd,equipGroup,equipCd"
-				, jobBatch.getAreaCd(), jobBatch.getStageCd(), jobBatch.getEquipGroup(), jobBatch.getEquipCd());	
+				, batch.getAreaCd(), batch.getStageCd(), batch.getEquipGroup(), batch.getEquipCd());	
 	}
 	
 	/**
-	 * jobBatch equipGroup 정보로 설비 마스터 리스트 조회 
+	 * batch equipGroup 정보로 설비 마스터 리스트 조회 
 	 * @param clazz
-	 * @param jobBatch
+	 * @param batch
 	 * @return
 	 */
-	private <T> List<T> searchEquipByJobBatchEquipGroup(Class<T> clazz, JobBatch jobBatch){
-		return LogisEntityUtil.searchEntitiesBy(jobBatch.getDomainId(), false, clazz, null
+	private <T> List<T> searchEquipByJobBatchEquipGroup(Class<T> clazz, JobBatch batch){
+		return LogisEntityUtil.searchEntitiesBy(batch.getDomainId(), false, clazz, null
 				, "areaCd,stageCd,equipGroup"
-				, jobBatch.getAreaCd(), jobBatch.getStageCd(), jobBatch.getEquipGroup());	
+				, batch.getAreaCd(), batch.getStageCd(), batch.getEquipGroup());	
 	}
 	
 }
