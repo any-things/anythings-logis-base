@@ -105,8 +105,8 @@ public class AbstractInstructionService extends AbstractExecutionService{
 	 */
 	private <T> List<T> searchEquipByJobBatchEquipCd(Class<T> clazz, JobBatch batch){
 		return LogisEntityUtil.searchEntitiesBy(batch.getDomainId(), false, clazz, null
-				, "areaCd,stageCd,equipGroup,equipCd"
-				, batch.getAreaCd(), batch.getStageCd(), batch.getEquipGroup(), batch.getEquipCd());	
+				, "areaCd,stageCd,equipGroup,equipCd,activeFlag"
+				, batch.getAreaCd(), batch.getStageCd(), batch.getEquipGroup(), batch.getEquipCd(), 1);	
 	}
 	
 	/**
@@ -117,8 +117,8 @@ public class AbstractInstructionService extends AbstractExecutionService{
 	 */
 	private <T> List<T> searchEquipByJobBatchEquipGroup(Class<T> clazz, JobBatch batch){
 		return LogisEntityUtil.searchEntitiesBy(batch.getDomainId(), false, clazz, null
-				, "areaCd,stageCd,equipGroup"
-				, batch.getAreaCd(), batch.getStageCd(), batch.getEquipGroup());	
+				, "areaCd,stageCd,equipGroup,activeFlag"
+				, batch.getAreaCd(), batch.getStageCd(), batch.getEquipGroup(), 1);	
 	}
 	
 }
