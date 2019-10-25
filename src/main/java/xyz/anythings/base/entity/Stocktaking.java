@@ -29,6 +29,9 @@ public class Stocktaking extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	@Column(name = "job_seq", nullable = false, length = 12)
 	private Integer jobSeq;
+	
+	@Column (name = "stage_cd", nullable = false, length = 30)
+	private String stageCd;
 
 	@Column(name = "equip_type", nullable = false, length = 20)
 	private String equipType;
@@ -64,6 +67,14 @@ public class Stocktaking extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setJobSeq(Integer jobSeq) {
 		this.jobSeq = jobSeq;
+	}
+
+	public String getStageCd() {
+		return stageCd;
+	}
+
+	public void setStageCd(String stageCd) {
+		this.stageCd = stageCd;
 	}
 
 	public String getEquipType() {

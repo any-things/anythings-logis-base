@@ -1,10 +1,13 @@
 package xyz.anythings.base.entity;
 
-import xyz.elidom.dbist.annotation.Index;
+import xyz.anythings.base.LogisConstants;
+import xyz.anythings.base.util.LogisEntityUtil;
 import xyz.elidom.dbist.annotation.Column;
-import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.GenerationRule;
+import xyz.elidom.dbist.annotation.Index;
+import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.Table;
+import xyz.elidom.sys.entity.Domain;
 
 @Table(name = "gateways", idStrategy = GenerationRule.UUID, uniqueFields="domainId,gwCd", indexes = {
 	@Index(name = "ix_gateways_0", columnList = "domain_id,gw_cd", unique = true),
@@ -125,5 +128,28 @@ public class Gateway extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setRemark(String remark) {
 		this.remark = remark;
-	}	
+	}
+	
+	public static String buildGatewayPath(String siteCd, String areaCd, String stageCd, String gwCd) {
+		return siteCd + LogisConstants.DASH + areaCd + LogisConstants.DASH + stageCd + LogisConstants.DASH + gwCd;
+	}
+	
+	@Override
+	public void beforeCreate() {
+		super.beforeCreate();
+
+		Stage stage = LogisEntityUtil.findEntityByCode(this.domainId, true, Stage.class, "stageCd", this.stageCd);
+		Domain domain = Domain.currentDomain();
+		this.gwNm = Gateway.buildGatewayPath(domain.getMwSiteCd(), stage.getAreaCd(), stageCd, gwCd);
+	}
+	
+	@Override
+	public void beforeUpdate() {
+		super.beforeUpdate();
+		
+		Stage stage = LogisEntityUtil.findEntityByCode(this.domainId, true, Stage.class, "stageCd", this.stageCd);
+		Domain domain = Domain.currentDomain();
+		this.gwNm = Gateway.buildGatewayPath(domain.getMwSiteCd(), stage.getAreaCd(), stageCd, gwCd);
+	}
+
 }
