@@ -1,17 +1,16 @@
 package xyz.anythings.base.service.impl.dps;
 
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
 import xyz.anythings.base.entity.JobBatch;
-import xyz.anythings.base.entity.Order;
+import xyz.anythings.base.entity.Rack;
 import xyz.anythings.base.event.EventConstants;
 import xyz.anythings.base.service.api.IInstructionService;
 import xyz.anythings.base.service.impl.AbstractInstructionService;
-import xyz.anythings.base.util.LogisEntityUtil;
 import xyz.anythings.sys.event.model.EventResultSet;
 import xyz.elidom.util.ValueUtil;
 
@@ -159,7 +158,7 @@ public class DpsInstructionService extends AbstractInstructionService implements
 		int resultCnt = 0;
 		
 		// 3. 작업 지시 
-		resultCnt += this.instructBatchStartProcess(batch, equipList, params);
+		resultCnt += this.instructBatchStartCallProc(batch, equipList, params);
 		
 		// 4. 후처리 이벤트 
 		EventResultSet aftResult = this.instructBatchStartEvent(EventConstants.EVENT_STEP_AFTER, batch, equipList, params);
@@ -174,51 +173,25 @@ public class DpsInstructionService extends AbstractInstructionService implements
 		return resultCnt;
 	}
 	
-	private int instructBatchStartProcess(JobBatch batch, List<?> equipList, Object...params) {
+	/**
+	 * 작업 지시 프로시저 실행 
+	 * @param batch
+	 * @param equipList
+	 * @param params
+	 * @return
+	 */
+	private int instructBatchStartCallProc(JobBatch batch, List<?> equipList, Object...params) {
 
-		// 1. 전체 주문 조회 
-		List<Order> orderList = LogisEntityUtil.searchEntitiesBy(batch.getDomainId(), false, Order.class, "id,orderNo,orderType", "batchId", batch.getId());
+		List<String> equipIdList = new ArrayList<String>();
+		for(Object equip : equipList) equipIdList.add(((Rack)equip).getId());
 		
-		if(ValueUtil.isEmpty(batch.getEquipCd())){
-			boolean useDivideOptions = false;
-			if(useDivideOptions) {
-				// 1.1. 호기별 분할 ( 비율 설정 ) 
-				// TODO 
-			} else {
-				// 1.2. 전체 호기 대상 작업 지시
-				
-				// 1.2.1 상태 변경 
-				for(Order order : orderList) {
-					order.setStatus(Order.STATUS_INSTRUCT);
-				}
-				
-				// 1.2.2 배치 update
-				this.queryManager.updateBatch(orderList, "status");
-				
-				// 1.2.3. 작업 배치 상태 업데이트 
-				batch.setEquipCd("ALL");
-				batch.setStatus(JobBatch.STATUS_RUNNING);
-				batch.setInstructedAt(new Date());
-				
-				this.queryManager.update(batch, "equipCd","status","instructedAt");
-			}
-			
-		} else {
-			// 3. 하나의 호기에 작업 지시 
-			// 3.1. 상태 변경 
-			for(Order order : orderList) {
-				order.setStatus(Order.STATUS_INSTRUCT);
-			}
-			
-			// 3.2. 배치 update
-			batch.setStatus(JobBatch.STATUS_RUNNING);
-			batch.setInstructedAt(new Date());
-			
-			this.queryManager.update(batch, "status","instructedAt");
-			
-			// 3.3. 작업 배치 상태 업데이트 
-			batch.updateStatus(JobBatch.STATUS_RUNNING);
-		}
+		// 1. 파라미터 생성
+		Map<String, Object> paramMap = ValueUtil.newMap("P_IN_DOMAIN_ID,P_IN_BATCH_ID,P_IN_EQUIP_ID_LIST"
+				, batch.getDomainId(), batch.getId(),ValueUtil.listToString(equipIdList));
+		// 2. 프로시져 콜 
+//		Map<?, ?> result = this.queryManager.callReturnProcedure("OP_INSTRUCT_DPS_BATCH", paramMap, Map.class);
+		
+		this.queryManager.callReturnProcedure("OP_INSTRUCT_DPS_BATCH", paramMap, Map.class);
 		
 		return 1;
 	}

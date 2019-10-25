@@ -41,15 +41,15 @@ public class BatchService extends AbstractQueryService implements IBatchService 
 	}
 
 	@Override
-	public JobBatch findRunningBatch(Long domainId, String stageCd, String equipType, String equipCd) {
+	public JobBatch findRunningBatch(Long domainId, String stageCd, String equipType, String equipGroup, String equipCd) {
 		// equipCd 가 지정 된 경우에는 해당 equip 에 대한 작업 상태를 확인
-		// equipCd 가 없는 경우에는 equipType 까지만 작업 상태를 확인 
+		// equipCd 가 없는 경우에는 equipGroup 까지만 작업 상태를 확인 
 		
 		// 1. stage 조회 
 		Stage stage = LogisEntityUtil.findEntityBy(domainId, false, Stage.class, null, "stageCd", stageCd);
 		
-		String filterNames = "areaCd,stageCd,equipType,status";
-		List<Object> filterValues = ValueUtil.newList(stage.getAreaCd(), stageCd, equipType, JobBatch.STATUS_RUNNING);
+		String filterNames = "areaCd,stageCd,equipType,equipGroup,status";
+		List<Object> filterValues = ValueUtil.newList(stage.getAreaCd(), stageCd, equipType, equipGroup, JobBatch.STATUS_RUNNING);
 		
 		// 2. equipCd 가 지정된 경우 조건이 다름 
 		if(ValueUtil.isEmpty(equipCd) == false) {
