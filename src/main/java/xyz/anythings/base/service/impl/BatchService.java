@@ -51,9 +51,9 @@ public class BatchService extends AbstractQueryService implements IBatchService 
 		String filterNames = "areaCd,stageCd,equipType,equipGroup,status";
 		List<Object> filterValues = ValueUtil.newList(stage.getAreaCd(), stageCd, equipType, equipGroup, JobBatch.STATUS_RUNNING);
 		
-		// 2. equipCd 가 지정된 경우 조건이 다름 
-		if(ValueUtil.isEmpty(equipCd) == false) {
-			filterNames+="equipCd";
+		// 2. equipCd가 지정된 경우 조건이 다름 
+		if(ValueUtil.isNotEmpty(equipCd)) {
+			filterNames += "equipCd";
 			filterValues.add(equipCd);
 		}
 		
