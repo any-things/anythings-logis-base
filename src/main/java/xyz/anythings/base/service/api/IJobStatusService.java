@@ -189,20 +189,17 @@ public interface IJobStatusService {
 	 * 
 	 * @param domainId
 	 * @param deviceType
-	 * @param deviceId
-	 * @param updateVersion
 	 * @return
 	 */
-	public List<String> searchUpdateItems(Long domainId, String deviceType, String deviceId, String updateVersion);
+	public List<String> searchUpdateItems(Long domainId, String deviceType);
 	
 	/**
 	 * 5-4. 모바일 장비 업데이트 메시지 전송
 	 * 
 	 * @param domainId
 	 * @param deviceType
-	 * @param deviceId
 	 */
-	public void sendDeviceUpdateMessage(Long domainId, String deviceType, String deviceId);
+	public void sendDeviceUpdateMessage(Long domainId, String deviceType);
 		
 	/**
 	 * 6-1. 기타 : 배치별 (B2B - 상품별, B2C - 주문별) 셀에 남은 총 처리할 수량 계산

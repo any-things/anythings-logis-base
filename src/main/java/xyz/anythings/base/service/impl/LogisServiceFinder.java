@@ -6,8 +6,11 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import xyz.anythings.base.entity.BoxPack;
 import xyz.anythings.base.entity.JobBatch;
+import xyz.anythings.base.entity.JobInstance;
 import xyz.anythings.base.service.api.IBatchService;
+import xyz.anythings.base.service.api.IClassificationService;
 import xyz.anythings.base.service.api.IInstructionService;
 import xyz.anythings.base.service.api.IInvoiceNoService;
 import xyz.anythings.base.service.api.IPreprocessService;
@@ -152,9 +155,9 @@ public class LogisServiceFinder implements BeanFactoryAware {
 	 * @param batch
 	 * @return
 	 */
-	/*public IAssortService getAssortService(JobBatch batch) {
-		return this.getAssortService(batch.getJobType());
-	}*/
+	public IClassificationService getClassificationService(JobBatch batch) {
+		return this.getClassificationService(batch.getEquipType());
+	}
 	
 	/**
 	 * 작업 정보로 분류 서비스를 찾아 리턴
@@ -162,9 +165,9 @@ public class LogisServiceFinder implements BeanFactoryAware {
 	 * @param job
 	 * @return
 	 */
-	/*public IAssortService getAssortService(JobProcess job) {
-		return this.getAssortService(job.getJobType());
-	}*/
+	public IClassificationService getClassificationService(JobInstance job) {
+		return this.getClassificationService(job.getEquipType());
+	}
 	
 	/**
 	 * 박스 정보로 분류 서비스를 찾아 리턴
@@ -172,19 +175,19 @@ public class LogisServiceFinder implements BeanFactoryAware {
 	 * @param box
 	 * @return
 	 */
-	/*public IAssortService getAssortService(BoxResult box) {
-		return this.getAssortService(box.getJobType());
-	}*/
+	public IClassificationService getClassificationService(BoxPack box) {
+		return this.getClassificationService(box.getEquipType());
+	}
 	
 	/**
 	 * 작업 유형에 따른 분류 서비스 컴포넌트를 찾아서 리턴
 	 * 
-	 * @param jobType
+	 * @param equipType
 	 * @return
 	 */
-	/*public IAssortService getAssortService(String jobType) {
-		String assortSvcType = jobType.toLowerCase() + "AssortService";
-		return (IAssortService)this.beanFactory.getBean(assortSvcType);
-	}*/
+	public IClassificationService getClassificationService(String equipType) {
+		String assortSvcType = equipType.toLowerCase() + "ClassificationService";
+		return (IClassificationService)this.beanFactory.getBean(assortSvcType);
+	}
 
 }
