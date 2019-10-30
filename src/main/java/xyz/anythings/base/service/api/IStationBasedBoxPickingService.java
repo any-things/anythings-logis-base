@@ -23,7 +23,7 @@ import xyz.anythings.base.entity.JobInstance;
  * 		5) 박싱 처리
  * 		6) 박싱 취소
  * 		7) 주문별 박스별 피킹 완료 여부 체크
- * 		8) 스테이션 별 현재 작업 완료 여부 체크
+ * 		8) 스테이션에 투입된 주문별 피킹 작업 완료 여부 체크
  */
 public interface IStationBasedBoxPickingService extends IBoxPickingService {
 

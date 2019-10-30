@@ -2,6 +2,7 @@ package xyz.anythings.base.entity;
 
 import xyz.elidom.dbist.annotation.Column;
 import xyz.elidom.dbist.annotation.GenerationRule;
+import xyz.elidom.dbist.annotation.Ignore;
 import xyz.elidom.dbist.annotation.Index;
 import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.Table;
@@ -64,6 +65,15 @@ public class JobInput extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	@Column (name = "status", length = 10)
 	private String status;
+	
+	@Ignore
+	private String skuNm;
+	
+	@Ignore
+	private Integer planQty;
+	
+	@Ignore
+	private Integer resultQty;
   
 	public String getId() {
 		return id;
@@ -183,5 +193,30 @@ public class JobInput extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setStatus(String status) {
 		this.status = status;
-	}	
+	}
+
+	public String getSkuNm() {
+		return skuNm;
+	}
+
+	public void setSkuNm(String skuNm) {
+		this.skuNm = skuNm;
+	}
+
+	public Integer getPlanQty() {
+		return planQty;
+	}
+
+	public void setPlanQty(Integer planQty) {
+		this.planQty = planQty;
+	}
+
+	public Integer getResultQty() {
+		return resultQty;
+	}
+
+	public void setResultQty(Integer resultQty) {
+		this.resultQty = resultQty;
+	}
+
 }
