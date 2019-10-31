@@ -9,7 +9,7 @@ import xyz.anythings.base.entity.SKU;
  * 
  * @author shortstop
  */
-public class MiddleClass {
+public class Category {
 	
 	/**
 	 * 배치 그룹 ID
@@ -38,12 +38,12 @@ public class MiddleClass {
 	/**
 	 * 설비 코드별 분류 수량 정보 
 	 */
-	private List<MiddleClassItem> items;
+	private List<CategoryItem> items;
 	
 	/**
 	 * 기본 생성자 
 	 */
-	public MiddleClass() {
+	public Category() {
 	}
 	
 	/**
@@ -53,7 +53,7 @@ public class MiddleClass {
 	 * @param sku
 	 * @param items
 	 */
-	public MiddleClass(String batchGroupId, SKU sku) {
+	public Category(String batchGroupId, SKU sku) {
 		this.batchGroupId = batchGroupId;
 		this.skuCd = sku.getSkuCd();
 		this.skuNm = sku.getSkuNm();
@@ -69,7 +69,7 @@ public class MiddleClass {
 	 * @param sku
 	 * @param items
 	 */
-	public MiddleClass(String batchGroupId, SKU sku, List<MiddleClassItem> items) {
+	public Category(String batchGroupId, SKU sku, List<CategoryItem> items) {
 		this.batchGroupId = batchGroupId;
 		this.skuCd = sku.getSkuCd();
 		this.skuNm = sku.getSkuNm();
@@ -127,11 +127,11 @@ public class MiddleClass {
 		this.skuWt = skuWt;
 	}
 	
-	public List<MiddleClassItem> getItems() {
+	public List<CategoryItem> getItems() {
 		return items;
 	}
 
-	public void setItems(List<MiddleClassItem> items) {
+	public void setItems(List<CategoryItem> items) {
 		this.items = items;
 	}
 

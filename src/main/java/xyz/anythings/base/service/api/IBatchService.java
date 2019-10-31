@@ -37,14 +37,7 @@ public interface IBatchService {
 	 * @return
 	 */
 	public BatchProgressRate dailyProgressRate(Long domainId, String stageCd, String jobDate);
-	
-	/**
-	 * 작업 배치에 대한 진행율을 조회한다.
-	 * 
-	 * @param batch
-	 */
-	public BatchProgressRate batchProgressRate(JobBatch batch);
-	
+		
 	/**
 	 * 스테이지 내 설비 별로 진행 중인 작업 배치 찾기
 	 * 

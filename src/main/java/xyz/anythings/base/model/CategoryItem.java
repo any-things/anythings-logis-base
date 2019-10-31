@@ -1,11 +1,11 @@
 package xyz.anythings.base.model;
 
 /**
- * 중분류 정보
+ * 중분류 아이템
  * 
  * @author shortstop
  */
-public class MiddleClassItem {
+public class CategoryItem {
 	/**
 	 * 배치 시퀀스 - 반품 중분류에서 사용
 	 */
@@ -35,10 +35,10 @@ public class MiddleClassItem {
 	 */
 	private int pcsQty;
 	
-	public MiddleClassItem() {
+	public CategoryItem() {
 	}
 	
-	public MiddleClassItem(Integer jobSeq, String equipType, String equipCd, String equipNm, int palletQty, int boxQty, Integer pcsQty) {
+	public CategoryItem(Integer jobSeq, String equipType, String equipCd, String equipNm, int palletQty, int boxQty, Integer pcsQty) {
 		this.jobSeq = jobSeq;
 		this.equipType = equipType;
 		this.equipCd = equipCd;

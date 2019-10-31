@@ -2,6 +2,7 @@ package xyz.anythings.base.service.impl;
 
 import java.util.List;
 
+import xyz.anythings.base.LogisConstants;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.Rack;
 import xyz.anythings.base.event.EventConstants;
@@ -29,7 +30,7 @@ public class AbstractInstructionService extends AbstractExecutionService{
 		Class<?> masterEntity = null;
 		
 		//1. 설비 타입에 대한 마스터 엔티티 구분 s
-		if(ValueUtil.isEqual(batch.getEquipType(), "Rack")) {
+		if(ValueUtil.isEqual(batch.getEquipType(), LogisConstants.EQUIP_TYPE_RACK)) {
 			masterEntity = Rack.class;
 		} else {
 			// TODO : 소터 등등등 추가 

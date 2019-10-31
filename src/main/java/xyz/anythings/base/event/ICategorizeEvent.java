@@ -1,26 +1,54 @@
 package xyz.anythings.base.event;
 
 /**
- * 소분류 작업을 위한 설비 투입 최상위 이벤트
+ * 중분류 이벤트
  * 
  * @author shortstop
  */
-public interface IClassifyInEvent extends IClassifyEvent {
-	
+public interface ICategorizeEvent {
+
 	/**
-	 * 검수를 위한 투입 여부
+	 * 작업 배치 그룹 리턴 
 	 * 
 	 * @return
 	 */
-	public boolean isForInspection();
+	public String getBatchGroupId();
 	
 	/**
-	 * 검수를 위한 투입 설정 
+	 * 작업 배치 그룹 설정
 	 * 
-	 * @param isForInspection
+	 * @param batchGroupId
 	 */
-	public void setForInspection(boolean isForInspection);
+	public void setBatchGroupId(String batchGroupId);
 	
+	/**
+	 * 이벤트 소스 리턴 - 이벤트 발생 모듈명
+	 * 
+	 * @return
+	 */
+	public String getEventSource();
+	
+	/**
+	 * 이벤트 소스 설정
+	 * 
+	 * @param eventSource
+	 */
+	public void setEventSource(String eventSource);
+	
+	/**
+	 * 이벤트 타겟 리턴 - 이벤트를 수신할 모듈명
+	 * 
+	 * @return
+	 */
+	public String getEventTarget();
+	
+	/**
+	 * 이벤트 타겟 설정
+	 * 
+	 * @param eventTarget
+	 */
+	public void setEventTarget(String eventTarget);
+
 	/**
 	 * 투입 유형 리턴 - 아래 상수 참조 (상품 낱개 투입, 상품 완박스 투입, 상품 묶음 투입, 박스 투입)
 	 * LogisCodeConstants.CLASSIFICATION_INPUT_TYPE_SKU, 
@@ -56,19 +84,5 @@ public interface IClassifyInEvent extends IClassifyEvent {
 	 * @param inputCode
 	 */
 	public void setInputCode(String inputCode);
-	
-	/**
-	 * 투입 수량 리턴
-	 * 
-	 * @return
-	 */
-	public String getInputQty();
-	
-	/**
-	 * 투입 수량 설정
-	 * 
-	 * @param inputQty
-	 */
-	public void setInputQty(int inputQty);
-	
+
 }

@@ -4,7 +4,7 @@ import xyz.anythings.base.entity.JobInstance;
 import xyz.anythings.base.entity.WorkCell;
 
 /**
- * 분류 작업 시 발생한 에러 이벤트
+ * 소분류 작업 시 발생한 에러 이벤트
  * 
  * @author shortstop
  */

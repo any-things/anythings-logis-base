@@ -23,7 +23,7 @@ import xyz.anythings.base.entity.JobInstance;
 import xyz.anythings.base.entity.SKU;
 import xyz.anythings.base.model.BaseResponse;
 import xyz.anythings.base.model.BatchProgressRate;
-import xyz.anythings.base.model.MiddleClass;
+import xyz.anythings.base.model.Category;
 import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
 import xyz.elidom.orm.system.annotation.service.ServiceDesc;
@@ -260,9 +260,9 @@ public class DeviceProcessController {
 	 * @param weightFlag
 	 * @return
 	 */
-	@RequestMapping(value = "/classify/middle_step/{batch_group_id}/{com_cd}/{sku_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiDesc(description = "Classify middle step by batchGroupId, comCd, skuCd")
-	public MiddleClass classifyMiddleStep(
+	@RequestMapping(value = "/categorize/{batch_group_id}/{com_cd}/{sku_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Categorize by batchGroupId, comCd, skuCd")
+	public Category categorize(
 			@PathVariable("batch_group_id") String batchGroupId,
 			@PathVariable("com_cd") String comCd, 
 			@PathVariable("sku_cd") String skuCd, 
@@ -280,8 +280,8 @@ public class DeviceProcessController {
 	 * @param skuInfo
 	 * @return
 	 */
-	@RequestMapping(value = "/classify/middle_step/{batch_group_id}/apply_weight", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiDesc(description = "Classify middle step - apply SKU Weight!")
+	@RequestMapping(value = "/categorize/{batch_group_id}/apply_weight", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Categorize - apply SKU Weight!")
 	public Object updateSkuWeight(@PathVariable("batch_group_id") String batchGroupId, @RequestBody SKU skuInfo) {
 		
 		// TODO 
@@ -289,18 +289,18 @@ public class DeviceProcessController {
 	}
 	
 	/**********************************************************************
-	 * 								분류 처리 API  
+	 * 								소분류 처리 API  
 	 **********************************************************************/
 	
 	/**
-	 * 작업 처리 ID (jobInstanceId)로 분류 작업 처리 
+	 * 작업 처리 ID (jobInstanceId)로 소분류 작업 처리 
 	 * 
 	 * @param equipType
 	 * @param equipCd
 	 * @param jobProcessId
 	 * @return
 	 */
-	@RequestMapping(value = "/classification/confirm/{equip_type}/{equip_cd}/{job_instance_id}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/classify/confirm/{equip_type}/{equip_cd}/{job_instance_id}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Confirm classification")
 	public BaseResponse confirmClassification(
 			@PathVariable("equip_type") String equipType,
@@ -311,7 +311,7 @@ public class DeviceProcessController {
 	}
 
 	/**
-	 * 작업 ID (jobInstanceId)로 작업 분할 처리
+	 * 작업 ID (jobInstanceId)로 소분류 작업 분할 처리
 	 * 
 	 * @param equipType
 	 * @param equipCd
@@ -320,7 +320,7 @@ public class DeviceProcessController {
 	 * @param resQty
 	 * @return
 	 */
-	@RequestMapping(value = "/classification/split/{equip_type}/{equip_cd}/{job_instance_id}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/classify/split/{equip_type}/{equip_cd}/{job_instance_id}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Confirm classification")
 	public BaseResponse splitClassification(
 			@PathVariable("equip_type") String equipType,
@@ -333,14 +333,14 @@ public class DeviceProcessController {
 	}
 	
 	/**
-	 * 작업 ID (jobInstanceId)로 작업 취소 처리
+	 * 작업 ID (jobInstanceId)로 소분류 작업 취소 처리
 	 * 
 	 * @param equipType
 	 * @param equipCd
 	 * @param jobInstanceId
 	 * @return
 	 */
-	@RequestMapping(value = "/classification/cancel/{equip_type}/{equip_cd}/{job_instance_id}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/classify/cancel/{equip_type}/{equip_cd}/{job_instance_id}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Cancel classification")
 	public BaseResponse cancelClassification(
 			@PathVariable("equip_type") String equipType,
@@ -348,8 +348,26 @@ public class DeviceProcessController {
 			@PathVariable("job_instance_id") String jobInstanceId) {
 		// TODO
 		return null;
+	}	
+	
+	/**
+	 * 소분류 확정 취소
+	 * 
+	 * @param equipType
+	 * @param equipCd
+	 * @param jobInstanceId
+	 * @return
+	 */
+	@RequestMapping(value = "/classify/undo/{equip_type}/{equip_cd}/{job_instance_id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Undo classification")
+	public BaseResponse undoClassification(
+			@PathVariable("equip_type") String equipType,
+			@PathVariable("equip_cd") String equipCd, 
+			@PathVariable("job_instance_id") String jobInstanceId) {
+		// TODO
+		return null;
 	}
-
+	
 	/**
 	 * 풀 박스
 	 * 
@@ -358,7 +376,7 @@ public class DeviceProcessController {
 	 * @param jobInstanceId
 	 * @return
 	 */
-	@RequestMapping(value = "/classification/fullbox/{equip_type}/{equip_cd}/{job_instance_id}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/fullbox/{equip_type}/{equip_cd}/{job_instance_id}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Fullbox")
 	public BaseResponse fullboxing(
 			@PathVariable("equip_type") String equipType,
@@ -375,27 +393,9 @@ public class DeviceProcessController {
 	 * @param equipCd
 	 * @return
 	 */
-	@RequestMapping(value = "/classification/fullbox_all/{equip_type}/{equip_cd}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/fullbox_all/{equip_type}/{equip_cd}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Batch fullbox")
 	public BaseResponse batchFullbox(@PathVariable("equip_type") String equipType,  @PathVariable("equip_cd") String equipCd) {
-		// TODO
-		return null;
-	}	
-	
-	/**
-	 * 피킹 확정 취소
-	 * 
-	 * @param equipType
-	 * @param equipCd
-	 * @param jobInstanceId
-	 * @return
-	 */
-	@RequestMapping(value = "/undo/classification/{equip_type}/{equip_cd}/{job_instance_id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiDesc(description = "Undo classification")
-	public BaseResponse undoClassification(
-			@PathVariable("equip_type") String equipType,
-			@PathVariable("equip_cd") String equipCd, 
-			@PathVariable("job_instance_id") String jobInstanceId) {
 		// TODO
 		return null;
 	}
@@ -409,7 +409,7 @@ public class DeviceProcessController {
 	 * @param boxId
 	 * @return
 	 */
-	@RequestMapping(value = "/undo/fullbox/{equip_type}/{equip_cd}/{cell_cd}/{box_id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/fullbox/undo/{equip_type}/{equip_cd}/{cell_cd}/{box_id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Undo fullbox")
 	public BaseResponse undoFullboxing(
 			@PathVariable("equip_type") String equipType,

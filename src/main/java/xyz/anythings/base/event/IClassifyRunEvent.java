@@ -1,7 +1,7 @@
 package xyz.anythings.base.event;
 
 /**
- * 분류 처리 이벤트
+ * 소분류 처리 이벤트
  * 
  * @author shortstop
  */

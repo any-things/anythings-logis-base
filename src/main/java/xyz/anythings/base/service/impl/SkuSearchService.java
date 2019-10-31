@@ -2,6 +2,7 @@ package xyz.anythings.base.service.impl;
 
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.springframework.stereotype.Component;
 
@@ -11,13 +12,12 @@ import xyz.anythings.base.LogisConstants;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.SKU;
 import xyz.anythings.base.query.store.BatchQueryStore;
+import xyz.anythings.base.service.api.IConfigSetService;
 import xyz.anythings.base.service.api.ISkuSearchService;
 import xyz.anythings.base.util.LogisEntityUtil;
-import xyz.anythings.sys.service.AbstractQueryService;
 import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.elidom.dbist.dml.Query;
 import xyz.elidom.sys.SysConstants;
-import xyz.elidom.sys.util.SettingUtil;
 import xyz.elidom.sys.util.ThrowUtil;
 import xyz.elidom.util.BeanUtil;
 import xyz.elidom.util.ValueUtil;
@@ -28,30 +28,39 @@ import xyz.elidom.util.ValueUtil;
  * @author shortstop
  */
 @Component("baseSkuSearchService")
-public class SkuSearchService extends AbstractQueryService implements ISkuSearchService {
+public class SkuSearchService extends AbstractLogisService implements ISkuSearchService {
 
 	@Override
 	public String[] getSkuSearchConditionFields(JobBatch batch) {
-		// TODO batch로 설정을 찾는 것으로 수정
-		String config = SettingUtil.getValue(LogisConfigConstants.SKU_CONDITION_FIELDS_TO_SEARCH, "skuCd,skuBarcd");
+		String config = this.logisServiceFinder.getConfigSetService().getJobConfigValue(batch.getId(), LogisConfigConstants.SKU_CONDITION_FIELDS_TO_SEARCH, "skuCd,skuBarcd");
 		return config.split(LogisConstants.COMMA);
 	}
 	
 	@Override
 	public String getSkuSearchSelectFields(JobBatch batch) {
-		// TODO batch로 설정을 찾는 것으로 수정
-		return SettingUtil.getValue(LogisConfigConstants.SKU_SELECT_FIELDS_TO_SEARCH, "id,com_cd,sku_cd,sku_nm,sku_barcd,box_barcd,box_in_qty,sku_wt");
+		String config = this.logisServiceFinder.getConfigSetService().getJobConfigValue(batch.getId(), LogisConfigConstants.SKU_SELECT_FIELDS_TO_SEARCH, "id,com_cd,sku_cd,sku_nm,sku_barcd,box_barcd,box_in_qty,sku_wt");
+		return config;
 	}
 	
 	@Override
 	public String validateSkuCd(JobBatch batch, String skuCd) {
 		skuCd = ValueUtil.isEmpty(skuCd) ? skuCd : skuCd.trim();
-		// TODO 유효성 체크 여부 설정에 따라서 유효성 체크 부분 추가
-		String maxLengthStr = SettingUtil.getValue(LogisConfigConstants.SKU_BARCODE_MAX_LENGTH);
+		IConfigSetService configSetSvc = this.logisServiceFinder.getConfigSetService();
 		
+		// 1. SKU 바코드 최대 길이 체크
+		String maxLengthStr = configSetSvc.getJobConfigValue(batch.getId(), LogisConfigConstants.SKU_BARCODE_MAX_LENGTH);
 		if(ValueUtil.isNotEmpty(maxLengthStr)) {
 			int maxLen = ValueUtil.toInteger(maxLengthStr);
 			skuCd = (skuCd.length() > maxLen) ? skuCd.substring(0, maxLen) : skuCd;
+		}
+		
+		// 2. 상품 코드 유효성 체크 설정에 따라서 정규표현식 체크
+		String skuCdRule = configSetSvc.getJobConfigValue(batch.getId(), LogisConfigConstants.VALIDATION_RULE_SKUCD);
+		if(ValueUtil.isNotEmpty(skuCdRule)) {
+			if(!Pattern.matches(skuCdRule, skuCd)) {
+				// 상품 코드가 유효하지 않습니다.
+				throw ThrowUtil.newAIsInvalid("terms.label.sku_cd");
+			}
 		}
 		
 		return skuCd;		

@@ -19,7 +19,6 @@ import xyz.anythings.base.entity.BatchReceipt;
 import xyz.anythings.base.entity.BatchReceiptItem;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.model.BatchProgressRate;
-import xyz.anythings.base.service.api.IBatchService;
 import xyz.anythings.base.service.impl.LogisServiceFinder;
 import xyz.anythings.base.util.LogisEntityUtil;
 import xyz.elidom.dbist.dml.Page;
@@ -42,11 +41,6 @@ public class JobBatchController extends AbstractRestService {
 	 */
 	@Autowired
 	private LogisServiceFinder logisServiceFinder;
-	/**
-	 * 작업 배치 서비스
-	 */
-	@Autowired
-	private IBatchService batchService;
 	
 	@Override
 	protected Class<?> entityClass() {
@@ -113,7 +107,7 @@ public class JobBatchController extends AbstractRestService {
 			@RequestParam(name = "stage_cd", required = true) String stageCd, 
 			@RequestParam(name = "job_date", required = true) String jobDate) {
 		
-		return this.batchService.dailyProgressRate(Domain.currentDomainId(), stageCd, jobDate);
+		return this.logisServiceFinder.getBatchService().dailyProgressRate(Domain.currentDomainId(), stageCd, jobDate);
 	}
 	
 	/**
@@ -127,7 +121,7 @@ public class JobBatchController extends AbstractRestService {
 	public BatchProgressRate batchProgressRate(@RequestParam(name = "id", required = true) String id) {
 		
 		JobBatch batch = LogisEntityUtil.findEntityById(true, JobBatch.class, id);
-		return this.batchService.batchProgressRate(batch);
+		return this.logisServiceFinder.getJobStatusService(batch).getBatchProgressSummary(batch);
 	}
 	
 	/**
@@ -145,7 +139,7 @@ public class JobBatchController extends AbstractRestService {
 			@PathVariable(name = "equip_type") String equipType,
 			@PathVariable(name = "equip_cd") String equipCd) {
 		
-		return this.batchService.findRunningBatch(Domain.currentDomainId(), stageCd, equipType, equipCd);
+		return this.logisServiceFinder.getBatchService().findRunningBatch(Domain.currentDomainId(), stageCd, equipType, equipCd);
 	}
 	
 	/**
@@ -163,7 +157,7 @@ public class JobBatchController extends AbstractRestService {
 			@PathVariable(name = "equip_type") String equipType,
 			@PathVariable(name = "equip_cd") String equipCd) {
 		
-		return this.batchService.searchRunningMainBatchList(Domain.currentDomainId(), stageCd, equipType, equipCd);
+		return this.logisServiceFinder.getBatchService().searchRunningMainBatchList(Domain.currentDomainId(), stageCd, equipType, equipCd);
 	}
 	
 	/**
@@ -181,7 +175,7 @@ public class JobBatchController extends AbstractRestService {
 			@PathVariable(name = "job_type") String jobType,
 			@PathVariable(name = "job_date") String jobDate) {
 		
-		return this.batchService.searchRunningBatchList(Domain.currentDomainId(), stageCd, jobType, jobDate);
+		return this.logisServiceFinder.getBatchService().searchRunningBatchList(Domain.currentDomainId(), stageCd, jobType, jobDate);
 	}
 	
 	/**
@@ -374,7 +368,7 @@ public class JobBatchController extends AbstractRestService {
 	public Map<String, Object> closeBatch(@RequestParam(name = "id", required = true) String id) {
 
 		JobBatch batch = LogisEntityUtil.findEntityByIdWithLock(true, JobBatch.class, id);
-		int count = this.batchService.closeBatch(batch, false);
+		int count = this.logisServiceFinder.getBatchService().closeBatch(batch, false);
 		return ValueUtil.newMap("result,count", SysConstants.OK_STRING, count);
 	}
 	
@@ -391,7 +385,7 @@ public class JobBatchController extends AbstractRestService {
 		// 1. JobBatch 조회 
 		JobBatch batch = LogisEntityUtil.findEntityByIdWithLock(true, JobBatch.class, id);
 		// 2. 작업 배치 마감
-		int count = this.batchService.closeBatch(batch, true);
+		int count = this.logisServiceFinder.getBatchService().closeBatch(batch, true);
 		// 3. 결과 리턴
 		return ValueUtil.newMap("result,count", SysConstants.OK_STRING, count);
 	}
@@ -427,7 +421,7 @@ public class JobBatchController extends AbstractRestService {
 			@PathVariable("batch_group_id") String batchGroupId, 
 			@RequestParam(name = "forcibly", required = false) boolean forcibly) {
 		
-		int count = this.batchService.closeBatchGroup(Domain.currentDomainId(), batchGroupId, forcibly);
+		int count = this.logisServiceFinder.getBatchService().closeBatchGroup(Domain.currentDomainId(), batchGroupId, forcibly);
 		return ValueUtil.newMap("result,msg,count", SysConstants.OK_STRING, SysConstants.OK_STRING, count);
 	}
 

@@ -3,7 +3,7 @@ package xyz.anythings.base.event;
 import xyz.anythings.base.entity.JobBatch;
 
 /**
- * 분류(In, 분류, Out)를 위한 공통 이벤트
+ * 소분류(In, 분류, Out)를 위한 공통 이벤트
  * 
  * @author shortstop
  */

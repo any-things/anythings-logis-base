@@ -83,7 +83,7 @@ public class LogisServiceUtil {
 		JobBatch batch = findBatch(domainId, batchId, false, true);
 		String jobType = batch.getJobType();
 		
-		if(!LogisConstants.isRtnJobType(jobType) && !LogisConstants.isRtn3JobType(jobType)) {
+		if(!LogisConstants.isRtnJobType(jobType)) {
 			// 지원하지 않는 작업 유형입니다
 			throw ThrowUtil.newValidationErrorWithNoLog(true, "NOT_SUPPORTED_A", "terms.label.job_type");
 		}

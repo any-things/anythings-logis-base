@@ -10,6 +10,7 @@ import xyz.anythings.base.entity.JobConfigSet;
 import xyz.anythings.base.entity.Stage;
 import xyz.anythings.base.model.BatchProgressRate;
 import xyz.anythings.base.service.api.IBatchService;
+import xyz.anythings.base.util.LogisBaseUtil;
 import xyz.anythings.base.util.LogisEntityUtil;
 import xyz.anythings.sys.service.AbstractQueryService;
 import xyz.elidom.util.ValueUtil;
@@ -24,18 +25,11 @@ public class BatchService extends AbstractQueryService implements IBatchService 
 
 	@Override
 	public String newJobBatchId(Long domainId, String stageCd, Object... params) {
-		// TODO Auto-generated method stub
-		return null;
+		return LogisBaseUtil.newJobBatchId(domainId);
 	}
 
 	@Override
 	public BatchProgressRate dailyProgressRate(Long domainId, String stageCd, String jobDate) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public BatchProgressRate batchProgressRate(JobBatch batch) {
 		// TODO Auto-generated method stub
 		return null;
 	}

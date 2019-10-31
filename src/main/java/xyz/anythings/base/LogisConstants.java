@@ -27,43 +27,32 @@ public class LogisConstants extends AnyConstants {
 	public static final String SIDE_TOTAL = "T";
 
 	/**
-	 * MPS Job Type : DAS - 일반 DAS
+	 * 분류 작업 유형 : Rack
+	 */
+	public static final String EQUIP_TYPE_RACK = "Rack";
+	/**
+	 * 분류 작업 유형 : Sorter 
+	 */
+	public static final String EQUIP_TYPE_SORTER = "Sorter";
+	/**
+	 * 분류 작업 유형 : MobileCart
+	 */
+	public static final String EQUIP_TYPE_MOBILE_CART = "MobileCart";
+	
+	/**
+	 * 분류 작업 유형 : DAS
 	 */
 	public static final String JOB_TYPE_DAS = "DAS";
 	/**
-	 * MPS Job Type : DAS2 - 소터와 연동하는 2차 분류 DAS
-	 */
-	public static final String JOB_TYPE_DAS2 = "DAS2";
-	/**
-	 * MPS Job Type : DAS3 - 단수/단포 DAS
-	 */
-	public static final String JOB_TYPE_DAS3 = "DAS3";
-	/**
-	 * MPS Job Type : RTN - 일반 반품 
+	 * 분류 작업 유형 : RTN 
 	 */
 	public static final String JOB_TYPE_RTN = "RTN";
 	/**
-	 * MPS Job Type : RTN2 - 소터와 연동하는 2차 분류 반품
-	 */
-	public static final String JOB_TYPE_RTN2 = "RTN2";
-	/**
-	 * MPS Job Type : RTN3 - 무오더 반품
-	 */
-	public static final String JOB_TYPE_RTN3 = "RTN3";
-	/**
-	 * MPS Job Type : DPS - 일반 DPS
+	 * 분류 작업 유형 : DPS
 	 */
 	public static final String JOB_TYPE_DPS = "DPS";
 	/**
-	 * MPS Job Type : DPS2 - 2차 분류 타입 DPS
-	 */
-	public static final String JOB_TYPE_DPS2 = "DPS2";
-	/**
-	 * MPS Job Type : DPS3 - 단수/단포 DPS
-	 */
-	public static final String JOB_TYPE_DPS3 = "DPS3";
-	/**
-	 * MPS Job Type : QPS
+	 * 분류 작업 유형 : QPS
 	 */
 	public static final String JOB_TYPE_QPS = "QPS";
 	
@@ -193,26 +182,6 @@ public class LogisConstants extends AnyConstants {
 	}
 	
 	/**
-	 * 작업 유형이 DAS 2차분류 작업 타입인지 체크 
-	 * 
-	 * @param jobType
-	 * @return
-	 */
-	public static boolean isDas2JobType(String jobType) {
-		return ValueUtil.isEqualIgnoreCase(JOB_TYPE_DAS2, jobType);
-	}
-	
-	/**
-	 * 작업 유형이 DAS 2차 분류 단수/단포 작업 타입인지 체크 
-	 * 
-	 * @param jobType
-	 * @return
-	 */
-	public static boolean isDas3JobType(String jobType) {
-		return ValueUtil.isEqualIgnoreCase(JOB_TYPE_DAS3, jobType);
-	}
-	
-	/**
 	 * 작업 유형이 반품 작업 타입인지 체크 
 	 * 
 	 * @param jobType
@@ -223,26 +192,6 @@ public class LogisConstants extends AnyConstants {
 	}
 	
 	/**
-	 * 작업 유형이 2차 분류 반품 작업 타입인지 체크 
-	 * 
-	 * @param jobType
-	 * @return
-	 */
-	public static boolean isRtn2JobType(String jobType) {
-		return ValueUtil.isEqualIgnoreCase(JOB_TYPE_RTN2, jobType);
-	}
-	
-	/**
-	 * 작업 유형이 무오더 반품 작업 타입인지 체크 
-	 * 
-	 * @param jobType
-	 * @return
-	 */
-	public static boolean isRtn3JobType(String jobType) {
-		return ValueUtil.isEqualIgnoreCase(JOB_TYPE_RTN3, jobType);
-	}
-	
-	/**
 	 * 작업 유형이 DPS 작업 타입인지 체크 
 	 * 
 	 * @param jobType
@@ -250,26 +199,6 @@ public class LogisConstants extends AnyConstants {
 	 */
 	public static boolean isDpsJobType(String jobType) {
 		return ValueUtil.isEqualIgnoreCase(JOB_TYPE_DPS, jobType);
-	}
-	
-	/**
-	 * 작업 유형이 2차 분류 DPS 작업 타입인지 체크
-	 * 
-	 * @param jobType
-	 * @return
-	 */
-	public static boolean isDps2JobType(String jobType) {
-		return ValueUtil.isEqualIgnoreCase(JOB_TYPE_DPS2, jobType);
-	}
-	
-	/**
-	 * 작업 유형이 단수/단포 DPS 작업 타입인지 체크
-	 * 
-	 * @param jobType
-	 * @return
-	 */
-	public static boolean isDps3JobType(String jobType) {
-		return ValueUtil.isEqualIgnoreCase(JOB_TYPE_DPS3, jobType);
 	}
 	
 	/**
@@ -299,17 +228,7 @@ public class LogisConstants extends AnyConstants {
 	 * @return
 	 */
 	public static boolean isB2CJobType(String jobType) {
-		return isDpsJobType(jobType) || isDps2JobType(jobType) || isDps3JobType(jobType) || isQpsJobType(jobType);
-	}
-	
-	/**
-	 * 무오더 작업 유형인지 체크
-	 * 
-	 * @param jobType
-	 * @return
-	 */
-	public static boolean isNoOrderJobType(String jobType) {
-		return isRtn3JobType(jobType);
+		return isDpsJobType(jobType) || isQpsJobType(jobType);
 	}
 	
 	/**
