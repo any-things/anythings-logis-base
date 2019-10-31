@@ -90,9 +90,6 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "equip_type", length = 20)
 	private String equipType;
 	
-	@Column(name = "equip_group", nullable = false, length = 30)
-	private String equipGroup;
-
 	@Column (name = "equip_cd", length = 30)
 	private String equipCd;
 
@@ -226,14 +223,6 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.equipType = equipType;
 	}
 	
-	public String getEquipGroup() {
-		return equipGroup;
-	}
-	
-	public void setEquipGroup(String equipGroup) {
-		this.equipGroup = equipGroup;
-	}
-
 	public String getEquipCd() {
 		return equipCd;
 	}
@@ -436,7 +425,6 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		batch.setAreaCd(receiptItem.getAreaCd());
 		batch.setStageCd(receiptItem.getStageCd());
 		batch.setEquipType(receiptItem.getEquipType());
-		batch.setEquipGroup(receiptItem.getEquipGroup());
 		batch.setEquipCd(receiptItem.getEquipCd());
 		batch.setEquipNm(""); // TODO ?????
 		batch.setParentOrderQty(receiptItem.getTotalOrders());

@@ -25,9 +25,6 @@ public class Rack extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column(name = "stage_cd", length = 30)
 	private String stageCd;
 
-	@Column(name = "equip_group", nullable = false, length = 30)
-	private String equipGroup;
-
 	@Column(name = "rack_cd", nullable = false, length = 30)
 	private String rackCd;
 
@@ -88,14 +85,6 @@ public class Rack extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.stageCd = stageCd;
 	}
 	
-	public String getEquipGroup() {
-		return equipGroup;
-	}
-	
-	public void setEquipGroup(String equipGroup) {
-		this.equipGroup = equipGroup;
-	}
-
 	public String getRackCd() {
 		return rackCd;
 	}

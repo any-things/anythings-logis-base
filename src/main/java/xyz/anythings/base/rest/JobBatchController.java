@@ -138,12 +138,11 @@ public class JobBatchController extends AbstractRestService {
 	 * @param equipCd
 	 * @return
 	 */
-	@RequestMapping(value = "/running_batch/{stage_cd}/{equip_type}/{equip_group}/{equip_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/running_batch/{stage_cd}/{equip_type}/{equip_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Find running batch of job batch")
 	public JobBatch findRunningBatch(
 			@PathVariable(name = "stage_cd") String stageCd, 
 			@PathVariable(name = "equip_type") String equipType,
-			@PathVariable(name = "equip_group") String equipGroup,
 			@PathVariable(name = "equip_cd") String equipCd) {
 		
 		return this.batchService.findRunningBatch(Domain.currentDomainId(), stageCd, equipType, equipGroup, equipCd);
