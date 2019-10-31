@@ -47,7 +47,7 @@ public class AbstractInstructionService extends AbstractExecutionService{
 		}
 		
 		// 3. batch 에 작업 대상 설비 타입만 지정되어 있으면 
-		return this.searchEquipByJobBatchEquipGroup(masterEntity, batch);
+		return this.searchEquipByJobBatch(masterEntity, batch);
 	}
 	
 	/************** 배치 작업 지시 이벤트 처리  **************/
@@ -105,20 +105,20 @@ public class AbstractInstructionService extends AbstractExecutionService{
 	 */
 	private <T> List<T> searchEquipByJobBatchEquipCd(Class<T> clazz, JobBatch batch){
 		return LogisEntityUtil.searchEntitiesBy(batch.getDomainId(), false, clazz, null
-				, "areaCd,stageCd,equipGroup,equipCd,activeFlag"
-				, batch.getAreaCd(), batch.getStageCd(), batch.getEquipGroup(), batch.getEquipCd(), 1);	
+				, "areaCd,stageCd,equipCd,activeFlag"
+				, batch.getAreaCd(), batch.getStageCd(), batch.getEquipCd(), 1);	
 	}
 	
 	/**
-	 * batch equipGroup 정보로 설비 마스터 리스트 조회 
+	 * batch 정보로 설비 마스터 리스트 조회 
 	 * @param clazz
 	 * @param batch
 	 * @return
 	 */
-	private <T> List<T> searchEquipByJobBatchEquipGroup(Class<T> clazz, JobBatch batch){
+	private <T> List<T> searchEquipByJobBatch(Class<T> clazz, JobBatch batch){
 		return LogisEntityUtil.searchEntitiesBy(batch.getDomainId(), false, clazz, null
-				, "areaCd,stageCd,equipGroup,activeFlag"
-				, batch.getAreaCd(), batch.getStageCd(), batch.getEquipGroup(), 1);	
+				, "areaCd,stageCd,activeFlag"
+				, batch.getAreaCd(), batch.getStageCd(), 1);	
 	}
 	
 }

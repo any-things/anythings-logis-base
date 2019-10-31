@@ -54,7 +54,7 @@ public interface IBatchService {
 	 * @param equipCd
 	 * @return
 	 */
-	public JobBatch findRunningBatch(Long domainId, String stageCd, String equipType, String equipGroup, String equipCd);
+	public JobBatch findRunningBatch(Long domainId, String stageCd, String equipType, String equipCd);
 	
 	/**
 	 * 스테이지 내 일자내 진행 중인 작업 배치 리스트 조회 

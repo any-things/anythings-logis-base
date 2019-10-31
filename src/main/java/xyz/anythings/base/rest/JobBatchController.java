@@ -145,7 +145,7 @@ public class JobBatchController extends AbstractRestService {
 			@PathVariable(name = "equip_type") String equipType,
 			@PathVariable(name = "equip_cd") String equipCd) {
 		
-		return this.batchService.findRunningBatch(Domain.currentDomainId(), stageCd, equipType, equipGroup, equipCd);
+		return this.batchService.findRunningBatch(Domain.currentDomainId(), stageCd, equipType, equipCd);
 	}
 	
 	/**
