@@ -57,6 +57,11 @@ public class LogisConstants extends AnyConstants {
 	public static final String JOB_TYPE_QPS = "QPS";
 	
 	/**
+	 * 박스요청 대기 상태 : Box Waiting
+	 */
+	public static final String JOB_STATUS_BOX_WAIT = "BW";
+	
+	/**
 	 * 작업 대기 상태 : Waiting
 	 */
 	public static final String JOB_STATUS_WAIT = "W";
