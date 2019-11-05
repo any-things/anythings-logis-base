@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.catalina.servlet4preview.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,20 +17,30 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.HandlerMapping;
 
+import xyz.anythings.base.LogisConstants;
 import xyz.anythings.base.entity.BoxItem;
 import xyz.anythings.base.entity.BoxPack;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.JobInput;
 import xyz.anythings.base.entity.JobInstance;
+import xyz.anythings.base.entity.Rack;
 import xyz.anythings.base.entity.SKU;
+import xyz.anythings.base.event.rest.DeviceProcessRestEvent;
 import xyz.anythings.base.model.BaseResponse;
 import xyz.anythings.base.model.BatchProgressRate;
 import xyz.anythings.base.model.Category;
+import xyz.anythings.base.query.store.BatchQueryStore;
+import xyz.anythings.base.util.LogisEntityUtil;
+import xyz.anythings.sys.event.EventPublisher;
 import xyz.elidom.dbist.dml.Page;
+import xyz.elidom.orm.IQueryManager;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
 import xyz.elidom.orm.system.annotation.service.ServiceDesc;
+import xyz.elidom.sys.entity.Domain;
 import xyz.elidom.sys.util.ValueUtil;
+import xyz.elidom.util.BeanUtil;
 
 /**
  * 작업자 디바이스와의 인터페이스 API
@@ -41,8 +54,14 @@ import xyz.elidom.sys.util.ValueUtil;
 @ServiceDesc(description = "Device Process Controller API")
 public class DeviceProcessController {
 
+	@Autowired
+	BatchQueryStore batchQueryStore;
+	
+	@Autowired
+	IQueryManager queryManager;
+	
 	/**********************************************************************
-	 * 								공통 API  
+	 * 								공통 API  q
 	 **********************************************************************/
 	/**
 	 * 장비 업데이트 하라는 메시지를 장비 타입별로 publish
@@ -99,8 +118,18 @@ public class DeviceProcessController {
 	@RequestMapping(value = "/batch_progress_rate/{equip_type}/{equip_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Batch Progress Rate")
 	public BatchProgressRate batchProgressRate(@PathVariable("equip_type") String equipType, @PathVariable("equip_cd") String equipCd) {
-		// TODO
-		return null;
+		
+		BatchProgressRate rate = new BatchProgressRate();
+		
+		// Rack 타입 공통 처리 
+		if(ValueUtil.isEqualIgnoreCase(LogisConstants.EQUIP_TYPE_RACK, equipType)) {
+			String qry = this.batchQueryStore.getRackBatchProgressRateQuery();
+			rate = this.queryManager.selectBySql(qry, ValueUtil.newMap("domainId,rackCd", Domain.currentDomainId(), equipCd), BatchProgressRate.class);
+		} else {
+			// TODO 다른 설비 추가 필요  
+		}
+		
+		return rate;
 	}
 	/**
 	 * 고객사 코드 및 상품 코드로 상품 조회
@@ -431,7 +460,7 @@ public class DeviceProcessController {
 	 * @param equipCd
 	 * @param page
 	 * @param limit
-	 * @param status 상태 - F: 완료인 것 만 보기, U: 미완료인 것만 보기 
+	 * @param status 상태 - F: 완료인 것 만 보기, U: 미완료인 것만 보기 , A : 전체 보기 
 	 * @return
 	 */
 	@RequestMapping(value = "/search/input_list/{equip_type}/{equip_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -443,7 +472,60 @@ public class DeviceProcessController {
 			@RequestParam(name = "limit", required = false) Integer limit,
 			@RequestParam(name = "status", required = false) String status) {
 		
-		// TODO 
+		Long domainId = Domain.currentDomainId();
+		
+		Map<String,Object> params = ValueUtil.newMap("domainId,equipType,equipCd", domainId, equipType, equipCd);
+		
+		// Rack 타입 공통 처리 
+		if(ValueUtil.isEqualIgnoreCase(LogisConstants.EQUIP_TYPE_RACK, equipType)) {
+			
+			// 1. RACK 조회 
+			Rack rack = LogisEntityUtil.findEntityBy(domainId, true, Rack.class, null,"rackCd,activeFlag,status", equipCd,LogisConstants.EQUIP_STATUS_OK, JobBatch.STATUS_RUNNING);
+			String qry = "";
+			
+			params.put("batchId", rack.getBatchId());
+			
+			
+			// 2. DPS 일때 쿼리 
+			if(LogisConstants.isDpsJobType(rack.getJobType())){
+				qry = this.batchQueryStore.getRackDpsBatchInputListQuery();
+			} else {
+				// TODO 다른 job type 쿼리.. 
+			}
+			
+			return this.queryManager.selectPageBySql(qry, params, JobInput.class, page, limit);
+		} else {
+			// TODO 다른 설비 추가 필요  
+		}
+		return null;
+	}
+	
+	
+	/**
+	 * 투입 리스트를 조회 (페이지네이션) 
+	 * 
+	 * @param equipType
+	 * @param equipCd
+	 * @param detailId
+	 * @return
+	 */
+	@RequestMapping(value = "/search/input_list/{equip_type}/{equip_cd}/{detail_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Search Input list Details")
+	public Page<JobInput> searchInputListDetails(
+			@PathVariable("equip_type") String equipType,
+			@PathVariable("equip_cd") String equipCd,
+			@PathVariable("detail_id") String detailId) {
+		
+		Long domainId = Domain.currentDomainId();
+		
+		Map<String,Object> params = ValueUtil.newMap("domainId,equipType,equipCd", domainId, equipType, equipCd);
+		
+		// Rack 타입 공통 처리 
+		if(ValueUtil.isEqualIgnoreCase(LogisConstants.EQUIP_TYPE_RACK, equipType)) {
+			
+		} else {
+			// TODO 다른 설비 추가 필요  
+		}
 		return null;
 	}
 	
@@ -629,4 +711,63 @@ public class DeviceProcessController {
 		return null;	
 	}
 
+
+	@RequestMapping(value = "/{job_type}/**", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Device Process Rest GET API")
+	public BaseResponse deviceProcessRestGetApi(
+			final HttpServletRequest request
+			, @PathVariable("job_type") String jobType
+			, @RequestParam Map<String,Object> paramMap) {
+        String finalPath = this.getRequestFinalPath(request);
+        DeviceProcessRestEvent event = new DeviceProcessRestEvent(Domain.currentDomainId(), jobType, finalPath, RequestMethod.GET, paramMap);
+        return this.restEventPublisher(event);
+	}
+
+	@RequestMapping(value = "/{job_type}/**", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Device Process Rest PUT API")
+	public BaseResponse deviceProcessRestPutApi(
+			final HttpServletRequest request
+			, @PathVariable("job_type") String jobType
+			, @RequestParam Map<String,Object> paramMap
+			, @RequestBody Map<String,Object> requestBody) {
+        String finalPath = this.getRequestFinalPath(request);
+        DeviceProcessRestEvent event = new DeviceProcessRestEvent(Domain.currentDomainId(), jobType, finalPath, RequestMethod.PUT, paramMap);
+        event.setRequestPutBody(requestBody);
+        return this.restEventPublisher(event);
+	}
+
+	@RequestMapping(value = "/{job_type}/**", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public BaseResponse deviceProcessRestPostApi(
+			final HttpServletRequest request
+			, @PathVariable("job_type") String jobType
+			, @RequestParam Map<String,Object> paramMap
+			, @RequestBody List<Map<String,Object>> requestBody) {
+        String finalPath = this.getRequestFinalPath(request);
+        DeviceProcessRestEvent event = new DeviceProcessRestEvent(Domain.currentDomainId(), jobType, finalPath, RequestMethod.POST, paramMap);
+        event.setRequestPostBody(requestBody);
+        return this.restEventPublisher(event);
+	}
+	
+	private BaseResponse restEventPublisher(DeviceProcessRestEvent event) {
+		BeanUtil.get(EventPublisher.class).publishEvent(event);
+		return event.getReturnResult();
+	}
+	
+	/**
+	 * path variable request 정리  
+	 * @param request
+	 * @return
+	 */
+	private String getRequestFinalPath(HttpServletRequest request) {
+		String path = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+        String bestMatchPattern = (String ) request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
+
+        AntPathMatcher apm = new AntPathMatcher();
+        String finalPath = apm.extractPathWithinPattern(bestMatchPattern, path);
+        
+        if(finalPath.startsWith("/") == false) finalPath = "/" + finalPath;
+        
+        return finalPath;
+	}
+			
 }

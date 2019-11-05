@@ -56,6 +56,29 @@ public class BatchQueryStore extends AbstractQueryStore {
 		return this.getQueryByPath("batch/CheckCloseBatchGroup");
 	}
 	
+	/**
+	 * Rack 타입 배치 진행율 쿼리 
+	 * @return
+	 */
+	public String getRackBatchProgressRateQuery() {
+		return this.getQueryByPath("batch/RackBatchProgressRate");
+	}
+	
+	/**
+	 * Rack DPS 투입 가능 박스 수 쿼리 
+	 * @return
+	 */
+	public String getRackDpsBatchInputableBoxQuery() {
+		return this.getQueryByPath("batch/RackDpsBatchInputableBox");
+	}
+	
+	/**
+	 * Rack DPS 투입 리스트 쿼리 
+	 * @return
+	 */
+	public String getRackDpsBatchInputListQuery() {
+		return this.getQueryByPath("batch/RackDpsBatchInputList");
+	}
 	
 	/*** BatchReceipt 관련 데이터 쿼리 ***/
 	/**

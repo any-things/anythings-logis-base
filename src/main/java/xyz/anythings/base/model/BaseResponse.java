@@ -15,6 +15,11 @@ public class BaseResponse {
 	 * 메시지 
 	 */
 	private String message;
+	
+	/**
+	 * 리턴 결과 
+	 */
+	private Object result;
 
 	/**
 	 * 생성자 1
@@ -48,5 +53,12 @@ public class BaseResponse {
 	public void setMessage(String message) {
 		this.message = message;
 	}
-
+	
+	public void setResult(Object result) {
+		this.result = result;
+	}
+	
+	public Object getResult() {
+		return this.result;
+	}
 }

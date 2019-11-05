@@ -70,6 +70,9 @@ public class JobInput extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	private String skuNm;
 	
 	@Ignore
+	private Integer skuQty;
+	
+	@Ignore
 	private Integer planQty;
 	
 	@Ignore
@@ -201,6 +204,14 @@ public class JobInput extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setSkuNm(String skuNm) {
 		this.skuNm = skuNm;
+	}
+	
+	public Integer getSkuQty() {
+		return this.skuQty;
+	}
+	
+	public void setSkuQty(Integer skuQty) {
+		this.skuQty = skuQty;
 	}
 
 	public Integer getPlanQty() {

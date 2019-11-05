@@ -6,69 +6,94 @@ package xyz.anythings.base.model;
  * @author shortstop
  */
 public class BatchProgressRate {
-
 	/**
-	 * ORDER 예정 / 실적 / 진행율
+	 * ORDER 예정량
 	 */
-	private PlanActual pcs;
+	private Integer planOrder;
 	/**
-	 * SKU 예정 / 실적 / 진행율
+	 * ORDER 처리량
 	 */
-	private PlanActual sku;
+	private Integer actualOrder;
 	/**
-	 * PCS 예정 / 실적 / 진행율
+	 * ORDER 진행율
 	 */
-	private PlanActual order;
+	private Integer rateOrder;
 	/**
-	 * TOTAL 예정 / 실적 / 진행율
+	 * SKU 예정량
 	 */
-	private PlanActual total;
-	
-	public PlanActual getPcs() {
-		return pcs;
+	private Integer planSku;
+	/**
+	 * SKU 처리량
+	 */
+	private Integer actualSku;
+	/**
+	 * SKU 진행율
+	 */
+	private Integer rateSku;
+	/**
+	 * PCS 예정량
+	 */
+	private Integer planPcs;
+	/**
+	 * PCS 처리량
+	 */
+	private Integer actualPcs;
+	/**
+	 * PCS 진행율
+	 */
+	private Integer ratePcs;
+	public Integer getPlanOrder() {
+		return planOrder;
 	}
-	
-	public void setPcs(Integer plan, Integer actual, Integer rate) {
-		this.pcs = new PlanActual(plan, actual, rate);
+	public void setPlanOrder(Integer planOrder) {
+		this.planOrder = planOrder;
 	}
-	
-	public void setPcs(PlanActual pcs) {
-		this.pcs = pcs;
+	public Integer getActualOrder() {
+		return actualOrder;
 	}
-	
-	public PlanActual getSku() {
-		return sku;
+	public void setActualOrder(Integer actualOrder) {
+		this.actualOrder = actualOrder;
 	}
-	
-	public void setSku(Integer plan, Integer actual, Integer rate) {
-		this.sku = new PlanActual(plan, actual, rate);
+	public Integer getRateOrder() {
+		return rateOrder;
 	}
-	
-	public void setSku(PlanActual sku) {
-		this.sku = sku;
+	public void setRateOrder(Integer rateOrder) {
+		this.rateOrder = rateOrder;
 	}
-	
-	public PlanActual getOrder() {
-		return order;
+	public Integer getPlanSku() {
+		return planSku;
 	}
-	
-	public void setOrder(Integer plan, Integer actual, Integer rate) {
-		this.order = new PlanActual(plan, actual, rate);
+	public void setPlanSku(Integer planSku) {
+		this.planSku = planSku;
 	}
-	
-	public void setOrder(PlanActual order) {
-		this.order = order;
+	public Integer getActualSku() {
+		return actualSku;
 	}
-	
-	public PlanActual getTotal() {
-		return total;
+	public void setActualSku(Integer actualSku) {
+		this.actualSku = actualSku;
 	}
-	
-	public void setTotal(PlanActual total) {
-		this.total = total;
+	public Integer getRateSku() {
+		return rateSku;
 	}
-	
-	public void setTotal(Integer plan, Integer actual, Integer rate) {
-		this.total = new PlanActual(plan, actual, rate);
+	public void setRateSku(Integer rateSku) {
+		this.rateSku = rateSku;
+	}
+	public Integer getPlanPcs() {
+		return planPcs;
+	}
+	public void setPlanPcs(Integer planPcs) {
+		this.planPcs = planPcs;
+	}
+	public Integer getActualPcs() {
+		return actualPcs;
+	}
+	public void setActualPcs(Integer actualPcs) {
+		this.actualPcs = actualPcs;
+	}
+	public Integer getRatePcs() {
+		return ratePcs;
+	}
+	public void setRatePcs(Integer ratePcs) {
+		this.ratePcs = ratePcs;
 	}
 }
