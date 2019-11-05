@@ -1,0 +1,12 @@
+[
+	{"bundle" : "sys", "entity": "xyz.elidom.sys.entity.Setting"},
+	{"bundle" : "sec", "entity": "xyz.elidom.sec.entity.Role"},
+	{"bundle" : "msg", "entity": "xyz.elidom.msg.entity.Terminology"},
+	{"bundle" : "msg", "entity": "xyz.elidom.msg.entity.Message"},
+	{"bundle" : "core", "entity": "xyz.elidom.core.entity.DomainApp"},
+	{"bundle" : "core", "entity": "xyz.elidom.core.entity.Storage"},
+	{"bundle" : "core", "entity": "xyz.elidom.core.entity.Code", "sub-entities": "xyz.elidom.core.entity.CodeDetail"},
+	{"bundle" : "base", "entity": "xyz.elidom.base.entity.Resource", "sub-entities": "xyz.elidom.base.entity.ResourceColumn"},
+	{"bundle" : "base", "entity": "xyz.elidom.base.entity.Menu", "sub-entities": "xyz.elidom.base.entity.MenuColumn,xyz.elidom.base.entity.MenuButton,xyz.elidom.base.entity.MenuParam"},
+	{"bundle" : "base", "entity": "xyz.elidom.base.entity.MenuDetail", "sub-entities": "xyz.elidom.base.entity.MenuDetailColumn,xyz.elidom.base.entity.MenuDetailButton"}
+]
