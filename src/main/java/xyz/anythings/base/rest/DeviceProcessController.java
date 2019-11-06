@@ -502,23 +502,23 @@ public class DeviceProcessController {
 	
 	
 	/**
-	 * 투입 리스트를 조회 (페이지네이션) 
+	 * 투입 리스트를 상세 조회 
 	 * 
 	 * @param equipType
 	 * @param equipCd
 	 * @param detailId
 	 * @return
 	 */
-	@RequestMapping(value = "/search/input_list/{equip_type}/{equip_cd}/{detail_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/search/input_list/{equip_type}/{equip_cd}/{detail_id}/details", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Search Input list Details")
 	public Page<JobInput> searchInputListDetails(
 			@PathVariable("equip_type") String equipType,
 			@PathVariable("equip_cd") String equipCd,
 			@PathVariable("detail_id") String detailId) {
 		
-		Long domainId = Domain.currentDomainId();
+//		Long domainId = Domain.currentDomainId();
 		
-		Map<String,Object> params = ValueUtil.newMap("domainId,equipType,equipCd", domainId, equipType, equipCd);
+//		Map<String,Object> params = ValueUtil.newMap("domainId,equipType,equipCd", domainId, equipType, equipCd);
 		
 		// Rack 타입 공통 처리 
 		if(ValueUtil.isEqualIgnoreCase(LogisConstants.EQUIP_TYPE_RACK, equipType)) {
@@ -712,6 +712,10 @@ public class DeviceProcessController {
 	}
 
 
+	/**
+	 * 디바이스 관련 각 모듈에 특화된 REST GET 서비스 
+	 * DeviceProcessRestEvent 이벤트를 발생시켜 각 모듈에서 해당 로직 처리 
+	 */
 	@RequestMapping(value = "/{job_type}/**", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Device Process Rest GET API")
 	public BaseResponse deviceProcessRestGetApi(
@@ -723,6 +727,10 @@ public class DeviceProcessController {
         return this.restEventPublisher(event);
 	}
 
+	/**
+	 * 디바이스 관련 각 모듈에 특화된 REST PUT 서비스 
+	 * DeviceProcessRestEvent 이벤트를 발생시켜 각 모듈에서 해당 로직 처리 
+	 */
 	@RequestMapping(value = "/{job_type}/**", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Device Process Rest PUT API")
 	public BaseResponse deviceProcessRestPutApi(
@@ -736,6 +744,10 @@ public class DeviceProcessController {
         return this.restEventPublisher(event);
 	}
 
+	/**
+	 * 디바이스 관련 각 모듈에 특화된 REST POST 서비스 
+	 * DeviceProcessRestEvent 이벤트를 발생시켜 각 모듈에서 해당 로직 처리 
+	 */
 	@RequestMapping(value = "/{job_type}/**", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public BaseResponse deviceProcessRestPostApi(
 			final HttpServletRequest request
@@ -748,6 +760,11 @@ public class DeviceProcessController {
         return this.restEventPublisher(event);
 	}
 	
+	/**
+	 * 디바이스 관련 이벤트 퍼블리셔 
+	 * @param event
+	 * @return
+	 */
 	private BaseResponse restEventPublisher(DeviceProcessRestEvent event) {
 		BeanUtil.get(EventPublisher.class).publishEvent(event);
 		return event.getReturnResult();
