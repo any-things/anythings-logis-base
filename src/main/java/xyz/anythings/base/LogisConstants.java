@@ -135,6 +135,21 @@ public class LogisConstants extends AnyConstants {
 	 * 로케이션 단위의 작업 최종 완료 상태 : ENDED
 	 */
 	public static final String CELL_JOB_STATUS_ENDED = "ENDED";
+	
+	
+	/**
+	 * 박스 ID 의 유일성 범위 : G: 도메인 전체 유일
+	 */
+	public static final String BOX_ID_UNIQUE_SCOPE_GLOBAL = "G";
+	/**
+	 * 박스 ID 의 유일성 범위 : D: 날자별 유일
+	 */
+	public static final String BOX_ID_UNIQUE_SCOPE_DAY = "D";
+	/**
+	 * 박스 ID 의 유일성 범위 : B: 배치 내 유일
+	 */
+	public static final String BOX_ID_UNIQUE_SCOPE_BATCH = "B";
+	
 	/**
 	 * 로케이션 단위의 작업 최종 완료, 완료 중 상태
 	 */
