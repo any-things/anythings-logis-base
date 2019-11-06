@@ -249,7 +249,7 @@ public class LogisConfigConstants extends xyz.anythings.sys.ConfigConstants {
 	/**
 	 * 박스 ID 유일성 보장 범위
 	 */
-	public static final String BOX_ID_UNIQ_SCOPE = "job.cmm.box.box_id.unique.scope";
+	public static final String BOX_ID_UNIQE_SCOPE = "job.cmm.box.box_id.unique.scope";
 	/**
 	 * 박스 취소 기능 활성화 여부
 	 */
