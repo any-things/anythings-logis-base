@@ -737,7 +737,7 @@ public class DeviceProcessController {
 			final HttpServletRequest request
 			, @PathVariable("job_type") String jobType
 			, @RequestParam Map<String,Object> paramMap
-			, @RequestBody Map<String,Object> requestBody) {
+			, @RequestBody(required=false) Map<String,Object> requestBody) {
         String finalPath = this.getRequestFinalPath(request);
         DeviceProcessRestEvent event = new DeviceProcessRestEvent(Domain.currentDomainId(), jobType, finalPath, RequestMethod.PUT, paramMap);
         event.setRequestPutBody(requestBody);
@@ -753,7 +753,7 @@ public class DeviceProcessController {
 			final HttpServletRequest request
 			, @PathVariable("job_type") String jobType
 			, @RequestParam Map<String,Object> paramMap
-			, @RequestBody List<Map<String,Object>> requestBody) {
+			, @RequestBody(required=false) List<Map<String,Object>> requestBody) {
         String finalPath = this.getRequestFinalPath(request);
         DeviceProcessRestEvent event = new DeviceProcessRestEvent(Domain.currentDomainId(), jobType, finalPath, RequestMethod.POST, paramMap);
         event.setRequestPostBody(requestBody);

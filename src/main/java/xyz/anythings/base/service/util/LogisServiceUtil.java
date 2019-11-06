@@ -27,7 +27,7 @@ public class LogisServiceUtil {
 	 * @return
 	 */
 	public static JobBatch findBatch(Long domainId, String batchId, boolean withLock, boolean exceptionWhenEmpty) {
-		JobBatch batch = LogisEntityUtil.findEntityBy(domainId, exceptionWhenEmpty, withLock, JobBatch.class, SysConstants.ENTITY_FIELD_ID, batchId);
+		JobBatch batch = LogisEntityUtil.findEntityBy(domainId, exceptionWhenEmpty, withLock, JobBatch.class, null, SysConstants.ENTITY_FIELD_ID, batchId);
 
 		if(batch == null && exceptionWhenEmpty) {
 			throw ThrowUtil.newNotFoundRecord("terms.menu.JobBatch", batchId);
@@ -68,7 +68,7 @@ public class LogisServiceUtil {
 	 * @return
 	 */
 	public static Rack checkValidRack(Long domainId, String rackCd) {
-		Rack rack = LogisEntityUtil.findEntityBy(domainId, true, Rack.class, "equipType,equipCd", "Rack", rackCd);
+		Rack rack = LogisEntityUtil.findEntityBy(domainId, true, Rack.class, null, "rackCd", rackCd);
 		
 		if(ValueUtil.isEmpty(rack.getBatchId())) {
 			// 호기에 작업 할당이 안되어 있습니다
@@ -180,5 +180,4 @@ public class LogisServiceUtil {
 		
 		return batch;
 	}
-	
 }

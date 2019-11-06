@@ -95,6 +95,8 @@ public class ConfigSetService extends AbstractExecutionService implements IConfi
 
 		if(configSet == null) {
 			configSet = LogisEntityUtil.findEntityById(true, JobConfigSet.class, batch.getJobConfigSetId());
+			configSet.setItems(LogisEntityUtil.searchDetails(batch.getDomainId(), JobConfig.class, "jobConfigSetId", batch.getJobConfigSetId()));
+			
 			this.batchJobConfigSet.put(batch.getId(), configSet);
 		}
 		
@@ -108,6 +110,7 @@ public class ConfigSetService extends AbstractExecutionService implements IConfi
 		if(configSet == null) {
 			JobBatch batch = LogisEntityUtil.findEntityBy(Domain.currentDomainId(), true, false, JobBatch.class, "id,job_config_set_id", "id", batchId);
 			configSet = LogisEntityUtil.findEntityById(true, JobConfigSet.class, batch.getJobConfigSetId());
+			configSet.setItems(LogisEntityUtil.searchDetails(batch.getDomainId(), JobConfig.class, "jobConfigSetId", batch.getJobConfigSetId()));
 			this.batchJobConfigSet.put(batchId, configSet);
 		}
 		
@@ -179,6 +182,7 @@ public class ConfigSetService extends AbstractExecutionService implements IConfi
 		
 		if(configSet == null) {
 			configSet = LogisEntityUtil.findEntityById(true, IndConfigSet.class, batch.getIndConfigSetId());
+			configSet.setItems(LogisEntityUtil.searchDetails(batch.getDomainId(), IndConfig.class, "indConfigSetId", batch.getIndConfigSetId()));
 			this.batchIndConfigSet.put(batch.getId(), configSet);
 		}
 		
@@ -190,8 +194,9 @@ public class ConfigSetService extends AbstractExecutionService implements IConfi
 		IndConfigSet configSet = this.batchIndConfigSet.get(batchId);
 		
 		if(configSet == null) {
-			JobBatch batch = LogisEntityUtil.findEntityBy(Domain.currentDomainId(), true, false, JobBatch.class, "id,ind_config_set_id", "id", batchId);
+			JobBatch batch = LogisEntityUtil.findEntityBy(Domain.currentDomainId(), true, false, JobBatch.class, "id,indConfigSetId", "id", batchId);
 			configSet = LogisEntityUtil.findEntityById(true, IndConfigSet.class, batch.getIndConfigSetId());
+			configSet.setItems(LogisEntityUtil.searchDetails(batch.getDomainId(), IndConfig.class, "indConfigSetId", batch.getIndConfigSetId()));
 			this.batchIndConfigSet.put(batchId, configSet);
 		}
 		
