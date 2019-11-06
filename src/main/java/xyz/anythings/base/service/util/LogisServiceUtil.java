@@ -3,6 +3,7 @@ package xyz.anythings.base.service.util;
 import xyz.anythings.base.LogisConstants;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.Rack;
+import xyz.anythings.base.model.EquipBatchSet;
 import xyz.anythings.base.util.LogisEntityUtil;
 import xyz.elidom.sys.SysConstants;
 import xyz.elidom.sys.SysMessageConstants;
@@ -34,6 +35,30 @@ public class LogisServiceUtil {
 
 		return batch;
 	}
+	
+	/**
+	 * 설비 타입 / 코드로 설비 및 배치 찾기   
+	 * @param domainId
+	 * @param equipType
+	 * @param equipCd
+	 */
+	public static EquipBatchSet findBatchByEquip(Long domainId, String equipType, String equipCd) {
+		
+		EquipBatchSet equipBatchSet = new EquipBatchSet();
+		
+		if(ValueUtil.isEqualIgnoreCase(LogisConstants.EQUIP_TYPE_RACK, equipType)) {
+			// 1. Rack Type 
+			Rack rack = checkValidRack(domainId, equipCd);
+			JobBatch batch = findBatch(domainId, rack.getBatchId(), false, true);
+			
+			equipBatchSet.setEquipEntity(rack);
+			equipBatchSet.setBatch(batch);
+		} else {
+			// TODO 기타 설비 추가 필요 함 .
+		}
+		
+		return equipBatchSet;
+	}
 
 	/**
 	 * regionCd로 호기 정보를 조회하고 현재 실행 가능한 상태인지 체크한 후 리턴  
@@ -43,7 +68,7 @@ public class LogisServiceUtil {
 	 * @return
 	 */
 	public static Rack checkValidRack(Long domainId, String rackCd) {
-		Rack rack = LogisEntityUtil.findEntityBy(domainId, true, Rack.class, "domainId,equipType,equipCd", domainId, "Rack", rackCd);
+		Rack rack = LogisEntityUtil.findEntityBy(domainId, true, Rack.class, "equipType,equipCd", "Rack", rackCd);
 		
 		if(ValueUtil.isEmpty(rack.getBatchId())) {
 			// 호기에 작업 할당이 안되어 있습니다
@@ -155,5 +180,5 @@ public class LogisServiceUtil {
 		
 		return batch;
 	}
-
+	
 }

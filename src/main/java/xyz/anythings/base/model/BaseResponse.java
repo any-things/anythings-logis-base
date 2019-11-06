@@ -34,8 +34,19 @@ public class BaseResponse {
 	 * @param message
 	 */
 	public BaseResponse(boolean success, String message) {
+		this(success,message,null);
+	}
+	
+	/**
+	 * 생정자 3 
+	 * @param success
+	 * @param message
+	 * @param result
+	 */
+	public BaseResponse(boolean success, String message, Object result) {
 		this.success = success;
 		this.message = message;
+		this.result = result;
 	}
 	
 	public boolean isSuccess() {

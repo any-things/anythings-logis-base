@@ -32,7 +32,7 @@ import xyz.anythings.base.model.BaseResponse;
 import xyz.anythings.base.model.BatchProgressRate;
 import xyz.anythings.base.model.Category;
 import xyz.anythings.base.query.store.BatchQueryStore;
-import xyz.anythings.base.util.LogisEntityUtil;
+import xyz.anythings.base.service.util.LogisServiceUtil;
 import xyz.anythings.sys.event.EventPublisher;
 import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.orm.IQueryManager;
@@ -480,7 +480,7 @@ public class DeviceProcessController {
 		if(ValueUtil.isEqualIgnoreCase(LogisConstants.EQUIP_TYPE_RACK, equipType)) {
 			
 			// 1. RACK 조회 
-			Rack rack = LogisEntityUtil.findEntityBy(domainId, true, Rack.class, null,"rackCd,activeFlag,status", equipCd,LogisConstants.EQUIP_STATUS_OK, JobBatch.STATUS_RUNNING);
+			Rack rack = LogisServiceUtil.checkValidRack(domainId, equipCd);
 			String qry = "";
 			
 			params.put("batchId", rack.getBatchId());

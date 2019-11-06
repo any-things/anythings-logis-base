@@ -175,6 +175,14 @@ public class LogisConstants extends AnyConstants {
 	 */
 	public static final String EQUIP_STATUS_BREAK_DOWN = "2";
 
+	/**
+	 * 설비 활성화 여부 : 활성 
+	 */
+	public static final String EQUIP_ACTIVE_TRUE = "1";
+	/**
+	 * 설비 활성화 여부 : 비활성  
+	 */
+	public static final String EQUIP_ACTIVE_FALSE = "0";
 	
 	/**
 	 * 작업 유형이 DAS 작업 타입인지 체크 
