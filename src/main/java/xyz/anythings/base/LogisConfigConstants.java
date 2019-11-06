@@ -347,6 +347,10 @@ public class LogisConfigConstants extends xyz.anythings.sys.ConfigConstants {
 	 */
 	public static final String DPS_BATCH_SPLIT_BY_RACK_ENABLED = "job.dps.batch.split-by-rack.enabled";
 	/**
+	 * DPS 설정 - 박스 투입시 박스 타입 split 기준 ( 1,2 )
+	 */
+	public static final String DPS_BATCH_INPUT_BOX_TYPE_SPLIT_INDEX = "job.dps.batch.input.box.type.split.index";
+	/**
 	 * DPS 설정 - 피킹과 동시에 검수 처리할 것인지 여부
 	 */
 	public static final String DPS_PICK_WITH_INSPECTION_ENABLED = "job.dps.pick-with-inspection.enabled";
