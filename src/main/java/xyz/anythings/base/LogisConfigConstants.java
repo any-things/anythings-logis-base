@@ -349,7 +349,7 @@ public class LogisConfigConstants extends xyz.anythings.sys.ConfigConstants {
 	/**
 	 * DPS 설정 - 박스 투입시 박스 타입 split 기준 ( 1,2 )
 	 */
-	public static final String DPS_BATCH_INPUT_BOX_TYPE_SPLIT_INDEX = "job.dps.batch.input.box.type.split.index";
+	public static final String DPS_INPUT_BOX_TYPE_SPLIT_INDEX = "job.dps.input.box.type.split.index";
 	/**
 	 * DPS 설정 - 피킹과 동시에 검수 처리할 것인지 여부
 	 */
