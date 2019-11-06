@@ -12,6 +12,7 @@ import xyz.elidom.dbist.annotation.Column;
 import xyz.elidom.dbist.annotation.GenerationRule;
 import xyz.elidom.dbist.annotation.Index;
 import xyz.elidom.dbist.annotation.PrimaryKey;
+import xyz.elidom.dbist.annotation.Relation;
 import xyz.elidom.dbist.annotation.Table;
 import xyz.elidom.dbist.dml.Query;
 import xyz.elidom.orm.IQueryManager;
@@ -134,6 +135,18 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	@Column (name = "status", length = 10)
 	private String status;
+	
+	@Column (name = "job_config_set_id", length = 40)
+	private String jobConfigSetId;
+	
+	@Column (name = "ind_config_set_id", length = 40)
+	private String indConfigSetId;
+
+	@Relation(field = "jobConfigSetId")
+	private JobConfigSet jobConfigSet;
+
+	@Relation(field = "indConfigSetId")
+	private IndConfigSet indConfigSet;
   
 	public String getId() {
 		return id;
@@ -342,6 +355,51 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	public void setStatus(String status) {
 		this.status = status;
 	}
+	
+	public String getJobConfigSetId() {
+		return this.jobConfigSetId;
+	}
+	
+	public void setJobConfigSetId(String jobConfigSetId) {
+		this.jobConfigSetId = jobConfigSetId;
+	}
+	
+	public String getIdConfigSetId() {
+		return this.indConfigSetId;
+	}
+	
+	public void setIndConfigSetId(String indConfigSetId) {
+		this.indConfigSetId = indConfigSetId;
+	}
+	
+	public JobConfigSet getJobConfigSet() {
+		return jobConfigSet;
+	}
+
+	public void setJobConfigSet(JobConfigSet jobConfigSet) {
+		this.jobConfigSet = jobConfigSet;
+
+		if(this.jobConfigSet != null) {
+			String refId = this.jobConfigSet.getId();
+			if (refId != null )
+				this.jobConfigSetId = refId;
+		}
+	}
+
+	public IndConfigSet getIndConfigSet() {
+		return indConfigSet;
+	}
+
+	public void setIndConfigSet(IndConfigSet indConfigSet) {
+		this.indConfigSet = indConfigSet;
+
+		if(this.indConfigSet != null) {
+			String refId = this.indConfigSet.getId();
+			if (refId != null )
+				this.indConfigSetId = refId;
+		}
+	}	
+
 	
 	/**
 	 * JobBatch 의 현재 상태를 가져온다. 
