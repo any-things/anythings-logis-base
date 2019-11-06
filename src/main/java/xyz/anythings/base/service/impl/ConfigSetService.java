@@ -18,6 +18,7 @@ import xyz.anythings.sys.service.AbstractExecutionService;
 import xyz.anythings.sys.util.AnyValueUtil;
 import xyz.elidom.exception.server.ElidomRuntimeException;
 import xyz.elidom.sys.SysConstants;
+import xyz.elidom.sys.entity.Domain;
 import xyz.elidom.util.ValueUtil;
 
 /**
@@ -91,12 +92,25 @@ public class ConfigSetService extends AbstractExecutionService implements IConfi
 	@Override
 	public String getJobConfigValue(JobBatch batch, String key) {
 		JobConfigSet configSet = this.batchJobConfigSet.get(batch.getId());
+
+		if(configSet == null) {
+			configSet = LogisEntityUtil.findEntityById(true, JobConfigSet.class, batch.getJobConfigSetId());
+			this.batchJobConfigSet.put(batch.getId(), configSet);
+		}
+		
 		return configSet != null ? configSet.findValue(key) : null;
 	}
 	
 	@Override
 	public String getJobConfigValue(String batchId, String key) {
 		JobConfigSet configSet = this.batchJobConfigSet.get(batchId);
+		
+		if(configSet == null) {
+			JobBatch batch = LogisEntityUtil.findEntityBy(Domain.currentDomainId(), true, false, JobBatch.class, "id,job_config_set_id", "id", batchId);
+			configSet = LogisEntityUtil.findEntityById(true, JobConfigSet.class, batch.getJobConfigSetId());
+			this.batchJobConfigSet.put(batchId, configSet);
+		}
+		
 		return configSet != null ? configSet.findValue(key) : null;
 	}
 
@@ -162,12 +176,25 @@ public class ConfigSetService extends AbstractExecutionService implements IConfi
 	@Override
 	public String getIndConfigValue(JobBatch batch, String key) {
 		IndConfigSet configSet = this.batchIndConfigSet.get(batch.getId());
+		
+		if(configSet == null) {
+			configSet = LogisEntityUtil.findEntityById(true, IndConfigSet.class, batch.getIndConfigSetId());
+			this.batchIndConfigSet.put(batch.getId(), configSet);
+		}
+		
 		return configSet == null ? null : configSet.findValue(key);
 	}
 	
 	@Override
 	public String getIndConfigValue(String batchId, String key) {
 		IndConfigSet configSet = this.batchIndConfigSet.get(batchId);
+		
+		if(configSet == null) {
+			JobBatch batch = LogisEntityUtil.findEntityBy(Domain.currentDomainId(), true, false, JobBatch.class, "id,ind_config_set_id", "id", batchId);
+			configSet = LogisEntityUtil.findEntityById(true, IndConfigSet.class, batch.getIndConfigSetId());
+			this.batchIndConfigSet.put(batchId, configSet);
+		}
+		
 		return configSet == null ? null : configSet.findValue(key);
 	}
 

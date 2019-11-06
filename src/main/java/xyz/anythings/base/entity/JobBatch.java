@@ -364,7 +364,7 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.jobConfigSetId = jobConfigSetId;
 	}
 	
-	public String getIdConfigSetId() {
+	public String getIndConfigSetId() {
 		return this.indConfigSetId;
 	}
 	
@@ -395,7 +395,7 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 		if(this.indConfigSet != null) {
 			String refId = this.indConfigSet.getId();
-			if (refId != null )
+			if (refId != null)
 				this.indConfigSetId = refId;
 		}
 	}	
