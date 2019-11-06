@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import xyz.anythings.base.config.ModuleProperties;
 import xyz.anythings.base.query.store.BatchQueryStore;
+import xyz.anythings.base.query.store.BoxQueryStore;
 import xyz.anythings.base.query.store.ConfigQueryStore;
 import xyz.anythings.base.query.store.EtcQueryStore;
 import xyz.anythings.base.query.store.IndicatorQueryStore;
@@ -67,6 +68,10 @@ public class AnythingsLogisBaseInitializer {
 	private PreprocessQueryStore preprocessQueryStore;
 	
 	@Autowired
+	private BoxQueryStore boxQueryStore;
+
+	
+	@Autowired
 	private EtcQueryStore etcQueryStore;
 
 	@EventListener({ ContextRefreshedEvent.class })
@@ -106,5 +111,6 @@ public class AnythingsLogisBaseInitializer {
 		this.instructionQueryStore.initQueryStore(dbType);
 		this.preprocessQueryStore.initQueryStore(dbType);
 		this.etcQueryStore.initQueryStore(dbType);
+		this.boxQueryStore.initQueryStore(dbType);
 	}
 }

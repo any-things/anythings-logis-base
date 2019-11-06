@@ -1,14 +1,21 @@
 package xyz.anythings.base.service.util;
 
+import java.util.Map;
+
+import xyz.anythings.base.LogisConfigConstants;
 import xyz.anythings.base.LogisConstants;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.Rack;
 import xyz.anythings.base.model.EquipBatchSet;
+import xyz.anythings.base.query.store.BoxQueryStore;
+import xyz.anythings.base.service.impl.ConfigSetService;
 import xyz.anythings.base.util.LogisEntityUtil;
+import xyz.elidom.orm.IQueryManager;
 import xyz.elidom.sys.SysConstants;
 import xyz.elidom.sys.SysMessageConstants;
 import xyz.elidom.sys.util.ThrowUtil;
 import xyz.elidom.sys.util.ValueUtil;
+import xyz.elidom.util.BeanUtil;
 
 /**
  * 물류 서비스 유틸리티
@@ -179,5 +186,37 @@ public class LogisServiceUtil {
 		}
 		
 		return batch;
+	}
+	
+	
+	/**
+	 * 배치 설정에 박스 아이디 유니크 범위로 중복 여부 확인 
+	 * TODO : 현재는 JobInput 기준 추후 박싱 결과 등 필요시 추가  
+	 * @param domainId
+	 * @param batch
+	 * @param boxType
+	 * @param boxId
+	 * @return
+	 */
+	public static boolean checkUniqueBoxId(Long domainId, JobBatch batch, String boxType, String boxId) {
+		// 1. 박스 아이디 유니크 범위 설정 
+		String uniqueScope = BeanUtil.get(ConfigSetService.class).getJobConfigValue(batch, LogisConfigConstants.BOX_ID_UNIQE_SCOPE);
+		
+		// 1.1. 설정 값이 없으면 기본 GLOBAL
+		if(ValueUtil.isEmpty(uniqueScope)) {
+			uniqueScope = LogisConstants.BOX_ID_UNIQUE_SCOPE_GLOBAL;
+		}
+		
+		// 2. 파라미터 셋팅 
+		Map<String,Object> params = ValueUtil.newMap("domainId,boxId,batchId,uniqueScope,boxType"
+				, domainId, boxId, batch.getId(), uniqueScope, boxType);
+		
+		// 3. 쿼리 
+		String qry = BeanUtil.get(BoxQueryStore.class).getBoxIdUniqueCheckQuery();
+		
+		// 4. 조회 dup Cnt == 0  중복 없음 
+		int dupCnt = BeanUtil.get(IQueryManager.class).selectBySql(qry, params, Integer.class);
+
+		return dupCnt == 0 ? false : true;
 	}
 }
