@@ -1,15 +1,16 @@
 package xyz.anythings.base.entity;
 
-import xyz.elidom.dbist.annotation.Index;
+import xyz.anythings.base.entity.ifc.IBucket;
 import xyz.elidom.dbist.annotation.Column;
-import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.GenerationRule;
+import xyz.elidom.dbist.annotation.Index;
+import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.Table;
 
 @Table(name = "tray_boxes", idStrategy = GenerationRule.UUID, uniqueFields="domainId,trayCd", indexes = {
 	@Index(name = "ix_tray_boxes_0", columnList = "domain_id,tray_cd", unique = true)
 })
-public class TrayBox extends xyz.elidom.orm.entity.basic.ElidomStampHook {
+public class TrayBox extends xyz.elidom.orm.entity.basic.ElidomStampHook implements IBucket{
 	/**
 	 * SerialVersion UID
 	 */
@@ -91,5 +92,20 @@ public class TrayBox extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	@Override
+	public String getBucketCd() {
+		return this.getTrayCd();
+	}
+
+	@Override
+	public String getBucketType() {
+		return this.getTrayType();
+	}
+
+	@Override
+	public String getBucketColor() {
+		return this.getTrayColor();
 	}	
 }

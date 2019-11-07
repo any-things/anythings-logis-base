@@ -9,6 +9,5 @@ import xyz.anythings.sys.service.AbstractExecutionService;
  *
  */
 public abstract class AbstractBoxingService extends AbstractExecutionService implements IBoxingService {
-	
 
 }

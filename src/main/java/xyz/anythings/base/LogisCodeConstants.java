@@ -32,6 +32,10 @@ public class LogisCodeConstants {
 	 * 분류 투입 유형 - 박스
 	 */
 	public static final String CLASSIFICATION_INPUT_TYPE_BOX = "box";
+	/**
+	 * 분류 투입 유형 - Tray
+	 */
+	public static final String CLASSIFICATION_INPUT_TYPE_TRAY = "tray";
 	
 	/**
 	 * 분류 장비 유형 - 표시기를 통한 분류 처리 (IClassifyExeEvent에서 사용)

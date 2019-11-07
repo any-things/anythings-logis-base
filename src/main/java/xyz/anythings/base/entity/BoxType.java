@@ -1,15 +1,17 @@
 package xyz.anythings.base.entity;
 
-import xyz.elidom.dbist.annotation.Index;
+import xyz.anythings.base.entity.ifc.IBucket;
 import xyz.elidom.dbist.annotation.Column;
-import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.GenerationRule;
+import xyz.elidom.dbist.annotation.Ignore;
+import xyz.elidom.dbist.annotation.Index;
+import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.Table;
 
 @Table(name = "box_types", idStrategy = GenerationRule.UUID, uniqueFields="domainId,boxTypeCd", indexes = {
 	@Index(name = "ix_box_types_0", columnList = "domain_id,box_type_cd", unique = true)
 })
-public class BoxType extends xyz.elidom.orm.entity.basic.ElidomStampHook {
+public class BoxType extends xyz.elidom.orm.entity.basic.ElidomStampHook implements IBucket{
 	/**
 	 * SerialVersion UID
 	 */
@@ -54,6 +56,9 @@ public class BoxType extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	@Column (name = "vol_unit", length = 6)
 	private String volUnit;
+	
+	@Ignore
+	private String boxId;
   
 	public String getId() {
 		return id;
@@ -157,5 +162,34 @@ public class BoxType extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setVolUnit(String volUnit) {
 		this.volUnit = volUnit;
-	}	
+	}
+	
+	public String getBoxId() {
+		return this.boxId;
+	}
+	
+	public void setBoxId(String boxId) {
+		this.boxId = boxId;
+	}
+
+	@Override
+	public String getBucketCd() {
+		return this.getBoxId();
+	}
+
+	@Override
+	public String getBucketType() {
+		return this.getBoxTypeCd();
+	}
+
+	@Override
+	public String getBucketColor() {
+		return this.getBoxColor();
+	}
+	
+	@Override
+	public String getStatus() {
+		// 미구현 
+		return null;
+	}
 }

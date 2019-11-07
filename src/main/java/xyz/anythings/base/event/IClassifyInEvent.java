@@ -27,7 +27,7 @@ public interface IClassifyInEvent extends IClassifyEvent {
 	 * LogisCodeConstants.CLASSIFICATION_INPUT_TYPE_SKU_BOX, 
 	 * LogisCodeConstants.CLASSIFICATION_INPUT_TYPE_SKU_BUNDLE, 
 	 * LogisCodeConstants.CLASSIFICATION_INPUT_TYPE_BOX
-	 * 
+	 * LogisCodeConstants.CLASSIFICATION_INPUT_TYPE_TRAY
 	 * @return
 	 */
 	public String getInputType();
@@ -45,6 +45,7 @@ public interface IClassifyInEvent extends IClassifyEvent {
 	 * LogisCodeConstants.CLASSIFICATION_INPUT_TYPE_SKU_BOX : SKU BOX_BARCD
 	 * LogisCodeConstants.CLASSIFICATION_INPUT_TYPE_SKU_BUNDLE : BUNDLE Code
 	 * LogisCodeConstants.CLASSIFICATION_INPUT_TYPE_BOX : BOX_ID
+	 * LogisCodeConstants.CLASSIFICATION_INPUT_TYPE_TRAY : TRAY_CD
 	 * 
 	 * @return
 	 */

@@ -97,4 +97,12 @@ public class BatchQueryStore extends AbstractQueryStore {
 	public String getBatchReceiptOrderTypeStatusQuery() {
 		return this.getQueryByPath("batch/BatchReceiptOrderTypeStatus");
 	}
+	
+	/**
+	 * 마지막 투입 작업 조회 
+	 * @return
+	 */
+	public String getLatestJobInputQry() {
+		return this.getQueryByPath("batch/LastestJobInput");
+	}
 }
