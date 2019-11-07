@@ -4,8 +4,10 @@ import java.util.Map;
 
 import xyz.anythings.base.LogisConfigConstants;
 import xyz.anythings.base.LogisConstants;
+import xyz.anythings.base.entity.BoxType;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.Rack;
+import xyz.anythings.base.entity.TrayBox;
 import xyz.anythings.base.model.EquipBatchSet;
 import xyz.anythings.base.query.store.BoxQueryStore;
 import xyz.anythings.base.service.impl.ConfigSetService;
@@ -189,6 +191,70 @@ public class LogisServiceUtil {
 	}
 	
 	
+	
+	/***********************************************************************************************/
+	/*   버킷 ( BOX , TRAY ) 엔티티 조회    */
+	/***********************************************************************************************/
+
+	
+	/**
+	 * 투입 가능한 트레이 박스인지 확인 후 리턴 
+	 * @param domainId
+	 * @param trayCd
+	 * @param withLock
+	 * @param exceptionWhenEmpty
+	 * @return
+	 */
+	public static TrayBox checkVaildTray(Long domainId, String trayCd, boolean withLock) {
+
+		TrayBox trayBox = findTrayBox(domainId, trayCd, withLock, true);
+		
+		// 상태 체크 
+		if(ValueUtil.isNotEqual(LogisConstants.COMMON_STATUS_WAIT, trayBox.getStatus())) {
+			// 상태 유형이(가) 유효하지 않습니다
+			throw ThrowUtil.newValidationErrorWithNoLog(true, "A_IS_INVALID", "terms.label.status");
+		}
+		return trayBox;
+	}
+	
+	/**
+	 * 트레이 박스 검색 
+	 * @param domainId
+	 * @param trayCd
+	 * @param withLock
+	 * @param exceptionWhenEmpty
+	 * @return
+	 */
+	public static TrayBox findTrayBox(Long domainId, String trayCd, boolean withLock, boolean exceptionWhenEmpty) {
+		TrayBox trayBox = LogisEntityUtil.findEntityBy(domainId, exceptionWhenEmpty, withLock, TrayBox.class, null, "trayCd", trayCd);
+
+		if(trayBox == null && exceptionWhenEmpty) {
+			throw ThrowUtil.newNotFoundRecord("terms.menu.TrayBox", trayCd);
+		}
+		return trayBox;
+	}
+
+	/**
+	 * 박스 유형 검색 
+	 * @param domainId
+	 * @param trayCd
+	 * @param withLock
+	 * @param exceptionWhenEmpty
+	 * @return
+	 */
+	public static BoxType findBoxType(Long domainId, String boxTypeCd, boolean withLock, boolean exceptionWhenEmpty) {
+		BoxType boxType = LogisEntityUtil.findEntityBy(domainId, exceptionWhenEmpty, withLock, BoxType.class, null, "boxTypeCd", boxTypeCd);
+
+		if(boxType == null && exceptionWhenEmpty) {
+			throw ThrowUtil.newNotFoundRecord("terms.menu.BoxType", boxTypeCd);
+		}
+		return boxType;
+	}
+	
+	/***********************************************************************************************/
+	/*   버킷 유효성 체크   */
+	/***********************************************************************************************/
+	
 	/**
 	 * 배치 설정에 박스 아이디 유니크 범위로 중복 여부 확인 
 	 * TODO : 현재는 JobInput 기준 추후 박싱 결과 등 필요시 추가  
@@ -218,5 +284,26 @@ public class LogisServiceUtil {
 		int dupCnt = BeanUtil.get(IQueryManager.class).selectBySql(qry, params, Integer.class);
 
 		return dupCnt == 0 ? false : true;
+	}
+	
+	
+	/**
+	 * boxId 에서 박스 타입 구하기 
+	 * @param batch
+	 * @param boxId
+	 * @return
+	 */
+	public static String getBoxTypeByBoxId(JobBatch batch, String boxId) {
+		// 1. 박스 ID 에 박스 타입 split 기준  
+		String boxTypeSplit = BeanUtil.get(ConfigSetService.class).getJobConfigValue(batch, LogisConfigConstants.DPS_INPUT_BOX_TYPE_SPLIT_INDEX);
+		
+		// 1.1. 설정 값이 없으면 기본 GLOBAL
+		if(ValueUtil.isEmpty(boxTypeSplit) || boxTypeSplit.length() < 3) {
+			boxTypeSplit = "0,1";
+		}
+		// 2. 기준에 따라 박스 타입 분할 
+		String[] splitIndex = boxTypeSplit.split(SysConstants.COMMA);
+		String boxType = boxId.substring(ValueUtil.toInteger(splitIndex[0]), ValueUtil.toInteger(splitIndex[1]));
+		return boxType;
 	}
 }

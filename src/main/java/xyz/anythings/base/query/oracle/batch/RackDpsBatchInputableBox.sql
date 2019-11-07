@@ -6,5 +6,6 @@ SELECT COUNT(DISTINCT(ORDER_NO)) AS INPUTABLE_BOX
                FROM RACKS
               WHERE DOMAIN_ID = :domainId
                 AND RACK_CD = :rackCd
-                AND ACTIVE_FLAG = 1)
+                AND ACTIVE_FLAG = 1
+                AND STATUS = 'RUN' )
    AND STATUS IN ('BW','W') -- 박스 요청 대기 / 박스 맵핑 대기 

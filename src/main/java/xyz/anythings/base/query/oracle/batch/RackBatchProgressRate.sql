@@ -12,7 +12,8 @@ WITH T_JOBS AS (
                            FROM RACKS
                           WHERE DOMAIN_ID = :domainId
                             AND RACK_CD = :rackCd
-                            AND ACTIVE_FLAG = 1)
+                            AND ACTIVE_FLAG = 1
+                            AND STATUS = 'RUN' )
                AND STATUS NOT IN ('C','D') -- 작업 취소 , 주문 취소가 아닌 것 
            )
 ),
