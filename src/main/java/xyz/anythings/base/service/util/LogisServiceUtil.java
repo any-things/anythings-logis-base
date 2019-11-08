@@ -189,27 +189,6 @@ public class LogisServiceUtil {
 	/*   버킷 ( BOX , TRAY ) 엔티티 조회    */
 	/***********************************************************************************************/
 
-	
-	/**
-	 * 투입 가능한 트레이 박스인지 확인 후 리턴 
-	 * @param domainId
-	 * @param trayCd
-	 * @param withLock
-	 * @param exceptionWhenEmpty
-	 * @return
-	 */
-	public static TrayBox checkVaildTray(Long domainId, String trayCd, boolean withLock) {
-
-		TrayBox trayBox = findTrayBox(domainId, trayCd, withLock, true);
-		
-		// 상태 체크 
-		if(ValueUtil.isNotEqual(LogisConstants.COMMON_STATUS_WAIT, trayBox.getStatus())) {
-			// 상태 유형이(가) 유효하지 않습니다
-			throw ThrowUtil.newValidationErrorWithNoLog(true, "A_IS_INVALID", "terms.label.status");
-		}
-		return trayBox;
-	}
-	
 	/**
 	 * 트레이 박스 검색 
 	 * @param domainId

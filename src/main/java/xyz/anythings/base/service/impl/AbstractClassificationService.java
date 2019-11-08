@@ -48,7 +48,7 @@ public abstract class AbstractClassificationService extends AbstractExecutionSer
 			
 		// 2. 트레이 타입이면 트레이에서 조회 
 		} else {
-			return LogisServiceUtil.checkVaildTray(domainId, bucketCd, withLock);
+			return LogisServiceUtil.findTrayBox(domainId, bucketCd, withLock, true);
 		}
 	}
 
