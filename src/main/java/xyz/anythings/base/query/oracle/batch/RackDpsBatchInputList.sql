@@ -19,6 +19,7 @@ SELECT BATCH_ID, INPUT_SEQ, ORDER_NO, BOX_ID, BOX_TYPE
 	               AND EQUIP_CD = :equipCd
 	             #end
 	               AND STATUS  not in ('BW','W')
+	               AND ORDER_TYPE = 'MT'
 	             GROUP BY BATCH_ID, ORDER_NO, INPUT_SEQ, BOX_ID, BOX_TYPE_CD, COM_CD, SKU_CD
 	           )
 	     GROUP BY BATCH_ID, ORDER_NO, INPUT_SEQ, BOX_ID, BOX_TYPE_CD  

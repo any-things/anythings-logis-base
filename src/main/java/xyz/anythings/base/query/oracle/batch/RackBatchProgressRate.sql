@@ -6,14 +6,12 @@ WITH T_JOBS AS (
             SELECT ORDER_NO, COM_CD, SKU_CD
                  , PICK_QTY, NVL(PICKED_QTY, 0) AS PICKED_QTY
               FROM JOB_INSTANCES
-             WHERE DOMAIN_ID = 1000
-               AND (BATCH_ID, EQUIP_TYPE, EQUIP_CD ) 
-                    in ( SELECT BATCH_ID, 'Rack', RACK_CD
-                           FROM RACKS
-                          WHERE DOMAIN_ID = :domainId
-                            AND RACK_CD = :rackCd
-                            AND ACTIVE_FLAG = 1
-                            AND STATUS = 'RUN' )
+             WHERE DOMAIN_ID = :domainId
+               AND BATCH_ID = :batchId
+               AND EQUIP_TYPE = :equipType
+             #if($equipCd)
+               AND EQUIP_CD = :equipCd
+             #end
                AND STATUS NOT IN ('C','D') -- 작업 취소 , 주문 취소가 아닌 것 
            )
 ),

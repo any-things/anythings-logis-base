@@ -121,11 +121,22 @@ public class DeviceProcessController {
 	public BatchProgressRate batchProgressRate(@PathVariable("equip_type") String equipType, @PathVariable("equip_cd") String equipCd) {
 		
 		BatchProgressRate rate = new BatchProgressRate();
+		Long domainId = Domain.currentDomainId();
 		
 		// Rack 타입 공통 처리 
 		if(ValueUtil.isEqualIgnoreCase(LogisConstants.EQUIP_TYPE_RACK, equipType)) {
 			String qry = this.batchQueryStore.getRackBatchProgressRateQuery();
-			rate = this.queryManager.selectBySql(qry, ValueUtil.newMap("domainId,rackCd", Domain.currentDomainId(), equipCd), BatchProgressRate.class);
+			
+			EquipBatchSet equipBatchSet = LogisServiceUtil.findBatchByEquip(domainId, equipType, equipCd);
+			JobBatch batch = equipBatchSet.getBatch();
+			
+			Map<String,Object> params = ValueUtil.newMap("domainId,batchId,equipType", domainId, batch.getId(), equipType);
+			
+			if(ValueUtil.isNotEmpty(batch.getEquipCd())) {
+				params.put("equipCd", equipCd);
+			}
+			
+			rate = this.queryManager.selectBySql(qry, params, BatchProgressRate.class);
 		} else {
 			// TODO 다른 설비 추가 필요  
 		}
