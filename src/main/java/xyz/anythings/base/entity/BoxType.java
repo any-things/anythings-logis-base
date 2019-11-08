@@ -1,5 +1,6 @@
 package xyz.anythings.base.entity;
 
+import xyz.anythings.base.LogisCodeConstants;
 import xyz.anythings.base.entity.ifc.IBucket;
 import xyz.elidom.dbist.annotation.Column;
 import xyz.elidom.dbist.annotation.GenerationRule;
@@ -178,7 +179,7 @@ public class BoxType extends xyz.elidom.orm.entity.basic.ElidomStampHook impleme
 	}
 
 	@Override
-	public String getBucketType() {
+	public String getBucketTypeCd() {
 		return this.getBoxTypeCd();
 	}
 
@@ -191,5 +192,9 @@ public class BoxType extends xyz.elidom.orm.entity.basic.ElidomStampHook impleme
 	public String getStatus() {
 		// 미구현 
 		return null;
+	}
+	@Override
+	public String getBucketType() {
+		return LogisCodeConstants.BOX_TYPE_BOX;
 	}
 }

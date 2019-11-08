@@ -75,10 +75,9 @@ public interface IJobStatusService {
 	 * 2-3. 투입 정보 조회 - 다음 처리할 릴레이 시퀀스를 조회 - 락을 걸고 처리해야 함 ...
 	 * 
 	 * @param batchId
-	 * @param stationCd
 	 * @return
 	 */
-	public Integer findNextInputSeq(JobBatch batch, String stationCd);
+	public Integer findNextInputSeq(JobBatch batch);
 	
 	/**
 	 * 3-1. 작업 조회 - 설비, 작업 존 별 투입 정보에 매핑된 작업 리스트 조회

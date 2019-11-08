@@ -31,6 +31,7 @@ import xyz.anythings.base.event.rest.DeviceProcessRestEvent;
 import xyz.anythings.base.model.BaseResponse;
 import xyz.anythings.base.model.BatchProgressRate;
 import xyz.anythings.base.model.Category;
+import xyz.anythings.base.model.EquipBatchSet;
 import xyz.anythings.base.query.store.BatchQueryStore;
 import xyz.anythings.base.service.util.LogisServiceUtil;
 import xyz.anythings.sys.event.EventPublisher;
@@ -474,17 +475,23 @@ public class DeviceProcessController {
 		
 		Long domainId = Domain.currentDomainId();
 		
-		Map<String,Object> params = ValueUtil.newMap("domainId,equipType,equipCd", domainId, equipType, equipCd);
+		Map<String,Object> params = ValueUtil.newMap("domainId,equipType", domainId, equipType);
 		
 		// Rack 타입 공통 처리 
 		if(ValueUtil.isEqualIgnoreCase(LogisConstants.EQUIP_TYPE_RACK, equipType)) {
 			
-			// 1. RACK 조회 
-			Rack rack = LogisServiceUtil.checkValidRack(domainId, equipCd);
+			// 1. RACK , BATCH 조회
+			EquipBatchSet equipBatchSet = LogisServiceUtil.findBatchByEquip(domainId, equipType, equipCd);
+			Rack rack = (Rack)equipBatchSet.getEquipEntity();
+			JobBatch batch = equipBatchSet.getBatch();
+			
 			String qry = "";
 			
-			params.put("batchId", rack.getBatchId());
+			params.put("batchId", batch.getId());
 			
+			if(ValueUtil.isNotEmpty(batch.getEquipCd())) {
+				params.put("equipCd", equipCd);
+			}
 			
 			// 2. DPS 일때 쿼리 
 			if(LogisConstants.isDpsJobType(rack.getJobType())){

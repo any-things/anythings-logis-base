@@ -102,7 +102,15 @@ public class BatchQueryStore extends AbstractQueryStore {
 	 * 마지막 투입 작업 조회 
 	 * @return
 	 */
-	public String getLatestJobInputQry() {
+	public String getLatestJobInputQuery() {
 		return this.getQueryByPath("batch/LastestJobInput");
+	}
+	
+	/**
+	 * 다음 맵핑할 작업 정보 조회 
+	 * @return
+	 */
+	public String getFindNextMappingJobQuery() {
+		return this.getQueryByPath("batch/FindNextMappingJob");
 	}
 }

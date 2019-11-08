@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import xyz.anythings.base.entity.BoxItem;
 import xyz.anythings.base.entity.BoxPack;
@@ -13,6 +15,7 @@ import xyz.anythings.base.entity.JobInstance;
 import xyz.anythings.base.model.BatchProgressRate;
 import xyz.anythings.base.query.store.BatchQueryStore;
 import xyz.anythings.base.service.api.IJobStatusService;
+import xyz.anythings.base.util.LogisEntityUtil;
 import xyz.anythings.sys.service.AbstractExecutionService;
 import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.util.ValueUtil;
@@ -47,15 +50,25 @@ public class AbstractJobStatusService extends AbstractExecutionService implement
 
 	@Override
 	public JobInput findLatestInput(JobBatch batch) {
-		String qry = this.batchQueryStore.getLatestJobInputQry();
+		String qry = this.batchQueryStore.getLatestJobInputQuery();
 		Map<String,Object> paramMap = ValueUtil.newMap("domainId,batchId,equipType", batch.getDomainId(), batch.getId(), batch.getEquipType());
+		
+		if(ValueUtil.isNotEmpty(batch.getEquipCd())) {
+			paramMap.put("equipCd", batch.getEquipCd());
+		}
+		
 		return this.queryManager.selectBySql(qry, paramMap, JobInput.class);
 	}
 
 	@Override
-	public Integer findNextInputSeq(JobBatch batch, String stationCd) {
-		// TODO Auto-generated method stub
-		return null;
+	@Transactional(propagation=Propagation.REQUIRES_NEW)
+	public Integer findNextInputSeq(JobBatch batch) {
+		// 작업 배치의 마지막 투입 시퀀스를 조회 후 하나 올려서 리턴
+		JobBatch findBatch = LogisEntityUtil.findEntityByIdWithLock(true, JobBatch.class, batch.getId());
+		int lastInputSeq = (findBatch.getLastInputSeq() == null) ? 1 : findBatch.getLastInputSeq() + 1;
+		batch.setLastInputSeq(lastInputSeq);
+		this.queryManager.update(batch, "lastInputSeq");
+		return lastInputSeq;
 	}
 
 	@Override

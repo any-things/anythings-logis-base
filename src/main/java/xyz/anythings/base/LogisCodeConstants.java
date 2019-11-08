@@ -87,4 +87,64 @@ public class LogisCodeConstants {
 	 */
 	public static final String CLASSIFICATION_ACTION_END = "end";
 	
+	
+	/**************************************************************
+	 * 
+	 * 작업 투입 유형 
+	 * 
+	 **************************************************************/
+	/**
+	 * 작업 투입 유형 : 낱개  
+	 */
+	public static final String JOB_INPUT_TYPE_PCS = "PCS";
+	/**
+	 * 작업 투입 유형 : 완박스  
+	 */
+	public static final String JOB_INPUT_TYPE_BOX = "BOX";
+	/**
+	 * 작업 투입 유형 : 묶음  
+	 */
+	public static final String JOB_INPUT_TYPE_BUNDLE = "BUNDLE";
+	
+	
+	/**************************************************************
+	 * 
+	 * 작업 투입 처리 상태 
+	 * 
+	 **************************************************************/
+	/**
+	 * 작업 투입 처리 상태  : 대기
+	 */
+	public static final String JOB_INPUT_STATUS_WAIT = "W";
+	/**
+	 * 작업 투입 처리 상태  : 진행
+	 */
+	public static final String JOB_INPUT_STATUS_RUN = "R";
+	/**
+	 * 작업 투입 처리 상태  : 완료
+	 */
+	public static final String JOB_INPUT_STATUS_FINISHED = "F";
+	/**
+	 * 작업 투입 처리 상태  : 미처리
+	 */
+	public static final String JOB_INPUT_STATUS_UNFINISHED = "U";
+	/**
+	 * 작업 투입 처리 상태  : 검수완료
+	 */
+	public static final String JOB_INPUT_STATUS_EXAMED = "E";
+	
+	/**************************************************************
+	 * 
+	 * 박스 유형 (박스/트레이 )
+	 * 
+	 **************************************************************/
+
+	/**
+	 * 박스 유형  : 트레이
+	 */
+	public static final String BOX_TYPE_TRAY = "TRAY";
+	/**
+	 * 박스 유형  : 박스 
+	 */
+	public static final String BOX_TYPE_BOX = "BOX";
 }

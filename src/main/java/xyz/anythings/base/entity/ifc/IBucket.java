@@ -9,6 +9,12 @@ package xyz.anythings.base.entity.ifc;
 public interface IBucket{
 	
 	/**
+	 * bucket Type : tray / box
+	 */
+	public String getBucketType();
+	
+	
+	/**
 	 * PK ID 정보 
 	 * @return
 	 */
@@ -24,7 +30,7 @@ public interface IBucket{
 	 * TRAY_TYPE or BOX_TYPE_CD
 	 * @return
 	 */
-	public String getBucketType();
+	public String getBucketTypeCd();
 	
 	/**
 	 * TRAY_COLOR or BOX_COLOR
@@ -37,4 +43,6 @@ public interface IBucket{
 	 * @return
 	 */
 	public String getStatus();
+	
+	
 }

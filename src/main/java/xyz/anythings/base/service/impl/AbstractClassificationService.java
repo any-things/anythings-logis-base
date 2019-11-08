@@ -26,6 +26,7 @@ import xyz.elidom.util.ValueUtil;
  */
 public abstract class AbstractClassificationService extends AbstractExecutionService implements IClassificationService{
 
+	
 	@Autowired
 	ConfigSetService configSetService;
 	

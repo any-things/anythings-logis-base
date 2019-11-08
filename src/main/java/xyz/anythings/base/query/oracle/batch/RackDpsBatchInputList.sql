@@ -15,8 +15,10 @@ SELECT BATCH_ID, INPUT_SEQ, ORDER_NO, BOX_ID, BOX_TYPE
 	             WHERE DOMAIN_ID = :domainId
 	               AND BATCH_ID = :batchId
 	               AND EQUIP_TYPE = :equipType
+	             #if($equipCd)
 	               AND EQUIP_CD = :equipCd
-	               AND STATUS != 'BW'
+	             #end
+	               AND STATUS  not in ('BW','W')
 	             GROUP BY BATCH_ID, ORDER_NO, INPUT_SEQ, BOX_ID, BOX_TYPE_CD, COM_CD, SKU_CD
 	           )
 	     GROUP BY BATCH_ID, ORDER_NO, INPUT_SEQ, BOX_ID, BOX_TYPE_CD  

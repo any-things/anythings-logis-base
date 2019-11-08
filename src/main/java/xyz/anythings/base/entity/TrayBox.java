@@ -1,5 +1,6 @@
 package xyz.anythings.base.entity;
 
+import xyz.anythings.base.LogisCodeConstants;
 import xyz.anythings.base.entity.ifc.IBucket;
 import xyz.elidom.dbist.annotation.Column;
 import xyz.elidom.dbist.annotation.GenerationRule;
@@ -100,7 +101,7 @@ public class TrayBox extends xyz.elidom.orm.entity.basic.ElidomStampHook impleme
 	}
 
 	@Override
-	public String getBucketType() {
+	public String getBucketTypeCd() {
 		return this.getTrayType();
 	}
 
@@ -108,4 +109,9 @@ public class TrayBox extends xyz.elidom.orm.entity.basic.ElidomStampHook impleme
 	public String getBucketColor() {
 		return this.getTrayColor();
 	}	
+	
+	@Override
+	public String getBucketType() {
+		return LogisCodeConstants.BOX_TYPE_TRAY;
+	}
 }
