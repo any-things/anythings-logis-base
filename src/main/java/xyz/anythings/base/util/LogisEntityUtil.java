@@ -237,6 +237,31 @@ public class LogisEntityUtil extends EntityUtil {
 	}
 	
 	/**
+	 * clazz에서 fieldName, fieldValue 로 사이즈 조회 
+	 * @param domainId
+	 * @param clazz
+	 * @param fieldNames
+	 * @param fieldValues
+	 * @return
+	 */
+	public static int selectSizeByEntity(Long domainId, Class<?> clazz, String fieldNames, Object ... fieldValues) {
+		Query condition = AnyOrmUtil.newConditionForExecution(domainId);
+		
+		String[] keyArr = fieldNames.split(SysConstants.COMMA);
+
+		if (keyArr.length != fieldValues.length) {
+			throw ThrowUtil.newMismatchMapKeyValue();
+		}
+
+		for (int i = 0; i < keyArr.length; i++) {
+			condition.addFilter(keyArr[i], fieldValues[i]);
+		}
+		
+		return BeanUtil.get(IQueryManager.class).selectSize(clazz, condition);
+	}
+	
+	
+	/**
 	 * 마스터의 상세 리스트 조회
 	 * 
 	 * @param domainId
