@@ -12,6 +12,7 @@ WITH T_JOBS AS (
              #if($equipCd)
                AND EQUIP_CD = :equipCd
              #end
+               AND ORDER_TYPE = 'MT'
                AND STATUS NOT IN ('C','D') -- 작업 취소 , 주문 취소가 아닌 것 
            )
 ),
