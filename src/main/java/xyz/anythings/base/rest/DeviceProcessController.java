@@ -472,7 +472,7 @@ public class DeviceProcessController {
 	 * @param equipCd
 	 * @param page
 	 * @param limit
-	 * @param status 상태 - F: 완료인 것 만 보기, U: 미완료인 것만 보기 , A : 전체 보기 
+	 * @param status 상태 - F: 완료인 것 만 보기, U: 미완료인 것만 보기
 	 * @return
 	 */
 	@RequestMapping(value = "/search/input_list/{equip_type}/{equip_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

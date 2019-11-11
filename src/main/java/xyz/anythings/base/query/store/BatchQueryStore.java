@@ -113,4 +113,20 @@ public class BatchQueryStore extends AbstractQueryStore {
 	public String getFindNextMappingJobQuery() {
 		return this.getQueryByPath("batch/FindNextMappingJob");
 	}
+	
+	/**
+	 * 배치 instances 데이터 에서 Input 데이터 생성 쿼리 
+	 * @return
+	 */
+	public String getRackDpsBatchNewInputDataQuery() {
+		return this.getQueryByPath("batch/RackDpsBatchNewInputData");
+	}
+	
+	/**
+	 * instance 테이블에 boxId 및 seq 정보 update 쿼리 
+	 * @return
+	 */
+	public String getRackDpsBatchMapBoxIdAndSeqQuery() {
+		return this.getQueryByPath("batch/RackDpsBatchMapBoxIdAndSeq");
+	}
 }
