@@ -131,7 +131,7 @@ public class Gateway extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	}
 	
 	public static String buildGatewayPath(String siteCd, String areaCd, String stageCd, String gwCd) {
-		return siteCd + LogisConstants.DASH + areaCd + LogisConstants.DASH + stageCd + LogisConstants.DASH + gwCd;
+		return siteCd + LogisConstants.SLASH + areaCd + LogisConstants.SLASH + stageCd + LogisConstants.SLASH + gwCd;
 	}
 	
 	@Override
