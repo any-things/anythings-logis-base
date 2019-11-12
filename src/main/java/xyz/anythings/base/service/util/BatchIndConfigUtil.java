@@ -4,6 +4,7 @@ import xyz.anythings.base.entity.JobBatch;
 
 /**
  * 작업 배치 범위 내 표시기 설정 값 조회 유틸리티
+ * 표시기 설정 리스트
  *  - ind.action.delay.before.on				표시기가 점등되기 전 지연되는 시간입니다. (100ms 단위)
  *  - ind.action.delay.cancel.button.off		표시기의 취소 버튼을 눌렀을 때 표시기가 소등되기까지의 지연 시간입니다. (100ms)
  *  - ind.action.send.off.ack.already.off		표시기가 이미 소등된 상태에서 소등 요청을 받았을 때 응답 메시지를 보낼 지 여부입니다.
