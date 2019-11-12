@@ -15,8 +15,8 @@ import xyz.elidom.util.ValueUtil;
  * 
  * @author shortstop
  */
-@Table(name = "job_config_set", idStrategy = GenerationRule.UUID, uniqueFields="domainId,comCd,stageCd,jobType,equipType,equipCd,confSetCd", indexes = {
-	@Index(name = "ix_job_config_set_0", columnList = "domain_id,com_cd,stage_cd,job_type,equip_type,equip_cd,conf_set_cd", unique = true)
+@Table(name = "job_config_set", idStrategy = GenerationRule.UUID, indexes = {
+	@Index(name = "ix_job_config_set_0", columnList = "domain_id,stage_cd,job_type,equip_type,equip_cd,com_cd,conf_set_cd", unique = true)
 })
 public class JobConfigSet extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	/**

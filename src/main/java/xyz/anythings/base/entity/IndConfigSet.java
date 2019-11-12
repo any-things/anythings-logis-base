@@ -15,8 +15,8 @@ import xyz.elidom.util.ValueUtil;
  * 
  * @author shortstop
  */
-@Table(name = "ind_config_set", idStrategy = GenerationRule.UUID, uniqueFields="domainId,comCd,stageCd,jobType,equipType,equipCd,confSetCd", indexes = {
-	@Index(name = "ix_ind_config_set_0", columnList = "domain_id,com_cd,stage_cd,job_type,equip_type,equip_cd,conf_set_cd", unique = true)
+@Table(name = "ind_config_set", idStrategy = GenerationRule.UUID, indexes = {
+	@Index(name = "ix_ind_config_set_0", columnList = "domain_id,stage_cd,ind_type,job_type,equip_type,equip_cd,com_cd,conf_set_cd", unique = true)
 })
 public class IndConfigSet extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	/**
@@ -28,11 +28,14 @@ public class IndConfigSet extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "id", nullable = false, length = 40)
 	private String id;
 
+	@Column (name = "stage_cd", nullable = false, length = 30)
+	private String stageCd;
+	
+	@Column (name = "ind_type", length = 20)
+	private String indType;
+	
 	@Column (name = "com_cd", length = 30)
 	private String comCd;
-
-	@Column (name = "stage_cd", length = 30)
-	private String stageCd;
 
 	@Column (name = "job_type", length = 20)
 	private String jobType;
@@ -65,6 +68,22 @@ public class IndConfigSet extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	public void setId(String id) {
 		this.id = id;
 	}
+	
+	public String getStageCd() {
+		return stageCd;
+	}
+
+	public void setStageCd(String stageCd) {
+		this.stageCd = stageCd;
+	}
+
+	public String getIndType() {
+		return indType;
+	}
+
+	public void setIndType(String indType) {
+		this.indType = indType;
+	}
 
 	public String getComCd() {
 		return comCd;
@@ -72,14 +91,6 @@ public class IndConfigSet extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setComCd(String comCd) {
 		this.comCd = comCd;
-	}
-
-	public String getStageCd() {
-		return stageCd;
-	}
-
-	public void setStageCd(String stageCd) {
-		this.stageCd = stageCd;
 	}
 
 	public String getJobType() {

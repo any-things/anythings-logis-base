@@ -27,6 +27,7 @@ import xyz.elidom.orm.system.annotation.service.ApiDesc;
 import xyz.elidom.orm.system.annotation.service.ServiceDesc;
 import xyz.elidom.sys.entity.Domain;
 import xyz.elidom.sys.system.service.AbstractRestService;
+import xyz.elidom.sys.util.ValueUtil;
 
 @RestController
 @Transactional
@@ -120,11 +121,13 @@ public class JobConfigSetController extends AbstractRestService {
 		return this.configSetService.buildTemplateJobConfigSet(Domain.currentDomainId());
 	}
 	
-	@RequestMapping(value = "/{id}/copy", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/{id}/copy", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
 	@ApiDesc(description = "Copy template config set")
-	public JobConfigSet copyConfigSet(@PathVariable("id") String sourceConfigSetId) {
-		return this.configSetService.copyJobConfigSet(Domain.currentDomainId(), sourceConfigSetId);
+	public JobConfigSet copyConfigSet(@PathVariable("id") String sourceConfigSetId, @RequestBody Map<String, Object> params) {
+		String targetSetCd = ValueUtil.toString(params.get("target_set_cd"));
+		String targetSetNm = ValueUtil.toString(params.get("target_set_nm"));
+		return this.configSetService.copyJobConfigSet(Domain.currentDomainId(), sourceConfigSetId, targetSetCd, targetSetNm);
 	}
 	
 	@RequestMapping(value = "/build_config_set/{batch_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
