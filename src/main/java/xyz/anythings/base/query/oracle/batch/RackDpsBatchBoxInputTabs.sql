@@ -46,13 +46,19 @@ T_B_INPUT AS (
       FROM (
             SELECT *
               FROM (
-                    SELECT 1 as ORDER_SEQ , X.*
+              	#if($selectedInputId)
+              		SELECT 1 AS ORDER_SEQ , X.DOMAIN_ID, X.BATCH_ID , X.BOX_ID, X.ORDER_NO, X.INPUT_SEQ
+              		  FROM T_STATION_INPUTS X
+              		 WHERE ID = :selectedInputId
+              		 UNION ALL 
+              	#end
+                    SELECT 2 as ORDER_SEQ , X.*
                       FROM T_R_INPUTS X
                      UNION ALL
-                    SELECT 2 as ORDER_SEQ , X.*
+                    SELECT 3 as ORDER_SEQ , X.*
                       FROM T_E_INPUTS X
                       UNION ALL
-                    SELECT 3 as ORDER_SEQ , X.*
+                    SELECT 4 as ORDER_SEQ , X.*
                       FROM T_W_INPUTS X
                    )
              ORDER BY ORDER_SEQ ASC
@@ -87,6 +93,7 @@ T_INPUT_SEQ_RES AS (
                                END ), 10 , 1, 0 ) AS IS_MY_ZONE_IS_LAST
                  , 0 AS MY_ZONE_PROGRESS_RATE
                  , MAX(INPUT_SEQ) AS ORDER_SEQ
+                 , MAX(DECODE(STATION_CD, :equipZone, STATUS, NULL)) AS STATUS 
               FROM (
                     SELECT 1 as SEQ, X.*
                       FROM T_INPUTS_FILTER X
@@ -136,8 +143,12 @@ SELECT X.BATCH_ID, X.ORDER_NO, X.BOX_ID, X.COLOR_CD
      , X.HAS_MY_JOBS, X.IS_MY_ZONE_IS_LAST
      , DECODE(X.INPUT_SEQ, 0, X.ORDER_SEQ, X.INPUT_SEQ) AS INPUT_SEQ
      , DECODE(NVL(PICKED_QTY,0), 0, 0, PICK_QTY/PICKED_QTY) * 100 MY_ZONE_PROGRESS_RATE
+     , X.STATUS
+#if($selectedInputId)
+	 , DECODE(X.ID, :selectedInputId, 1, 0 ) AS IS_SELECTED_ITEM
+#end     
   FROM T_INPUT_SEQ_RES X
-     , (SELECT DOMAIN_ID, BATCH_ID, ORDER_NO, PICK_QTY, PICKED_QTY
+     , (SELECT DOMAIN_ID, BATCH_ID, ORDER_NO, SUM(PICK_QTY) AS PICK_QTY, SUM(PICKED_QTY) AS PICKED_QTY
           FROM JOB_INSTANCES
          WHERE (DOMAIN_ID, BATCH_ID, ORDER_NO)
                  in (SELECT DOMAIN_ID, BATCH_ID, ORDER_NO FROM T_INPUT_SEQ_RES)
@@ -149,6 +160,7 @@ SELECT X.BATCH_ID, X.ORDER_NO, X.BOX_ID, X.COLOR_CD
                         AND Y.EQUIP_CD = :equipCd
                         AND Y.STATION_CD = :equipZone
                     )
+         GROUP BY DOMAIN_ID, BATCH_ID, ORDER_NO
        ) Y
  WHERE X.BATCH_ID = Y.BATCH_ID(+)
    AND X.ORDER_NO = Y.ORDER_NO(+)

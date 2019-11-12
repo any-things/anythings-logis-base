@@ -57,8 +57,7 @@ public class DeviceProcessRestEvent extends SysRestEvent{
 	public boolean checkCondition(String restPath, String jobType) {
 		if(super.checkCondition(restPath) == false) return false;
 		
-		if(ValueUtil.isNotEqual(jobType, this.getJobType())) return false;
-		return true;
+		return ValueUtil.isEqualIgnoreCase(jobType, this.getJobType());
 	}
 
 }

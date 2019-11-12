@@ -559,7 +559,8 @@ public class DeviceProcessController {
 	public List<JobInput> searchInputList(
 			@PathVariable("equip_type") String equipType,
 			@PathVariable("equip_cd") String equipCd,
-			@PathVariable("equip_zone") String equipZone) {
+			@PathVariable("equip_zone") String equipZone,
+			@RequestParam(name="selected_input_id", required=false) String selectedInputId) {
 		
 		Long domainId = Domain.currentDomainId();
 		
@@ -579,6 +580,11 @@ public class DeviceProcessController {
 			if(LogisConstants.isDpsJobType(rack.getJobType())){
 				qry = this.batchQueryStore.getRackDpsBatchBoxInputTabsQuery();
 				//params.put("viewOnlyMyJob", 1); // TODO : 내 작업 만 볼지 옵션 
+				
+				if(ValueUtil.isNotEmpty(selectedInputId)) {
+					params.put("selectedInputId", selectedInputId); //기준이 될 Bucket Input  ( ex) 박스 도착 후 조회 되는 리스트 )
+				}
+				
 			} else {
 				// TODO 다른 job type 쿼리.. 
 			}

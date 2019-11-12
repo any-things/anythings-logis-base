@@ -84,6 +84,9 @@ public class JobInput extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Ignore
 	private Integer myZoneProgressRate;
 	
+	@Ignore
+	private Boolean isSelectedItem;
+
   
 	public String getId() {
 		return id;
@@ -251,6 +254,14 @@ public class JobInput extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setMyZoneProgressRate(Integer myZoneProgressRate) {
 		this.myZoneProgressRate = myZoneProgressRate;
+	}
+
+	public Boolean getIsSelectedItem() {
+		return isSelectedItem;
+	}
+
+	public void setIsSelectedItem(Boolean isSelectedItem) {
+		this.isSelectedItem = isSelectedItem;
 	}
 
 }
