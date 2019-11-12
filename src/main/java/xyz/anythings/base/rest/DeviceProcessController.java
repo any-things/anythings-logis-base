@@ -34,6 +34,7 @@ import xyz.anythings.base.model.Category;
 import xyz.anythings.base.model.EquipBatchSet;
 import xyz.anythings.base.query.store.BatchQueryStore;
 import xyz.anythings.base.service.util.LogisServiceUtil;
+import xyz.anythings.base.util.LogisEntityUtil;
 import xyz.anythings.sys.event.EventPublisher;
 import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.orm.IQueryManager;
@@ -598,14 +599,46 @@ public class DeviceProcessController {
 	 * @param equipZone
 	 * @return
 	 */
-	@RequestMapping(value = "/search/input_jobs/{job_input_id}/{equip_zone}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/search/input_jobs/{job_input_id}/{equip_type}/{equip_cd}/{equip_zone}/{ind_on_flag}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Search Input Job list")
 	public List<JobInstance> searchInputJobs(
 			@PathVariable("job_input_id") String jobInputId, 
-			@PathVariable("equip_zone") String equipZone) {
+			@PathVariable("equip_type") String equipType,
+			@PathVariable("equip_cd") String equipCd,
+			@PathVariable("equip_zone") String equipZone,
+			@PathVariable("ind_on_flag") Boolean indOnFlag) {
 		
-		// TODO 
-		return null;
+		Long domainId = Domain.currentDomainId();
+		// 1. JobInput 조회 
+		//  - 모든 작업 유형에 내 작업 외 다른 작업 까지 보기 선택된 경우에는 input 데이터가 null 
+		JobInput input = LogisEntityUtil.findEntityBy(domainId, false, JobInput.class, null, "id,equipType,equipCd,stationCd", jobInputId,equipType,equipCd,equipZone);
+		
+		// 1.1. input 이 Empty 면 현재 작업 존의 데이터가 없는 것. 
+		if(ValueUtil.isEmpty(input)) {
+			return null;
+		}
+		
+		// 2. EQUIP , BATCH 조회
+		EquipBatchSet equipBatchSet = LogisServiceUtil.findBatchByEquip(domainId, equipType, equipCd);
+		JobBatch batch = equipBatchSet.getBatch();
+		List<JobInstance> resultList = null;
+		
+		// Rack 타입 공통 처리 
+		if(ValueUtil.isEqualIgnoreCase(LogisConstants.EQUIP_TYPE_RACK, equipType)) {
+			// 3. JobInstance 조회
+			// - side, gwPath 정보 추가 
+			String detailListQry = this.batchQueryStore.getRackDpsBatchBoxInputTabDetailQuery();
+			Map<String,Object> params = ValueUtil.newMap("domainId,batchId,equipType,equipCd,orderNo,equipZone,stageCd"
+										, domainId,batch.getId(),equipType,equipCd,input.getOrderNo(),equipZone,batch.getStageCd());
+			resultList = this.queryManager.selectListBySql(detailListQry, params, JobInstance.class, 0, 0);
+			
+		} else {
+			// TODO : 다른 설비들은? 
+		}
+		
+		// 4. indOnFlag 처리 
+		// TODO 향후 지시기 불켜기 할까 말까 .. 
+		return resultList;
 	}
 	
 	/**
