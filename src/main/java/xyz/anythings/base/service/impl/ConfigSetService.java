@@ -30,9 +30,13 @@ import xyz.elidom.util.ValueUtil;
 public class ConfigSetService extends AbstractExecutionService implements IConfigSetService {
 	
 	/**
-	 * ConfigSet Copy Fields
+	 * 작업 프로파일 셋 Copy Fields
 	 */
-	private static final String[] CONFIG_SET_COPY_FIELDS = new String[] { "comCd", "stageCd", "jobType", "equipType", "equipCd", "confSetCd", "confSetNm", "remark" };
+	private static final String[] JOB_CONFIG_SET_COPY_FIELDS = new String[] { "stageCd", "jobType", "equipType", "equipCd", "comCd", "confSetCd", "confSetNm", "remark" };
+	/**
+	 * 표시기 프로파일 셋 Copy Fields
+	 */
+	private static final String[] IND_CONFIG_SET_COPY_FIELDS = new String[] { "stageCd", "indType", "jobType", "equipType", "equipCd", "comCd", "confSetCd", "confSetNm", "remark" };
 	/**
 	 * ConfigSet 
 	 */
@@ -53,15 +57,17 @@ public class ConfigSetService extends AbstractExecutionService implements IConfi
 		List<JobConfigSet> sourceSetList = LogisEntityUtil.searchEntitiesBy(domainId, true, JobConfigSet.class, SysConstants.ENTITY_FIELD_ID, "defaultFlag", Boolean.TRUE);
 		JobConfigSet sourceSet = sourceSetList.get(0);
 		// 2. 설정 항목 복사
-		return this.copyJobConfigSet(domainId, sourceSet.getId());
+		String targetSetCd = sourceSet.getConfSetCd() + "_copy";
+		return this.copyJobConfigSet(domainId, sourceSet.getId(), targetSetCd, targetSetCd);
 	}
 	
 	@Override
-	public JobConfigSet copyJobConfigSet(Long domainId, String templateConfigSetId) {
+	public JobConfigSet copyJobConfigSet(Long domainId, String templateConfigSetId, String targetSetCd, String targetSetNm) {
 		// 1. templateConfigSetId로 템플릿 설정을 조회 
 		JobConfigSet sourceSet = LogisEntityUtil.findEntityById(true, JobConfigSet.class, templateConfigSetId);
-		JobConfigSet targetSet = AnyValueUtil.populate(sourceSet, new JobConfigSet(), CONFIG_SET_COPY_FIELDS);
-		targetSet.setConfSetCd(sourceSet.getConfSetCd() + "_copy");
+		JobConfigSet targetSet = AnyValueUtil.populate(sourceSet, new JobConfigSet(), JOB_CONFIG_SET_COPY_FIELDS);
+		targetSet.setConfSetCd(targetSetCd);
+		targetSet.setConfSetNm(targetSetNm);
 		this.queryManager.insert(targetSet);
 		// 2. 템플릿 설정 생성
 		this.cloneSourceJobConfigItems(sourceSet, targetSet);
@@ -140,15 +146,17 @@ public class ConfigSetService extends AbstractExecutionService implements IConfi
 		List<IndConfigSet> sourceSetList = LogisEntityUtil.searchEntitiesBy(domainId, true, IndConfigSet.class, SysConstants.ENTITY_FIELD_ID, "defaultFlag", Boolean.TRUE);
 		IndConfigSet sourceSet = sourceSetList.get(0);
 		// 2. 설정 항목 복사
-		return this.copyIndConfigSet(domainId, sourceSet.getId());
+		String targetSetCd = sourceSet.getConfSetCd() + "_copy";
+		return this.copyIndConfigSet(domainId, sourceSet.getId(), targetSetCd, targetSetCd);
 	}
 
 	@Override
-	public IndConfigSet copyIndConfigSet(Long domainId, String templateConfigSetId) {
+	public IndConfigSet copyIndConfigSet(Long domainId, String templateConfigSetId, String targetSetCd, String targetSetNm) {
 		// 1. templateConfigSetId로 템플릿 설정을 조회 
 		IndConfigSet sourceSet = LogisEntityUtil.findEntityById(true, IndConfigSet.class, templateConfigSetId);
-		IndConfigSet targetSet = AnyValueUtil.populate(sourceSet, new IndConfigSet(), CONFIG_SET_COPY_FIELDS);
-		targetSet.setConfSetCd(sourceSet.getConfSetCd() + "_copy");
+		IndConfigSet targetSet = AnyValueUtil.populate(sourceSet, new IndConfigSet(), IND_CONFIG_SET_COPY_FIELDS);
+		targetSet.setConfSetCd(targetSetCd);
+		targetSet.setConfSetNm(targetSetNm);
 		this.queryManager.insert(targetSet);
 		// 2. 템플릿 설정 생성
 		this.cloneSourceIndConfigItems(sourceSet, targetSet);

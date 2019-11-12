@@ -24,9 +24,11 @@ public interface IConfigSetService {
 	 * 
 	 * @param domainId
 	 * @param templateConfigSetId
+	 * @param targetSetCd
+	 * @param targetSetNm
 	 * @return
 	 */
-	public JobConfigSet copyJobConfigSet(Long domainId, String templateConfigSetId);
+	public JobConfigSet copyJobConfigSet(Long domainId, String templateConfigSetId, String targetSetCd, String targetSetNm);
  
 	/**
 	 * 작업 배치 정보로 작업 설정 셋 생성
@@ -94,9 +96,11 @@ public interface IConfigSetService {
 	 * 
 	 * @param domainId
 	 * @param templateConfigSetId
+	 * @param targetSetCd
+	 * @param targetSetNm
 	 * @return
 	 */
-	public IndConfigSet copyIndConfigSet(Long domainId, String templateConfigSetId);
+	public IndConfigSet copyIndConfigSet(Long domainId, String templateConfigSetId, String targetSetCd, String targetSetNm);
 	
 	/**
 	 * 작업 배치 정보로 표시기 설정 셋 생성
