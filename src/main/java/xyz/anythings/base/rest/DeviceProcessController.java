@@ -486,19 +486,17 @@ public class DeviceProcessController {
 		
 		Long domainId = Domain.currentDomainId();
 		
-		Map<String,Object> params = ValueUtil.newMap("domainId,equipType", domainId, equipType);
+		// 1. EQUIP , BATCH 조회
+		EquipBatchSet equipBatchSet = LogisServiceUtil.findBatchByEquip(domainId, equipType, equipCd);
+		JobBatch batch = equipBatchSet.getBatch();
+		
+		Map<String,Object> params = ValueUtil.newMap("domainId,equipType,batchId", domainId, equipType, batch.getId());
 		
 		// Rack 타입 공통 처리 
 		if(ValueUtil.isEqualIgnoreCase(LogisConstants.EQUIP_TYPE_RACK, equipType)) {
-			
-			// 1. RACK , BATCH 조회
-			EquipBatchSet equipBatchSet = LogisServiceUtil.findBatchByEquip(domainId, equipType, equipCd);
 			Rack rack = (Rack)equipBatchSet.getEquipEntity();
-			JobBatch batch = equipBatchSet.getBatch();
 			
 			String qry = "";
-			
-			params.put("batchId", batch.getId());
 			
 			if(ValueUtil.isNotEmpty(batch.getEquipCd())) {
 				params.put("equipCd", equipCd);
@@ -561,6 +559,33 @@ public class DeviceProcessController {
 			@PathVariable("equip_type") String equipType,
 			@PathVariable("equip_cd") String equipCd,
 			@PathVariable("equip_zone") String equipZone) {
+		
+		Long domainId = Domain.currentDomainId();
+		
+		
+		// 1. EQUIP , BATCH 조회
+		EquipBatchSet equipBatchSet = LogisServiceUtil.findBatchByEquip(domainId, equipType, equipCd);
+		JobBatch batch = equipBatchSet.getBatch();
+		
+		Map<String,Object> params = ValueUtil.newMap("domainId,equipType,equipCd,equipZone,batchId", domainId, equipType, equipCd, equipZone, batch.getId());
+		// Rack 타입 공통 처리 
+		if(ValueUtil.isEqualIgnoreCase(LogisConstants.EQUIP_TYPE_RACK, equipType)) {
+			Rack rack = (Rack)equipBatchSet.getEquipEntity();
+			
+			String qry = "";
+			
+			// 2. DPS 일때 쿼리 
+			if(LogisConstants.isDpsJobType(rack.getJobType())){
+				qry = this.batchQueryStore.getRackDpsBatchBoxInputTabsQuery();
+				//params.put("viewOnlyMyJob", 1); // TODO : 내 작업 만 볼지 옵션 
+			} else {
+				// TODO 다른 job type 쿼리.. 
+			}
+			
+			return this.queryManager.selectListBySql(qry, params, JobInput.class, 0, 0);
+		} else {
+			// TODO  다른 설비 ....
+		}
 		
 		// TODO 
 		return null;

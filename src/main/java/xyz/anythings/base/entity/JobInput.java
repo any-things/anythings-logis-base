@@ -77,6 +77,13 @@ public class JobInput extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	
 	@Ignore
 	private Integer resultQty;
+	
+	@Ignore
+	private Boolean isMyZoneIsLast;
+	
+	@Ignore
+	private Integer myZoneProgressRate;
+	
   
 	public String getId() {
 		return id;
@@ -228,6 +235,22 @@ public class JobInput extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setResultQty(Integer resultQty) {
 		this.resultQty = resultQty;
+	}
+
+	public Boolean getIsMyZoneIsLast() {
+		return isMyZoneIsLast;
+	}
+
+	public void setIsMyZoneIsLast(Boolean isMyZoneIsLast) {
+		this.isMyZoneIsLast = isMyZoneIsLast;
+	}
+
+	public Integer getMyZoneProgressRate() {
+		return myZoneProgressRate;
+	}
+
+	public void setMyZoneProgressRate(Integer myZoneProgressRate) {
+		this.myZoneProgressRate = myZoneProgressRate;
 	}
 
 }

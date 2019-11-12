@@ -129,4 +129,12 @@ public class BatchQueryStore extends AbstractQueryStore {
 	public String getRackDpsBatchMapBoxIdAndSeqQuery() {
 		return this.getQueryByPath("batch/RackDpsBatchMapBoxIdAndSeq");
 	}
+	
+	/**
+	 * Rack DPS 작업의 투입 탭 리스트 쿼리 
+	 * @return
+	 */
+	public String getRackDpsBatchBoxInputTabsQuery() {
+		return this.getQueryByPath("batch/RackDpsBatchBoxInputTabs");
+	}
 }
