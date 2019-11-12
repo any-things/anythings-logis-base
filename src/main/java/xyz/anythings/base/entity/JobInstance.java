@@ -122,6 +122,10 @@ public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	
 	@Ignore
 	private String gwPath;
+	
+	@Ignore
+	private String sideCd;
+	
   
 	public String getId() {
 		return id;
@@ -385,6 +389,14 @@ public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setGwPath(String gwPath) {
 		this.gwPath = gwPath;
+	}
+	
+	public String getSideCd() {
+		return this.sideCd;
+	}
+	
+	public void setSideCd(String sideCd) {
+		this.sideCd = sideCd;
 	}
 
 	/**
