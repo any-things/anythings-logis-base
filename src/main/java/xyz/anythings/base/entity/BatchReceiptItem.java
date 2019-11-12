@@ -74,7 +74,10 @@ public class BatchReceiptItem extends xyz.elidom.orm.entity.basic.ElidomStampHoo
 
 	@Column (name = "skip_flag", length = 1)
 	private Boolean skipFlag;
-  
+ 
+	@Column (name = "job_seq", length = 12)
+	private Integer jobSeq;
+	
 	public String getId() {
 		return id;
 	}
@@ -219,6 +222,14 @@ public class BatchReceiptItem extends xyz.elidom.orm.entity.basic.ElidomStampHoo
 		this.jobType = jobType;
 	}
 
+	public Integer getJobSeq() {
+		return jobSeq;
+	}
+
+	public void setJobSeq(Integer jobSeq) {
+		this.jobSeq = jobSeq;
+	}
+	
 	/**
 	 * 상태 업데이트 
 	 * @param status
