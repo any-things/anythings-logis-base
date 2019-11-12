@@ -64,9 +64,9 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 		this.queryManager.insert(batchReceipt);
 		
 		// 3. 각 작업 유형별로 이벤트 전달
-		for(CodeDetail detail : details) {
+		for(CodeDetail detail : details) { 
 			String jobType = detail.getName();
-			this.readyToReceiveEvent(EventConstants.EVENT_STEP_BEFORE, domainId, jobType, areaCd, stageCd, comCd, jobDate, null, params);
+			this.readyToReceiveEvent(EventConstants.EVENT_STEP_BEFORE, domainId, jobType, areaCd, stageCd, comCd, jobDate, batchReceipt, params);
 		}
 		
 		// 4. 수신 정보가 있는지 체크 
