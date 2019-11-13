@@ -1,6 +1,9 @@
 /* Copyright © HatioLab Inc. All rights reserved. */
 package xyz.anythings.base.web.initializer;
 
+import java.util.HashMap;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +21,10 @@ import xyz.anythings.base.query.store.EtcQueryStore;
 import xyz.anythings.base.query.store.IndicatorQueryStore;
 import xyz.anythings.base.query.store.InstructionQueryStore;
 import xyz.anythings.base.query.store.PreprocessQueryStore;
+import xyz.anythings.base.service.impl.ConfigSetService;
 import xyz.elidom.orm.IQueryManager;
 import xyz.elidom.sys.config.ModuleConfigSet;
+import xyz.elidom.sys.entity.Domain;
 import xyz.elidom.sys.system.service.api.IEntityFieldCache;
 import xyz.elidom.sys.system.service.api.IServiceFinder;
 
@@ -69,10 +74,12 @@ public class AnythingsLogisBaseInitializer {
 	
 	@Autowired
 	private BoxQueryStore boxQueryStore;
-
 	
 	@Autowired
 	private EtcQueryStore etcQueryStore;
+	
+	@Autowired
+	private ConfigSetService configSetSvc;
 
 	@EventListener({ ContextRefreshedEvent.class })
 	public void refresh(ContextRefreshedEvent event) {
@@ -88,6 +95,7 @@ public class AnythingsLogisBaseInitializer {
 		this.configSet.addConfig(this.module.getName(), this.module);
 		this.scanServices();
 		this.initQueryStores();
+		this.initStageConfigProfiles();
 		
 		this.logger.info("Anythings Logistics Base module initialized!");
     }
@@ -113,4 +121,18 @@ public class AnythingsLogisBaseInitializer {
 		this.etcQueryStore.initQueryStore(dbType);
 		this.boxQueryStore.initQueryStore(dbType);
 	}
+	
+	/**
+	 * 스테이지 설정 프로파일 초기화
+	 */
+	private void initStageConfigProfiles() {
+		String sql = "select id from domains";
+		List<Domain> domainList = this.queryManager.selectListBySql(sql, new HashMap<String, Object>(1), Domain.class, 0, 0);
+		
+		for(Domain domain : domainList) {
+			this.configSetSvc.buildStageJobConfigSet(domain.getId());
+			this.configSetSvc.buildStageIndConfigSet(domain.getId());
+		}
+	}
+
 }

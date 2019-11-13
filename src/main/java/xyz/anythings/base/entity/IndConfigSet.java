@@ -165,7 +165,7 @@ public class IndConfigSet extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	 */
 	public String findValue(String key) {
 		if(ValueUtil.isNotEmpty(this.items)) {
-			for(IndConfig item : items) {
+			for(IndConfig item : this.items) {
 				if(ValueUtil.isEqualIgnoreCase(key, item.getName())) {
 					return item.getValue();
 				}

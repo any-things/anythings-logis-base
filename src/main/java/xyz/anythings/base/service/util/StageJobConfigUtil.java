@@ -1,5 +1,11 @@
 package xyz.anythings.base.service.util;
 
+import xyz.anythings.base.LogisConfigConstants;
+import xyz.anythings.base.service.impl.ConfigSetService;
+import xyz.elidom.sys.util.ThrowUtil;
+import xyz.elidom.sys.util.ValueUtil;
+import xyz.elidom.util.BeanUtil;
+
 /**
  * 스테이지 범위 내 작업 설정 값 조회 유틸리티
  * 설정 항목 리스트
@@ -71,14 +77,61 @@ package xyz.anythings.base.service.util;
 public class StageJobConfigUtil {
 	
 	/**
+	 * 설정 프로파일 서비스
+	 */
+	public static ConfigSetService CONFIG_SET_SVC;
+	
+	/**
+	 * 설정 프로파일 서비스 리턴
+	 * 
+	 * @return
+	 */
+	public static ConfigSetService getConfigSetService() {
+		if(CONFIG_SET_SVC == null) {
+			CONFIG_SET_SVC = BeanUtil.get(ConfigSetService.class);
+		}
+		
+		return CONFIG_SET_SVC;
+	}
+	
+	/**
+	 * 스테이지 범위 내에 설정 내용을 키로 조회해서 리턴
+	 *  
+	 * @param stageCd
+	 * @param jobType
+	 * @param key
+	 * @param exceptionWhenEmptyValue
+	 * @return
+	 */
+	public static String getConfigValue(String stageCd, String jobType, String key, boolean exceptionWhenEmptyValue) {
+		ConfigSetService configSvc = getConfigSetService();
+		
+		// 1. 작업 유형에 따른 설정값 조회
+		String value = configSvc.getJobConfigValue(stageCd, key);
+		
+		// 2. 1값이 없다면 공통 설정값 조회
+		if(ValueUtil.isEmpty(value) && ValueUtil.isNotEmpty(jobType)) {
+			String jobTypeKey = key.replace(jobType.toLowerCase() + ".", "cmm.");
+			value = configSvc.getJobConfigValue(stageCd, jobTypeKey);
+		}
+		
+		// 3. 설정값이 없다면 exceptionWhenEmptyValue에 따라 예외 처리
+		if(exceptionWhenEmptyValue) {
+			throw ThrowUtil.newJobConfigNotSet(key);
+		}
+		
+		return value;
+	}
+	
+	/**
 	 * 상위 시스템 인터페이스 유형 (datasource / dblink / if-table)
 	 * 
 	 * @param stageCd 스테이지 코드
 	 * @return
 	 */
 	public static String getParentIfType(String stageCd) {
-		// parent.system.if.iftype					
-		return null;
+		// parent.system.if.iftype
+		return getConfigValue(stageCd, null, LogisConfigConstants.IF_IF_TYPE, true);
 	}
 	
 	/**
@@ -89,7 +142,7 @@ public class StageJobConfigUtil {
 	 */
 	public static String getParentIfDbLinkName(String stageCd) {
 		// parent.system.if.dblink.name
-		return null;
+		return getConfigValue(stageCd, null, LogisConfigConstants.IF_DBLINK, true);
 	}
 	
 	/**
@@ -100,7 +153,7 @@ public class StageJobConfigUtil {
 	 */
 	public static String getParentIfDatasource(String stageCd) {
 		// parent.system.if.datasource.name
-		return null;
+		return getConfigValue(stageCd, null, LogisConfigConstants.IF_DS_NAME, true);
 	}
 	
 	/**
@@ -111,7 +164,7 @@ public class StageJobConfigUtil {
 	 */
 	public static String getParentIfCompanyTable(String stageCd) {
 		// parent.system.if.company.table
-		return null;
+		return getConfigValue(stageCd, null, LogisConfigConstants.IF_COMPANY_TABLE, true);
 	}
 	
 	/**
@@ -121,8 +174,8 @@ public class StageJobConfigUtil {
 	 * @return
 	 */
 	public static String getParentIfSkuTable(String stageCd) {
-		// parent.system.if.sku.table		
-		return null;
+		// parent.system.if.sku.table
+		return getConfigValue(stageCd, null, LogisConfigConstants.IF_SKU_TABLE, true);
 	}
 	
 	/**
@@ -132,8 +185,8 @@ public class StageJobConfigUtil {
 	 * @return
 	 */
 	public static String getParentIfShopTable(String stageCd) {
-		// parent.system.if.shop.table	
-		return null;
+		// parent.system.if.shop.table
+		return getConfigValue(stageCd, null, LogisConfigConstants.IF_SHOP_TABLE, true);
 	}
 	
 	/**
@@ -143,8 +196,8 @@ public class StageJobConfigUtil {
 	 * @return
 	 */
 	public static String getParentIfBoxTypeTable(String stageCd) {
-		// parent.system.if.boxtype.table			
-		return null;
+		// parent.system.if.boxtype.table
+		return getConfigValue(stageCd, null, LogisConfigConstants.IF_BOXTYPE_TABLE, true);
 	}
 	
 	/**
@@ -154,8 +207,8 @@ public class StageJobConfigUtil {
 	 * @return
 	 */
 	public static String getParentIfOrderTable(String stageCd) {
-		// parent.system.if.order.table 
-		return null;
+		// parent.system.if.order.table
+		return getConfigValue(stageCd, null, LogisConfigConstants.IF_ORDER_TABLE, true);
 	}
 	
 	/**
@@ -166,7 +219,7 @@ public class StageJobConfigUtil {
 	 */
 	public static String getParentIfPickingResultTable(String stageCd) {
 		// parent.system.if.pick-result.table
-		return null;
+		return getConfigValue(stageCd, null, LogisConfigConstants.IF_PICK_RESULT_TABLE, true);
 	}
 	
 	/**
@@ -177,7 +230,7 @@ public class StageJobConfigUtil {
 	 */
 	public static String getParentIfBoxResultTable(String stageCd) {
 		// parent.system.if.box-result.table
-		return null;
+		return getConfigValue(stageCd, null, LogisConfigConstants.IF_BOX_RESULT_TABLE, true);
 	}
 	
 	/**
@@ -188,7 +241,7 @@ public class StageJobConfigUtil {
 	 */
 	public static String getParentIfTotalPickingTable(String stageCd) {
 		// parent.system.if.totalpicking.table
-		return null;
+		return getConfigValue(stageCd, null, LogisConfigConstants.IF_TOTAL_PICKING_TABLE, true);
 	}
 	
 	/**
@@ -199,9 +252,9 @@ public class StageJobConfigUtil {
 	 */
 	public static String getParentIfCompanyProcedure(String stageCd) {
 		// parent.system.if.company.procedure
-		return null;
+		return getConfigValue(stageCd, null, LogisConfigConstants.IF_COMPANY_PROCEDURE, true);
 	}
-	
+		
 	/**
 	 * 상위 시스템 SKU I/F 프로시져 명
 	 * 
@@ -210,7 +263,7 @@ public class StageJobConfigUtil {
 	 */
 	public static String getParentIfSkuProcedure(String stageCd) {
 		// parent.system.if.sku.procedure
-		return null;
+		return getConfigValue(stageCd, null, LogisConfigConstants.IF_SKU_PROCEDURE, true);
 	}
 	
 	/**
@@ -221,7 +274,7 @@ public class StageJobConfigUtil {
 	 */
 	public static String getParentIfShopProcedure(String stageCd) {
 		// parent.system.if.shop.procedure
-		return null;
+		return getConfigValue(stageCd, null, LogisConfigConstants.IF_SHOP_PROCEDURE, true);
 	}
 	
 	/**
@@ -232,7 +285,7 @@ public class StageJobConfigUtil {
 	 */
 	public static String getParentIfBoxTypeProcedure(String stageCd) {
 		// parent.system.if.boxtype.procedure
-		return null;
+		return getConfigValue(stageCd, null, LogisConfigConstants.IF_BOXTYPE_PROCEDURE, true);
 	}
 	
 	/**
@@ -243,7 +296,7 @@ public class StageJobConfigUtil {
 	 */
 	public static String getParentIfOrderProcedure(String stageCd) {
 		// parent.system.if.order.procedure
-		return null;
+		return getConfigValue(stageCd, null, LogisConfigConstants.IF_ORDER_PROCEDURE, true);
 	}
 	
 	/**
@@ -254,7 +307,7 @@ public class StageJobConfigUtil {
 	 */
 	public static String getParentIfPickingResultProcedure(String stageCd) {
 		// parent.system.if.pick-result.procedure
-		return null;
+		return getConfigValue(stageCd, null, LogisConfigConstants.IF_PICK_RESULT_PROCEDURE, true);
 	}
 	
 	/**
@@ -265,7 +318,7 @@ public class StageJobConfigUtil {
 	 */
 	public static String getParentIfBoxResultProcedure(String stageCd) {
 		// parent.system.if.box-result.procedure
-		return null;
+		return getConfigValue(stageCd, null, LogisConfigConstants.IF_BOX_RESULT_PROCEDURE, true);
 	}
 	
 	/**
@@ -276,7 +329,7 @@ public class StageJobConfigUtil {
 	 */
 	public static String getParentIfTotalPickingProcedure(String stageCd) {
 		// parent.system.if.totalpicking.procedure
-		return null;
+		return getConfigValue(stageCd, null, LogisConfigConstants.IF_TOTAL_PICKING_PROCEDURE, true);
 	}
 
 	/**
@@ -287,7 +340,8 @@ public class StageJobConfigUtil {
 	 */
 	public static boolean isIgnoreEquipStatusReport(String stageCd) {
 		// cmm.equip.status.report.ignore.flag
-		return false;
+		String boolVal = getConfigValue(stageCd, null, "cmm.equip.status.report.ignore.flag", true);
+		return ValueUtil.toBoolean(boolVal);
 	}
 
 	/**
@@ -298,7 +352,7 @@ public class StageJobConfigUtil {
 	 */
 	public static String isLogMwMessage(String stageCd) {
 		// cmm.receive.logging.enabled
-		return null;
+		return getConfigValue(stageCd, null, "cmm.receive.logging.enabled", true);
 	}
 	
 	/**
@@ -309,7 +363,7 @@ public class StageJobConfigUtil {
 	 */
 	public static String getStockAdjustColor(String stageCd) {
 		// cmm.ind.stock.adjustment.color
-		return null;
+		return getConfigValue(stageCd, null, "cmm.ind.stock.adjustment.color", true);
 	}
 	
 	/**
@@ -320,7 +374,7 @@ public class StageJobConfigUtil {
 	 */
 	public static String getIndButtonDefaultColor(String stageCd) {
 		// cmm.ind.button.default.color
-		return null;
+		return getConfigValue(stageCd, null, "cmm.ind.button.default.color", true);
 	}
 	
 	/**
@@ -332,7 +386,7 @@ public class StageJobConfigUtil {
 	 */
 	public static String getSkuBarcdMaxLength(String stageCd, String jobType) {
 		// cmm.sku.barcode.max.length
-		return null;
+		return getConfigValue(stageCd, null, "cmm.sku.barcode.max.length", true);
 	}
 	
 	/**
@@ -344,7 +398,7 @@ public class StageJobConfigUtil {
 	 */
 	public static String getSearchSkuFields(String stageCd, String jobType) {
 		// cmm.sku.search.code.fields
-		return null;
+		return getConfigValue(stageCd, null, "cmm.sku.search.code.fields", true);
 	}
 	
 	/**
@@ -356,7 +410,7 @@ public class StageJobConfigUtil {
 	 */
 	public static String getBoxOutClassCodeField(String stageCd, String jobType) {
 		// cmm.box.out.class.field
-		return null;
+		return getConfigValue(stageCd, null, "cmm.box.out.class.field", true);
 	}
 	
 	/**
@@ -368,7 +422,7 @@ public class StageJobConfigUtil {
 	 */
 	public static String getCellMappingTargetField(String stageCd, String jobType) {
 		// cmm.cell.mapping.target.field
-		return null;
+		return getConfigValue(stageCd, null, "cmm.cell.mapping.target.field", true);
 	}
 	
 	/**
@@ -380,7 +434,7 @@ public class StageJobConfigUtil {
 	 */
 	public static String getIndicatorType(String stageCd, String jobType) {
 		// cmm.indicator.type
-		return null;
+		return getConfigValue(stageCd, null, "cmm.indicator.type", true);
 	}
 	
 	/**
@@ -392,7 +446,8 @@ public class StageJobConfigUtil {
 	 */
 	public static boolean isOrderDeleteWhenOrderCancel(String stageCd, String jobType) {
 		// cmm.order.delete.when.order_cancel
-		return false;
+		String boolVal = getConfigValue(stageCd, null, "cmm.order.delete.when.order_cancel", true);
+		return ValueUtil.toBoolean(boolVal);
 	}
 	
 	/**
@@ -404,7 +459,7 @@ public class StageJobConfigUtil {
 	 */
 	public static String getOrderGroupField(String stageCd, String jobType) {
 		// cmm.order.ordergroup.field
-		return null;
+		return getConfigValue(stageCd, null, "cmm.order.ordergroup.field", true);
 	}
 
 }

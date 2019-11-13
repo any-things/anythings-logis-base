@@ -5,22 +5,30 @@ import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.JobConfigSet;
 
 /**
- * 설정 셋 서비스 API 정의
+ * 설정 프로파일 서비스 API 정의
  * 
  * @author shortstop
  */
 public interface IConfigSetService {
-	
+		
 	/**
-	 * 템플릿 작업 설정 셋 생성
+	 * 스테이지 범위 내 작업 설정 프로파일 초기화
 	 * 
 	 * @param domainId
 	 * @return
 	 */
-	public JobConfigSet buildTemplateJobConfigSet(Long domainId);
+	public int buildStageJobConfigSet(Long domainId);
 	
 	/**
-	 * templateConfigSetId로 작업 설정 셋 복사
+	 * 스테이지 디폴트 작업 설정 프로파일 초기화
+	 * 
+	 * @param configSet
+	 * @return
+	 */
+	public JobConfigSet buildStageJobConfigSet(JobConfigSet configSet);
+
+	/**
+	 * templateConfigSetId로 작업 설정 프로파일 복사
 	 * 
 	 * @param domainId
 	 * @param templateConfigSetId
@@ -29,9 +37,9 @@ public interface IConfigSetService {
 	 * @return
 	 */
 	public JobConfigSet copyJobConfigSet(Long domainId, String templateConfigSetId, String targetSetCd, String targetSetNm);
- 
+	
 	/**
-	 * 작업 배치 정보로 작업 설정 셋 생성
+	 * 작업 배치 정보로 작업 설정 프로파일 생성
 	 * 
 	 * @param batch
 	 * @return
@@ -77,22 +85,30 @@ public interface IConfigSetService {
 	public String getJobConfigValue(String batchId, String key, String defaultValue);
 	
 	/**
-	 * 작업 배치 정보로 작업 설정 셋 리셋 (캐쉬 리셋)
+	 * 작업 배치 정보로 작업 설정 프로파일 리셋 (캐쉬 리셋)
 	 * 
-	 * @param batch
+	 * @param batchId
 	 */
-	public void clearJobConfigSet(JobBatch batch);
+	public void clearJobConfigSet(String batchId);
 	
 	/**
-	 * 템플릿 표시기 설정 셋 생성
+	 * 스테이지 범위 내 표시기 설정 프로파일 초기화
 	 * 
 	 * @param domainId
 	 * @return
 	 */
-	public IndConfigSet buildTemplateIndConfigSet(Long domainId);
+	public int buildStageIndConfigSet(Long domainId);
 	
 	/**
-	 * templateConfigSetId로 표시기 설정 셋 복사
+	 * 스테이지 디폴트 표시기 설정 프로파일 초기화
+	 * 
+	 * @param configSet
+	 * @return
+	 */
+	public IndConfigSet buildStageIndConfigSet(IndConfigSet configSet);
+	
+	/**
+	 * templateConfigSetId로 표시기 설정 프로파일 복사
 	 * 
 	 * @param domainId
 	 * @param templateConfigSetId
@@ -103,7 +119,7 @@ public interface IConfigSetService {
 	public IndConfigSet copyIndConfigSet(Long domainId, String templateConfigSetId, String targetSetCd, String targetSetNm);
 	
 	/**
-	 * 작업 배치 정보로 표시기 설정 셋 생성
+	 * 작업 배치 정보로 표시기 설정 프로파일 생성
 	 * 
 	 * @param batch
 	 * @return
@@ -149,10 +165,10 @@ public interface IConfigSetService {
 	public String getIndConfigValue(String batchId, String key, String defaultValue);
 	
 	/**
-	 * 작업 배치 정보로 표시기 설정 셋 리셋 (캐쉬 리셋)
+	 * 작업 배치 정보로 표시기 설정 프로파일 리셋 (캐쉬 리셋)
 	 * 
-	 * @param batch
+	 * @param batchId
 	 */
-	public void clearIndConfigSet(JobBatch batch);
+	public void clearIndConfigSet(String batchId);
 
 }

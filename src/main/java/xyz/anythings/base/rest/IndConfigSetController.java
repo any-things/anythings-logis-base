@@ -15,9 +15,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import xyz.anythings.base.LogisConstants;
 import xyz.anythings.base.entity.IndConfig;
 import xyz.anythings.base.entity.IndConfigSet;
 import xyz.anythings.base.entity.JobBatch;
+import xyz.anythings.base.model.BaseResponse;
 import xyz.anythings.base.service.impl.ConfigSetService;
 import xyz.anythings.base.util.LogisEntityUtil;
 import xyz.anythings.sys.model.KeyValue;
@@ -114,13 +116,6 @@ public class IndConfigSetController extends AbstractRestService {
 		return this.findIndConfig(id);
 	}
 	
-	@RequestMapping(value = "/build_template", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseStatus(HttpStatus.CREATED)
-	@ApiDesc(description = "Build template config set")
-	public IndConfigSet buildTemplateConfigSet() {
-		return this.configSetService.buildTemplateIndConfigSet(Domain.currentDomainId());
-	}
-	
 	@RequestMapping(value = "/{id}/copy", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
 	@ApiDesc(description = "Copy template config set")
@@ -130,25 +125,56 @@ public class IndConfigSetController extends AbstractRestService {
 		return this.configSetService.copyIndConfigSet(Domain.currentDomainId(), sourceConfigSetId, targetSetCd, targetSetNm);
 	}
 	
-	@RequestMapping(value = "/build_config_set/{batch_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/batch/build_config_set/{batch_id}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Build config set by batch id")
 	public IndConfigSet buildBatchConfigSet(@PathVariable("batch_id") String batchiId) {
 		JobBatch batch = LogisEntityUtil.findEntityById(true, JobBatch.class, batchiId);
 		return this.configSetService.buildIndConfigSet(batch);
 	}
-
-	@RequestMapping(value = "/clear_config_set/{batch_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiDesc(description = "Clear config set by batch id")
-	public IndConfigSet clearBatchConfigSet(@PathVariable("batch_id") String batchiId) {
-		JobBatch batch = LogisEntityUtil.findEntityById(true, JobBatch.class, batchiId);
-		return this.configSetService.buildIndConfigSet(batch);
-	}
 	
-	@RequestMapping(value = "/config_value/{batch_id}/{config_key}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/batch/config_value/{batch_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Config key by batch id")
-	public KeyValue getConfigValue(@PathVariable("batch_id") String batchiId, @PathVariable("config_key") String configKey) {
+	public KeyValue getConfigValueInBatchScope(@PathVariable("batch_id") String batchiId, @RequestParam(name = "config_key", required = true) String configKey) {
 		JobBatch batch = LogisEntityUtil.findEntityById(true, JobBatch.class, batchiId);
 		String value = this.configSetService.getIndConfigValue(batch, configKey);
+		return new KeyValue(configKey, value);
+	}
+
+	@RequestMapping(value = "/clear_config_set/{batch_id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Clear config set by batch id")
+	public BaseResponse clearBatchConfigSet(@PathVariable("batch_id") String batchId) {
+		this.configSetService.clearIndConfigSet(batchId);
+		return new BaseResponse(true, LogisConstants.OK_STRING);
+	}
+	
+	@RequestMapping(value = "/stage/build_config_set/{stage_cd}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Build config set by stage code")
+	public BaseResponse buildStageDefaultConfigSet(@PathVariable("stage_cd") String stageCd) {
+		
+		stageCd = ValueUtil.isEqualIgnoreCase(stageCd, LogisConstants.ALL_CAP_STRING) ? null : stageCd;
+		Long domainId = Domain.currentDomainId();
+		
+		if(stageCd == null) {
+			this.configSetService.buildStageIndConfigSet(domainId);
+			
+		} else {
+			String sql = "select id,domain_id,conf_set_cd,conf_set_nm,stage_cd,ind_type from ind_config_set where domain_id = :domainId and default_flag = :defaultFlag and stage_cd = :stageCd and equip_type is null and equip_cd is null and job_type is null and com_cd is null";
+			List<IndConfigSet> confSetList = LogisEntityUtil.searchItems(domainId, false, IndConfigSet.class, sql, "domainId,defaultFlag,stageCd", domainId, true, stageCd);
+			
+			if(ValueUtil.isNotEmpty(confSetList)) {
+				for(IndConfigSet confSet : confSetList) {
+					this.configSetService.buildStageIndConfigSet(confSet);
+				}
+			}
+		}
+		
+		return new BaseResponse(true, LogisConstants.OK_STRING);
+	}
+	
+	@RequestMapping(value = "/stage/config_value/{stage_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Config key by stage code")
+	public KeyValue getConfigValueInStageScope(@PathVariable("stage_cd") String stageCd, @RequestParam(name = "config_key", required = true) String configKey) {
+		String value = this.configSetService.getIndConfigValue(stageCd, configKey);
 		return new KeyValue(configKey, value);
 	}
 

@@ -154,7 +154,7 @@ public class JobConfigSet extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	 */
 	public String findValue(String key) {
 		if(ValueUtil.isNotEmpty(this.items)) {
-			for(JobConfig item : items) {
+			for(JobConfig item : this.items) {
 				if(ValueUtil.isEqualIgnoreCase(key, item.getName())) {
 					return item.getValue();
 				}

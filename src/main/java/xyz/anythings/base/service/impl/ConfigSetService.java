@@ -17,7 +17,6 @@ import xyz.anythings.base.util.LogisEntityUtil;
 import xyz.anythings.sys.service.AbstractExecutionService;
 import xyz.anythings.sys.util.AnyValueUtil;
 import xyz.elidom.exception.server.ElidomRuntimeException;
-import xyz.elidom.sys.SysConstants;
 import xyz.elidom.sys.entity.Domain;
 import xyz.elidom.util.ValueUtil;
 
@@ -52,13 +51,25 @@ public class ConfigSetService extends AbstractExecutionService implements IConfi
 	private Map<String, IndConfigSet> batchIndConfigSet = new HashMap<String, IndConfigSet>();
 
 	@Override
-	public JobConfigSet buildTemplateJobConfigSet(Long domainId) {
-		// 1. 템플릿 설정을 조회 
-		List<JobConfigSet> sourceSetList = LogisEntityUtil.searchEntitiesBy(domainId, true, JobConfigSet.class, SysConstants.ENTITY_FIELD_ID, "defaultFlag", Boolean.TRUE);
-		JobConfigSet sourceSet = sourceSetList.get(0);
-		// 2. 설정 항목 복사
-		String targetSetCd = sourceSet.getConfSetCd() + "_copy";
-		return this.copyJobConfigSet(domainId, sourceSet.getId(), targetSetCd, targetSetCd);
+	public int buildStageJobConfigSet(Long domainId) {
+		String sql = "select id,domain_id,conf_set_cd,conf_set_nm,stage_cd from job_config_set where domain_id = :domainId and default_flag = :defaultFlag and stage_cd is not null and equip_type is null and equip_cd is null and job_type is null and com_cd is null";
+		List<JobConfigSet> confSetList = LogisEntityUtil.searchItems(domainId, false, JobConfigSet.class, sql, "domainId,defaultFlag", domainId, true);
+		
+		if(ValueUtil.isNotEmpty(confSetList)) {
+			for(JobConfigSet confSet : confSetList) {
+				this.buildStageJobConfigSet(confSet);
+			}
+		}
+		
+		return confSetList.size();
+	}
+
+	@Override
+	public JobConfigSet buildStageJobConfigSet(JobConfigSet configSet) {
+		List<JobConfig> items = LogisEntityUtil.searchDetails(configSet.getDomainId(), JobConfig.class, "jobConfigSetId", configSet.getId());
+		configSet.setItems(items);
+		this.batchJobConfigSet.put(configSet.getStageCd(), configSet);
+		return configSet;
 	}
 	
 	@Override
@@ -77,21 +88,31 @@ public class ConfigSetService extends AbstractExecutionService implements IConfi
 
 	@Override
 	public JobConfigSet buildJobConfigSet(JobBatch batch) {
-		// 1. 파라미터 생성
-		Map<String, Object> params = ValueUtil.newMap("P_IN_DOMAIN_ID,P_IN_BATCH_ID", batch.getDomainId(), batch.getId());
-		// 2. 프로시져 콜 
-		Map<?, ?> result = this.queryManager.callReturnProcedure("OP_FIND_JOB_CONFIG_SET", params, Map.class);
-		// 3. 결과 
-		String jobConfigSetId = (String)result.get("P_OUT_JOB_CONFIG_SET_ID");
+//		// 1. 파라미터 생성
+//		Map<String, Object> params = ValueUtil.newMap("P_IN_DOMAIN_ID,P_IN_BATCH_ID", batch.getDomainId(), batch.getId());
+//		// 2. 프로시져 콜 
+//		Map<?, ?> result = this.queryManager.callReturnProcedure("OP_FIND_JOB_CONFIG_SET", params, Map.class);
+//		// 3. 결과 
+//		String jobConfigSetId = (String)result.get("P_OUT_JOB_CONFIG_SET_ID");
+//		
+//		if(ValueUtil.isNotEmpty(jobConfigSetId)) {
+//			JobConfigSet sourceSet = LogisEntityUtil.findEntityById(true, JobConfigSet.class, jobConfigSetId);
+//			List<JobConfig> sourceItems = LogisEntityUtil.searchDetails(sourceSet.getDomainId(), JobConfig.class, "jobConfigSetId", sourceSet.getId());
+//			sourceSet.setItems(sourceItems);
+//			this.batchJobConfigSet.put(batch.getId(), sourceSet);
+//			return sourceSet;
+//		} else {
+//			throw new ElidomRuntimeException("배치 ID [" + batch.getId() + "]와 매치되는 작업 설정 셋을 찾지 못했습니다.");
+//		}
 		
-		if(ValueUtil.isNotEmpty(jobConfigSetId)) {
-			JobConfigSet sourceSet = LogisEntityUtil.findEntityById(true, JobConfigSet.class, jobConfigSetId);
-			List<JobConfig> sourceItems = LogisEntityUtil.searchDetails(sourceSet.getDomainId(), JobConfig.class, "jobConfigSetId", sourceSet.getId());
-			sourceSet.setItems(sourceItems);
-			this.batchJobConfigSet.put(batch.getId(), sourceSet);
-			return sourceSet;
+		if(ValueUtil.isNotEmpty(batch.getJobConfigSetId())) {
+			JobConfigSet configSet = LogisEntityUtil.findEntityById(true, JobConfigSet.class, batch.getJobConfigSetId());
+			List<JobConfig> sourceItems = LogisEntityUtil.searchDetails(configSet.getDomainId(), JobConfig.class, "jobConfigSetId", configSet.getId());
+			configSet.setItems(sourceItems);
+			this.batchJobConfigSet.put(batch.getId(), configSet);
+			return configSet;
 		} else {
-			throw new ElidomRuntimeException("배치 ID [" + batch.getId() + "]와 매치되는 작업 설정 셋을 찾지 못했습니다.");
+			throw new ElidomRuntimeException("작업 배치 [" + batch.getId() + "]에 작업 설정 프로파일이 설정되지 않았습니다.");
 		}
 	}
 
@@ -102,7 +123,6 @@ public class ConfigSetService extends AbstractExecutionService implements IConfi
 		if(configSet == null) {
 			configSet = LogisEntityUtil.findEntityById(true, JobConfigSet.class, batch.getJobConfigSetId());
 			configSet.setItems(LogisEntityUtil.searchDetails(batch.getDomainId(), JobConfig.class, "jobConfigSetId", batch.getJobConfigSetId()));
-			
 			this.batchJobConfigSet.put(batch.getId(), configSet);
 		}
 		
@@ -136,20 +156,32 @@ public class ConfigSetService extends AbstractExecutionService implements IConfi
 	}
 
 	@Override
-	public void clearJobConfigSet(JobBatch batch) {
-		this.batchJobConfigSet.remove(batch.getId());
+	public void clearJobConfigSet(String batchId) {
+		this.batchJobConfigSet.remove(batchId);
 	}
 	
 	@Override
-	public IndConfigSet buildTemplateIndConfigSet(Long domainId) {
-		// 1. 템플릿 설정을 조회 
-		List<IndConfigSet> sourceSetList = LogisEntityUtil.searchEntitiesBy(domainId, true, IndConfigSet.class, SysConstants.ENTITY_FIELD_ID, "defaultFlag", Boolean.TRUE);
-		IndConfigSet sourceSet = sourceSetList.get(0);
-		// 2. 설정 항목 복사
-		String targetSetCd = sourceSet.getConfSetCd() + "_copy";
-		return this.copyIndConfigSet(domainId, sourceSet.getId(), targetSetCd, targetSetCd);
+	public int buildStageIndConfigSet(Long domainId) {
+		String sql = "select id,domain_id,conf_set_cd,conf_set_nm,stage_cd,ind_type from ind_config_set where domain_id = :domainId and default_flag = :defaultFlag and stage_cd is not null and equip_type is null and equip_cd is null and job_type is null and com_cd is null";
+		List<IndConfigSet> confSetList = LogisEntityUtil.searchItems(domainId, false, IndConfigSet.class, sql, "domainId,defaultFlag", domainId, true);
+		
+		if(ValueUtil.isNotEmpty(confSetList)) {
+			for(IndConfigSet confSet : confSetList) {
+				this.buildStageIndConfigSet(confSet);
+			}
+		}
+		
+		return confSetList.size();
 	}
 
+	@Override
+	public IndConfigSet buildStageIndConfigSet(IndConfigSet configSet) {
+		List<IndConfig> items = LogisEntityUtil.searchDetails(configSet.getDomainId(), IndConfig.class, "indConfigSetId", configSet.getId());
+		configSet.setItems(items);
+		this.batchIndConfigSet.put(configSet.getStageCd(), configSet);
+		return configSet;
+	}
+	
 	@Override
 	public IndConfigSet copyIndConfigSet(Long domainId, String templateConfigSetId, String targetSetCd, String targetSetNm) {
 		// 1. templateConfigSetId로 템플릿 설정을 조회 
@@ -166,22 +198,32 @@ public class ConfigSetService extends AbstractExecutionService implements IConfi
 
 	@Override
 	public IndConfigSet buildIndConfigSet(JobBatch batch) {
-		// 1. 파라미터 생성
-		Map<String, Object> params = ValueUtil.newMap("P_IN_DOMAIN_ID,P_IN_BATCH_ID", batch.getDomainId(), batch.getId());
-		// 2. 프로시져 콜 
-		Map<?, ?> result = this.queryManager.callReturnProcedure("OP_FIND_IND_CONFIG_SET", params, Map.class);
-		// 3. 결과 
-		String jobConfigSetId = (String)result.get("P_OUT_IND_CONFIG_SET_ID");
+//		// 1. 파라미터 생성
+//		Map<String, Object> params = ValueUtil.newMap("P_IN_DOMAIN_ID,P_IN_BATCH_ID", batch.getDomainId(), batch.getId());
+//		// 2. 프로시져 콜 
+//		Map<?, ?> result = this.queryManager.callReturnProcedure("OP_FIND_IND_CONFIG_SET", params, Map.class);
+//		// 3. 결과 
+//		String jobConfigSetId = (String)result.get("P_OUT_IND_CONFIG_SET_ID");
+//		
+//		if(ValueUtil.isNotEmpty(jobConfigSetId)) {
+//			IndConfigSet sourceSet = LogisEntityUtil.findEntityById(true, IndConfigSet.class, jobConfigSetId);
+//			List<IndConfig> sourceItems = LogisEntityUtil.searchDetails(sourceSet.getDomainId(), IndConfig.class, "indConfigSetId", sourceSet.getId());
+//			sourceSet.setItems(sourceItems);
+//			this.batchIndConfigSet.put(batch.getId(), sourceSet);
+//			return sourceSet;
+//		} else {
+//			throw new ElidomRuntimeException("배치 ID [" + batch.getId() + "]와 매치되는 표시기 설정 셋을 찾지 못했습니다.");
+//		}
 		
-		if(ValueUtil.isNotEmpty(jobConfigSetId)) {
-			IndConfigSet sourceSet = LogisEntityUtil.findEntityById(true, IndConfigSet.class, jobConfigSetId);
-			List<IndConfig> sourceItems = LogisEntityUtil.searchDetails(sourceSet.getDomainId(), IndConfig.class, "indConfigSetId", sourceSet.getId());
-			sourceSet.setItems(sourceItems);
-			this.batchIndConfigSet.put(batch.getId(), sourceSet);
-			return sourceSet;
+		if(ValueUtil.isNotEmpty(batch.getIndConfigSetId())) {
+			IndConfigSet configSet = LogisEntityUtil.findEntityById(true, IndConfigSet.class, batch.getIndConfigSetId());
+			List<IndConfig> sourceItems = LogisEntityUtil.searchDetails(configSet.getDomainId(), IndConfig.class, "indConfigSetId", configSet.getId());
+			configSet.setItems(sourceItems);
+			this.batchIndConfigSet.put(batch.getId(), configSet);
+			return configSet;
 		} else {
-			throw new ElidomRuntimeException("배치 ID [" + batch.getId() + "]와 매치되는 표시기 설정 셋을 찾지 못했습니다.");
-		}
+			throw new ElidomRuntimeException("작업 배치 [" + batch.getId() + "]에 표시기 설정 프로파일이 설정되지 않았습니다.");
+		}		
 	}
 
 	@Override
@@ -224,8 +266,8 @@ public class ConfigSetService extends AbstractExecutionService implements IConfi
 	}
 
 	@Override
-	public void clearIndConfigSet(JobBatch batch) {
-		this.batchIndConfigSet.remove(batch.getId());
+	public void clearIndConfigSet(String batchId) {
+		this.batchIndConfigSet.remove(batchId);
 	}
 
 	/**

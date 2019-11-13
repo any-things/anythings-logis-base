@@ -13,83 +13,83 @@ public class LogisConfigConstants extends xyz.anythings.sys.ConfigConstants {
 	/**
 	 * 상위 시스템 인터페이스 유형
 	 */
-	public static final String IF_IF_TYPE = "if.iftype";
+	public static final String IF_IF_TYPE = "parent.system.if.iftype";
 	/**
 	 * 상위 시스템 DB Link 명
 	 */
-	public static final String IF_DBLINK = "if.dblink.name";
+	public static final String IF_DBLINK = "parent.system.if.dblink.name";
 	/**
 	 * 상위 시스템 데이터소스 명
 	 */
-	public static final String IF_DS_NAME = "if.datasource.name";
+	public static final String IF_DS_NAME = "parent.system.if.datasource.name";
 	/**
 	 * 고객사 I/F 테이블 명
 	 */
-	public static final String IF_COMPANY_TABLE = "if.company.table";
+	public static final String IF_COMPANY_TABLE = "parent.system.if.company.table";
 	/**
 	 * 상품 I/F 테이블 명
 	 */
-	public static final String IF_SKU_TABLE = "if.sku.table";
+	public static final String IF_SKU_TABLE = "parent.system.if.sku.table";
 	/**
 	 * 매장 I/F 테이블 명
 	 */
-	public static final String IF_SHOP_TABLE = "if.shop.table";
+	public static final String IF_SHOP_TABLE = "parent.system.if.shop.table";
 	/**
 	 * 박스 유형 I/F 테이블 명
 	 */
-	public static final String IF_BOXTYPE_TABLE = "if.boxtype.table";
+	public static final String IF_BOXTYPE_TABLE = "parent.system.if.boxtype.table";
 	/**
 	 * 주문 I/F 테이블 명
 	 */
-	public static final String IF_ORDER_TABLE = "if.order.table";
+	public static final String IF_ORDER_TABLE = "parent.system.if.order.table";
 	/**
 	 * 피킹 실적  I/F 테이블 명
 	 */
-	public static final String IF_PICK_RESULT_TABLE = "if.pick-result.table";
+	public static final String IF_PICK_RESULT_TABLE = "parent.system.if.pick-result.table";
 	/**
 	 * 박스 실적 I/F 테이블 명
 	 */
-	public static final String IF_BOX_RESULT_TABLE = "if.box-result.table";
+	public static final String IF_BOX_RESULT_TABLE = "parent.system.if.box-result.table";
 	/**
 	 * 토털 피킹 I/F 테이블 명
 	 */
-	public static final String IF_TOTAL_PICKING_TABLE = "if.totalpicking.table";
+	public static final String IF_TOTAL_PICKING_TABLE = "parent.system.if.totalpicking.table";
 	/**
 	 * 고객사 I/F 프로시져 명
 	 */
-	public static final String IF_COMPANY_PROCEDURE = "if.company.procedure";
+	public static final String IF_COMPANY_PROCEDURE = "parent.system.if.company.procedure";
 	/**
 	 * 상품 I/F 프로시져 명
 	 */
-	public static final String IF_SKU_PROCEDURE = "if.sku.procedure";
+	public static final String IF_SKU_PROCEDURE = "parent.system.if.sku.procedure";
 	/**
 	 * 매장 I/F 프로시져 명
 	 */
-	public static final String IF_SHOP_PROCEDURE = "if.shop.procedure";
+	public static final String IF_SHOP_PROCEDURE = "parent.system.if.shop.procedure";
 	/**
 	 * 박스 유형 I/F 프로시져 명
 	 */
-	public static final String IF_BOXTYPE_PROCEDURE = "if.boxtype.procedure";
+	public static final String IF_BOXTYPE_PROCEDURE = "parent.system.if.boxtype.procedure";
 	/**
 	 * 주문 I/F 프로시져 명
 	 */
-	public static final String IF_ORDER_PROCEDURE = "if.order.procedure";
+	public static final String IF_ORDER_PROCEDURE = "parent.system.if.order.procedure";
 	/**
 	 * 피킹 실적  I/F 프로시져 명
 	 */
-	public static final String IF_PICK_RESULT_PROCEDURE = "if.pick-result.procedure";
+	public static final String IF_PICK_RESULT_PROCEDURE = "parent.system.if.pick-result.procedure";
 	/**
 	 * 박스 실적 I/F 프로시져 명
 	 */
-	public static final String IF_BOX_RESULT_PROCEDURE = "if.box-result.procedure";
+	public static final String IF_BOX_RESULT_PROCEDURE = "parent.system.if.box-result.procedure";
 	/**
 	 * 토털 피킹 I/F 프로시져 명
 	 */
-	public static final String IF_TOTAL_PICKING_PROCEDURE = "if.totalpicking.procedure";
+	public static final String IF_TOTAL_PICKING_PROCEDURE = "parent.system.if.totalpicking.procedure";
 	/**
 	 * 주문 수신유형 (datasource/procedure)
 	 */
-	public static final String IF_RECEIVE_ORDER_TYPE = "if.receive.order.type";
+	public static final String IF_RECEIVE_ORDER_TYPE = "parent.system.if.receive.order.type";
 	
 	/**********************************************************************
 	 * 								2. SKU 조회 관련 설정 
@@ -357,7 +357,7 @@ public class LogisConfigConstants extends xyz.anythings.sys.ConfigConstants {
 	/**
 	 * DPS 설정 - 피킹과 동시에 검수 처리할 것인지 여부
 	 */
-	public static final String DPS_PICK_WITH_INSPECTION_ENABLED = "job.dps.pick-with-inspection.enabled";
+	public static final String DPS_PICK_WITH_INSPECTION_ENABLED = "job.dps.pick.with-inspection.enabled";
 	/**
 	 * DPS 설정 - 완박스 바로 출고 대상 분류 여부
 	 */
