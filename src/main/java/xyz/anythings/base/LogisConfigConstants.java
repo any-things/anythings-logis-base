@@ -274,6 +274,10 @@ public class LogisConfigConstants extends xyz.anythings.sys.ConfigConstants {
 	 * 박스 중량 관리 여부
 	 */
 	public static final String BOX_WEIGHT_ENABLED = "job.cmm.box.weight.enabled";
+	/**
+	 * 거래명세서 템플릿
+	 */
+	public static final String BOX_TRADE_STATEMENT_TEMPLATE = "job.cmm.trade-statement.template";
 	
 	/**********************************************************************
 	 * 								10. 디바이스 설정 
