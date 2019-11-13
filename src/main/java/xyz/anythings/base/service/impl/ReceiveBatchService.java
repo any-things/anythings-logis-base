@@ -136,14 +136,16 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 	/**
 	 * 배치 수신 준비 이벤트 처리
 	 * 
+	 * @param eventStep
 	 * @param domainId
 	 * @param jobType
 	 * @param areaCd
 	 * @param stageCd
 	 * @param comCd
 	 * @param jobDate
+	 * @param receiptData
 	 * @param params
-	 * @return BatchReceiveEvent
+	 * @return
 	 */
 	private EventResultSet readyToReceiveEvent(
 			short eventStep, 
@@ -169,8 +171,18 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 	 * @return
 	 */
 	private EventResultSet startToReceiveEvent(short eventStep, String jobType, BatchReceipt receipt, Object ... params) {
-		return this.publishBatchReceiveEvent(EventConstants.EVENT_RECEIVE_TYPE_RECEIVE, eventStep, receipt.getDomainId(),
-				jobType, receipt.getAreaCd(), receipt.getStageCd(), receipt.getComCd(), receipt.getJobDate(), receipt, null, params);
+		return this.publishBatchReceiveEvent(
+				EventConstants.EVENT_RECEIVE_TYPE_RECEIVE, 
+				eventStep, 
+				receipt.getDomainId(),
+				jobType, 
+				receipt.getAreaCd(), 
+				receipt.getStageCd(), 
+				receipt.getComCd(), 
+				receipt.getJobDate(), 
+				receipt, 
+				null, 
+				params);
 	}
 		
 	/**

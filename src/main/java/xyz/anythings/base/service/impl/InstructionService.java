@@ -23,7 +23,7 @@ public class InstructionService extends AbstractLogisService {
 	 * @return
 	 */
 	public Map<String, Object> searchInstructionData(JobBatch batch, Object ... params) {
-		return this.logisServiceFinder.getInstructionService(batch).searchInstructionData(batch, params);
+		return this.serviceDispatcher.getInstructionService(batch).searchInstructionData(batch, params);
 	}
 		
 	/**
@@ -35,7 +35,7 @@ public class InstructionService extends AbstractLogisService {
 	 * @return
 	 */
 	public int instructBatch(JobBatch batch, List<String> equipIdList, Object ... params) {
-		return this.logisServiceFinder.getInstructionService(batch).instructBatch(batch, equipIdList, params);
+		return this.serviceDispatcher.getInstructionService(batch).instructBatch(batch, equipIdList, params);
 	}
 	
 	/**
@@ -47,7 +47,7 @@ public class InstructionService extends AbstractLogisService {
 	 * @return
 	 */
 	public int instructTotalpicking(JobBatch batch, List<String> equipIdList, Object ... params) {
-		return this.logisServiceFinder.getInstructionService(batch).instructBatch(batch, equipIdList, params);
+		return this.serviceDispatcher.getInstructionService(batch).instructBatch(batch, equipIdList, params);
 	}
 		
 	/**
@@ -59,7 +59,7 @@ public class InstructionService extends AbstractLogisService {
 	 * @return
 	 */
 	public int mergeBatch(JobBatch mainBatch, JobBatch newBatch, Object ... params) {
-		return this.logisServiceFinder.getInstructionService(mainBatch).mergeBatch(mainBatch, newBatch, params);
+		return this.serviceDispatcher.getInstructionService(mainBatch).mergeBatch(mainBatch, newBatch, params);
 	}
 	
 	/**
@@ -69,7 +69,7 @@ public class InstructionService extends AbstractLogisService {
 	 * @return
 	 */
 	public int cancelInstructionBatch(JobBatch batch) {
-		return this.logisServiceFinder.getInstructionService(batch).cancelInstructionBatch(batch);
+		return this.serviceDispatcher.getInstructionService(batch).cancelInstructionBatch(batch);
 	}
 
 }

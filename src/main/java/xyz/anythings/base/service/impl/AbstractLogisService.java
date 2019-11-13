@@ -12,9 +12,9 @@ import xyz.anythings.sys.service.AbstractExecutionService;
 public class AbstractLogisService extends AbstractExecutionService {
 
 	/**
-	 * 물류 서비스 파인더
+	 * 물류 서비스 디스패처
 	 */
 	@Autowired
-	protected LogisServiceFinder logisServiceFinder;
+	protected LogisServiceDispatcher serviceDispatcher;
 	
 }

@@ -1,18 +1,17 @@
 package xyz.anythings.base.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
-import xyz.anythings.base.entity.IndConfigSet;
 import xyz.anythings.base.entity.JobBatch;
-import xyz.anythings.base.entity.JobConfigSet;
-import xyz.anythings.base.entity.Stage;
 import xyz.anythings.base.model.BatchProgressRate;
 import xyz.anythings.base.service.api.IBatchService;
 import xyz.anythings.base.util.LogisBaseUtil;
 import xyz.anythings.base.util.LogisEntityUtil;
 import xyz.anythings.sys.service.AbstractQueryService;
+import xyz.elidom.sys.entity.Domain;
 import xyz.elidom.util.ValueUtil;
 
 /**
@@ -22,7 +21,7 @@ import xyz.elidom.util.ValueUtil;
  */
 @Component
 public class BatchService extends AbstractQueryService implements IBatchService {
-
+	
 	@Override
 	public String newJobBatchId(Long domainId, String stageCd, Object... params) {
 		return LogisBaseUtil.newJobBatchId(domainId);
@@ -30,22 +29,21 @@ public class BatchService extends AbstractQueryService implements IBatchService 
 
 	@Override
 	public BatchProgressRate dailyProgressRate(Long domainId, String stageCd, String jobDate) {
-		// TODO Auto-generated method stub
-		return null;
+		// 1. 조회 조건 
+		Map<String, Object> params = ValueUtil.newMap("P_IN_DOMAIN_ID,P_IN_JOB_DATE,P_IN_STAGE_CD", Domain.currentDomainId(), jobDate, stageCd);
+		// 2. 프로시져 콜 
+		Map<?, ?> progress = this.queryManager.callReturnProcedure("SP_DAILY_JOB_PROGRESS", params, Map.class);
+		// 3. 최종 결과 리턴 
+		BatchProgressRate progressRage = new BatchProgressRate();
+		progressRage.parseResult(progress);
+		return progressRage;
 	}
 
 	@Override
 	public JobBatch findRunningBatch(Long domainId, String stageCd, String equipType, String equipCd) {
-		// equipCd 가 지정 된 경우에는 해당 equip 에 대한 작업 상태를 확인
-		// equipCd 가 없는 경우에는 equip_type 까지만 작업 상태를 확인 
+		String filterNames = "domainId,stageCd,equipType,status";
+		List<Object> filterValues = ValueUtil.newList(domainId, stageCd, equipType, JobBatch.STATUS_RUNNING);
 		
-		// 1. stage 조회 
-		Stage stage = LogisEntityUtil.findEntityBy(domainId, false, Stage.class, null, "stageCd", stageCd);
-		
-		String filterNames = "areaCd,stageCd,equipType,status";
-		List<Object> filterValues = ValueUtil.newList(stage.getAreaCd(), stageCd, equipType, JobBatch.STATUS_RUNNING);
-		
-		// 2. equipCd가 지정된 경우 조건이 다름 
 		if(ValueUtil.isNotEmpty(equipCd)) {
 			filterNames += "equipCd";
 			filterValues.add(equipCd);
@@ -56,28 +54,15 @@ public class BatchService extends AbstractQueryService implements IBatchService 
 
 	@Override
 	public List<JobBatch> searchRunningBatchList(Long domainId, String stageCd, String jobType, String jobDate) {
-		// TODO Auto-generated method stub
-		return null;
+		return LogisEntityUtil.searchEntitiesBy(domainId, false, JobBatch.class, "stageCd,jobType,jobDate", stageCd, jobType, jobDate);
 	}
 
 	@Override
 	public List<JobBatch> searchRunningMainBatchList(Long domainId, String stageCd, String jobType, String jobDate) {
-		// TODO Auto-generated method stub
-		return null;
+		String sql = "select * from job_batches where domain_id = :domainId and stage_cd = :stageCd and job_type = :jobType and job_date = :jobDate and id = batch_group_id";
+		return LogisEntityUtil.searchItems(domainId, false, JobBatch.class, sql, "domainId,stageCd,jobType,jobDate", domainId, stageCd, jobType, jobDate);
 	}
 	
-	@Override
-	public JobConfigSet findJobConfigSet(JobBatch batch) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public IndConfigSet findIndConfigSet(JobBatch batch) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	@Override
 	public void isPossibleCloseBatch(JobBatch batch, boolean closeForcibly) {
 		// TODO Auto-generated method stub

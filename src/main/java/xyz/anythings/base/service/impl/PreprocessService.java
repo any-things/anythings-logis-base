@@ -24,7 +24,7 @@ public class PreprocessService extends AbstractLogisService {
 	 * @return
 	 */
 	public List<OrderPreprocess> searchPreprocessList(JobBatch batch) {
-		return this.logisServiceFinder.getPreprocessService(batch).searchPreprocessList(batch);
+		return this.serviceDispatcher.getPreprocessService(batch).searchPreprocessList(batch);
 	}
 	
 	/**
@@ -35,7 +35,7 @@ public class PreprocessService extends AbstractLogisService {
 	 * @return 작업 배치의 거래처 리스트, 주문 그룹 리스트, 호기 리스트, 거래처 별 물량 요약 정보, 호기별 물량 요약 정보 
 	 */
 	public Map<String, ?> buildPreprocessSet(JobBatch batch, Query query) {
-		return this.logisServiceFinder.getPreprocessService(batch).buildPreprocessSet(batch, query);
+		return this.serviceDispatcher.getPreprocessService(batch).buildPreprocessSet(batch, query);
 	}
 	
 	/**
@@ -45,7 +45,7 @@ public class PreprocessService extends AbstractLogisService {
 	 * @return 주문 가공 생성 개수
 	 */
 	public int generatePreprocess(JobBatch batch) {
-		return this.logisServiceFinder.getPreprocessService(batch).generatePreprocess(batch);
+		return this.serviceDispatcher.getPreprocessService(batch).generatePreprocess(batch);
 	}
 	
 	/**
@@ -55,7 +55,7 @@ public class PreprocessService extends AbstractLogisService {
 	 * @return 삭제된 주문 가공 정보 개수
 	 */
 	public int deletePreprocess(JobBatch batch) {
-		return this.logisServiceFinder.getPreprocessService(batch).deletePreprocess(batch);
+		return this.serviceDispatcher.getPreprocessService(batch).deletePreprocess(batch);
 	}
 
 	/**
@@ -66,7 +66,7 @@ public class PreprocessService extends AbstractLogisService {
 	 * @return
 	 */
 	public List<JobBatch> completePreprocess(JobBatch batch, Object ... params) {
-		return this.logisServiceFinder.getPreprocessService(batch).completePreprocess(batch, params);
+		return this.serviceDispatcher.getPreprocessService(batch).completePreprocess(batch, params);
 	}
 
 	/**
@@ -76,7 +76,7 @@ public class PreprocessService extends AbstractLogisService {
 	 * @param isRackReset 로케이션 할당 정보만 리셋할 것인지 (false), 로케이션 할당 및 호기 할당 정보까지 리셋할 것인지 (true)
 	 */
 	public void resetPreprocess(JobBatch batch, boolean isRackReset) {
-		this.logisServiceFinder.getPreprocessService(batch).resetPreprocess(batch, isRackReset);
+		this.serviceDispatcher.getPreprocessService(batch).resetPreprocess(batch, isRackReset);
 	}
 
 	/**
@@ -89,7 +89,7 @@ public class PreprocessService extends AbstractLogisService {
 	 * @return
 	 */
 	public int assignEquipLevel(JobBatch batch, String equipCds, List<OrderPreprocess> items, boolean automatically) {
-		return this.logisServiceFinder.getPreprocessService(batch).assignEquipLevel(batch, equipCds, items, automatically);
+		return this.serviceDispatcher.getPreprocessService(batch).assignEquipLevel(batch, equipCds, items, automatically);
 	}
 	
 	/**
@@ -102,7 +102,7 @@ public class PreprocessService extends AbstractLogisService {
 	 * @return
 	 */
 	public int assignSubEquipLevel(JobBatch batch, String equipType, String equipCd, List<OrderPreprocess> items) {
-		return this.logisServiceFinder.getPreprocessService(batch).assignSubEquipLevel(batch, equipType, equipCd, items);
+		return this.serviceDispatcher.getPreprocessService(batch).assignSubEquipLevel(batch, equipType, equipCd, items);
 	}
 
 }

@@ -36,7 +36,7 @@ import xyz.anythings.base.model.BatchProgressRate;
 import xyz.anythings.base.model.Category;
 import xyz.anythings.base.model.EquipBatchSet;
 import xyz.anythings.base.query.store.BatchQueryStore;
-import xyz.anythings.base.service.impl.LogisServiceFinder;
+import xyz.anythings.base.service.impl.LogisServiceDispatcher;
 import xyz.anythings.base.service.util.LogisServiceUtil;
 import xyz.anythings.base.util.LogisEntityUtil;
 import xyz.anythings.sys.event.EventPublisher;
@@ -63,7 +63,7 @@ public class DeviceProcessController {
 	 * 서비스 파인더
 	 */
 	@Autowired
-	private LogisServiceFinder logisServiceFinder;
+	private LogisServiceDispatcher logisServiceFinder;
 	
 	
 	@Autowired

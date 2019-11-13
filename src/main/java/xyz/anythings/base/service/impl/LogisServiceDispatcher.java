@@ -27,7 +27,7 @@ import xyz.anythings.base.service.api.IStockService;
  * @author shortstop
  */
 @Component
-public class LogisServiceFinder implements BeanFactoryAware {
+public class LogisServiceDispatcher implements BeanFactoryAware {
 
 	/**
 	 * BeanFactory

@@ -7,13 +7,13 @@ import java.util.regex.Pattern;
 import org.springframework.stereotype.Component;
 
 import xyz.anythings.base.LogisCodeConstants;
-import xyz.anythings.base.LogisConfigConstants;
 import xyz.anythings.base.LogisConstants;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.SKU;
 import xyz.anythings.base.query.store.BatchQueryStore;
-import xyz.anythings.base.service.api.IConfigSetService;
 import xyz.anythings.base.service.api.ISkuSearchService;
+import xyz.anythings.base.service.util.BatchJobConfigUtil;
+import xyz.anythings.base.service.util.StageJobConfigUtil;
 import xyz.anythings.base.util.LogisEntityUtil;
 import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.elidom.dbist.dml.Query;
@@ -31,31 +31,17 @@ import xyz.elidom.util.ValueUtil;
 public class SkuSearchService extends AbstractLogisService implements ISkuSearchService {
 
 	@Override
-	public String[] getSkuSearchConditionFields(JobBatch batch) {
-		String config = this.logisServiceFinder.getConfigSetService().getJobConfigValue(batch.getId(), LogisConfigConstants.SKU_CONDITION_FIELDS_TO_SEARCH, "skuCd,skuBarcd");
-		return config.split(LogisConstants.COMMA);
-	}
-	
-	@Override
-	public String getSkuSearchSelectFields(JobBatch batch) {
-		String config = this.logisServiceFinder.getConfigSetService().getJobConfigValue(batch.getId(), LogisConfigConstants.SKU_SELECT_FIELDS_TO_SEARCH, "id,com_cd,sku_cd,sku_nm,sku_barcd,box_barcd,box_in_qty,sku_wt");
-		return config;
-	}
-	
-	@Override
 	public String validateSkuCd(JobBatch batch, String skuCd) {
 		skuCd = ValueUtil.isEmpty(skuCd) ? skuCd : skuCd.trim();
-		IConfigSetService configSetSvc = this.logisServiceFinder.getConfigSetService();
 		
 		// 1. SKU 바코드 최대 길이 체크
-		String maxLengthStr = configSetSvc.getJobConfigValue(batch.getId(), LogisConfigConstants.SKU_BARCODE_MAX_LENGTH);
-		if(ValueUtil.isNotEmpty(maxLengthStr)) {
-			int maxLen = ValueUtil.toInteger(maxLengthStr);
-			skuCd = (skuCd.length() > maxLen) ? skuCd.substring(0, maxLen) : skuCd;
+		int maxLength = BatchJobConfigUtil.getMaxBarcodeSize(batch);
+		if(maxLength > 1) {
+			skuCd = (skuCd.length() > maxLength) ? skuCd.substring(0, maxLength) : skuCd;
 		}
 		
 		// 2. 상품 코드 유효성 체크 설정에 따라서 정규표현식 체크
-		String skuCdRule = configSetSvc.getJobConfigValue(batch.getId(), LogisConfigConstants.VALIDATION_RULE_SKUCD);
+		String skuCdRule = BatchJobConfigUtil.getSkuCdValidationRule(batch);
 		if(ValueUtil.isNotEmpty(skuCdRule)) {
 			if(!Pattern.matches(skuCdRule, skuCd)) {
 				// 상품 코드가 유효하지 않습니다.
@@ -74,7 +60,7 @@ public class SkuSearchService extends AbstractLogisService implements ISkuSearch
 	@Override
 	public List<SKU> searchListInBatchGroup(JobBatch batch, String comCd, String skuCd, boolean todoOnly, boolean exceptionWhenEmpty) {		
 		skuCd = this.validateSkuCd(batch, skuCd);
-		String[] skuCodeFields = this.getSkuSearchConditionFields(batch);
+		String[] skuCodeFields = BatchJobConfigUtil.getSkuSearchConditionFields(batch);
 		
 		String sql = BeanUtil.get(BatchQueryStore.class).getSearchSkuInBatchGroupQuery();
 		Map<String, Object> params = ValueUtil.newMap("domainId,batchGroupId,comCd", batch.getDomainId(), batch.getBatchGroupId(), comCd);
@@ -102,7 +88,7 @@ public class SkuSearchService extends AbstractLogisService implements ISkuSearch
 	@Override
 	public List<SKU> searchListInBatch(JobBatch batch, String stationCd, String comCd, String skuCd, boolean todoOnly, boolean exceptionWhenEmpty) {
 		skuCd = this.validateSkuCd(batch, skuCd);
-		String[] skuCodeFields = this.getSkuSearchConditionFields(batch);
+		String[] skuCodeFields = BatchJobConfigUtil.getSkuSearchConditionFields(batch);
 		
 		String sql = BeanUtil.get(BatchQueryStore.class).getSearchSkuInBatchQuery();
 		Map<String, Object> params = ValueUtil.newMap("domainId,batchId,comCd", batch.getDomainId(), batch.getId(), comCd);
@@ -151,13 +137,13 @@ public class SkuSearchService extends AbstractLogisService implements ISkuSearch
 	}
 
 	@Override
-	public SKU findSku(Long domainId, String comCd, String skuCd, String skuBarcd, boolean exceptionFlag) {
-		return findSKU(domainId, exceptionFlag, this.getSkuSearchSelectFields(null), "comCd,skuCd,skuBarcd", comCd, skuCd, skuBarcd);
+	public SKU findSku(Long domainId, String stageCd, String comCd, String skuCd, String skuBarcd, boolean exceptionFlag) {
+		return findSKU(domainId, exceptionFlag, StageJobConfigUtil.getSearchSkuFields(stageCd, null), "comCd,skuCd,skuBarcd", comCd, skuCd, skuBarcd);
 	}
 
 	@Override
-	public SKU findSkuByBoxBarcd(Long domainId, String comCd, String boxBarcd, boolean exceptionFlag) {
-		return findSKU(domainId, exceptionFlag, this.getSkuSearchSelectFields(null), "comCd,boxBarcd", comCd, boxBarcd);
+	public SKU findSkuByBoxBarcd(Long domainId, String stageCd, String comCd, String boxBarcd, boolean exceptionFlag) {
+		return findSKU(domainId, exceptionFlag, StageJobConfigUtil.getSearchSkuFields(stageCd, null), "comCd,boxBarcd", comCd, boxBarcd);
 	}
 	
 	@Override

@@ -13,22 +13,6 @@ import xyz.anythings.base.entity.SKU;
 public interface ISkuSearchService {
 	
 	/**
-	 * 작업 배치 스코프에서 스캔한 상품 코드로 상품 정보 조회시 조회 조건 필드 리스트 - 설정에서 조회
-	 * 
-	 * @param batch 작업 배치
-	 * @return
-	 */
-	public String[] getSkuSearchConditionFields(JobBatch batch);
-	
-	/**
-	 * 작업 배치 스코프에서 스캔한 상품 코드로 상품 정보 조회시 조회할 필드 리스트 - 설정에서 조회
-	 *  
-	 * @param batch
-	 * @return
-	 */
-	public String getSkuSearchSelectFields(JobBatch batch);
-	
-	/**
 	 * 작업 배치 소속 분류 작업 중에 작업자가 상품 코드 혹은 상품 바코드 정보를 스캔했을 때 유효성 체크
 	 * 
 	 * @param batch 작업 배치
@@ -111,24 +95,26 @@ public interface ISkuSearchService {
 	 * 창고 내 고객사 코드, 상품 코드, 상품 바코드로 SKU 조회
 	 * 
 	 * @param domainId
+	 * @param stageCd 스테이지 코드
 	 * @param comCd 고객사 코드
 	 * @param skuCd 상품 코드 Only
 	 * @param skuBarcd 상품 바코드 Only
 	 * @param exceptionFlag
 	 * @return
 	 */
-	public SKU findSku(Long domainId, String comCd, String skuCd, String skuBarcd, boolean exceptionFlag);
+	public SKU findSku(Long domainId, String stageCd, String comCd, String skuCd, String skuBarcd, boolean exceptionFlag);
 	
 	/**
 	 * 고객사 코드, 박스 바코드로 SKU 조회
 	 * 
 	 * @param domainId
+	 * @param stageCd 스테이지 코드
 	 * @param comCd 고객사 코드
 	 * @param boxBarcd 박스 바코드
 	 * @param exceptionFlag
 	 * @return
 	 */
-	public SKU findSkuByBoxBarcd(Long domainId, String comCd, String boxBarcd, boolean exceptionFlag);
+	public SKU findSkuByBoxBarcd(Long domainId, String stageCd, String comCd, String boxBarcd, boolean exceptionFlag);
 	
 	/**
 	 * 조회 조건으로 SKU 조회

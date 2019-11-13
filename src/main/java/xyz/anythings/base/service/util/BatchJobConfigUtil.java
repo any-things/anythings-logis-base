@@ -122,9 +122,10 @@ public class BatchJobConfigUtil {
 	 * @param batch
 	 * @return
 	 */
-	public static String getSkuSearchConditionFields(JobBatch batch) {
+	public static String[] getSkuSearchConditionFields(JobBatch batch) {
 		// job.cmm.sku.search.condition.fields
-		return getConfigValue(batch, LogisConfigConstants.SKU_CONDITION_FIELDS_TO_SEARCH, true);
+		String strVal = getConfigValue(batch, LogisConfigConstants.SKU_CONDITION_FIELDS_TO_SEARCH, true);
+		return strVal.split(LogisConstants.COMMA);
 	}
 	
 	/**
@@ -133,7 +134,7 @@ public class BatchJobConfigUtil {
 	 * @param batch
 	 * @return
 	 */
-	public static String getSkuSelectConditionFields(JobBatch batch) {
+	public static String getSkuSearchSelectFields(JobBatch batch) {
 		// job.cmm.sku.search.select.fields
 		return getConfigValue(batch, LogisConfigConstants.SKU_SELECT_FIELDS_TO_SEARCH, true);
 	}
