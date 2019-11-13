@@ -8,21 +8,21 @@ import xyz.anythings.base.entity.WorkCell;
  * 
  * @author shortstop
  */
-public interface IClassifyErrorEvent {
+public interface IClassifyErrorEvent extends IBatchBasedEvent {
 
 	/**
 	 * 분류 이벤트 리턴 
 	 * 
 	 * @return
 	 */
-	public IClassifyRunEvent getClassifyExeEvent();
+	public IClassifyRunEvent getClassifyRunEvent();
 	
 	/**
 	 * 분류 이벤트 설정
 	 * 
 	 * @param executionEvent
 	 */
-	public void setClassifyExeEvent(IClassifyRunEvent executionEvent);
+	public void setClassifyRunEvent(IClassifyRunEvent executionEvent);
 	
 	/**
 	 * 작업 인스턴스 리턴

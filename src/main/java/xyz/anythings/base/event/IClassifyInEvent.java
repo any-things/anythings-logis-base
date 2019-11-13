@@ -63,7 +63,7 @@ public interface IClassifyInEvent extends IClassifyEvent {
 	 * 
 	 * @return
 	 */
-	public String getInputQty();
+	public int getInputQty();
 	
 	/**
 	 * 투입 수량 설정

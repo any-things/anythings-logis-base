@@ -5,7 +5,7 @@ package xyz.anythings.base.event;
  * 
  * @author shortstop
  */
-public interface ICategorizeEvent {
+public interface ICategorizeEvent extends IBatchBasedEvent {
 
 	/**
 	 * 작업 배치 그룹 리턴 
@@ -20,34 +20,6 @@ public interface ICategorizeEvent {
 	 * @param batchGroupId
 	 */
 	public void setBatchGroupId(String batchGroupId);
-	
-	/**
-	 * 이벤트 소스 리턴 - 이벤트 발생 모듈명
-	 * 
-	 * @return
-	 */
-	public String getEventSource();
-	
-	/**
-	 * 이벤트 소스 설정
-	 * 
-	 * @param eventSource
-	 */
-	public void setEventSource(String eventSource);
-	
-	/**
-	 * 이벤트 타겟 리턴 - 이벤트를 수신할 모듈명
-	 * 
-	 * @return
-	 */
-	public String getEventTarget();
-	
-	/**
-	 * 이벤트 타겟 설정
-	 * 
-	 * @param eventTarget
-	 */
-	public void setEventTarget(String eventTarget);
 
 	/**
 	 * 투입 유형 리턴 - 아래 상수 참조 (상품 낱개 투입, 상품 완박스 투입, 상품 묶음 투입, 박스 투입)

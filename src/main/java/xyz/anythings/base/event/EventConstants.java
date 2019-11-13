@@ -23,8 +23,6 @@ public class EventConstants {
 	public static final short EVENT_STEP_ALONE = 3;
 	
 	
-	
-	
 	/** BatchReceiveEvent ================       **/
 	
 	/**

@@ -1,6 +1,9 @@
 package xyz.anythings.base.service.util;
 
 import xyz.anythings.base.entity.JobBatch;
+import xyz.anythings.base.service.impl.ConfigSetService;
+import xyz.elidom.sys.util.ThrowUtil;
+import xyz.elidom.util.BeanUtil;
 
 /**
  * 작업 배치 범위 내 표시기 설정 값 조회 유틸리티
@@ -35,6 +38,46 @@ import xyz.anythings.base.entity.JobBatch;
  * @author shortstop
  */
 public class BatchIndConfigUtil {
+	
+	/**
+	 * 설정 프로파일 서비스
+	 */
+	public static ConfigSetService CONFIG_SET_SVC;
+	
+	/**
+	 * 설정 프로파일 서비스 리턴
+	 * 
+	 * @return
+	 */
+	public static ConfigSetService getConfigSetService() {
+		if(CONFIG_SET_SVC == null) {
+			CONFIG_SET_SVC = BeanUtil.get(ConfigSetService.class);
+		}
+		
+		return CONFIG_SET_SVC;
+	}
+	
+	/**
+	 * 작업 배치 범위 내에 설정 내용을 키로 조회해서 리턴
+	 *  
+	 * @param batch
+	 * @param key
+	 * @param exceptionWhenEmptyValue
+	 * @return
+	 */
+	public static String getConfigValue(JobBatch batch, String key, boolean exceptionWhenEmptyValue) {
+		ConfigSetService configSvc = getConfigSetService();
+		
+		// 1. 작업 유형에 따른 설정값 조회
+		String value = configSvc.getJobConfigValue(batch, key);
+		
+		// 2. 설정값이 없다면 exceptionWhenEmptyValue에 따라 예외 처리
+		if(exceptionWhenEmptyValue) {
+			throw ThrowUtil.newJobConfigNotSet(key);
+		}
+		
+		return value;
+	}
 
 	/**
 	 * 표시기가 점등되기 전 지연되는 시간입니다. (100ms 단위)
