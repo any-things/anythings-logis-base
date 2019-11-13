@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.HandlerMapping;
 
+import xyz.anythings.base.LogisCodeConstants;
 import xyz.anythings.base.LogisConstants;
 import xyz.anythings.base.entity.BoxItem;
 import xyz.anythings.base.entity.BoxPack;
@@ -27,12 +28,15 @@ import xyz.anythings.base.entity.JobInput;
 import xyz.anythings.base.entity.JobInstance;
 import xyz.anythings.base.entity.Rack;
 import xyz.anythings.base.entity.SKU;
+import xyz.anythings.base.event.EventConstants;
+import xyz.anythings.base.event.classfy.ClassifyRunEvent;
 import xyz.anythings.base.event.rest.DeviceProcessRestEvent;
 import xyz.anythings.base.model.BaseResponse;
 import xyz.anythings.base.model.BatchProgressRate;
 import xyz.anythings.base.model.Category;
 import xyz.anythings.base.model.EquipBatchSet;
 import xyz.anythings.base.query.store.BatchQueryStore;
+import xyz.anythings.base.service.impl.LogisServiceFinder;
 import xyz.anythings.base.service.util.LogisServiceUtil;
 import xyz.anythings.base.util.LogisEntityUtil;
 import xyz.anythings.sys.event.EventPublisher;
@@ -55,7 +59,13 @@ import xyz.elidom.util.BeanUtil;
 @RequestMapping("/rest/device_process")
 @ServiceDesc(description = "Device Process Controller API")
 public class DeviceProcessController {
-
+	/**
+	 * 서비스 파인더
+	 */
+	@Autowired
+	private LogisServiceFinder logisServiceFinder;
+	
+	
 	@Autowired
 	BatchQueryStore batchQueryStore;
 	
@@ -348,8 +358,22 @@ public class DeviceProcessController {
 			@PathVariable("equip_type") String equipType,
 			@PathVariable("equip_cd") String equipCd, 
 			@PathVariable("job_instance_id") String jobInstanceId) {
-		// TODO
-		return null;
+		
+		Long domainId = Domain.currentDomainId();
+		
+		// 1. Equip 으로 Batch조회 
+		EquipBatchSet equipBatchSet = LogisServiceUtil.findBatchByEquip(domainId, equipType, equipCd);
+		JobBatch batch = equipBatchSet.getBatch();
+		
+		// 2. JobInstance 조회 
+		JobInstance job = LogisEntityUtil.findEntityById(true, JobInstance.class, jobInstanceId);
+		
+		// 3. 소분류 이벤트 생성 
+		ClassifyRunEvent event = new ClassifyRunEvent(batch, EventConstants.EVENT_STEP_ALONE
+				, LogisCodeConstants.CLASSIFICATION_DEVICE_TABLET
+				, LogisCodeConstants.CLASSIFICATION_ACTION_CONFIRM, jobInstanceId, job.getSubEquipCd(), job.getPickQty(), job.getPickQty());
+		
+		return new BaseResponse(true,null, this.logisServiceFinder.getClassificationService(batch).classify(event));
 	}
 
 	/**
@@ -370,8 +394,24 @@ public class DeviceProcessController {
 			@PathVariable("job_instance_id") String jobInstanceId, 
 			@RequestParam(name = "req_qty", required = true) Integer reqQty,
 			@RequestParam(name = "res_qty", required = true) Integer resQty) {
-		// TODO
-		return null;
+
+		Long domainId = Domain.currentDomainId();
+		
+		// 1. Equip 으로 Batch조회 
+		EquipBatchSet equipBatchSet = LogisServiceUtil.findBatchByEquip(domainId, equipType, equipCd);
+		JobBatch batch = equipBatchSet.getBatch();
+		
+		// 2. JobInstance 조회 
+		JobInstance job = LogisEntityUtil.findEntityById(true, JobInstance.class, jobInstanceId);
+		
+		// 3. 소분류 이벤트 생성 
+		ClassifyRunEvent event = new ClassifyRunEvent(batch, EventConstants.EVENT_STEP_ALONE
+				, LogisCodeConstants.CLASSIFICATION_DEVICE_TABLET
+				, LogisCodeConstants.CLASSIFICATION_ACTION_MODIFY, jobInstanceId, job.getSubEquipCd()
+				, ValueUtil.isEmpty(reqQty) ? job.getPickQty() : reqQty
+				, ValueUtil.isEmpty(resQty) ? 1 : resQty);
+		
+		return new BaseResponse(true,null, this.logisServiceFinder.getClassificationService(batch).classify(event));		
 	}
 	
 	/**
@@ -388,8 +428,23 @@ public class DeviceProcessController {
 			@PathVariable("equip_type") String equipType,
 			@PathVariable("equip_cd") String equipCd, 
 			@PathVariable("job_instance_id") String jobInstanceId) {
-		// TODO
-		return null;
+
+		Long domainId = Domain.currentDomainId();
+		
+		// 1. Equip 으로 Batch조회 
+		EquipBatchSet equipBatchSet = LogisServiceUtil.findBatchByEquip(domainId, equipType, equipCd);
+		JobBatch batch = equipBatchSet.getBatch();
+		
+		// 2. JobInstance 조회 
+		JobInstance job = LogisEntityUtil.findEntityById(true, JobInstance.class, jobInstanceId);
+		
+		// 3. 소분류 이벤트 생성 
+		ClassifyRunEvent event = new ClassifyRunEvent(batch, EventConstants.EVENT_STEP_ALONE
+				, LogisCodeConstants.CLASSIFICATION_DEVICE_TABLET
+				, LogisCodeConstants.CLASSIFICATION_ACTION_CANCEL, jobInstanceId, job.getSubEquipCd()
+				, 0, 0);
+		
+		return new BaseResponse(true,null, this.logisServiceFinder.getClassificationService(batch).classify(event));		
 	}	
 	
 	/**
