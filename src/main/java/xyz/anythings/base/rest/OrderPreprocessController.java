@@ -117,6 +117,10 @@ public class OrderPreprocessController extends AbstractRestService {
 		Query queryObj = this.parseQuery(OrderPreprocess.class, 0, 0, select, sort, query);
 		// 2. 배치 ID 추출
 		String batchId = AnyValueUtil.getFilterValue(queryObj, "id");
+		
+		if(batchId == null) {
+			batchId = AnyValueUtil.getFilterValue(queryObj, "batchId");
+		}
 		// 3. 배치 ID 체크 
 		if(batchId == null) {
 			throw ThrowUtil.newNotAllowedEmptyInfo("terms.label.batch_id");
