@@ -127,14 +127,14 @@ public class OrderPreprocessController extends AbstractRestService {
 		queryObj.addFilter("batch_id", batchId);
 		
 		String comCd = AnyValueUtil.getFilterValue(queryObj, "comCd");
-		String regionCd = AnyValueUtil.getFilterValue(queryObj, "regionCd");
+		String equipCd = AnyValueUtil.getFilterValue(queryObj, "equipCd");
 		
 		if(ValueUtil.isNotEmpty(comCd)) {
 			queryObj.addFilter("com_cd", comCd);
 		}
 		
-		if(ValueUtil.isNotEmpty(regionCd)) {
-			queryObj.addFilter("region_cd", regionCd);
+		if(ValueUtil.isNotEmpty(equipCd)) {
+			queryObj.addFilter("equip_cd", equipCd);
 		}		
 		
 		// 5. 작업 배치 조회
