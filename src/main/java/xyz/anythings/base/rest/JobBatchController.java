@@ -20,7 +20,7 @@ import xyz.anythings.base.entity.BatchReceiptItem;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.model.BatchProgressRate;
 import xyz.anythings.base.service.impl.LogisServiceDispatcher;
-import xyz.anythings.base.util.LogisEntityUtil;
+import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
 import xyz.elidom.orm.system.annotation.service.ServiceDesc;
@@ -120,7 +120,7 @@ public class JobBatchController extends AbstractRestService {
 	@ApiDesc(description = "Progress rate of job batch")
 	public BatchProgressRate batchProgressRate(@RequestParam(name = "id", required = true) String id) {
 		
-		JobBatch batch = LogisEntityUtil.findEntityById(true, JobBatch.class, id);
+		JobBatch batch = AnyEntityUtil.findEntityById(true, JobBatch.class, id);
 		return this.serviceDispatcher.getJobStatusService(batch).getBatchProgressSummary(batch);
 	}
 	
@@ -219,8 +219,8 @@ public class JobBatchController extends AbstractRestService {
 	@RequestMapping(value = "/receive_batches/rate/{batch_summary_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Receive batch orders Status")
 	public BatchReceipt startReceivingOrders(@PathVariable("batch_summary_id") String batchSummaryId) {
-		BatchReceipt summary = LogisEntityUtil.findEntityById(false, BatchReceipt.class, batchSummaryId);
-		summary.setItems(LogisEntityUtil.searchDetails(Domain.currentDomainId(), BatchReceiptItem.class, "batchReceiptId", batchSummaryId));
+		BatchReceipt summary = AnyEntityUtil.findEntityById(false, BatchReceipt.class, batchSummaryId);
+		summary.setItems(AnyEntityUtil.searchDetails(Domain.currentDomainId(), BatchReceiptItem.class, "batchReceiptId", batchSummaryId));
 		return summary;
 	}
 	
@@ -237,7 +237,7 @@ public class JobBatchController extends AbstractRestService {
 	public Map<String, Object> searchInstructionData(@PathVariable("id") String batchId) {
 		
 		// 1. 작업 배치 조회 
-		JobBatch batch = LogisEntityUtil.findEntityByIdWithLock(true, JobBatch.class, batchId);
+		JobBatch batch = AnyEntityUtil.findEntityByIdWithLock(true, JobBatch.class, batchId);
 		// 2. 작업 지시 데이터 조회
 		return this.serviceDispatcher.getInstructionService(batch).searchInstructionData(batch);
 	}
@@ -255,7 +255,7 @@ public class JobBatchController extends AbstractRestService {
 			@RequestBody(required = false) List<String> equipList) {
 		
 		// 1. 작업 배치 조회
-		JobBatch batch = LogisEntityUtil.findEntityByIdWithLock(true, JobBatch.class, batchId);
+		JobBatch batch = AnyEntityUtil.findEntityByIdWithLock(true, JobBatch.class, batchId);
 		// 2. 작업 지시 
 		int createdCount = this.serviceDispatcher.getInstructionService(batch).instructBatch(batch, equipList);
 		// 3. 작업 지시 결과 리턴
@@ -292,7 +292,7 @@ public class JobBatchController extends AbstractRestService {
 			@RequestBody(required = false) List<String> equipIdList) {
 		
 		// 1. 작업 배치 조회
-		JobBatch batch = LogisEntityUtil.findEntityByIdWithLock(true, JobBatch.class, batchId);
+		JobBatch batch = AnyEntityUtil.findEntityByIdWithLock(true, JobBatch.class, batchId);
 		// 2. 작업 지시 
 		int count = this.serviceDispatcher.getInstructionService(batch).instructTotalpicking(batch, equipIdList);
 		// 3. 작업 지시 결과 리턴
@@ -330,9 +330,9 @@ public class JobBatchController extends AbstractRestService {
 			@PathVariable("main_batch_id") String mainBatchId) {
 		
 		// 1. 병합할 메인 배치 정보 조회 
-		JobBatch mainBatch = LogisEntityUtil.findEntityByIdWithLock(true, JobBatch.class, mainBatchId);	
+		JobBatch mainBatch = AnyEntityUtil.findEntityByIdWithLock(true, JobBatch.class, mainBatchId);	
 		// 2. 병합될 배치 정보 조회 
-		JobBatch sourceBatch = LogisEntityUtil.findEntityByIdWithLock(true, JobBatch.class, sourceBatchId);	
+		JobBatch sourceBatch = AnyEntityUtil.findEntityByIdWithLock(true, JobBatch.class, sourceBatchId);	
 		// 3. 작업 배치 병합
 		int mergedCnt = this.serviceDispatcher.getInstructionService(mainBatch).mergeBatch(mainBatch, sourceBatch);
 		// 4. 결과 리턴
@@ -350,7 +350,7 @@ public class JobBatchController extends AbstractRestService {
 	public Map<String, Object> cancelInstructionBatch(@PathVariable("id") String batchId) {
 		
 		// 1. 작업 배치 조회 
-		JobBatch batch = LogisEntityUtil.findEntityByIdWithLock(true, JobBatch.class, batchId);
+		JobBatch batch = AnyEntityUtil.findEntityByIdWithLock(true, JobBatch.class, batchId);
 		// 2. 작업 지시 취소
 		int count = this.serviceDispatcher.getInstructionService(batch).cancelInstructionBatch(batch);
 		// 3. 작업 지시 결과 리턴
@@ -367,7 +367,7 @@ public class JobBatchController extends AbstractRestService {
 	@ApiDesc(description = "Close batch")
 	public Map<String, Object> closeBatch(@RequestParam(name = "id", required = true) String id) {
 
-		JobBatch batch = LogisEntityUtil.findEntityByIdWithLock(true, JobBatch.class, id);
+		JobBatch batch = AnyEntityUtil.findEntityByIdWithLock(true, JobBatch.class, id);
 		int count = this.serviceDispatcher.getBatchService().closeBatch(batch, false);
 		return ValueUtil.newMap("result,count", SysConstants.OK_STRING, count);
 	}
@@ -383,7 +383,7 @@ public class JobBatchController extends AbstractRestService {
 	public Map<String, Object> closeBatchForcibly(@PathVariable("id") String id) {
 		
 		// 1. JobBatch 조회 
-		JobBatch batch = LogisEntityUtil.findEntityByIdWithLock(true, JobBatch.class, id);
+		JobBatch batch = AnyEntityUtil.findEntityByIdWithLock(true, JobBatch.class, id);
 		// 2. 작업 배치 마감
 		int count = this.serviceDispatcher.getBatchService().closeBatch(batch, true);
 		// 3. 결과 리턴
@@ -401,7 +401,7 @@ public class JobBatchController extends AbstractRestService {
 	public Map<String, Object> cancelBatch(@PathVariable("id") String id) {
 		
 		// 1. JobBatch 조회 
-		JobBatch batch = LogisEntityUtil.findEntityByIdWithLock(true, JobBatch.class, id);
+		JobBatch batch = AnyEntityUtil.findEntityByIdWithLock(true, JobBatch.class, id);
 		// 2. 작업 배치 마감
 		int count = this.serviceDispatcher.getReceiveBatchService().cancelBatch(batch);
 		// 3. 작업 배치 수신 취소

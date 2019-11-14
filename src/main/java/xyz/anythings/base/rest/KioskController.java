@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import xyz.anythings.base.LogisConstants;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.Kiosk;
-import xyz.anythings.base.util.LogisEntityUtil;
+import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.anythings.sys.util.AnyValueUtil;
 import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
@@ -106,8 +106,8 @@ public class KioskController extends AbstractRestService {
 			return null;
 		}
 		
-		JobBatch batch = LogisEntityUtil.findEntityBy(domainId, false, JobBatch.class, "equip_nm", "domainId,equipType,equipCd,status", domainId, equipType, equipCd, JobBatch.STATUS_RUNNING);
-		Kiosk kiosk = LogisEntityUtil.findEntityBy(domainId, false, Kiosk.class, "id,domain_id,kiosk_cd,kiosk_nm,equip_type,equip_cd,side_cd,status", "domainId,kioskIp", domainId, kioskIp);
+		JobBatch batch = AnyEntityUtil.findEntityBy(domainId, false, JobBatch.class, "equip_nm", "domainId,equipType,equipCd,status", domainId, equipType, equipCd, JobBatch.STATUS_RUNNING);
+		Kiosk kiosk = AnyEntityUtil.findEntityBy(domainId, false, Kiosk.class, "id,domain_id,kiosk_cd,kiosk_nm,equip_type,equip_cd,side_cd,status", "domainId,kioskIp", domainId, kioskIp);
 
 		String kioskNm = (batch == null) ? kioskCd : batch.getEquipNm();
 		if(ValueUtil.isNotEmpty(sideCd)) {

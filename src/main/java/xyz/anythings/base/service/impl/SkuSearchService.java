@@ -14,7 +14,7 @@ import xyz.anythings.base.query.store.BatchQueryStore;
 import xyz.anythings.base.service.api.ISkuSearchService;
 import xyz.anythings.base.service.util.BatchJobConfigUtil;
 import xyz.anythings.base.service.util.StageJobConfigUtil;
-import xyz.anythings.base.util.LogisEntityUtil;
+import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.elidom.dbist.dml.Query;
 import xyz.elidom.sys.SysConstants;
@@ -148,7 +148,7 @@ public class SkuSearchService extends AbstractLogisService implements ISkuSearch
 	
 	@Override
 	public SKU findSKU(Long domainId, boolean exceptionWhenEmpty, String selectFields, String paramNames, Object ... paramValues) {
-		SKU sku = LogisEntityUtil.findEntityBy(domainId, false, SKU.class, selectFields, paramNames, paramValues);
+		SKU sku = AnyEntityUtil.findEntityBy(domainId, false, SKU.class, selectFields, paramNames, paramValues);
 
 		if(sku == null && exceptionWhenEmpty) {
 			throw ThrowUtil.newValidationErrorWithNoLog(ThrowUtil.notFoundRecordMsg("terms.menu.SKU"));

@@ -3,7 +3,6 @@ package xyz.anythings.base.service.api;
 import java.util.List;
 
 import xyz.anythings.base.entity.BoxPack;
-import xyz.anythings.base.entity.IndConfigSet;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.JobConfigSet;
 import xyz.anythings.base.entity.JobInstance;
@@ -53,7 +52,7 @@ public interface IBoxingService {
 	 * @param batchId
 	 * @return
 	 */
-	public IndConfigSet getIndConfigSet(String batchId);
+	//public IndConfigSet getIndConfigSet(String batchId);
 	
 	/**
 	 * 2-1. 작업 준비 : 셀에 박스를 할당

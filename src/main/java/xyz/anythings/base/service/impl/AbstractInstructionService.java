@@ -7,9 +7,9 @@ import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.Rack;
 import xyz.anythings.base.event.EventConstants;
 import xyz.anythings.base.event.main.BatchInstructEvent;
-import xyz.anythings.base.util.LogisEntityUtil;
 import xyz.anythings.sys.event.model.EventResultSet;
 import xyz.anythings.sys.service.AbstractExecutionService;
+import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.elidom.util.ValueUtil;
 
 /**
@@ -95,7 +95,7 @@ public class AbstractInstructionService extends AbstractExecutionService{
 	 * @return
 	 */
 	private <T> List<T> searchEquipByIds(long domainId, Class<T> clazz, List<String> equipIdList){
-		return LogisEntityUtil.searchEntitiesBy(domainId, false, clazz, null, "id", equipIdList);
+		return AnyEntityUtil.searchEntitiesBy(domainId, false, clazz, null, "id", equipIdList);
 	}
 	
 	/**
@@ -105,7 +105,7 @@ public class AbstractInstructionService extends AbstractExecutionService{
 	 * @return
 	 */
 	private <T> List<T> searchEquipByJobBatchEquipCd(Class<T> clazz, JobBatch batch){
-		return LogisEntityUtil.searchEntitiesBy(batch.getDomainId(), false, clazz, null
+		return AnyEntityUtil.searchEntitiesBy(batch.getDomainId(), false, clazz, null
 				, "areaCd,stageCd,equipCd,activeFlag,status"
 				, batch.getAreaCd(), batch.getStageCd(), batch.getEquipCd(), Boolean.TRUE, JobBatch.STATUS_RUNNING);	
 	}
@@ -117,7 +117,7 @@ public class AbstractInstructionService extends AbstractExecutionService{
 	 * @return
 	 */
 	private <T> List<T> searchEquipByJobBatch(Class<T> clazz, JobBatch batch){
-		return LogisEntityUtil.searchEntitiesBy(batch.getDomainId(), false, clazz, null
+		return AnyEntityUtil.searchEntitiesBy(batch.getDomainId(), false, clazz, null
 				, "areaCd,stageCd,activeFlag,status"
 				, batch.getAreaCd(), batch.getStageCd(), Boolean.TRUE, JobBatch.STATUS_RUNNING);	
 	}

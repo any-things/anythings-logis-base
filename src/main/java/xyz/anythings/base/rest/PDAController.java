@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import xyz.anythings.base.LogisConstants;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.PDA;
-import xyz.anythings.base.util.LogisEntityUtil;
+import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.anythings.sys.util.AnyValueUtil;
 import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
@@ -105,8 +105,8 @@ public class PDAController extends AbstractRestService {
 			return null;
 		}
 		
-		JobBatch batch = LogisEntityUtil.findEntityBy(domainId, false, JobBatch.class, "equip_nm", "domainId,equipType,equipCd,status", domainId, equipType, equipCd, JobBatch.STATUS_RUNNING);
-		PDA pda = LogisEntityUtil.findEntityBy(domainId, false, PDA.class, "id,domain_id,pda_cd,pda_nm,equip_type,equip_cd,station_cd,status", "domainId,pdaIp", domainId, pdaIp);
+		JobBatch batch = AnyEntityUtil.findEntityBy(domainId, false, JobBatch.class, "equip_nm", "domainId,equipType,equipCd,status", domainId, equipType, equipCd, JobBatch.STATUS_RUNNING);
+		PDA pda = AnyEntityUtil.findEntityBy(domainId, false, PDA.class, "id,domain_id,pda_cd,pda_nm,equip_type,equip_cd,station_cd,status", "domainId,pdaIp", domainId, pdaIp);
 		
 		String pdaNm = (batch == null) ? pdaCd : batch.getEquipNm();
 		if(ValueUtil.isNotEmpty(stationCd)) {

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
  * @author shortstop
  */
 @Component
-public class ConfigQueryStore extends AbstractQueryStore {
+public class ConfigQueryStore extends LogisBaseQueryStore {
 
 
 	/**

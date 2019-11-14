@@ -9,6 +9,6 @@ import org.springframework.stereotype.Component;
  * @author shortstop
  */
 @Component
-public class PreprocessQueryStore extends AbstractQueryStore {
+public class PreprocessQueryStore extends LogisBaseQueryStore {
 
 }

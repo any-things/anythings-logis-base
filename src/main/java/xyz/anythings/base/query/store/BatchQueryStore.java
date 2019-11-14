@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
  * @author shortstop
  */
 @Component
-public class BatchQueryStore extends AbstractQueryStore {
-
+public class BatchQueryStore extends LogisBaseQueryStore {
+	
 	/**
 	 * 창고 전체의 최근 3개월 작업 진행율 쿼리
 	 * 
@@ -57,7 +57,8 @@ public class BatchQueryStore extends AbstractQueryStore {
 	}
 	
 	/**
-	 * Rack 타입 배치 진행율 쿼리 
+	 * Rack 타입 배치 진행율 쿼리
+	 * 
 	 * @return
 	 */
 	public String getRackBatchProgressRateQuery() {
@@ -65,7 +66,8 @@ public class BatchQueryStore extends AbstractQueryStore {
 	}
 	
 	/**
-	 * Rack DPS 투입 가능 박스 수 쿼리 
+	 * Rack DPS 투입 가능 박스 수 쿼리
+	 * 
 	 * @return
 	 */
 	public String getRackDpsBatchInputableBoxQuery() {
@@ -73,7 +75,8 @@ public class BatchQueryStore extends AbstractQueryStore {
 	}
 	
 	/**
-	 * Rack DPS 투입 리스트 쿼리 
+	 * Rack DPS 투입 리스트 쿼리
+	 * 
 	 * @return
 	 */
 	public String getRackDpsBatchInputListQuery() {
@@ -83,6 +86,7 @@ public class BatchQueryStore extends AbstractQueryStore {
 	/*** BatchReceipt 관련 데이터 쿼리 ***/
 	/**
 	 * WMS I/F 테이블로 부터 BatchReceipt 데이터를 조회 한다.
+	 * 
 	 * @return
 	 */
 	public String getWmsIfToReceiptDataQuery() {
@@ -91,7 +95,8 @@ public class BatchQueryStore extends AbstractQueryStore {
 	
 	/**
 	 * BatchReceipt 조회
-	 * 상세 Item 에 Order 타입이 있는 Case 
+	 * 상세 Item 에 Order 타입이 있는 Case
+	 * 
 	 * @return
 	 */
 	public String getBatchReceiptOrderTypeStatusQuery() {
@@ -99,7 +104,8 @@ public class BatchQueryStore extends AbstractQueryStore {
 	}
 	
 	/**
-	 * 마지막 투입 작업 조회 
+	 * 마지막 투입 작업 조회
+	 * 
 	 * @return
 	 */
 	public String getLatestJobInputQuery() {
@@ -107,7 +113,8 @@ public class BatchQueryStore extends AbstractQueryStore {
 	}
 	
 	/**
-	 * 다음 맵핑할 작업 정보 조회 
+	 * 다음 맵핑할 작업 정보 조회
+	 * 
 	 * @return
 	 */
 	public String getFindNextMappingJobQuery() {
@@ -115,7 +122,8 @@ public class BatchQueryStore extends AbstractQueryStore {
 	}
 	
 	/**
-	 * 배치 instances 데이터 에서 Input 데이터 생성 쿼리 
+	 * 배치 instances 데이터 에서 Input 데이터 생성 쿼리
+	 * 
 	 * @return
 	 */
 	public String getRackDpsBatchNewInputDataQuery() {
@@ -123,7 +131,8 @@ public class BatchQueryStore extends AbstractQueryStore {
 	}
 	
 	/**
-	 * instance 테이블에 boxId 및 seq 정보 update 쿼리 
+	 * instance 테이블에 boxId 및 seq 정보 update 쿼리
+	 * 
 	 * @return
 	 */
 	public String getRackDpsBatchMapBoxIdAndSeqQuery() {
@@ -131,7 +140,8 @@ public class BatchQueryStore extends AbstractQueryStore {
 	}
 	
 	/**
-	 * Rack DPS 작업의 투입 탭 리스트 쿼리 
+	 * Rack DPS 작업의 투입 탭 리스트 쿼리
+	 * 
 	 * @return
 	 */
 	public String getRackDpsBatchBoxInputTabsQuery() {
@@ -139,10 +149,12 @@ public class BatchQueryStore extends AbstractQueryStore {
 	}
 	
 	/**
-	 * Rack DPS 작업의 투입 탭 상세 리스트 쿼리 
+	 * Rack DPS 작업의 투입 탭 상세 리스트 쿼리
+	 * 
 	 * @return
 	 */
 	public String getRackDpsBatchBoxInputTabDetailQuery() {
 		return this.getQueryByPath("batch/RackDpsBatchBoxInputTabDetail");
 	}
+
 }

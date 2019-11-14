@@ -15,8 +15,8 @@ import xyz.anythings.base.entity.JobInstance;
 import xyz.anythings.base.model.BatchProgressRate;
 import xyz.anythings.base.query.store.BatchQueryStore;
 import xyz.anythings.base.service.api.IJobStatusService;
-import xyz.anythings.base.util.LogisEntityUtil;
 import xyz.anythings.sys.service.AbstractExecutionService;
+import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.util.ValueUtil;
 
@@ -64,7 +64,7 @@ public class AbstractJobStatusService extends AbstractExecutionService implement
 	@Transactional(propagation=Propagation.REQUIRES_NEW)
 	public Integer findNextInputSeq(JobBatch batch) {
 		// 작업 배치의 마지막 투입 시퀀스를 조회 후 하나 올려서 리턴
-		JobBatch findBatch = LogisEntityUtil.findEntityByIdWithLock(true, JobBatch.class, batch.getId());
+		JobBatch findBatch = AnyEntityUtil.findEntityByIdWithLock(true, JobBatch.class, batch.getId());
 		int lastInputSeq = (findBatch.getLastInputSeq() == null) ? 1 : findBatch.getLastInputSeq() + 1;
 		batch.setLastInputSeq(lastInputSeq);
 		this.queryManager.update(batch, "lastInputSeq");

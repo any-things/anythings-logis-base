@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
  * @author shortstop
  */
 @Component
-public class EtcQueryStore extends AbstractQueryStore {
+public class EtcQueryStore extends LogisBaseQueryStore {
 
 	/**
 	 * 데이터베이스 서버 기준 현재 시간을 조회하는 쿼리 

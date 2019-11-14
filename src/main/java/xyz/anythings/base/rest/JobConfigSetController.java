@@ -19,10 +19,10 @@ import xyz.anythings.base.LogisConstants;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.JobConfig;
 import xyz.anythings.base.entity.JobConfigSet;
-import xyz.anythings.base.model.BaseResponse;
 import xyz.anythings.base.service.impl.ConfigSetService;
-import xyz.anythings.base.util.LogisEntityUtil;
+import xyz.anythings.sys.model.BaseResponse;
 import xyz.anythings.sys.model.KeyValue;
+import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.elidom.dbist.dml.Filter;
 import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
@@ -128,14 +128,14 @@ public class JobConfigSetController extends AbstractRestService {
 	@RequestMapping(value = "/batch/build_config_set/{batch_id}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Build config set by batch id")
 	public JobConfigSet buildBatchConfigSet(@PathVariable("batch_id") String batchiId) {
-		JobBatch batch = LogisEntityUtil.findEntityById(true, JobBatch.class, batchiId);
+		JobBatch batch = AnyEntityUtil.findEntityById(true, JobBatch.class, batchiId);
 		return this.configSetService.buildJobConfigSet(batch);
 	}
 	
 	@RequestMapping(value = "/batch/config_value/{batch_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Config key by batch id")
 	public KeyValue getConfigValueInBatchScope(@PathVariable("batch_id") String batchiId, @RequestParam(name = "config_key", required = true) String configKey) {
-		JobBatch batch = LogisEntityUtil.findEntityById(true, JobBatch.class, batchiId);
+		JobBatch batch = AnyEntityUtil.findEntityById(true, JobBatch.class, batchiId);
 		String value = this.configSetService.getJobConfigValue(batch, configKey);
 		return new KeyValue(configKey, value);
 	}
@@ -159,7 +159,7 @@ public class JobConfigSetController extends AbstractRestService {
 			
 		} else {
 			String sql = "select id,domain_id,conf_set_cd,conf_set_nm,stage_cd from job_config_set where domain_id = :domainId and default_flag = :defaultFlag and stage_cd = :stageCd and equip_type is null and equip_cd is null and job_type is null and com_cd is null";
-			List<JobConfigSet> confSetList = LogisEntityUtil.searchItems(domainId, false, JobConfigSet.class, sql, "domainId,defaultFlag,stageCd", domainId, true, stageCd);
+			List<JobConfigSet> confSetList = AnyEntityUtil.searchItems(domainId, false, JobConfigSet.class, sql, "domainId,defaultFlag,stageCd", domainId, true, stageCd);
 			
 			if(ValueUtil.isNotEmpty(confSetList)) {
 				for(JobConfigSet confSet : confSetList) {

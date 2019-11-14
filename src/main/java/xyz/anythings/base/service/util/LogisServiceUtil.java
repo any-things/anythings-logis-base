@@ -6,7 +6,7 @@ import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.Rack;
 import xyz.anythings.base.entity.TrayBox;
 import xyz.anythings.base.model.EquipBatchSet;
-import xyz.anythings.base.util.LogisEntityUtil;
+import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.elidom.sys.SysConstants;
 import xyz.elidom.sys.SysMessageConstants;
 import xyz.elidom.sys.util.ThrowUtil;
@@ -29,7 +29,7 @@ public class LogisServiceUtil {
 	 * @return
 	 */
 	public static JobBatch findBatch(Long domainId, String batchId, boolean withLock, boolean exceptionWhenEmpty) {
-		JobBatch batch = LogisEntityUtil.findEntityBy(domainId, exceptionWhenEmpty, withLock, JobBatch.class, null, SysConstants.ENTITY_FIELD_ID, batchId);
+		JobBatch batch = AnyEntityUtil.findEntityBy(domainId, exceptionWhenEmpty, withLock, JobBatch.class, null, SysConstants.ENTITY_FIELD_ID, batchId);
 
 		if(batch == null && exceptionWhenEmpty) {
 			throw ThrowUtil.newNotFoundRecord("terms.menu.JobBatch", batchId);
@@ -70,7 +70,7 @@ public class LogisServiceUtil {
 	 * @return
 	 */
 	public static Rack checkValidRack(Long domainId, String rackCd) {
-		Rack rack = LogisEntityUtil.findEntityBy(domainId, true, Rack.class, null, "rackCd", rackCd);
+		Rack rack = AnyEntityUtil.findEntityBy(domainId, true, Rack.class, null, "rackCd", rackCd);
 		
 		if(ValueUtil.isEmpty(rack.getBatchId())) {
 			// 호기에 작업 할당이 안되어 있습니다
@@ -198,7 +198,7 @@ public class LogisServiceUtil {
 	 * @return
 	 */
 	public static TrayBox findTrayBox(Long domainId, String trayCd, boolean withLock, boolean exceptionWhenEmpty) {
-		TrayBox trayBox = LogisEntityUtil.findEntityBy(domainId, exceptionWhenEmpty, withLock, TrayBox.class, null, "trayCd", trayCd);
+		TrayBox trayBox = AnyEntityUtil.findEntityBy(domainId, exceptionWhenEmpty, withLock, TrayBox.class, null, "trayCd", trayCd);
 
 		if(trayBox == null && exceptionWhenEmpty) {
 			throw ThrowUtil.newNotFoundRecord("terms.menu.TrayBox", trayCd);
@@ -215,7 +215,7 @@ public class LogisServiceUtil {
 	 * @return
 	 */
 	public static BoxType findBoxType(Long domainId, String boxTypeCd, boolean withLock, boolean exceptionWhenEmpty) {
-		BoxType boxType = LogisEntityUtil.findEntityBy(domainId, exceptionWhenEmpty, withLock, BoxType.class, null, "boxTypeCd", boxTypeCd);
+		BoxType boxType = AnyEntityUtil.findEntityBy(domainId, exceptionWhenEmpty, withLock, BoxType.class, null, "boxTypeCd", boxTypeCd);
 
 		if(boxType == null && exceptionWhenEmpty) {
 			throw ThrowUtil.newNotFoundRecord("terms.menu.BoxType", boxTypeCd);

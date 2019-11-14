@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import xyz.anythings.base.util.LogisEntityUtil;
+import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.elidom.dbist.annotation.Column;
 import xyz.elidom.dbist.annotation.GenerationRule;
@@ -128,7 +128,7 @@ public class BatchReceipt extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	 * @return
 	 */
 	public String getCurrentStatus() {
-		BatchReceipt checkReceipt = LogisEntityUtil.findEntityById(false, BatchReceipt.class, this.getId());
+		BatchReceipt checkReceipt = AnyEntityUtil.findEntityById(false, BatchReceipt.class, this.getId());
 		this.setStatus(checkReceipt.getStatus());
 		return checkReceipt.getStatus();
 	}

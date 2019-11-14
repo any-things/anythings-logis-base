@@ -3,7 +3,6 @@ package xyz.anythings.base.service.api;
 import java.util.List;
 import java.util.Map;
 
-import xyz.anythings.base.entity.Gateway;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.JobInput;
 import xyz.anythings.base.entity.JobInstance;
@@ -40,7 +39,7 @@ public interface IIndicationService {
 	 * @param batch
 	 * @return
 	 */
-	public List<Gateway> searchGateways(JobBatch batch);
+	//public List<Gateway> searchGateways(JobBatch batch);
 	
 	/**
 	 * 1-2. 조회 조건으로 표시기 점등을 위한 작업 리스트 조회
@@ -212,7 +211,7 @@ public interface IIndicationService {
 	 * @param batch
 	 * @param gw
 	 */
-	public void restoreIndicatorsOn(JobBatch batch, Gateway gw);
+	//public void restoreIndicatorsOn(JobBatch batch, Gateway gw);
 	
 	/**
 	 * 1-16. 표시기 : 작업 배치, 투입 시퀀스, 장비 존 별 작업 리스트 조회 후 모드에 따라서 표시기 재점등

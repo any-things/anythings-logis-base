@@ -6,7 +6,8 @@ import java.util.List;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import xyz.anythings.base.util.LogisEntityUtil;
+import xyz.anythings.base.LogisConstants;
+import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.elidom.dbist.annotation.Column;
 import xyz.elidom.dbist.annotation.GenerationRule;
@@ -145,8 +146,8 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Relation(field = "jobConfigSetId")
 	private JobConfigSet jobConfigSet;
 
-	@Relation(field = "indConfigSetId")
-	private IndConfigSet indConfigSet;
+	//@Relation(field = "indConfigSetId")
+	//private IndConfigSet indConfigSet;
   
 	public String getId() {
 		return id;
@@ -386,7 +387,7 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		}
 	}
 
-	public IndConfigSet getIndConfigSet() {
+	/*public IndConfigSet getIndConfigSet() {
 		return indConfigSet;
 	}
 
@@ -398,23 +399,23 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 			if (refId != null)
 				this.indConfigSetId = refId;
 		}
-	}	
-
+	}*/
 	
 	/**
-	 * JobBatch 의 현재 상태를 가져온다. 
+	 * 현재 상태
+	 * 
 	 * @param batchReceipt
 	 * @return
 	 */
 	public String getCurrentStatus() {
-		JobBatch jobBatch = LogisEntityUtil.findEntityById(false, JobBatch.class, this.getId());
-		this.setStatus(jobBatch.getStageCd());
-		return jobBatch.getStatus();
+		JobBatch batch = AnyEntityUtil.findEntityById(false, JobBatch.class, this.getId());
+		this.setStatus(batch.getStatus());
+		return batch.getStatus();
 	}
 	
 	/**
-	 * 상태 업데이트 
-	 * 즉시 반영 
+	 * 상태 업데이트, 즉시 반영
+	 *  
 	 * @param status
 	 */
 	@Transactional(propagation=Propagation.REQUIRES_NEW) 
@@ -423,11 +424,13 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	}
 	
 	/**
-	 * 상태 업데이트 
+	 * 상태 업데이트
+	 * 
 	 * @param status
 	 */
 	public void updateStatus(String status) {
 		this.setStatus(status);
+		
 		if(ValueUtil.isEqual(JobBatch.STATUS_CANCEL, status)) {
 			this.setJobSeq(0);
 			BeanUtil.get(IQueryManager.class).update(this, "jobSeq", "status");
@@ -438,6 +441,7 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	/**
 	 * 현재 잡 시퀀스의 최대 값을 가져온다.
+	 * 
 	 * @param domainId
 	 * @param comCd
 	 * @param areaCd
@@ -447,7 +451,6 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	 */
 	public static int getMaxJobSeq(Long domainId, String comCd, String areaCd, String stageCd, String jobDate) {
 		IQueryManager queryManager = BeanUtil.get(IQueryManager.class);
-		
 		Query condition = AnyOrmUtil.newConditionForExecution(domainId);
 		condition.addSelect("jobSeq");
 		condition.addFilter("comCd", comCd);
@@ -455,14 +458,13 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		condition.addFilter("stageCd", stageCd);
 		condition.addFilter("jobDate", jobDate);
 		condition.addOrder("jobSeq", false);
-		
 		List<JobBatch> jobSeqList = queryManager.selectList(JobBatch.class, condition);
-		
 		return (ValueUtil.isEmpty(jobSeqList) ? 0 : jobSeqList.get(0).getJobSeq());
 	}
 	
 	/**
-	 * JobBatch 데이터 생성 
+	 * JobBatch 데이터 생성
+	 * 
 	 * @param batchId
 	 * @param jobSeq
 	 * @param batchReceipt
@@ -484,15 +486,14 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		batch.setStageCd(receiptItem.getStageCd());
 		batch.setEquipType(receiptItem.getEquipType());
 		batch.setEquipCd(receiptItem.getEquipCd());
-		batch.setEquipNm(""); // TODO ?????
+		batch.setEquipNm(LogisConstants.EMPTY_STRING);
 		batch.setParentOrderQty(receiptItem.getTotalOrders());
 		batch.setParentPcs(receiptItem.getTotalPcs());
 		batch.setBatchOrderQty(receiptItem.getTotalOrders());
 		batch.setBatchPcs(receiptItem.getTotalPcs());
 		batch.setStatus(JobBatch.STATUS_RECEIVE);
-		
 		BeanUtil.get(IQueryManager.class).insert(batch);
-		
 		return batch;
 	}
+
 }

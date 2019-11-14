@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import xyz.anythings.base.entity.Rack;
-import xyz.anythings.base.util.LogisEntityUtil;
+import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
 import xyz.elidom.orm.system.annotation.service.ServiceDesc;
@@ -85,7 +85,7 @@ public class RackController extends AbstractRestService {
 	public List<String> searchStations(@PathVariable("rack_cd") String rackCd) {
 		Long domainId = Domain.currentDomainId();
 		String sql = "select distinct(station_cd) as zone_cd from cells where domain_id = :domainId and equip_type = 'Rack' and equip_cd = :rackCd order by station_cd asc";
-		return LogisEntityUtil.searchItems(domainId, false, String.class, sql, "domainId,rackCd", domainId, rackCd);
+		return AnyEntityUtil.searchItems(domainId, false, String.class, sql, "domainId,rackCd", domainId, rackCd);
 	}
 
 }

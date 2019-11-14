@@ -19,7 +19,7 @@ import xyz.anythings.base.LogisConstants;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.OrderPreprocess;
 import xyz.anythings.base.service.impl.PreprocessService;
-import xyz.anythings.base.util.LogisEntityUtil;
+import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.anythings.sys.util.AnyValueUtil;
 import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.dbist.dml.Query;
@@ -252,7 +252,7 @@ public class OrderPreprocessController extends AbstractRestService {
 	 * @return
 	 */
 	private JobBatch checkBatch(String batchId) {
-		JobBatch batch = LogisEntityUtil.findEntityByIdWithLock(true, JobBatch.class, batchId);
+		JobBatch batch = AnyEntityUtil.findEntityByIdWithLock(true, JobBatch.class, batchId);
 		
 		if(!LogisConstants.isB2BJobType(batch.getJobType())) {
 			throw ThrowUtil.newNotSupportedMethodYet();

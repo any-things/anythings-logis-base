@@ -131,7 +131,6 @@ public class AnythingsLogisBaseInitializer {
 		
 		for(Domain domain : domainList) {
 			this.configSetSvc.buildStageJobConfigSet(domain.getId());
-			this.configSetSvc.buildStageIndConfigSet(domain.getId());
 		}
 	}
 

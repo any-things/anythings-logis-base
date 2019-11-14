@@ -31,15 +31,15 @@ import xyz.anythings.base.entity.SKU;
 import xyz.anythings.base.event.EventConstants;
 import xyz.anythings.base.event.classfy.ClassifyRunEvent;
 import xyz.anythings.base.event.rest.DeviceProcessRestEvent;
-import xyz.anythings.base.model.BaseResponse;
 import xyz.anythings.base.model.BatchProgressRate;
 import xyz.anythings.base.model.Category;
 import xyz.anythings.base.model.EquipBatchSet;
 import xyz.anythings.base.query.store.BatchQueryStore;
 import xyz.anythings.base.service.impl.LogisServiceDispatcher;
 import xyz.anythings.base.service.util.LogisServiceUtil;
-import xyz.anythings.base.util.LogisEntityUtil;
 import xyz.anythings.sys.event.EventPublisher;
+import xyz.anythings.sys.model.BaseResponse;
+import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.orm.IQueryManager;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
@@ -366,7 +366,7 @@ public class DeviceProcessController {
 		JobBatch batch = equipBatchSet.getBatch();
 		
 		// 2. JobInstance 조회 
-		JobInstance job = LogisEntityUtil.findEntityById(true, JobInstance.class, jobInstanceId);
+		JobInstance job = AnyEntityUtil.findEntityById(true, JobInstance.class, jobInstanceId);
 		
 		// 3. 소분류 이벤트 생성 
 		ClassifyRunEvent event = new ClassifyRunEvent(batch, EventConstants.EVENT_STEP_ALONE
@@ -402,7 +402,7 @@ public class DeviceProcessController {
 		JobBatch batch = equipBatchSet.getBatch();
 		
 		// 2. JobInstance 조회 
-		JobInstance job = LogisEntityUtil.findEntityById(true, JobInstance.class, jobInstanceId);
+		JobInstance job = AnyEntityUtil.findEntityById(true, JobInstance.class, jobInstanceId);
 		
 		// 3. 소분류 이벤트 생성 
 		ClassifyRunEvent event = new ClassifyRunEvent(batch, EventConstants.EVENT_STEP_ALONE
@@ -436,7 +436,7 @@ public class DeviceProcessController {
 		JobBatch batch = equipBatchSet.getBatch();
 		
 		// 2. JobInstance 조회 
-		JobInstance job = LogisEntityUtil.findEntityById(true, JobInstance.class, jobInstanceId);
+		JobInstance job = AnyEntityUtil.findEntityById(true, JobInstance.class, jobInstanceId);
 		
 		// 3. 소분류 이벤트 생성 
 		ClassifyRunEvent event = new ClassifyRunEvent(batch, EventConstants.EVENT_STEP_ALONE
@@ -672,7 +672,7 @@ public class DeviceProcessController {
 		Long domainId = Domain.currentDomainId();
 		// 1. JobInput 조회 
 		//  - 모든 작업 유형에 내 작업 외 다른 작업 까지 보기 선택된 경우에는 input 데이터가 null 
-		JobInput input = LogisEntityUtil.findEntityBy(domainId, false, JobInput.class, null, "id,equipType,equipCd,stationCd", jobInputId,equipType,equipCd,equipZone);
+		JobInput input = AnyEntityUtil.findEntityBy(domainId, false, JobInput.class, null, "id,equipType,equipCd,stationCd", jobInputId,equipType,equipCd,equipZone);
 		
 		// 1.1. input 이 Empty 면 현재 작업 존의 데이터가 없는 것. 
 		if(ValueUtil.isEmpty(input)) {

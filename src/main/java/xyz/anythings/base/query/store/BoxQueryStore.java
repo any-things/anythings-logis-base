@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
  * @author yang
  */
 @Component
-public class BoxQueryStore extends AbstractQueryStore {
+public class BoxQueryStore extends LogisBaseQueryStore {
 	
 	/**
 	 * JobInput 기준으로 박스 ID 유니크 여부를 확인 하는 쿼리   
@@ -19,22 +19,22 @@ public class BoxQueryStore extends AbstractQueryStore {
 		return this.getQueryByPath("box/BoxIdUniqueCheck");
 	}
 	
-	
-	
 	/**
-	 * boxItems 데이터를 기준으로 boxPack 데이터를 생성 한다.
+	 * boxItems 데이터를 기준으로 boxPack 데이터를 생성
+	 * 
 	 * @return
 	 */
 	public String getCreateBoxPackDataByBoxItemsQuery() {
 		return this.getQueryByPath("box/CreateBoxPackDataByBoxItems");
 	}
 	
-	
 	/**
-	 * 주문 번호를 기준으로 주문에서 BoxItem 데이터를 생성 한다.
+	 * 주문 번호를 기준으로 주문에서 BoxItem 데이터를 생성
+	 * 
 	 * @return
 	 */
 	public String getCreateBoxItemsDataByOrderQuery() {
 		return this.getQueryByPath("box/CreateBoxItemsDataByOrder");
 	}
+
 }

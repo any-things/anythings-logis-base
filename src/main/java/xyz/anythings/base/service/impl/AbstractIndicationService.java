@@ -3,7 +3,6 @@ package xyz.anythings.base.service.impl;
 import java.util.List;
 import java.util.Map;
 
-import xyz.anythings.base.entity.Gateway;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.JobInput;
 import xyz.anythings.base.entity.JobInstance;
@@ -16,12 +15,6 @@ import xyz.anythings.sys.service.AbstractExecutionService;
  * @author shortstop
  */
 public class AbstractIndicationService extends AbstractExecutionService implements IIndicationService {
-
-	@Override
-	public List<Gateway> searchGateways(JobBatch batch) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public List<JobInstance> searchJobList(Map<String, Object> condition) {
@@ -129,12 +122,6 @@ public class AbstractIndicationService extends AbstractExecutionService implemen
 
 	@Override
 	public void restoreIndicatorsOn(JobBatch batch, String equipZone) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void restoreIndicatorsOn(JobBatch batch, Gateway gw) {
 		// TODO Auto-generated method stub
 		
 	}
