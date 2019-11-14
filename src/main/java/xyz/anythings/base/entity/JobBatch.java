@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import xyz.anythings.base.LogisConstants;
+import xyz.anythings.gw.entity.IndConfigSet;
 import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.elidom.dbist.annotation.Column;
@@ -146,8 +147,8 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Relation(field = "jobConfigSetId")
 	private JobConfigSet jobConfigSet;
 
-	//@Relation(field = "indConfigSetId")
-	//private IndConfigSet indConfigSet;
+	@Relation(field = "indConfigSetId")
+	private IndConfigSet indConfigSet;
   
 	public String getId() {
 		return id;
@@ -387,7 +388,7 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		}
 	}
 
-	/*public IndConfigSet getIndConfigSet() {
+	public IndConfigSet getIndConfigSet() {
 		return indConfigSet;
 	}
 
@@ -399,7 +400,7 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 			if (refId != null)
 				this.indConfigSetId = refId;
 		}
-	}*/
+	}
 	
 	/**
 	 * 현재 상태

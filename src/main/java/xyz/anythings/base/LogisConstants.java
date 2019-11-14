@@ -40,6 +40,10 @@ public class LogisConstants extends AnyConstants {
 	public static final String EQUIP_TYPE_MOBILE_CART = "MobileCart";
 	
 	/**
+	 * 분류 작업 유형 필드 : JOB_TYPE
+	 */
+	public static final String JOB_TYPE = "JOB_TYPE";
+	/**
 	 * 분류 작업 유형 : DAS
 	 */
 	public static final String JOB_TYPE_DAS = "DAS";

@@ -49,7 +49,7 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 	 */
 	public BatchReceipt readyToReceive(Long domainId, String areaCd, String stageCd, String comCd, String jobDate, Object ... params) {
 		// 1. 모든 작업 유형을 찾는다. 공통 코드에서 찾음
-		Code code = this.codeCtrl.findByName(domainId, "JOB_TYPE");
+		Code code = this.codeCtrl.findByName(domainId, LogisConstants.JOB_TYPE);
 		List<CodeDetail> details = code.getItems();
 		
 		// 2. BatchReceipt 하나 생성
