@@ -16,7 +16,7 @@ import xyz.anythings.gw.service.IndicatorDispatcher;
 import xyz.anythings.gw.service.api.IIndicatorRequestService;
 import xyz.anythings.gw.service.model.IndCommonReq;
 import xyz.anythings.gw.service.model.IndOnPickReq;
-import xyz.anythings.gw.service.mw.model.IndicatorOnInformation;
+import xyz.anythings.gw.service.mq.model.IndicatorOnInformation;
 import xyz.anythings.gw.service.util.MwMessageUtil;
 import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.elidom.dbist.dml.Query;
