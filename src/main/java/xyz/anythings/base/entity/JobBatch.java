@@ -16,8 +16,11 @@ import xyz.elidom.dbist.annotation.Index;
 import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.Relation;
 import xyz.elidom.dbist.annotation.Table;
+import xyz.elidom.dbist.dml.Filter;
 import xyz.elidom.dbist.dml.Query;
 import xyz.elidom.orm.IQueryManager;
+import xyz.elidom.sys.SysConstants;
+import xyz.elidom.sys.util.ThrowUtil;
 import xyz.elidom.util.BeanUtil;
 import xyz.elidom.util.ValueUtil;
 
@@ -495,6 +498,29 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		batch.setStatus(JobBatch.STATUS_RECEIVE);
 		BeanUtil.get(IQueryManager.class).insert(batch);
 		return batch;
+	}
+	
+	/**
+	 * ID로 작업 배치 조회
+	 *
+	 * @param stageCd Stage ID
+	 * @param id 배치 ID
+	 * @param withLock 테이블 락을 걸지 여부
+	 * @param exceptionWhenEmpty 조회 결과가 null이면 예외 발생 여부
+	 * @return
+	 */
+	public static JobBatch find(Long domainId, String id, boolean withLock, boolean exceptionWhenEmpty) {
+		Query condition = AnyOrmUtil.newConditionForExecution(domainId);
+		condition.addFilter(new Filter(SysConstants.ENTITY_FIELD_ID, id));
+		JobBatch jobBatch = withLock ?
+				BeanUtil.get(IQueryManager.class).selectByConditionWithLock(JobBatch.class, condition) :
+				BeanUtil.get(IQueryManager.class).selectByCondition(JobBatch.class, condition);
+
+		if(jobBatch == null && exceptionWhenEmpty) {
+			throw ThrowUtil.newNotFoundRecord("terms.menu.JobBatch", id);
+		}
+
+		return jobBatch;
 	}
 
 }

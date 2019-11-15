@@ -1,10 +1,18 @@
 package xyz.anythings.base.entity;
 
+import java.util.List;
+  
+import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.elidom.dbist.annotation.Column;
 import xyz.elidom.dbist.annotation.GenerationRule;
 import xyz.elidom.dbist.annotation.Index;
 import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.Table;
+import xyz.elidom.dbist.dml.Query;
+import xyz.elidom.orm.IQueryManager;
+import xyz.elidom.sys.util.ThrowUtil;
+import xyz.elidom.sys.util.ValueUtil;
+import xyz.elidom.util.BeanUtil;
 
 @Table(name = "racks", idStrategy = GenerationRule.UUID, uniqueFields = "domainId,rackCd", indexes = {
 		@Index(name = "ix_racks_0", columnList = "domain_id,rack_cd", unique = true),
@@ -179,5 +187,46 @@ public class Rack extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setActiveFlag(Boolean activeFlag) {
 		this.activeFlag = activeFlag;
+	}
+	
+	/**
+	 * regionCd로 호기를 조회
+	 *
+	 * @param domainId
+	 * @param regionCd
+	 * @param exceptionWhenEmpty
+	 * @return
+	 */
+	public static Rack findByRackCd(String rackCd, boolean exceptionWhenEmpty) {
+		Query query = new Query();
+		Rack rack = null;
+
+		if(ValueUtil.isNotEqual(rackCd, "NA")) {
+			query.addFilter("rackCd", rackCd);
+			rack = BeanUtil.get(IQueryManager.class).selectByCondition(Rack.class, query);
+		} else {
+			query.setPageIndex(1);
+			query.setPageSize(1);
+			List<Rack> rackList = BeanUtil.get(IQueryManager.class).selectList(Rack.class, query);
+			rack = rackList.isEmpty() ? null : rackList.get(0);
+		}
+
+		if(rack == null && exceptionWhenEmpty) {
+			throw ThrowUtil.newNotFoundRecord("terms.menu.Region", rackCd);
+		}
+
+		return rack;
+	}
+	
+	/**
+	 * 호기에서 사용 가능한 로케이션 (셀) 개수
+	 *
+	 * @return
+	 */
+	public int validLocationCount() {
+		Cell condition = new Cell();
+		condition.setEquipCd(this.rackCd);
+		condition.setActiveFlag(true);
+		return BeanUtil.get(IQueryManager.class).selectSize(Cell.class, condition);
 	}
 }
