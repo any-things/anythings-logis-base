@@ -21,14 +21,15 @@ import xyz.anythings.base.LogisConstants;
 import xyz.anythings.base.entity.Cell;
 import xyz.anythings.base.entity.JobInstance;
 import xyz.anythings.base.service.util.RuntimeIndServiceUtil;
-import xyz.anythings.gw.MwConstants;
-import xyz.anythings.gw.model.Action;
-import xyz.anythings.gw.model.IndicatorOnInformation;
-import xyz.anythings.gw.service.impl.type1.Type1IndicatorRequestService;
+import xyz.anythings.gw.GwConstants;
+import xyz.anythings.gw.service.IndicatorDispatcher;
+import xyz.anythings.gw.service.api.IIndicatorRequestService;
 import xyz.anythings.gw.service.model.IndOffReq;
 import xyz.anythings.gw.service.model.IndTest;
 import xyz.anythings.gw.service.model.IndTest.IndAction;
 import xyz.anythings.gw.service.model.IndTest.IndTarget;
+import xyz.anythings.gw.service.mw.model.Action;
+import xyz.anythings.gw.service.mw.model.IndicatorOnInformation;
 import xyz.anythings.sys.AnyConstants;
 import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.elidom.orm.IQueryManager;
@@ -37,6 +38,7 @@ import xyz.elidom.orm.system.annotation.service.ServiceDesc;
 import xyz.elidom.sys.SysConstants;
 import xyz.elidom.sys.entity.Domain;
 import xyz.elidom.sys.util.ThrowUtil;
+import xyz.elidom.util.BeanUtil;
 import xyz.elidom.util.FormatUtil;
 import xyz.elidom.util.ValueUtil;
 
@@ -52,11 +54,26 @@ public class IndicatorTestController {
 	 */
 	@Autowired
 	private IQueryManager queryManager;
+
 	/**
-	 * 표시기 요청 관련 서비스
+	 * 표시기 서비스를 요청
+	 * 
+	 * @return
 	 */
-	@Autowired
-	private Type1IndicatorRequestService indReqSvc;
+	public IIndicatorRequestService getIndicatorRequestService(IndTest indTest) {
+		// FIXME indTest.getVendorType()
+		return BeanUtil.get(IndicatorDispatcher.class).getIndicatorRequestService(indTest.getJobType());
+	}
+	
+	/**
+	 * 표시기 서비스를 요청
+	 * 
+	 * @return
+	 */
+	public IIndicatorRequestService getIndicatorRequestService() {
+		// FIXME 하드코딩 제거
+		return BeanUtil.get(IndicatorDispatcher.class).getIndicatorRequestService("type1");
+	}
 
 	@RequestMapping(value = "/unit_test", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Indicator Unit Test")
@@ -115,7 +132,7 @@ public class IndicatorTestController {
 		if(ValueUtil.isNotEmpty(indOffList)) {
 			msg = FormatUtil.toUnderScoreJsonString(indOffList);
 			boolean forceFlag = (indTest.getAction().getForceFlag() == null) ? false : indTest.getAction().getForceFlag().booleanValue();
-			this.indReqSvc.requestIndListOff(Domain.currentDomainId(), indOffList, forceFlag);
+			this.getIndicatorRequestService(indTest).requestIndListOff(Domain.currentDomainId(), indOffList, forceFlag);
 		} else {
 			// 소등할 정보가 없습니다
 			msg = ThrowUtil.notFoundRecordMsg("terms.button.off");
@@ -137,7 +154,7 @@ public class IndicatorTestController {
 		
 		if(ValueUtil.isNotEmpty(ledOnList)) {
 			msg = FormatUtil.toUnderScoreJsonString(ledOnList);
-			this.indReqSvc.requestLedListOn(Domain.currentDomainId(), ledOnList, 10);
+			this.getIndicatorRequestService(indTest).requestLedListOn(Domain.currentDomainId(), ledOnList, 10);
 		} else {
 			// 점등할 정보가 없습니다
 			msg = ThrowUtil.notFoundRecordMsg("terms.button.on");
@@ -159,7 +176,7 @@ public class IndicatorTestController {
 		
 		if(ValueUtil.isNotEmpty(ledOffList)) {
 			msg = FormatUtil.toUnderScoreJsonString(ledOffList);
-			this.indReqSvc.requestLedListOff(Domain.currentDomainId(), ledOffList);
+			this.getIndicatorRequestService(indTest).requestLedListOff(Domain.currentDomainId(), ledOffList);
 		} else {
 			// 소등할 정보가 없습니다
 			msg = ThrowUtil.notFoundRecordMsg("terms.button.off");
@@ -177,8 +194,8 @@ public class IndicatorTestController {
 	 * @return
 	 */
 	private String indicatorOnByInfo(Long domainId, String actionType, String jobType, Map<String, List<IndicatorOnInformation>> indOnInfo) {
-		if(ValueUtil.isEqualIgnoreCase(actionType, MwConstants.IND_ACTION_TYPE_PICK)) {
-			this.indReqSvc.requestIndsOn(domainId, jobType, actionType, indOnInfo);
+		if(ValueUtil.isEqualIgnoreCase(actionType, GwConstants.IND_ACTION_TYPE_PICK)) {
+			this.getIndicatorRequestService().requestIndsOn(domainId, jobType, actionType, indOnInfo);
 			return FormatUtil.toUnderScoreJsonString(indOnInfo);
 		} else {
 			if(this.indicatorOn(domainId, actionType, jobType, indOnInfo)) {
@@ -198,6 +215,7 @@ public class IndicatorTestController {
 	 * @param indOnInfo
 	 */
 	private boolean indicatorOn(Long domainId, String actionType, String jobType, Map<String, List<IndicatorOnInformation>> indOnInfo) {
+		IIndicatorRequestService indReqSvc = this.getIndicatorRequestService();
 		Iterator<String> indOnIter = indOnInfo.keySet().iterator();
 		int count = 0;
 		
@@ -215,38 +233,38 @@ public class IndicatorTestController {
 					case "cell_cd" : {
 					}
 					
-					case MwConstants.IND_ACTION_TYPE_STR_SHOW : {
-						this.indReqSvc.requestShowString(domainId, jobType, gwPath, indCd, indCd, info.getViewStr());
+					case GwConstants.IND_ACTION_TYPE_STR_SHOW : {
+						indReqSvc.requestShowString(domainId, jobType, gwPath, indCd, indCd, info.getViewStr());
 						count++;
 						break;
 					}
 					
-					case MwConstants.IND_BIZ_FLAG_FULL : {
-						this.indReqSvc.requestFullbox(domainId, jobType, gwPath, indCd, indCd, info.getColor());
+					case GwConstants.IND_BIZ_FLAG_FULL : {
+						indReqSvc.requestFullbox(domainId, jobType, gwPath, indCd, indCd, info.getColor());
 						count++;
 						break;
 					}
 					
-					case MwConstants.IND_BIZ_FLAG_END : {
-						this.indReqSvc.requestIndEndDisplay(domainId, jobType, gwPath, indCd, indCd, false);
+					case GwConstants.IND_BIZ_FLAG_END : {
+						indReqSvc.requestIndEndDisplay(domainId, jobType, gwPath, indCd, indCd, false);
 						count++;
 						break;
 					}
 					
-					case MwConstants.IND_ACTION_TYPE_NOBOX : {
-						this.indReqSvc.requestIndNoBoxDisplay(domainId, jobType, gwPath, indCd);
+					case GwConstants.IND_ACTION_TYPE_NOBOX : {
+						indReqSvc.requestIndNoBoxDisplay(domainId, jobType, gwPath, indCd);
 						count++;
 						break;
 					}
 					
-					case MwConstants.IND_ACTION_TYPE_ERRBOX : {
-						this.indReqSvc.requestIndErrBoxDisplay(domainId, jobType, gwPath, indCd);
+					case GwConstants.IND_ACTION_TYPE_ERRBOX : {
+						indReqSvc.requestIndErrBoxDisplay(domainId, jobType, gwPath, indCd);
 						count++;
 						break;
 					}
 					
-					case MwConstants.IND_ACTION_TYPE_DISPLAY : {
-						this.indReqSvc.requestDisplayBothDirectionQty(domainId, jobType, gwPath, indCd, indCd, info.getOrgRelay(), info.getOrgEaQty());
+					case GwConstants.IND_ACTION_TYPE_DISPLAY : {
+						indReqSvc.requestDisplayBothDirectionQty(domainId, jobType, gwPath, indCd, indCd, info.getOrgRelay(), info.getOrgEaQty());
 						count++;
 						break;
 					}
@@ -267,31 +285,31 @@ public class IndicatorTestController {
 		IndAction action = indTest.getAction();
 		
 		switch(action.getActionType()) {
-			case MwConstants.IND_ACTION_TYPE_PICK : {
+			case GwConstants.IND_ACTION_TYPE_PICK : {
 				return this.createIndOnIndInfoList(indTest);
 			}
 			
-			case MwConstants.IND_BIZ_FLAG_FULL : {
+			case GwConstants.IND_BIZ_FLAG_FULL : {
 				return this.createIndOnIndInfoList(indTest);
 			}
 			
-			case MwConstants.IND_BIZ_FLAG_END : {
+			case GwConstants.IND_BIZ_FLAG_END : {
 				return this.createIndOnIndInfoList(indTest);
 			}
 			
-			case MwConstants.IND_ACTION_TYPE_NOBOX : {
+			case GwConstants.IND_ACTION_TYPE_NOBOX : {
 				return this.createIndOnIndInfoList(indTest);
 			}
 			
-			case MwConstants.IND_ACTION_TYPE_ERRBOX : {
+			case GwConstants.IND_ACTION_TYPE_ERRBOX : {
 				return this.createIndOnIndInfoList(indTest);
 			}
 			
-			case MwConstants.IND_ACTION_TYPE_DISPLAY : {
+			case GwConstants.IND_ACTION_TYPE_DISPLAY : {
 				return this.createIndOnDisplayInfoList(indTest);
 			}
 			
-			case MwConstants.IND_ACTION_TYPE_STR_SHOW : {
+			case GwConstants.IND_ACTION_TYPE_STR_SHOW : {
 				return this.createIndOnShowStrInfoList(indTest);
 			}
 			

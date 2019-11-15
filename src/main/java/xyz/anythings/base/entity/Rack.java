@@ -1,8 +1,8 @@
 package xyz.anythings.base.entity;
 
 import java.util.List;
-  
-import xyz.anythings.sys.util.AnyOrmUtil;
+
+import xyz.anythings.base.LogisConstants;
 import xyz.elidom.dbist.annotation.Column;
 import xyz.elidom.dbist.annotation.GenerationRule;
 import xyz.elidom.dbist.annotation.Index;
@@ -201,7 +201,7 @@ public class Rack extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		Query query = new Query();
 		Rack rack = null;
 
-		if(ValueUtil.isNotEqual(rackCd, "NA")) {
+		if(ValueUtil.isNotEqual(rackCd, LogisConstants.NOT_AVAILABLE_CAP_STRING)) {
 			query.addFilter("rackCd", rackCd);
 			rack = BeanUtil.get(IQueryManager.class).selectByCondition(Rack.class, query);
 		} else {

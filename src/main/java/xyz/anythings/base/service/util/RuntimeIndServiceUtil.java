@@ -10,13 +10,13 @@ import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.JobInstance;
 import xyz.anythings.base.entity.WorkCell;
 import xyz.anythings.base.query.util.IndicatorQueryUtil;
-import xyz.anythings.gw.MwConstants;
+import xyz.anythings.gw.GwConstants;
 import xyz.anythings.gw.entity.Gateway;
-import xyz.anythings.gw.model.IndicatorOnInformation;
 import xyz.anythings.gw.service.IndicatorDispatcher;
 import xyz.anythings.gw.service.api.IIndicatorRequestService;
 import xyz.anythings.gw.service.model.IndCommonReq;
 import xyz.anythings.gw.service.model.IndOnPickReq;
+import xyz.anythings.gw.service.mw.model.IndicatorOnInformation;
 import xyz.anythings.gw.service.util.MwMessageUtil;
 import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.elidom.dbist.dml.Query;
@@ -70,7 +70,7 @@ public class RuntimeIndServiceUtil {
 					
 			if(ValueUtil.isNotEmpty(indOnInfoList)) {
 				// 3. 표시기 점등 요청
-				sendSvc.requestIndsOn(batch.getDomainId(), batch.getJobType(), MwConstants.IND_ACTION_TYPE_NOBOX, indOnInfoList);
+				sendSvc.requestIndsOn(batch.getDomainId(), batch.getJobType(), GwConstants.IND_ACTION_TYPE_NOBOX, indOnInfoList);
 				// 4. 점등된 표시기 개수 리턴 
 				return indOnInfoList.size();
 			}
@@ -107,7 +107,7 @@ public class RuntimeIndServiceUtil {
 			
 			if(ValueUtil.isNotEmpty(indOnInfoList)) {
 				// 3. 표시기 점등 요청
-				sendSvc.requestIndsOn(batch.getDomainId(), batch.getJobType(), MwConstants.IND_ACTION_TYPE_DISPLAY, indOnInfoList);
+				sendSvc.requestIndsOn(batch.getDomainId(), batch.getJobType(), GwConstants.IND_ACTION_TYPE_DISPLAY, indOnInfoList);
 				// 4. 점등된 표시기 개수 리턴 
 				return indOnInfoList.size();
 			}
@@ -246,7 +246,7 @@ public class RuntimeIndServiceUtil {
 			if(ValueUtil.isNotEmpty(indOnList)) {
 				JobInstance firstJob = jobList.get(0);
 				// 3. 표시기 점등 요청
-				indSendService.requestIndsOn(firstJob.getDomainId(), batch.getJobType(), MwConstants.IND_ACTION_TYPE_PICK, indOnList);
+				indSendService.requestIndsOn(firstJob.getDomainId(), batch.getJobType(), GwConstants.IND_ACTION_TYPE_PICK, indOnList);
 				// 4. 점등된 표시기 개수 리턴 
 				return indOnList.size();
 			}
@@ -275,7 +275,7 @@ public class RuntimeIndServiceUtil {
 				
 				JobInstance firstJob = jobList.get(0);
 				// 3. 표시기 점등 요청
-				indSendService.requestIndsOn(firstJob.getDomainId(), batch.getJobType(), MwConstants.IND_ACTION_TYPE_PICK, indOnList);
+				indSendService.requestIndsOn(firstJob.getDomainId(), batch.getJobType(), GwConstants.IND_ACTION_TYPE_PICK, indOnList);
 				// 4. 점등된 표시기 개수 리턴 
 				return indOnList.size();
 			}
@@ -313,7 +313,7 @@ public class RuntimeIndServiceUtil {
 				
 				if(ValueUtil.isNotEmpty(indOnList)) {
 					// 3. 표시기 점등 요청
-					indSendService.requestIndsOn(batch.getDomainId(), batch.getJobType(), MwConstants.IND_ACTION_TYPE_PICK, indOnList);
+					indSendService.requestIndsOn(batch.getDomainId(), batch.getJobType(), GwConstants.IND_ACTION_TYPE_PICK, indOnList);
 					// 4. 점등된 표시기 개수 리턴 
 					return indOnList.size();
 				}
@@ -351,7 +351,7 @@ public class RuntimeIndServiceUtil {
 				
 				if(ValueUtil.isNotEmpty(indOnList)) {
 					// 3. 표시기 점등 요청
-					indSendService.requestIndsOn(batch.getDomainId(), batch.getJobType(), MwConstants.IND_ACTION_TYPE_DISPLAY, indOnList);
+					indSendService.requestIndsOn(batch.getDomainId(), batch.getJobType(), GwConstants.IND_ACTION_TYPE_DISPLAY, indOnList);
 					// 4. 점등된 표시기 개수 리턴 
 					return indOnList.size();
 				}
