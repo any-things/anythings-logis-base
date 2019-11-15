@@ -225,10 +225,11 @@ public class OrderPreprocessController extends AbstractRestService {
 	@ApiDesc(description = "Complete preprocess")
 	public Map<String, Object> resetPreprocess(
 			@PathVariable("id") String batchId,
-			@PathVariable("is_equip_reset") boolean isEquipReset) {
+			@RequestParam(name = "reset_all", required = false) boolean resetAll,
+			@RequestBody List<String> equipCdList) {
 
 		JobBatch batch = this.checkBatch(batchId);
-		this.preprocessService.resetPreprocess(batch, isEquipReset);
+		this.preprocessService.resetPreprocess(batch, resetAll, equipCdList);
 		return ValueUtil.newMap("result", SysConstants.OK_STRING);
 	}
 	

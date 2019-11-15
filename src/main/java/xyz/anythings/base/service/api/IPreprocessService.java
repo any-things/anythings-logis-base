@@ -67,8 +67,9 @@ public interface IPreprocessService {
 	 * 
 	 * @param batch
 	 * @param isRackReset 로케이션 할당 정보만 리셋할 것인지 (false), 로케이션 할당 및 호기 할당 정보까지 리셋할 것인지 (true)
+	 * @param equipCdList
 	 */
-	public void resetPreprocess(JobBatch batch, boolean isRackReset);
+	public void resetPreprocess(JobBatch batch, boolean isRackReset, List<String> equipCdList);
 
 	/**
 	 * 주문 가공 - 주문별 설비 레벨에 할당 (호기, 소터) 
