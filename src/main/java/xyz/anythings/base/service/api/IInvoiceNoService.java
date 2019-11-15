@@ -24,7 +24,15 @@ public interface IInvoiceNoService {
 	public int generateInvoiceNo(Long domainId, String stageCd, String comCd, Object ... params);
 	
 	/**
-	 * 사용 가능한 다음 송장 번호를 추출하여 리턴.
+	 * 박스 컨텍스트에서 사용 가능한 다음 송장 번호를 추출하여 리턴.
+	 * 
+	 * @param box
+	 * @return
+	 */
+	public String nextInvoiceId(BoxPack box);
+
+	/**
+	 * 작업 배치 컨텍스트에서 사용 가능한 다음 송장 번호를 추출하여 리턴.
 	 * 
 	 * @param batch
 	 * @return
@@ -32,11 +40,19 @@ public interface IInvoiceNoService {
 	public String nextInvoiceId(JobBatch batch);
 	
 	/**
-	 * 사용 가능한 다음 송장 번호를 추출하여 리턴.
+	 * 스테이지 범위 내에서 사용 가능한 다음 송장 번호를 추출하여 리턴.
 	 * 
-	 * @param box
+	 * @param domainId
+	 * @param stageCd
 	 * @return
 	 */
-	public String nextInvoiceId(BoxPack box);
+	public String nextInvoiceId(Long domainId, String stageCd);
 	
+	/**
+	 * 도메인 전체 범위 내에서 사용 가능한 다음 송장 번호를 추출하여 리턴.
+	 * 
+	 * @param domainId
+	 * @return
+	 */
+	public String nextInvoiceId(Long domainId);
 }

@@ -21,7 +21,7 @@ import xyz.anythings.base.query.store.EtcQueryStore;
 import xyz.anythings.base.query.store.IndicatorQueryStore;
 import xyz.anythings.base.query.store.InstructionQueryStore;
 import xyz.anythings.base.query.store.PreprocessQueryStore;
-import xyz.anythings.base.service.impl.ConfigSetService;
+import xyz.anythings.base.service.impl.JobConfigProfileService;
 import xyz.elidom.orm.IQueryManager;
 import xyz.elidom.sys.config.ModuleConfigSet;
 import xyz.elidom.sys.entity.Domain;
@@ -79,7 +79,7 @@ public class AnythingsLogisBaseInitializer {
 	private EtcQueryStore etcQueryStore;
 	
 	@Autowired
-	private ConfigSetService configSetSvc;
+	private JobConfigProfileService configSetSvc;
 
 	@EventListener({ ContextRefreshedEvent.class })
 	public void refresh(ContextRefreshedEvent event) {
@@ -130,7 +130,7 @@ public class AnythingsLogisBaseInitializer {
 		List<Domain> domainList = this.queryManager.selectListBySql(sql, new HashMap<String, Object>(1), Domain.class, 0, 0);
 		
 		for(Domain domain : domainList) {
-			this.configSetSvc.buildStageJobConfigSet(domain.getId());
+			this.configSetSvc.buildStageConfigSet(domain.getId());
 		}
 	}
 

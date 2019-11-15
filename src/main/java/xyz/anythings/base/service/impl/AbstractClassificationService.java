@@ -11,6 +11,7 @@ import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.ifc.IBucket;
 import xyz.anythings.base.query.store.BoxQueryStore;
 import xyz.anythings.base.service.api.IClassificationService;
+import xyz.anythings.base.service.util.BatchJobConfigUtil;
 import xyz.anythings.base.service.util.LogisServiceUtil;
 import xyz.anythings.sys.service.AbstractExecutionService;
 import xyz.elidom.orm.IQueryManager;
@@ -20,18 +21,21 @@ import xyz.elidom.util.ValueUtil;
 
 
 /**
- * 분류 공통 (Picking & Assorting) 트랜잭션 서비스 기본 구현 
+ * 분류 공통 (Picking & Assorting) 트랜잭션 서비스 기본 구현
+ *  
  * @author yang
- *
  */
 public abstract class AbstractClassificationService extends AbstractExecutionService implements IClassificationService{
 
-	
+	/**
+	 * 작업 설정 프로파일
+	 */
 	@Autowired
-	ConfigSetService configSetService;
+	protected JobConfigProfileService configProfileService;
 	
 	/**
 	 * 버킷이 투입 가능한 버킷인 지 확인 및 해당 버킷에 Locking
+	 * 
 	 * @param domainId
 	 * @param batch
 	 * @param bucketCd
@@ -58,16 +62,15 @@ public abstract class AbstractClassificationService extends AbstractExecutionSer
 	
 	/**
 	 * 배치 설정에 박스 아이디 유니크 범위로 중복 여부 확인 
-	 * TODO : 현재는 JobInput 기준 추후 박싱 결과 등 필요시 추가  
+	 * 
 	 * @param domainId
 	 * @param batch
-	 * @param boxType
 	 * @param boxId
 	 * @return
 	 */
 	public boolean checkUniqueBoxId(Long domainId, JobBatch batch, String boxId) {
-		// 1. 박스 아이디 유니크 범위 설정 
-		String uniqueScope = this.configSetService.getJobConfigValue(batch, LogisConfigConstants.BOX_ID_UNIQE_SCOPE);
+		// 1. 박스 아이디 유니크 범위 설정, TODO API에 기본값 및 존재하지 않는 경우 예외 발생 여부 옵션 필요 
+		String uniqueScope = BatchJobConfigUtil.getBoxIdUniqueScope(batch);
 		
 		// 1.1. 설정 값이 없으면 기본 GLOBAL
 		if(ValueUtil.isEmpty(uniqueScope)) {
@@ -87,24 +90,26 @@ public abstract class AbstractClassificationService extends AbstractExecutionSer
 		return dupCnt == 0 ? false : true;
 	}
 	
-	
 	/**
-	 * boxId 에서 박스 타입 구하기 
+	 * boxId 에서 박스 타입 구하기
+	 * 
 	 * @param batch
 	 * @param boxId
 	 * @return
 	 */
 	public String getBoxTypeByBoxId(JobBatch batch, String boxId) {
-		// 1. 박스 ID 에 박스 타입 split 기준  
-		String boxTypeSplit = this.configSetService.getJobConfigValue(batch, LogisConfigConstants.DPS_INPUT_BOX_TYPE_SPLIT_INDEX);
+		// 1. 박스 ID 에 박스 타입 split 기준, TODO BatchJobConfigUtil 메소드 호출로 수정 
+		String boxTypeSplit = this.configProfileService.getConfigValue(batch, LogisConfigConstants.DPS_INPUT_BOX_TYPE_SPLIT_INDEX);
 		
-		// 1.1. 설정 값이 없으면 기본 GLOBAL
+		// 2. 설정 값이 없으면 기본 GLOBAL
 		if(ValueUtil.isEmpty(boxTypeSplit) || boxTypeSplit.length() < 3) {
 			boxTypeSplit = "0,1";
 		}
-		// 2. 기준에 따라 박스 타입 분할 
+		
+		// 3. 기준에 따라 박스 타입 분할 
 		String[] splitIndex = boxTypeSplit.split(SysConstants.COMMA);
 		String boxType = boxId.substring(ValueUtil.toInteger(splitIndex[0]), ValueUtil.toInteger(splitIndex[1]));
 		return boxType;
 	}
+
 }

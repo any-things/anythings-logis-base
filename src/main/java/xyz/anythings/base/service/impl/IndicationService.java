@@ -9,6 +9,7 @@ import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.JobInput;
 import xyz.anythings.base.entity.JobInstance;
 import xyz.anythings.gw.entity.Gateway;
+import xyz.anythings.gw.service.api.IIndicatorRequestService;
 
 /**
  * 표시기 점,소등 서비스 Facade
@@ -17,6 +18,26 @@ import xyz.anythings.gw.entity.Gateway;
  */
 @Component
 public class IndicationService extends AbstractLogisService {
+	
+	/**
+	 * 1-0. 표시기 점, 소등 요청 서비스
+	 * 
+	 * @param batch
+	 * @return
+	 */
+	public IIndicatorRequestService getIndicatorRequestService(JobBatch batch) {
+		return this.serviceDispatcher.getIndicationService(batch).getIndicatorRequestService(batch);
+	}
+	
+	/**
+	 * 1-0. 표시기 점, 소등 요청 서비스
+	 * 
+	 * @param indType
+	 * @return
+	 */
+	public IIndicatorRequestService getIndicatorRequestService(String indType) {
+		return this.serviceDispatcher.getIndicationService(indType).getIndicatorRequestService(indType);
+	}
 	
 	/**
 	 * 1-1. 작업 배치로 게이트웨이 리스트를 조회

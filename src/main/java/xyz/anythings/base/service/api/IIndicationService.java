@@ -7,6 +7,7 @@ import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.JobInput;
 import xyz.anythings.base.entity.JobInstance;
 import xyz.anythings.gw.entity.Gateway;
+import xyz.anythings.gw.service.api.IIndicatorRequestService;
 
 /**
  * 표시기 관련 서비스
@@ -33,6 +34,22 @@ import xyz.anythings.gw.entity.Gateway;
  * @author shortstop
  */
 public interface IIndicationService {
+	
+	/**
+	 * 1-0. 표시기 점, 소등 요청 서비스
+	 * 
+	 * @param batch
+	 * @return
+	 */
+	public IIndicatorRequestService getIndicatorRequestService(JobBatch batch);
+	
+	/**
+	 * 1-0. 표시기 점, 소등 요청 서비스
+	 * 
+	 * @param indType
+	 * @return
+	 */
+	public IIndicatorRequestService getIndicatorRequestService(String indType);
 	
 	/**
 	 * 1-1. 작업 배치로 게이트웨이 리스트를 조회

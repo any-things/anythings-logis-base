@@ -11,7 +11,7 @@ import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.JobInstance;
 import xyz.anythings.base.service.api.IBatchService;
 import xyz.anythings.base.service.api.IClassificationService;
-import xyz.anythings.base.service.api.IConfigSetService;
+import xyz.anythings.base.service.api.IJobConfigProfileService;
 import xyz.anythings.base.service.api.IIndicationService;
 import xyz.anythings.base.service.api.IInstructionService;
 import xyz.anythings.base.service.api.IInvoiceNoService;
@@ -47,7 +47,7 @@ public class LogisServiceDispatcher implements BeanFactoryAware {
 	 * 설정 셋 서비스
 	 */
 	@Autowired
-	private ConfigSetService configSetService;
+	private JobConfigProfileService configSetService;
 	/**
 	 * 상품 조회 서비스
 	 */
@@ -84,7 +84,7 @@ public class LogisServiceDispatcher implements BeanFactoryAware {
 	 * 
 	 * @return
 	 */
-	public IConfigSetService getConfigSetService() {
+	public IJobConfigProfileService getConfigSetService() {
 		return this.configSetService;
 	}
 	

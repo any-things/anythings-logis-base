@@ -1,7 +1,8 @@
 package xyz.anythings.base.service.util;
 
 import xyz.anythings.base.LogisConfigConstants;
-import xyz.anythings.base.service.impl.ConfigSetService;
+import xyz.anythings.base.service.impl.JobConfigProfileService;
+import xyz.elidom.sys.entity.Domain;
 import xyz.elidom.sys.util.ThrowUtil;
 import xyz.elidom.sys.util.ValueUtil;
 import xyz.elidom.util.BeanUtil;
@@ -79,16 +80,16 @@ public class StageJobConfigUtil {
 	/**
 	 * 설정 프로파일 서비스
 	 */
-	public static ConfigSetService CONFIG_SET_SVC;
+	public static JobConfigProfileService CONFIG_SET_SVC;
 	
 	/**
 	 * 설정 프로파일 서비스 리턴
 	 * 
 	 * @return
 	 */
-	public static ConfigSetService getConfigSetService() {
+	public static JobConfigProfileService getConfigSetService() {
 		if(CONFIG_SET_SVC == null) {
-			CONFIG_SET_SVC = BeanUtil.get(ConfigSetService.class);
+			CONFIG_SET_SVC = BeanUtil.get(JobConfigProfileService.class);
 		}
 		
 		return CONFIG_SET_SVC;
@@ -104,15 +105,15 @@ public class StageJobConfigUtil {
 	 * @return
 	 */
 	public static String getConfigValue(String stageCd, String jobType, String key, boolean exceptionWhenEmptyValue) {
-		ConfigSetService configSvc = getConfigSetService();
+		JobConfigProfileService configSvc = getConfigSetService();
 		
 		// 1. 작업 유형에 따른 설정값 조회
-		String value = configSvc.getJobConfigValue(stageCd, key);
+		String value = configSvc.getStageConfigValue(Domain.currentDomainId(), stageCd, key);
 		
 		// 2. 1값이 없다면 공통 설정값 조회
 		if(ValueUtil.isEmpty(value) && ValueUtil.isNotEmpty(jobType)) {
 			String jobTypeKey = key.replace(jobType.toLowerCase() + ".", "cmm.");
-			value = configSvc.getJobConfigValue(stageCd, jobTypeKey);
+			value = configSvc.getStageConfigValue(Domain.currentDomainId(), stageCd, jobTypeKey);
 		}
 		
 		// 3. 설정값이 없다면 exceptionWhenEmptyValue에 따라 예외 처리

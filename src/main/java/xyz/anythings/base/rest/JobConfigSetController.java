@@ -19,7 +19,7 @@ import xyz.anythings.base.LogisConstants;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.JobConfig;
 import xyz.anythings.base.entity.JobConfigSet;
-import xyz.anythings.base.service.impl.ConfigSetService;
+import xyz.anythings.base.service.impl.JobConfigProfileService;
 import xyz.anythings.sys.model.BaseResponse;
 import xyz.anythings.sys.model.KeyValue;
 import xyz.anythings.sys.util.AnyEntityUtil;
@@ -39,7 +39,7 @@ import xyz.elidom.sys.util.ValueUtil;
 public class JobConfigSetController extends AbstractRestService {
 	
 	@Autowired
-	private ConfigSetService configSetService;
+	private JobConfigProfileService configSetService;
 
 	@Override
 	protected Class<?> entityClass() {
@@ -122,28 +122,28 @@ public class JobConfigSetController extends AbstractRestService {
 	public JobConfigSet copyConfigSet(@PathVariable("id") String sourceConfigSetId, @RequestBody Map<String, Object> params) {
 		String targetSetCd = ValueUtil.toString(params.get("target_set_cd"));
 		String targetSetNm = ValueUtil.toString(params.get("target_set_nm"));
-		return this.configSetService.copyJobConfigSet(Domain.currentDomainId(), sourceConfigSetId, targetSetCd, targetSetNm);
+		return this.configSetService.copyConfigSet(Domain.currentDomainId(), sourceConfigSetId, targetSetCd, targetSetNm);
 	}
 	
 	@RequestMapping(value = "/batch/build_config_set/{batch_id}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Build config set by batch id")
 	public JobConfigSet buildBatchConfigSet(@PathVariable("batch_id") String batchiId) {
 		JobBatch batch = AnyEntityUtil.findEntityById(true, JobBatch.class, batchiId);
-		return this.configSetService.buildJobConfigSet(batch);
+		return this.configSetService.addConfigSet(batch);
 	}
 	
 	@RequestMapping(value = "/batch/config_value/{batch_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Config key by batch id")
 	public KeyValue getConfigValueInBatchScope(@PathVariable("batch_id") String batchiId, @RequestParam(name = "config_key", required = true) String configKey) {
 		JobBatch batch = AnyEntityUtil.findEntityById(true, JobBatch.class, batchiId);
-		String value = this.configSetService.getJobConfigValue(batch, configKey);
+		String value = this.configSetService.getConfigValue(batch, configKey);
 		return new KeyValue(configKey, value);
 	}
 
 	@RequestMapping(value = "/clear_config_set/{batch_id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Clear config set by batch id")
 	public BaseResponse clearBatchConfigSet(@PathVariable("batch_id") String batchId) {
-		this.configSetService.clearJobConfigSet(batchId);
+		this.configSetService.clearConfigSet(batchId);
 		return new BaseResponse(true, LogisConstants.OK_STRING);
 	}
 	
@@ -155,7 +155,7 @@ public class JobConfigSetController extends AbstractRestService {
 		Long domainId = Domain.currentDomainId();
 		
 		if(stageCd == null) {
-			this.configSetService.buildStageJobConfigSet(domainId);
+			this.configSetService.buildStageConfigSet(domainId);
 			
 		} else {
 			String sql = "select id,domain_id,conf_set_cd,conf_set_nm,stage_cd from job_config_set where domain_id = :domainId and default_flag = :defaultFlag and stage_cd = :stageCd and equip_type is null and equip_cd is null and job_type is null and com_cd is null";
@@ -163,7 +163,7 @@ public class JobConfigSetController extends AbstractRestService {
 			
 			if(ValueUtil.isNotEmpty(confSetList)) {
 				for(JobConfigSet confSet : confSetList) {
-					this.configSetService.buildStageJobConfigSet(confSet);
+					this.configSetService.addStageConfigSet(confSet);
 				}
 			}
 		}
@@ -174,7 +174,7 @@ public class JobConfigSetController extends AbstractRestService {
 	@RequestMapping(value = "/stage/config_value/{stage_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Config key by stage code")
 	public KeyValue getConfigValueInStageScope(@PathVariable("stage_cd") String stageCd, @RequestParam(name = "config_key", required = true) String configKey) {
-		String value = this.configSetService.getJobConfigValue(stageCd, configKey);
+		String value = this.configSetService.getStageConfigValue(Domain.currentDomainId(), stageCd, configKey);
 		return new KeyValue(configKey, value);
 	}
 

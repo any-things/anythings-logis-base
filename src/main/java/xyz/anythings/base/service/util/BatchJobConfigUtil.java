@@ -3,7 +3,7 @@ package xyz.anythings.base.service.util;
 import xyz.anythings.base.LogisConfigConstants;
 import xyz.anythings.base.LogisConstants;
 import xyz.anythings.base.entity.JobBatch;
-import xyz.anythings.base.service.impl.ConfigSetService;
+import xyz.anythings.base.service.impl.JobConfigProfileService;
 import xyz.elidom.sys.util.ThrowUtil;
 import xyz.elidom.sys.util.ValueUtil;
 import xyz.elidom.util.BeanUtil;
@@ -60,16 +60,16 @@ public class BatchJobConfigUtil {
 	/**
 	 * 설정 프로파일 서비스
 	 */
-	public static ConfigSetService CONFIG_SET_SVC;
+	public static JobConfigProfileService CONFIG_SET_SVC;
 	
 	/**
 	 * 설정 프로파일 서비스 리턴
 	 * 
 	 * @return
 	 */
-	public static ConfigSetService getConfigSetService() {
+	public static JobConfigProfileService getConfigSetService() {
 		if(CONFIG_SET_SVC == null) {
-			CONFIG_SET_SVC = BeanUtil.get(ConfigSetService.class);
+			CONFIG_SET_SVC = BeanUtil.get(JobConfigProfileService.class);
 		}
 		
 		return CONFIG_SET_SVC;
@@ -86,14 +86,14 @@ public class BatchJobConfigUtil {
 	public static String getConfigValue(JobBatch batch, String key, boolean exceptionWhenEmptyValue) {
 		String jobType = batch.getJobType().toLowerCase();
 		String jobTypeKey = key.replace("job.cmm", "job." + jobType);
-		ConfigSetService configSvc = getConfigSetService();
+		JobConfigProfileService configSvc = getConfigSetService();
 		
 		// 1. 작업 유형에 따른 설정값 조회
-		String value = configSvc.getJobConfigValue(batch, jobTypeKey);
+		String value = configSvc.getConfigValue(batch, jobTypeKey);
 		
 		// 2. 1값이 없다면 공통 설정값 조회
 		if(ValueUtil.isEmpty(value)) {
-			value = configSvc.getJobConfigValue(batch, key);
+			value = configSvc.getConfigValue(batch, key);
 		}
 		
 		// 3. 설정값이 없다면 exceptionWhenEmptyValue에 따라 예외 처리

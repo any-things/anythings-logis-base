@@ -21,13 +21,25 @@ public class InvoiceNoService implements IInvoiceNoService {
 	}
 
 	@Override
+	public String nextInvoiceId(BoxPack box) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
 	public String nextInvoiceId(JobBatch batch) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String nextInvoiceId(BoxPack box) {
+	public String nextInvoiceId(Long domainId, String stageCd) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String nextInvoiceId(Long domainId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
