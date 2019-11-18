@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import xyz.anythings.base.LogisConstants;
 import xyz.anythings.gw.entity.IndConfigSet;
+import xyz.anythings.sys.AnyConstants;
 import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.elidom.dbist.annotation.Column;
@@ -521,6 +522,54 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		}
 
 		return jobBatch;
+	}
+	
+	/**
+	 * 조건에 따른 주문 가공 데이터 건수를 조회하여 리턴
+	 *
+	 * @param filterNames
+	 * @param filterOpers
+	 * @param filterValues
+	 * @return
+	 */
+	public int preprocessCountByCondition(String filterNames, String filterOpers, String filterValues) {
+		Query condition = AnyOrmUtil.newConditionForExecution(this.domainId);
+		condition.addFilter("batchId", this.id);
+
+		if(ValueUtil.isNotEmpty(filterNames)) {
+			String[] names = filterNames.split(SysConstants.COMMA);
+			String[] opers = ValueUtil.isNotEmpty(filterOpers) ? filterOpers.split(SysConstants.COMMA) : SysConstants.EMPTY_STRING.split(SysConstants.COMMA);
+			String[] values = ValueUtil.isNotEmpty(filterValues) ? filterValues.split(SysConstants.COMMA) : SysConstants.EMPTY_STRING.split(SysConstants.COMMA);
+
+			for(int i = 0 ; i < names.length ; i++) {
+				condition.addFilter(new Filter(names[i], opers[i], values[i]));
+			}
+		}
+
+		if(this.isDasBatch() || this.isRtnBatch()) {
+			return BeanUtil.get(IQueryManager.class).selectSize(OrderPreprocess.class, condition);
+
+		} else {
+			return -1;
+		}
+	}
+	
+	/**
+	 * DAS용 작업 배치인지 체크
+	 *
+	 * @return
+	 */
+	public boolean isDasBatch() {
+		return ValueUtil.isEqualIgnoreCase(AnyConstants.JOB_TYPE_DAS, this.jobType);
+	}
+	
+	/**
+	 * 반품용 작업 배치인지 체크
+	 *
+	 * @return
+	 */
+	public boolean isRtnBatch() {
+		return ValueUtil.isEqualIgnoreCase(AnyConstants.JOB_TYPE_RTN, this.jobType);
 	}
 
 }

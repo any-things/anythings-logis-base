@@ -1,5 +1,6 @@
 package xyz.anythings.base.rest;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import xyz.anythings.base.LogisConstants;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.OrderPreprocess;
+import xyz.anythings.base.entity.Rack;
 import xyz.anythings.base.service.impl.PreprocessService;
 import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.anythings.sys.util.AnyValueUtil;
@@ -221,14 +223,20 @@ public class OrderPreprocessController extends AbstractRestService {
 	 * @param id
 	 * @return
 	 */
-	@RequestMapping(value = "/{id}/reset_preprocess", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/{id}/reset_preprocess", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Complete preprocess")
 	public Map<String, Object> resetPreprocess(
 			@PathVariable("id") String batchId,
 			@RequestParam(name = "reset_all", required = false) boolean resetAll,
-			@RequestBody List<String> equipCdList) {
-
+			@RequestBody List<Rack> items) {
+		
+		List<String> equipCdList= new ArrayList<String>();
 		JobBatch batch = this.checkBatch(batchId);
+		if(!items.isEmpty()) {
+			for(Rack item : items) {
+				equipCdList.add(item.getRackCd());
+			}
+		} 
 		this.preprocessService.resetPreprocess(batch, resetAll, equipCdList);
 		return ValueUtil.newMap("result", SysConstants.OK_STRING);
 	}
