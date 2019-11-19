@@ -1,17 +1,16 @@
 package xyz.anythings.base.query.util;
 
 import java.util.List;
+import java.util.Map;
 
 import xyz.anythings.base.LogisConstants;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.query.store.IndicatorQueryStore;
 import xyz.anythings.gw.entity.Gateway;
 import xyz.anythings.gw.service.model.IndCommonReq;
-import xyz.anythings.gw.service.mq.model.GatewayInitResIndList;
-import xyz.anythings.gw.service.util.BatchIndConfigUtil;
-import xyz.anythings.gw.service.util.StageIndConfigUtil;
 import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.elidom.util.BeanUtil;
+import xyz.elidom.util.ValueUtil;
 
 /**
  * 라우터 쿼리 유틸리티
@@ -111,14 +110,26 @@ public class IndicatorQueryUtil {
 	}
 	
 	/**
+	 * 게이트웨이 소속의 배치 리스트 조회 
+	 * 
+	 * @param gateway
+	 * @return
+	 */
+	public static List<JobBatch> searchRunningBatchesByGwCd(Gateway gateway) {
+		String sql = BeanUtil.get(IndicatorQueryStore.class).searchBatchListByGateway();
+		Map<String, Object> params = ValueUtil.newMap("domainId,stageCd,gwCd", gateway.getDomainId(), gateway.getStageCd(), gateway.getGwCd());
+		return AnyEntityUtil.searchItems(gateway.getDomainId(), false, JobBatch.class, sql, params);
+	}
+	
+	/**
 	 * 게이트웨이 리부팅시에 게이트웨이에 내려주기 위한 게이트웨이 소속 표시기 정보 리스트
 	 * 
 	 * @param gateway
 	 * @return
 	 */
-	public static List<GatewayInitResIndList> searchIndListForGwInit(Gateway gateway) {
+	/*public static List<GatewayInitResIndList> searchIndListForGwInit(Gateway gateway) {
 		return searchIndListForGwInit(gateway.getDomainId(), gateway.getStageCd(), gateway.getGwNm());
-	}
+	}*/
 	
 	/**
 	 * 게이트웨이 리부팅시에 게이트웨이에 내려주기 위한 게이트웨이 소속 표시기 정보 리스트
@@ -128,11 +139,11 @@ public class IndicatorQueryUtil {
 	 * @param gwPath
 	 * @return
 	 */
-	public static List<GatewayInitResIndList> searchIndListForGwInit(Long domainId, String stageCd, String gwPath) {
+	/*public static List<GatewayInitResIndList> searchIndListForGwInit(Long domainId, String stageCd, String gwPath) {
 		String viewType = StageIndConfigUtil.getIndViewType(domainId, stageCd);
 		String sql = BeanUtil.get(IndicatorQueryStore.class).getSearchIndListForGwInitQuery();
 		return AnyEntityUtil.searchItems(domainId, true, GatewayInitResIndList.class, sql, "domainId,gwNm,bizType,viewType", domainId, gwPath, "DAS", viewType);
-	}
+	}*/
 	
 	/**
 	 * 게이트웨이 리부팅시에 게이트웨이에 내려주기 위한 게이트웨이 및 설비 소속 표시기 정보 리스트
@@ -141,12 +152,12 @@ public class IndicatorQueryUtil {
 	 * @param batch
 	 * @return
 	 */
-	public static List<GatewayInitResIndList> searchIndListForGwInit(Gateway gateway, JobBatch batch) {
+	/*public static List<GatewayInitResIndList> searchIndListForGwInit(Gateway gateway, JobBatch batch) {
 		Long domainId = gateway.getDomainId();
 		String viewType = BatchIndConfigUtil.getIndViewType(batch.getId());
 		String sql = BeanUtil.get(IndicatorQueryStore.class).getSearchIndListForGwInitQuery();
 		return AnyEntityUtil.searchItems(domainId, true, GatewayInitResIndList.class, sql, "domainId,gwCd,bizType,viewType,equipType,equipCd", domainId, gateway.getGwCd(), batch.getJobType(), viewType, batch.getEquipType(), batch.getEquipCd());
-	}
+	}*/
 
 	/**
 	 * Gateway Code로 Gateway Path 조회

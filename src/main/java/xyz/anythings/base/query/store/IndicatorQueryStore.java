@@ -63,5 +63,14 @@ public class IndicatorQueryStore extends LogisBaseQueryStore {
 	public String getFindGwPathByInd() {
 		return this.getQueryByPath("ind/FindGwPathByIndCd");
 	}
+	
+	/**
+	 * 게이트웨이 코드로 배치 리스트를 조회 
+	 * 
+	 * @return
+	 */
+	public String searchBatchListByGateway() {
+		return this.getQueryByPath("ind/SearchBatchListByGateway");
+	}
 
 }

@@ -49,7 +49,6 @@ import xyz.elidom.util.ValueUtil;
 @ServiceDesc(description = "Indicator Test Service API")
 public class IndicatorTestController {
 	
-	// TODO 
 	/**
 	 * 쿼리 매니저
 	 */
@@ -62,8 +61,7 @@ public class IndicatorTestController {
 	 * @return
 	 */
 	public IIndRequestService getIndicatorRequestService(IndTest indTest) {
-		// FIXME indTest.getVendorType()
-		return BeanUtil.get(IndicatorDispatcher.class).getIndicatorRequestService(indTest.getJobType());
+		return BeanUtil.get(IndicatorDispatcher.class).getIndicatorRequestService(indTest.getIndConfigSet().getIndType());
 	}
 	
 	/**
@@ -79,6 +77,7 @@ public class IndicatorTestController {
 	@RequestMapping(value = "/unit_test", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Indicator Unit Test")
 	public Map<String, Object> unitTest(@RequestBody IndTest indTest) {
+		indTest.setIndConfigSetId(indTest.getIndConfigSetId());
 		String action = indTest.getAction().getAction();
 		String sendMsg = null;
 		boolean success = true;
@@ -354,7 +353,7 @@ public class IndicatorTestController {
 			job.setPickedQty(0);
 		}
 		
-		return RuntimeIndServiceUtil.buildTestIndOnList(indTest.getIndConfigSetId(), LogisConstants.JOB_TYPE_DAS, jobList);
+		return RuntimeIndServiceUtil.buildTestIndOnList(indTest.getIndConfigSet().getDomainId(), indTest.getIndConfigSet().getStageCd(), LogisConstants.JOB_TYPE_DAS, jobList);
 	}
 	
 	/**
@@ -458,9 +457,9 @@ public class IndicatorTestController {
 		   .add("FROM")
 		   .add("	CELLS CELL")
 		   .add("	INNER JOIN INDICATORS IND ON CELL.DOMAIN_ID = IND.DOMAIN_ID AND CELL.IND_CD = IND.IND_CD")
-		   .add("	INNER JOIN GATEWAYS GATE ON CELL.DOMAIN_ID = GATE.DOMAIN_ID AND CELL.GW_CD = GATE.GW_CD")
+		   .add("	INNER JOIN GATEWAYS GATE ON CELL.DOMAIN_ID = GATE.DOMAIN_ID AND IND.GW_CD = GATE.GW_CD")
 		   .add("WHERE")
-		   .add("	LOC.DOMAIN_ID = :domainId")
+		   .add("	CELL.DOMAIN_ID = :domainId")
 		   .add("	AND CELL.ACTIVE_FLAG = :activeFlag")
 		   .add("	#if($rack)")
 		   .add("	AND CELL.EQUIP_CD in (:rack)")

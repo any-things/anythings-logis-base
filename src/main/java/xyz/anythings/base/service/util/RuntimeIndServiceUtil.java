@@ -452,7 +452,7 @@ public class RuntimeIndServiceUtil {
 	 * @param jobList
 	 * @return
 	 */
-	public static Map<String, List<IIndOnInfo>> buildTestIndOnList(String indConfigSetId, String jobType, List<JobInstance> jobList) {
+	public static Map<String, List<IIndOnInfo>> buildTestIndOnList(Long domainId, String stageCd, String jobType, List<JobInstance> jobList) {
 		
 		if(ValueUtil.isNotEmpty(jobList)) {
 			List<IndOnPickReq> indListToLightOn = new ArrayList<IndOnPickReq>(jobList.size());
@@ -467,7 +467,7 @@ public class RuntimeIndServiceUtil {
 				indListToLightOn.add(lightOn);
 			}
 			
-			return indListToLightOn.isEmpty() ? null : MwMessageUtil.groupTestByGwPath(indConfigSetId, indListToLightOn);
+			return indListToLightOn.isEmpty() ? null : MwMessageUtil.groupTestByGwPath(domainId, stageCd, indListToLightOn);
 			
 		} else {
 			return null;
