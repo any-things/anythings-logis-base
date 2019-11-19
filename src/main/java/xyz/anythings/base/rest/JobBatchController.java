@@ -256,7 +256,7 @@ public class JobBatchController extends AbstractRestService {
 		
 		// 1. 작업 배치 조회
 		JobBatch batch = AnyEntityUtil.findEntityByIdWithLock(true, JobBatch.class, batchId);
-		// 2. 작업 지시 
+		// 2. 작업 지시  
 		int createdCount = this.serviceDispatcher.getInstructionService(batch).instructBatch(batch, equipList);
 		// 3. 작업 지시 결과 리턴
 		return ValueUtil.newMap("result,count", SysConstants.OK_STRING, createdCount);

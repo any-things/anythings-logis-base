@@ -1,10 +1,18 @@
 package xyz.anythings.base.entity;
 
+import java.util.List;
+
+import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.elidom.dbist.annotation.Column;
 import xyz.elidom.dbist.annotation.GenerationRule;
 import xyz.elidom.dbist.annotation.Index;
 import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.Table;
+import xyz.elidom.dbist.dml.Query;
+import xyz.elidom.orm.IQueryManager;
+import xyz.elidom.sys.util.ThrowUtil;
+import xyz.elidom.sys.util.ValueUtil;
+import xyz.elidom.util.BeanUtil;
 
 @Table(name = "cells", idStrategy = GenerationRule.UUID, uniqueFields="domainId,cellCd", indexes = {
 	@Index(name = "ix_cells_0", columnList = "domain_id,cell_cd", unique = true)
@@ -180,4 +188,6 @@ public class Cell extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	public void setActiveFlag(Boolean activeFlag) {
 		this.activeFlag = activeFlag;
 	}	
+	
+	
 }

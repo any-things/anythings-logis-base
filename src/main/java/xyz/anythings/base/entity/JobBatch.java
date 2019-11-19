@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Transactional; 
 
 import xyz.anythings.base.LogisConstants;
 import xyz.anythings.gw.entity.IndConfigSet;
@@ -570,6 +570,15 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	 */
 	public boolean isRtnBatch() {
 		return ValueUtil.isEqualIgnoreCase(AnyConstants.JOB_TYPE_RTN, this.jobType);
+	}
+	
+	/**
+	 * 무오더 반품용 작업 배치인지 체크
+	 *
+	 * @return
+	 */
+	public boolean isRtn3Batch() {
+		return ValueUtil.isEqualIgnoreCase(AnyConstants.JOB_TYPE_RTN3, this.jobType);
 	}
 
 }

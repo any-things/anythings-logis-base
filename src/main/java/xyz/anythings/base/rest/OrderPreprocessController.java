@@ -209,7 +209,7 @@ public class OrderPreprocessController extends AbstractRestService {
 	 * @param id
 	 * @return
 	 */
-	@RequestMapping(value = "/{id}/complete_preprocess", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/{id}/complete_preprocess", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Complete preprocess")
 	public List<JobBatch> completePreprocess(@PathVariable("id") String batchId) {
 

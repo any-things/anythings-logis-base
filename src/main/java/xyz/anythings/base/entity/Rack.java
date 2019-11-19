@@ -197,11 +197,12 @@ public class Rack extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	 * @param exceptionWhenEmpty
 	 * @return
 	 */
-	public static Rack findByRackCd(String rackCd, boolean exceptionWhenEmpty) {
+	public static Rack findByRackCd(Long domainId,String rackCd, boolean exceptionWhenEmpty) {
 		Query query = new Query();
 		Rack rack = null;
 
 		if(ValueUtil.isNotEqual(rackCd, LogisConstants.NOT_AVAILABLE_CAP_STRING)) {
+			query.addFilter("domainId", domainId);
 			query.addFilter("rackCd", rackCd);
 			rack = BeanUtil.get(IQueryManager.class).selectByCondition(Rack.class, query);
 		} else {
