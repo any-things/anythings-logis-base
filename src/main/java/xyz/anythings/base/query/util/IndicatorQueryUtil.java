@@ -6,7 +6,7 @@ import xyz.anythings.base.LogisConstants;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.query.store.IndicatorQueryStore;
 import xyz.anythings.gw.entity.Gateway;
-import xyz.anythings.gw.service.model.IndOffReq;
+import xyz.anythings.gw.service.model.IndCommonReq;
 import xyz.anythings.gw.service.mq.model.GatewayInitResIndList;
 import xyz.anythings.gw.service.util.BatchIndConfigUtil;
 import xyz.anythings.gw.service.util.StageIndConfigUtil;
@@ -157,7 +157,7 @@ public class IndicatorQueryUtil {
 	 */
 	public static String findGatewayPathByGwCd(Long domainId, String gwCd) {
 		Gateway gw = AnyEntityUtil.findEntityBy(domainId, true, Gateway.class, "gw_nm", "domainId,gwCd", domainId, gwCd);
-		return gw.getGwNm();
+		return gw != null ? gw.getGwNm() : null;
 	}
 	
 	/**
@@ -168,7 +168,7 @@ public class IndicatorQueryUtil {
 	 * @return
 	 */
 	public static String findGatewayPathByIndCd(Long domainId, String indCd) {
-		String sql = "select gw_nm from gateways where domain_id = :domainId and gw_cd = (select gw_cd from indicators where domain_id = :domainId and ind_cd = :indCd)";
+		String sql = BeanUtil.get(IndicatorQueryStore.class).getFindGwPathByInd();
 		return AnyEntityUtil.findItem(domainId, false, String.class, sql, "gw_nm", "domainId,indCd", domainId, indCd);
 	}
 	
@@ -196,10 +196,10 @@ public class IndicatorQueryUtil {
 	 * @param sideCd
 	 * @return
 	 */
-	public static List<IndOffReq> searchIndByEquipZone(Long domainId, String rackCd, String equipZoneCd, String sideCd) {
+	public static List<IndCommonReq> searchIndByEquipZone(Long domainId, String rackCd, String equipZoneCd, String sideCd) {
 		sideCd = LogisConstants.checkSideCdForQuery(domainId, sideCd);
 		String sql = BeanUtil.get(IndicatorQueryStore.class).getSearchIndicatorsQuery();
-		return AnyEntityUtil.searchItems(domainId, false, IndOffReq.class, sql, "domainId,rackCd,equipZone,sideCd,activeFlag,indQueryFlag", domainId, rackCd, equipZoneCd, sideCd, true, true);
+		return AnyEntityUtil.searchItems(domainId, false, IndCommonReq.class, sql, "domainId,rackCd,equipZone,sideCd,activeFlag,indQueryFlag", domainId, rackCd, equipZoneCd, sideCd, true, true);
 	}	
 	
 	/**
@@ -223,9 +223,9 @@ public class IndicatorQueryUtil {
 	 * @param zoneCd
 	 * @return
 	 */
-	public static List<IndOffReq> searchIndByStation(Long domainId, String rackCd, String stationCd) {
+	public static List<IndCommonReq> searchIndByStation(Long domainId, String rackCd, String stationCd) {
 		String sql = BeanUtil.get(IndicatorQueryStore.class).getSearchIndicatorsQuery();
-		return AnyEntityUtil.searchItems(domainId, false, IndOffReq.class, sql, "domainId,rackCd,stationCd,activeFlag,indQueryFlag", domainId, rackCd, stationCd, true, true);
+		return AnyEntityUtil.searchItems(domainId, false, IndCommonReq.class, sql, "domainId,rackCd,stationCd,activeFlag,indQueryFlag", domainId, rackCd, stationCd, true, true);
 	}
 
 }

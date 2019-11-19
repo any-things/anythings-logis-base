@@ -25,7 +25,7 @@ import xyz.anythings.gw.GwConstants;
 import xyz.anythings.gw.service.IndicatorDispatcher;
 import xyz.anythings.gw.service.api.IIndRequestService;
 import xyz.anythings.gw.service.model.IIndOnInfo;
-import xyz.anythings.gw.service.model.IndOffReq;
+import xyz.anythings.gw.service.model.IndCommonReq;
 import xyz.anythings.gw.service.model.IndTest;
 import xyz.anythings.gw.service.model.IndTest.IndAction;
 import xyz.anythings.gw.service.model.IndTest.IndTarget;
@@ -73,7 +73,7 @@ public class IndicatorTestController {
 	 */
 	public IIndRequestService getIndicatorRequestService() {
 		// FIXME 하드코딩 제거
-		return BeanUtil.get(IndicatorDispatcher.class).getIndicatorRequestService("type1");
+		return BeanUtil.get(IndicatorDispatcher.class).getIndicatorRequestService("mqbase");
 	}
 
 	@RequestMapping(value = "/unit_test", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -127,7 +127,7 @@ public class IndicatorTestController {
 	 * @return
 	 */
 	private String testOff(IndTest indTest) {
-		List<IndOffReq> indOffList = this.createIndOffInfoList(indTest);
+		List<IndCommonReq> indOffList = this.createIndOffInfoList(indTest);
 		String msg = null;
 		
 		if(ValueUtil.isNotEmpty(indOffList)) {
@@ -149,7 +149,7 @@ public class IndicatorTestController {
 	 * @return
 	 */
 	private String testLedOn(IndTest indTest) {
-		List<IndOffReq> ledOnList = this.createIndOffInfoList(indTest);
+		List<IndCommonReq> ledOnList = this.createIndOffInfoList(indTest);
 		
 		String msg = null;
 		
@@ -171,7 +171,7 @@ public class IndicatorTestController {
 	 * @return
 	 */
 	private String testLedOff(IndTest indTest) {
-		List<IndOffReq> ledOffList = this.createIndOffInfoList(indTest);
+		List<IndCommonReq> ledOffList = this.createIndOffInfoList(indTest);
 		
 		String msg = null;
 		
@@ -437,12 +437,12 @@ public class IndicatorTestController {
 	 * @param indTest
 	 * @return
 	 */
-	private List<IndOffReq> createIndOffInfoList(IndTest indTest) {
+	private List<IndCommonReq> createIndOffInfoList(IndTest indTest) {
 		IndTarget target = indTest.getTarget();
 		Map<String, Object> params = ValueUtil.newMap(target.getTargetType(), target.getTargetIdList());
 		params.put("domainId", Domain.currentDomainId());
 		params.put("activeFlag", true);
-		return this.queryManager.selectListBySql(this.getIndOffQuery(), params, IndOffReq.class, 0, 0);
+		return this.queryManager.selectListBySql(this.getIndOffQuery(), params, IndCommonReq.class, 0, 0);
 	}
 	
 	/**

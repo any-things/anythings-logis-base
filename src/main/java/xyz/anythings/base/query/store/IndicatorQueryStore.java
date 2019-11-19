@@ -42,7 +42,7 @@ public class IndicatorQueryStore extends LogisBaseQueryStore {
 	 *  
 	 * @return
 	 */
-	public String getEquipListByGateway() {
+	public String getEquipListByGatewayQuery() {
 		return this.getQueryByPath("ind/EquipListByGateway");
 	}
 
@@ -53,6 +53,15 @@ public class IndicatorQueryStore extends LogisBaseQueryStore {
 	 */
 	public String getSearchIndListForGwInitQuery() {
 		return this.getQueryByPath("ind/SearchIndListForGwInit");
+	}
+	
+	/**
+	 * 표시기 코드로 게이트웨이 패스를 조회 
+	 * 
+	 * @return
+	 */
+	public String getFindGwPathByInd() {
+		return this.getQueryByPath("ind/FindGwPathByIndCd");
 	}
 
 }
