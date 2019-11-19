@@ -70,7 +70,7 @@ public class RuntimeIndServiceUtil {
 					
 			if(ValueUtil.isNotEmpty(indOnInfoList)) {
 				// 3. 표시기 점등 요청
-				sendSvc.requestIndListOn(batch.getDomainId(), batch.getJobType(), GwConstants.IND_ACTION_TYPE_NOBOX, indOnInfoList);
+				sendSvc.requestIndListOn(batch.getDomainId(), batch.getStageCd(), batch.getJobType(), GwConstants.IND_ACTION_TYPE_NOBOX, indOnInfoList);
 				// 4. 점등된 표시기 개수 리턴 
 				return indOnInfoList.size();
 			}
@@ -108,7 +108,7 @@ public class RuntimeIndServiceUtil {
 			
 			if(ValueUtil.isNotEmpty(indOnInfoList)) {
 				// 3. 표시기 점등 요청
-				sendSvc.requestIndListOn(batch.getDomainId(), batch.getJobType(), GwConstants.IND_ACTION_TYPE_DISPLAY, indOnInfoList);
+				sendSvc.requestIndListOn(batch.getDomainId(), batch.getStageCd(), batch.getJobType(), GwConstants.IND_ACTION_TYPE_DISPLAY, indOnInfoList);
 				// 4. 점등된 표시기 개수 리턴 
 				return indOnInfoList.size();
 			}
@@ -178,11 +178,11 @@ public class RuntimeIndServiceUtil {
 				if(ValueUtil.isNotEmpty(jobStatus)) {
 					if(ValueUtil.isEqual(LogisConstants.CELL_JOB_STATUS_END, jobStatus)) {
 						String bizId = ValueUtil.isEmpty(cell.getJobInstanceId()) ? cell.getIndCd() : cell.getJobInstanceId();
-						indSendService.requestIndEndDisplay(cell.getDomainId(), batch.getJobType(), gwPath, cell.getIndCd(), bizId, false);
+						indSendService.requestIndEndDisplay(cell.getDomainId(), batch.getStageCd(), batch.getJobType(), gwPath, cell.getIndCd(), bizId, false);
 						
 					} else if(ValueUtil.isEqual(LogisConstants.CELL_JOB_STATUS_ENDED, jobStatus)) {
 						String bizId = ValueUtil.isEmpty(cell.getJobInstanceId()) ? cell.getIndCd() : cell.getJobInstanceId();
-						indSendService.requestIndEndDisplay(cell.getDomainId(), batch.getJobType(), gwPath, cell.getIndCd(), bizId, true);
+						indSendService.requestIndEndDisplay(cell.getDomainId(), batch.getStageCd(), batch.getJobType(), gwPath, cell.getIndCd(), bizId, true);
 					}
 				}			
 			}
@@ -247,7 +247,7 @@ public class RuntimeIndServiceUtil {
 			if(ValueUtil.isNotEmpty(indOnList)) {
 				JobInstance firstJob = jobList.get(0);
 				// 3. 표시기 점등 요청
-				indSendService.requestIndListOn(firstJob.getDomainId(), batch.getJobType(), GwConstants.IND_ACTION_TYPE_PICK, indOnList);
+				indSendService.requestIndListOn(firstJob.getDomainId(), batch.getStageCd(), batch.getJobType(), GwConstants.IND_ACTION_TYPE_PICK, indOnList);
 				// 4. 점등된 표시기 개수 리턴 
 				return indOnList.size();
 			}
@@ -276,7 +276,7 @@ public class RuntimeIndServiceUtil {
 				
 				JobInstance firstJob = jobList.get(0);
 				// 3. 표시기 점등 요청
-				indSendService.requestIndListOn(firstJob.getDomainId(), batch.getJobType(), GwConstants.IND_ACTION_TYPE_PICK, indOnList);
+				indSendService.requestIndListOn(firstJob.getDomainId(), batch.getStageCd(), batch.getJobType(), GwConstants.IND_ACTION_TYPE_PICK, indOnList);
 				// 4. 점등된 표시기 개수 리턴 
 				return indOnList.size();
 			}
@@ -314,7 +314,7 @@ public class RuntimeIndServiceUtil {
 				
 				if(ValueUtil.isNotEmpty(indOnList)) {
 					// 3. 표시기 점등 요청
-					indSendService.requestIndListOn(batch.getDomainId(), batch.getJobType(), GwConstants.IND_ACTION_TYPE_PICK, indOnList);
+					indSendService.requestIndListOn(batch.getDomainId(), batch.getStageCd(), batch.getJobType(), GwConstants.IND_ACTION_TYPE_PICK, indOnList);
 					// 4. 점등된 표시기 개수 리턴 
 					return indOnList.size();
 				}
@@ -352,7 +352,7 @@ public class RuntimeIndServiceUtil {
 				
 				if(ValueUtil.isNotEmpty(indOnList)) {
 					// 3. 표시기 점등 요청
-					indSendService.requestIndListOn(batch.getDomainId(), batch.getJobType(), GwConstants.IND_ACTION_TYPE_DISPLAY, indOnList);
+					indSendService.requestIndListOn(batch.getDomainId(), batch.getStageCd(), batch.getJobType(), GwConstants.IND_ACTION_TYPE_DISPLAY, indOnList);
 					// 4. 점등된 표시기 개수 리턴 
 					return indOnList.size();
 				}
@@ -384,7 +384,7 @@ public class RuntimeIndServiceUtil {
 			if(ValueUtil.isNotEmpty(indOnList)) {
 				IIndRequestService indSendService = getIndicatorRequestService(batch);
 				// 4. 표시기 점등 요청
-				indSendService.requestIndListOnForInspect(batch.getDomainId(), batch.getJobType(), indOnList);
+				indSendService.requestIndListOnForInspect(batch.getDomainId(), batch.getStageCd(), batch.getJobType(), indOnList);
 				// 5. 점등된 표시기 개수 리턴 
 				return indOnList.size();
 			}

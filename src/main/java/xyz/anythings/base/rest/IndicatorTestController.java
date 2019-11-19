@@ -112,7 +112,7 @@ public class IndicatorTestController {
 		Map<String, List<IIndOnInfo>> indOnList = this.createIndOnInfoList(indTest);
 		
 		if(ValueUtil.isNotEmpty(indOnList)) {
-			return this.indicatorOnByInfo(Domain.currentDomainId(), indTest.getAction().getActionType(), indTest.getJobType(), indOnList);
+			return this.indicatorOnByInfo(Domain.currentDomainId(), indTest.getIndConfigSet().getStageCd(), indTest.getAction().getActionType(), indTest.getJobType(), indOnList);
 		} else {
 			// 점등할 정보가 없습니다.
 			return ThrowUtil.notFoundRecordMsg("terms.button.on");
@@ -132,7 +132,7 @@ public class IndicatorTestController {
 		if(ValueUtil.isNotEmpty(indOffList)) {
 			msg = FormatUtil.toUnderScoreJsonString(indOffList);
 			boolean forceFlag = (indTest.getAction().getForceFlag() == null) ? false : indTest.getAction().getForceFlag().booleanValue();
-			this.getIndicatorRequestService(indTest).requestIndListOff(Domain.currentDomainId(), indOffList, forceFlag);
+			this.getIndicatorRequestService(indTest).requestIndListOff(Domain.currentDomainId(), indTest.getIndConfigSet().getStageCd(), indOffList, forceFlag);
 		} else {
 			// 소등할 정보가 없습니다
 			msg = ThrowUtil.notFoundRecordMsg("terms.button.off");
@@ -154,7 +154,7 @@ public class IndicatorTestController {
 		
 		if(ValueUtil.isNotEmpty(ledOnList)) {
 			msg = FormatUtil.toUnderScoreJsonString(ledOnList);
-			this.getIndicatorRequestService(indTest).requestLedListOn(Domain.currentDomainId(), ledOnList, 10);
+			this.getIndicatorRequestService(indTest).requestLedListOn(Domain.currentDomainId(), indTest.getIndConfigSet().getStageCd(), ledOnList, 10);
 		} else {
 			// 점등할 정보가 없습니다
 			msg = ThrowUtil.notFoundRecordMsg("terms.button.on");
@@ -176,7 +176,7 @@ public class IndicatorTestController {
 		
 		if(ValueUtil.isNotEmpty(ledOffList)) {
 			msg = FormatUtil.toUnderScoreJsonString(ledOffList);
-			this.getIndicatorRequestService(indTest).requestLedListOff(Domain.currentDomainId(), ledOffList);
+			this.getIndicatorRequestService(indTest).requestLedListOff(Domain.currentDomainId(), indTest.getIndConfigSet().getStageCd(), ledOffList);
 		} else {
 			// 소등할 정보가 없습니다
 			msg = ThrowUtil.notFoundRecordMsg("terms.button.off");
@@ -188,17 +188,19 @@ public class IndicatorTestController {
 	/**
 	 * 표시기 점등 ...
 	 * 
+	 * @param domainId
+	 * @param stageCd
 	 * @param actionType
 	 * @param jobType
 	 * @param indOnList
 	 * @return
 	 */
-	private String indicatorOnByInfo(Long domainId, String actionType, String jobType, Map<String, List<IIndOnInfo>> indOnInfo) {
+	private String indicatorOnByInfo(Long domainId, String stageCd, String actionType, String jobType, Map<String, List<IIndOnInfo>> indOnInfo) {
 		if(ValueUtil.isEqualIgnoreCase(actionType, GwConstants.IND_ACTION_TYPE_PICK)) {
-			this.getIndicatorRequestService().requestIndListOn(domainId, jobType, actionType, indOnInfo);
+			this.getIndicatorRequestService().requestIndListOn(domainId, stageCd, jobType, actionType, indOnInfo);
 			return FormatUtil.toUnderScoreJsonString(indOnInfo);
 		} else {
-			if(this.indicatorOn(domainId, actionType, jobType, indOnInfo)) {
+			if(this.indicatorOn(domainId, stageCd, actionType, jobType, indOnInfo)) {
 				return FormatUtil.toUnderScoreJsonString(indOnInfo);
 			} else {
 				return null;
@@ -210,11 +212,12 @@ public class IndicatorTestController {
 	 * 표시기 점등
 	 * 
 	 * @param domainId
+	 * @param stageCd
 	 * @param actionType
 	 * @param jobType
 	 * @param indOnInfo
 	 */
-	private boolean indicatorOn(Long domainId, String actionType, String jobType, Map<String, List<IIndOnInfo>> indOnInfo) {
+	private boolean indicatorOn(Long domainId, String stageCd, String actionType, String jobType, Map<String, List<IIndOnInfo>> indOnInfo) {
 		IIndRequestService indReqSvc = this.getIndicatorRequestService();
 		Iterator<String> indOnIter = indOnInfo.keySet().iterator();
 		int count = 0;
@@ -234,37 +237,37 @@ public class IndicatorTestController {
 					}
 					
 					case GwConstants.IND_ACTION_TYPE_STR_SHOW : {
-						indReqSvc.requestShowString(domainId, jobType, gwPath, indCd, indCd, info.getViewStr());
+						indReqSvc.requestShowString(domainId, stageCd, jobType, gwPath, indCd, indCd, info.getViewStr());
 						count++;
 						break;
 					}
 					
 					case GwConstants.IND_BIZ_FLAG_FULL : {
-						indReqSvc.requestFullbox(domainId, jobType, gwPath, indCd, indCd, info.getColor());
+						indReqSvc.requestFullbox(domainId, stageCd, jobType, gwPath, indCd, indCd, info.getColor());
 						count++;
 						break;
 					}
 					
 					case GwConstants.IND_BIZ_FLAG_END : {
-						indReqSvc.requestIndEndDisplay(domainId, jobType, gwPath, indCd, indCd, false);
+						indReqSvc.requestIndEndDisplay(domainId, stageCd, jobType, gwPath, indCd, indCd, false);
 						count++;
 						break;
 					}
 					
 					case GwConstants.IND_ACTION_TYPE_NOBOX : {
-						indReqSvc.requestIndNoBoxDisplay(domainId, jobType, gwPath, indCd);
+						indReqSvc.requestIndNoBoxDisplay(domainId, stageCd, jobType, gwPath, indCd);
 						count++;
 						break;
 					}
 					
 					case GwConstants.IND_ACTION_TYPE_ERRBOX : {
-						indReqSvc.requestIndErrBoxDisplay(domainId, jobType, gwPath, indCd);
+						indReqSvc.requestIndErrBoxDisplay(domainId, stageCd, jobType, gwPath, indCd);
 						count++;
 						break;
 					}
 					
 					case GwConstants.IND_ACTION_TYPE_DISPLAY : {
-						indReqSvc.requestDisplayBothDirectionQty(domainId, jobType, gwPath, indCd, indCd, info.getOrgRelay(), info.getOrgEaQty());
+						indReqSvc.requestDisplayBothDirectionQty(domainId, stageCd, jobType, gwPath, indCd, indCd, info.getOrgRelay(), info.getOrgEaQty());
 						count++;
 						break;
 					}
