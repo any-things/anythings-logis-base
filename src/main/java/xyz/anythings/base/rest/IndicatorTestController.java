@@ -23,13 +23,13 @@ import xyz.anythings.base.entity.JobInstance;
 import xyz.anythings.base.service.util.RuntimeIndServiceUtil;
 import xyz.anythings.gw.GwConstants;
 import xyz.anythings.gw.service.IndicatorDispatcher;
-import xyz.anythings.gw.service.api.IIndicatorRequestService;
+import xyz.anythings.gw.service.api.IIndRequestService;
+import xyz.anythings.gw.service.model.IIndOnInfo;
 import xyz.anythings.gw.service.model.IndOffReq;
 import xyz.anythings.gw.service.model.IndTest;
 import xyz.anythings.gw.service.model.IndTest.IndAction;
 import xyz.anythings.gw.service.model.IndTest.IndTarget;
 import xyz.anythings.gw.service.mq.model.Action;
-import xyz.anythings.gw.service.mq.model.IndicatorOnInformation;
 import xyz.anythings.sys.AnyConstants;
 import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.elidom.orm.IQueryManager;
@@ -49,6 +49,7 @@ import xyz.elidom.util.ValueUtil;
 @ServiceDesc(description = "Indicator Test Service API")
 public class IndicatorTestController {
 	
+	// TODO 
 	/**
 	 * 쿼리 매니저
 	 */
@@ -60,7 +61,7 @@ public class IndicatorTestController {
 	 * 
 	 * @return
 	 */
-	public IIndicatorRequestService getIndicatorRequestService(IndTest indTest) {
+	public IIndRequestService getIndicatorRequestService(IndTest indTest) {
 		// FIXME indTest.getVendorType()
 		return BeanUtil.get(IndicatorDispatcher.class).getIndicatorRequestService(indTest.getJobType());
 	}
@@ -70,7 +71,7 @@ public class IndicatorTestController {
 	 * 
 	 * @return
 	 */
-	public IIndicatorRequestService getIndicatorRequestService() {
+	public IIndRequestService getIndicatorRequestService() {
 		// FIXME 하드코딩 제거
 		return BeanUtil.get(IndicatorDispatcher.class).getIndicatorRequestService("type1");
 	}
@@ -109,7 +110,7 @@ public class IndicatorTestController {
 	 * @return
 	 */
 	private String testOn(IndTest indTest) {
-		Map<String, List<IndicatorOnInformation>> indOnList = this.createIndOnInfoList(indTest);
+		Map<String, List<IIndOnInfo>> indOnList = this.createIndOnInfoList(indTest);
 		
 		if(ValueUtil.isNotEmpty(indOnList)) {
 			return this.indicatorOnByInfo(Domain.currentDomainId(), indTest.getAction().getActionType(), indTest.getJobType(), indOnList);
@@ -193,9 +194,9 @@ public class IndicatorTestController {
 	 * @param indOnList
 	 * @return
 	 */
-	private String indicatorOnByInfo(Long domainId, String actionType, String jobType, Map<String, List<IndicatorOnInformation>> indOnInfo) {
+	private String indicatorOnByInfo(Long domainId, String actionType, String jobType, Map<String, List<IIndOnInfo>> indOnInfo) {
 		if(ValueUtil.isEqualIgnoreCase(actionType, GwConstants.IND_ACTION_TYPE_PICK)) {
-			this.getIndicatorRequestService().requestIndsOn(domainId, jobType, actionType, indOnInfo);
+			this.getIndicatorRequestService().requestIndListOn(domainId, jobType, actionType, indOnInfo);
 			return FormatUtil.toUnderScoreJsonString(indOnInfo);
 		} else {
 			if(this.indicatorOn(domainId, actionType, jobType, indOnInfo)) {
@@ -214,16 +215,16 @@ public class IndicatorTestController {
 	 * @param jobType
 	 * @param indOnInfo
 	 */
-	private boolean indicatorOn(Long domainId, String actionType, String jobType, Map<String, List<IndicatorOnInformation>> indOnInfo) {
-		IIndicatorRequestService indReqSvc = this.getIndicatorRequestService();
+	private boolean indicatorOn(Long domainId, String actionType, String jobType, Map<String, List<IIndOnInfo>> indOnInfo) {
+		IIndRequestService indReqSvc = this.getIndicatorRequestService();
 		Iterator<String> indOnIter = indOnInfo.keySet().iterator();
 		int count = 0;
 		
 		while(indOnIter.hasNext()) {
 			String gwPath = indOnIter.next();
-			List<IndicatorOnInformation> infoList = indOnInfo.get(gwPath);
+			List<IIndOnInfo> infoList = indOnInfo.get(gwPath);
 			
-			for(IndicatorOnInformation info : infoList) {
+			for(IIndOnInfo info : infoList) {
 				String indCd = info.getId();
 				
 				switch(actionType) {
@@ -281,7 +282,7 @@ public class IndicatorTestController {
 	 * @param indTest
 	 * @return
 	 */
-	private Map<String, List<IndicatorOnInformation>> createIndOnInfoList(IndTest indTest) {
+	private Map<String, List<IIndOnInfo>> createIndOnInfoList(IndTest indTest) {
 		IndAction action = indTest.getAction();
 		
 		switch(action.getActionType()) {
@@ -331,7 +332,7 @@ public class IndicatorTestController {
 	 * @param indTest
 	 * @return
 	 */
-	private Map<String, List<IndicatorOnInformation>> createIndOnIndInfoList(IndTest indTest) {
+	private Map<String, List<IIndOnInfo>> createIndOnIndInfoList(IndTest indTest) {
 		IndAction action = indTest.getAction();
 		IndTarget target = indTest.getTarget();
 		
@@ -362,15 +363,16 @@ public class IndicatorTestController {
 	 * @param indTest
 	 * @return
 	 */
-	private Map<String, List<IndicatorOnInformation>> createIndOnShowStrInfoList(IndTest indTest) {
+	private Map<String, List<IIndOnInfo>> createIndOnShowStrInfoList(IndTest indTest) {
 		Long domainId = Domain.currentDomainId();
-		Map<String, List<IndicatorOnInformation>> indOnInfoMap = this.createIndOnIndInfoList(indTest);
-		Iterator<List<IndicatorOnInformation>> valueIter = indOnInfoMap.values().iterator();
+		Map<String, List<IIndOnInfo>> indOnInfoMap = this.createIndOnIndInfoList(indTest);
+		Iterator<List<IIndOnInfo>> valueIter = indOnInfoMap.values().iterator();
 		IndAction action = indTest.getAction();
 		
 		while(valueIter.hasNext()) {
-			List<IndicatorOnInformation> indOnInfoList = valueIter.next();
-			for(IndicatorOnInformation indOnInfo : indOnInfoList) {
+			List<IIndOnInfo> indOnInfoList = valueIter.next();
+			
+			for(IIndOnInfo indOnInfo : indOnInfoList) {
 				String viewStr = null;
 				
 				if(ValueUtil.isEqualIgnoreCase(action.getActionType(), "ind_cd")) {
@@ -410,17 +412,17 @@ public class IndicatorTestController {
 	 * @param indTest
 	 * @return
 	 */
-	private Map<String, List<IndicatorOnInformation>> createIndOnDisplayInfoList(IndTest indTest) {
-		Map<String, List<IndicatorOnInformation>> indOnInfoMap = this.createIndOnIndInfoList(indTest);
-		Iterator<List<IndicatorOnInformation>> valueIter = indOnInfoMap.values().iterator();
+	private Map<String, List<IIndOnInfo>> createIndOnDisplayInfoList(IndTest indTest) {
+		Map<String, List<IIndOnInfo>> indOnInfoMap = this.createIndOnIndInfoList(indTest);
+		Iterator<List<IIndOnInfo>> valueIter = indOnInfoMap.values().iterator();
 		
 		IndAction action = indTest.getAction();
 		Integer firstQty = ValueUtil.toInteger(action.getFirstQty());
 		Integer secondQty = ValueUtil.toInteger(action.getSecondQty());
 		
 		while(valueIter.hasNext()) {
-			List<IndicatorOnInformation> indOnInfoList = valueIter.next();
-			for(IndicatorOnInformation indOnInfo : indOnInfoList) {
+			List<IIndOnInfo> indOnInfoList = valueIter.next();
+			for(IIndOnInfo indOnInfo : indOnInfoList) {
 				indOnInfo.setOrgRelay(firstQty);
 				indOnInfo.setOrgEaQty(secondQty);
 			}

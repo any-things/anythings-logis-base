@@ -13,10 +13,10 @@ import xyz.anythings.base.query.util.IndicatorQueryUtil;
 import xyz.anythings.gw.GwConstants;
 import xyz.anythings.gw.entity.Gateway;
 import xyz.anythings.gw.service.IndicatorDispatcher;
-import xyz.anythings.gw.service.api.IIndicatorRequestService;
+import xyz.anythings.gw.service.api.IIndRequestService;
+import xyz.anythings.gw.service.model.IIndOnInfo;
 import xyz.anythings.gw.service.model.IndCommonReq;
 import xyz.anythings.gw.service.model.IndOnPickReq;
-import xyz.anythings.gw.service.mq.model.IndicatorOnInformation;
 import xyz.anythings.gw.service.util.MwMessageUtil;
 import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.elidom.dbist.dml.Query;
@@ -39,7 +39,7 @@ public class RuntimeIndServiceUtil {
 	 * @param batch
 	 * @return
 	 */
-	public static IIndicatorRequestService getIndicatorRequestService(JobBatch batch) {
+	public static IIndRequestService getIndicatorRequestService(JobBatch batch) {
 		return BeanUtil.get(IndicatorDispatcher.class).getIndicatorRequestServiceByBatch(batch.getId());
 	}
 	
@@ -52,16 +52,16 @@ public class RuntimeIndServiceUtil {
 	public static int indOnNoboxDisplay(JobBatch batch, List<IndCommonReq> indList) {
 		// 1. 빈 값 체크 
 		if(ValueUtil.isNotEmpty(indList)) {
-			IIndicatorRequestService sendSvc = getIndicatorRequestService(batch);
+			IIndRequestService sendSvc = getIndicatorRequestService(batch);
 			
 			// 2. 점등 요청을 위한 데이터 모델 생성. 
-			Map<String, List<IndicatorOnInformation>> indOnInfoList = new HashMap<String, List<IndicatorOnInformation>>();
+			Map<String, List<IIndOnInfo>> indOnInfoList = new HashMap<String, List<IIndOnInfo>>();
 
 			for (IndCommonReq indOnPick : indList) {
 				String gwPath = indOnPick.getGwPath();
-				List<IndicatorOnInformation> indOnList = indOnInfoList.containsKey(gwPath) ? 
-						indOnInfoList.get(gwPath) : new ArrayList<IndicatorOnInformation>();
-				IndicatorOnInformation indOnInfo = new IndicatorOnInformation();
+				List<IIndOnInfo> indOnList = indOnInfoList.containsKey(gwPath) ? 
+						indOnInfoList.get(gwPath) : new ArrayList<IIndOnInfo>();
+				IIndOnInfo indOnInfo = sendSvc.newIndicatorInfomration();
 				indOnInfo.setId(indOnPick.getIndCd());
 				indOnInfo.setBizId(indOnPick.getIndCd());
 				indOnList.add(indOnInfo);
@@ -70,7 +70,7 @@ public class RuntimeIndServiceUtil {
 					
 			if(ValueUtil.isNotEmpty(indOnInfoList)) {
 				// 3. 표시기 점등 요청
-				sendSvc.requestIndsOn(batch.getDomainId(), batch.getJobType(), GwConstants.IND_ACTION_TYPE_NOBOX, indOnInfoList);
+				sendSvc.requestIndListOn(batch.getDomainId(), batch.getJobType(), GwConstants.IND_ACTION_TYPE_NOBOX, indOnInfoList);
 				// 4. 점등된 표시기 개수 리턴 
 				return indOnInfoList.size();
 			}
@@ -88,16 +88,17 @@ public class RuntimeIndServiceUtil {
 	public static int restoreIndDisplayJobPicked(JobBatch batch, List<JobInstance> jobList) {
 		// 1. 빈 값 체크 
 		if(ValueUtil.isNotEmpty(jobList)) {
-			IIndicatorRequestService sendSvc = getIndicatorRequestService(batch);
+			IIndRequestService sendSvc = getIndicatorRequestService(batch);
 			
 			// 2. 점등 요청을 위한 데이터 모델 생성. 
-			Map<String, List<IndicatorOnInformation>> indOnInfoList = new HashMap<String, List<IndicatorOnInformation>>();
+			Map<String, List<IIndOnInfo>> indOnInfoList = new HashMap<String, List<IIndOnInfo>>();
 			
 			for (JobInstance job : jobList) {
 				String gwPath = job.getGwPath();
-				List<IndicatorOnInformation> indOnList = indOnInfoList.containsKey(gwPath) ? 
-						indOnInfoList.get(gwPath) : new ArrayList<IndicatorOnInformation>();
-				IndicatorOnInformation indOnInfo = new IndicatorOnInformation();
+				List<IIndOnInfo> indOnList = indOnInfoList.containsKey(gwPath) ? 
+						indOnInfoList.get(gwPath) : new ArrayList<IIndOnInfo>();
+				
+				IIndOnInfo indOnInfo = sendSvc.newIndicatorInfomration();
 				indOnInfo.setId(job.getIndCd());
 				indOnInfo.setBizId(job.getId());
 				indOnInfo.setOrgEaQty(job.getPickedQty());
@@ -107,7 +108,7 @@ public class RuntimeIndServiceUtil {
 			
 			if(ValueUtil.isNotEmpty(indOnInfoList)) {
 				// 3. 표시기 점등 요청
-				sendSvc.requestIndsOn(batch.getDomainId(), batch.getJobType(), GwConstants.IND_ACTION_TYPE_DISPLAY, indOnInfoList);
+				sendSvc.requestIndListOn(batch.getDomainId(), batch.getJobType(), GwConstants.IND_ACTION_TYPE_DISPLAY, indOnInfoList);
 				// 4. 점등된 표시기 개수 리턴 
 				return indOnInfoList.size();
 			}
@@ -167,7 +168,7 @@ public class RuntimeIndServiceUtil {
 	 */
 	public static List<WorkCell> restoreIndDisplayBoxingEnd(JobBatch batch, List<WorkCell> workCells) {
 		if(ValueUtil.isNotEmpty(workCells)) {
-			IIndicatorRequestService indSendService = getIndicatorRequestService(batch);
+			IIndRequestService indSendService = getIndicatorRequestService(batch);
 
 			for(WorkCell cell : workCells) {
 				String jobStatus = cell.getStatus();
@@ -238,15 +239,15 @@ public class RuntimeIndServiceUtil {
 	public static int indOnByJobList(boolean needUpdateJobStatus, JobBatch batch, List<JobInstance> jobList) {
 		// 1. 빈 값 체크 
 		if(ValueUtil.isNotEmpty(jobList)) {
-			IIndicatorRequestService indSendService = getIndicatorRequestService(batch);
+			IIndRequestService indSendService = getIndicatorRequestService(batch);
 			
 			// 2. 점등 요청을 위한 데이터 모델 생성. 
-			Map<String, List<IndicatorOnInformation>> indOnList = buildIndOnList(needUpdateJobStatus, batch, jobList, false);
+			Map<String, List<IIndOnInfo>> indOnList = buildIndOnList(needUpdateJobStatus, batch, jobList, false);
 			
 			if(ValueUtil.isNotEmpty(indOnList)) {
 				JobInstance firstJob = jobList.get(0);
 				// 3. 표시기 점등 요청
-				indSendService.requestIndsOn(firstJob.getDomainId(), batch.getJobType(), GwConstants.IND_ACTION_TYPE_PICK, indOnList);
+				indSendService.requestIndListOn(firstJob.getDomainId(), batch.getJobType(), GwConstants.IND_ACTION_TYPE_PICK, indOnList);
 				// 4. 점등된 표시기 개수 리턴 
 				return indOnList.size();
 			}
@@ -268,14 +269,14 @@ public class RuntimeIndServiceUtil {
 		// 1. 빈 값 체크 
 		if(ValueUtil.isNotEmpty(jobList)) {
 			// 2. 점등 요청을 위한 데이터 모델 생성. 
-			Map<String, List<IndicatorOnInformation>> indOnList = buildIndOnList(needUpdateJobStatus, batch, jobList, true);
+			Map<String, List<IIndOnInfo>> indOnList = buildIndOnList(needUpdateJobStatus, batch, jobList, true);
 			
 			if(ValueUtil.isNotEmpty(indOnList)) {
-				IIndicatorRequestService indSendService = getIndicatorRequestService(batch);
+				IIndRequestService indSendService = getIndicatorRequestService(batch);
 				
 				JobInstance firstJob = jobList.get(0);
 				// 3. 표시기 점등 요청
-				indSendService.requestIndsOn(firstJob.getDomainId(), batch.getJobType(), GwConstants.IND_ACTION_TYPE_PICK, indOnList);
+				indSendService.requestIndListOn(firstJob.getDomainId(), batch.getJobType(), GwConstants.IND_ACTION_TYPE_PICK, indOnList);
 				// 4. 점등된 표시기 개수 리턴 
 				return indOnList.size();
 			}
@@ -306,14 +307,14 @@ public class RuntimeIndServiceUtil {
 			}
 			
 			if(ValueUtil.isNotEmpty(pickingJobs)) {
-				IIndicatorRequestService indSendService = getIndicatorRequestService(batch);
+				IIndRequestService indSendService = getIndicatorRequestService(batch);
 				
 	 			// 2. 점등 요청을 위한 데이터 모델 생성. 
-				Map<String, List<IndicatorOnInformation>> indOnList = buildIndOnList(needUpdateJobStatus, batch, jobList, false);
+				Map<String, List<IIndOnInfo>> indOnList = buildIndOnList(needUpdateJobStatus, batch, jobList, false);
 				
 				if(ValueUtil.isNotEmpty(indOnList)) {
 					// 3. 표시기 점등 요청
-					indSendService.requestIndsOn(batch.getDomainId(), batch.getJobType(), GwConstants.IND_ACTION_TYPE_PICK, indOnList);
+					indSendService.requestIndListOn(batch.getDomainId(), batch.getJobType(), GwConstants.IND_ACTION_TYPE_PICK, indOnList);
 					// 4. 점등된 표시기 개수 리턴 
 					return indOnList.size();
 				}
@@ -344,14 +345,14 @@ public class RuntimeIndServiceUtil {
 			}
 			
 			if(ValueUtil.isNotEmpty(pickingJobs)) {
-				IIndicatorRequestService indSendService = getIndicatorRequestService(batch);
+				IIndRequestService indSendService = getIndicatorRequestService(batch);
 				
 	 			// 2. 점등 요청을 위한 데이터 모델 생성. 
-				Map<String, List<IndicatorOnInformation>> indOnList = buildIndOnList(needUpdateJobStatus, batch, jobList, false);
+				Map<String, List<IIndOnInfo>> indOnList = buildIndOnList(needUpdateJobStatus, batch, jobList, false);
 				
 				if(ValueUtil.isNotEmpty(indOnList)) {
 					// 3. 표시기 점등 요청
-					indSendService.requestIndsOn(batch.getDomainId(), batch.getJobType(), GwConstants.IND_ACTION_TYPE_DISPLAY, indOnList);
+					indSendService.requestIndListOn(batch.getDomainId(), batch.getJobType(), GwConstants.IND_ACTION_TYPE_DISPLAY, indOnList);
 					// 4. 점등된 표시기 개수 리턴 
 					return indOnList.size();
 				}
@@ -378,12 +379,12 @@ public class RuntimeIndServiceUtil {
 			}
 			
 			// 3. 점등 요청을 위한 데이터 모델 생성. 
-			Map<String, List<IndicatorOnInformation>> indOnList = buildIndOnList(false, batch, jobList, false);
+			Map<String, List<IIndOnInfo>> indOnList = buildIndOnList(false, batch, jobList, false);
 			
 			if(ValueUtil.isNotEmpty(indOnList)) {
-				IIndicatorRequestService indSendService = getIndicatorRequestService(batch);
+				IIndRequestService indSendService = getIndicatorRequestService(batch);
 				// 4. 표시기 점등 요청
-				indSendService.requestIndsInspectOn(batch.getDomainId(), batch.getJobType(), indOnList);
+				indSendService.requestIndListOnForInspect(batch.getDomainId(), batch.getJobType(), indOnList);
 				// 5. 점등된 표시기 개수 리턴 
 				return indOnList.size();
 			}
@@ -401,7 +402,7 @@ public class RuntimeIndServiceUtil {
 	 * @param showPickingQty JobProcess의 pickQty가 아니라 pickingQty를 표시기의 분류 수량으로 표시할 지 여부
 	 * @return
 	 */
-	public static Map<String, List<IndicatorOnInformation>> buildIndOnList(
+	public static Map<String, List<IIndOnInfo>> buildIndOnList(
 			boolean needUpdateJobStatus, JobBatch batch, List<JobInstance> jobList, boolean showPickingQty) {
 		
 		if(ValueUtil.isNotEmpty(jobList)) {
@@ -451,7 +452,7 @@ public class RuntimeIndServiceUtil {
 	 * @param jobList
 	 * @return
 	 */
-	public static Map<String, List<IndicatorOnInformation>> buildTestIndOnList(String indConfigSetId, String jobType, List<JobInstance> jobList) {
+	public static Map<String, List<IIndOnInfo>> buildTestIndOnList(String indConfigSetId, String jobType, List<JobInstance> jobList) {
 		
 		if(ValueUtil.isNotEmpty(jobList)) {
 			List<IndOnPickReq> indListToLightOn = new ArrayList<IndOnPickReq>(jobList.size());

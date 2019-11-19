@@ -72,6 +72,7 @@ import xyz.elidom.util.BeanUtil;
  * - dps.sku.popula.rank.calc.days				DPS SKU 물량 Rank 선정 기준 데이터 범위 (일자)
  * - dps.station.wait-pool.count				DPS 작업 스테이션에 대기할 박스 최대 개수 (-1이면 무한대)
  * - dps.supple.recommend-cell.enabled			DPS 추천 로케이션 사용 여부
+ * - dps.job-assign.scheduling.enabled			DPS 작업 스케줄러 사용 여부
  * 
  * @author shortstop
  */
