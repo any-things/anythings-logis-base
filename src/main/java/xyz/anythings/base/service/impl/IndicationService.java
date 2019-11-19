@@ -9,7 +9,7 @@ import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.JobInput;
 import xyz.anythings.base.entity.JobInstance;
 import xyz.anythings.gw.entity.Gateway;
-import xyz.anythings.gw.service.api.IIndicatorRequestService;
+import xyz.anythings.gw.service.api.IIndRequestService;
 
 /**
  * 표시기 점,소등 서비스 Facade
@@ -25,7 +25,7 @@ public class IndicationService extends AbstractLogisService {
 	 * @param batch
 	 * @return
 	 */
-	public IIndicatorRequestService getIndicatorRequestService(JobBatch batch) {
+	public IIndRequestService getIndicatorRequestService(JobBatch batch) {
 		return this.serviceDispatcher.getIndicationService(batch).getIndicatorRequestService(batch);
 	}
 	
@@ -35,7 +35,7 @@ public class IndicationService extends AbstractLogisService {
 	 * @param indType
 	 * @return
 	 */
-	public IIndicatorRequestService getIndicatorRequestService(String indType) {
+	public IIndRequestService getIndicatorRequestService(String indType) {
 		return this.serviceDispatcher.getIndicationService(indType).getIndicatorRequestService(indType);
 	}
 	
