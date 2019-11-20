@@ -1,6 +1,8 @@
 package xyz.anythings.base.rest;
 
 import java.util.List;
+import java.util.Map;
+import xyz.elidom.dbist.dml.Filter;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import xyz.anythings.base.entity.Station;
+import xyz.anythings.base.entity.StationWorker;
 
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
 import xyz.elidom.orm.system.annotation.service.ServiceDesc;
@@ -77,6 +80,28 @@ public class StationController extends AbstractRestService {
 	@ApiDesc(description = "Create, Update or Delete multiple at one time")
 	public Boolean multipleUpdate(@RequestBody List<Station> list) {
 		return this.cudMultipleData(this.entityClass(), list);
+	}
+
+	@RequestMapping(value = "/{id}/include_details", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Find One included all details by ID")
+	public Map<String, Object> findDetails(@PathVariable("id") String id) {
+		return this.findOneIncludedDetails(id);
+	}
+
+	@RequestMapping(value = "/{id}/items", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Search detail list by master ID")
+	public List<StationWorker> findStationWorker(@PathVariable("id") String id) {
+		xyz.elidom.dbist.dml.Query query = new xyz.elidom.dbist.dml.Query();
+		query.addFilter(new Filter("stationId", id));
+		return this.queryManager.selectList(StationWorker.class, query);
+	}
+
+	@RequestMapping(value = "/{id}/items/update_multiple", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Create, Update, Delete multiple details at one time")
+	public List<StationWorker> updateStationWorker(@PathVariable("id") String id,
+			@RequestBody List<StationWorker> list) {
+		this.cudMultipleData(StationWorker.class, list);
+		return this.findStationWorker(id);
 	}
 
 }
