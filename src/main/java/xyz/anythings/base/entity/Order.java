@@ -41,6 +41,12 @@ public class Order extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	 */
 	public static final String STATUS_ASSIGN = "A";
 	
+	/**
+	 * 상태 R: 진행중
+	 */
+	public static final String STATUS_RUNNING = "R";
+	
+	
 	
 	
 

@@ -1,5 +1,6 @@
 package xyz.anythings.base.service.impl;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,19 @@ public abstract class AbstractBoxingService extends AbstractExecutionService imp
 		String qry = this.boxQueryStore.getCreateBoxPackDataByBoxItemsQuery();
 		Map<String,Object> param = ValueUtil.newMap("domainId,batchId,orderNo,userId,boxPackId,boxType,boxTypeCd"
 				, domainId,batch.getId(), orderNo,User.currentUser().getId(), boxPackId,boxType,boxTypeCd);
+		this.queryManager.executeBySql(qry, param);
+	}
+
+
+	/**
+	 * BoxPack 정보 orderIds를 기준으로 BoxItem 데이터의 수량을 Update 한다. 
+	 * @param domainId
+	 * @param boxPackId
+	 * @param orderIds
+	 */
+	public void updateBoxItemDataByOrder(Long domainId, String boxPackId, List<String> orderIds) {
+		String qry = this.boxQueryStore.getUpdateBoxItemDataByOrderQuery();
+		Map<String,Object> param = ValueUtil.newMap("domainId,boxPackId,orderIds", domainId,boxPackId,orderIds);
 		this.queryManager.executeBySql(qry, param);
 	}
 

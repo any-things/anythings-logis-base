@@ -35,12 +35,12 @@ import xyz.anythings.base.model.BatchProgressRate;
 import xyz.anythings.base.model.Category;
 import xyz.anythings.base.model.EquipBatchSet;
 import xyz.anythings.base.query.store.BatchQueryStore;
-import xyz.anythings.base.service.impl.LogisServiceDispatcher;
 import xyz.anythings.base.service.util.LogisServiceUtil;
 import xyz.anythings.sys.event.EventPublisher;
 import xyz.anythings.sys.model.BaseResponse;
 import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.elidom.dbist.dml.Page;
+import xyz.elidom.exception.server.ElidomServiceException;
 import xyz.elidom.orm.IQueryManager;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
 import xyz.elidom.orm.system.annotation.service.ServiceDesc;
@@ -59,18 +59,15 @@ import xyz.elidom.util.BeanUtil;
 @RequestMapping("/rest/device_process")
 @ServiceDesc(description = "Device Process Controller API")
 public class DeviceProcessController {
-	/**
-	 * 서비스 파인더
-	 */
-	@Autowired
-	private LogisServiceDispatcher logisServiceFinder;
-	
 	
 	@Autowired
 	BatchQueryStore batchQueryStore;
 	
 	@Autowired
 	IQueryManager queryManager;
+	
+	@Autowired
+	EventPublisher eventPublisher;
 	
 	/**********************************************************************
 	 * 								공통 API  q
@@ -352,9 +349,10 @@ public class DeviceProcessController {
 	 * @param jobProcessId
 	 * @return
 	 */
-	@RequestMapping(value = "/classify/confirm/{equip_type}/{equip_cd}/{job_instance_id}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/classify/confirm/{device_type}/{equip_type}/{equip_cd}/{job_instance_id}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Confirm classification")
 	public BaseResponse confirmClassification(
+			@PathVariable("device_type") String deviceType,
 			@PathVariable("equip_type") String equipType,
 			@PathVariable("equip_cd") String equipCd, 
 			@PathVariable("job_instance_id") String jobInstanceId) {
@@ -370,10 +368,19 @@ public class DeviceProcessController {
 		
 		// 3. 소분류 이벤트 생성 
 		ClassifyRunEvent event = new ClassifyRunEvent(batch, EventConstants.EVENT_STEP_ALONE
-				, LogisCodeConstants.CLASSIFICATION_DEVICE_TABLET
+				, deviceType.toLowerCase()
 				, LogisCodeConstants.CLASSIFICATION_ACTION_CONFIRM, jobInstanceId, job.getSubEquipCd(), job.getPickQty(), job.getPickQty());
 		
-		return new BaseResponse(true,null, this.logisServiceFinder.getClassificationService(batch).classify(event));
+		// 4. 이벤트 발생 
+		this.eventPublisher.publishEvent(event);
+		
+		// 5. 이벤트 처리 결과 리턴 
+		if(event.isExecuted() == false) {
+			// 기능 실행중 에러가 발생 했습니다. ? 
+			throw new ElidomServiceException();
+		} else {
+			return new BaseResponse(true,null, event.getResult());
+		}
 	}
 
 	/**
@@ -386,9 +393,10 @@ public class DeviceProcessController {
 	 * @param resQty
 	 * @return
 	 */
-	@RequestMapping(value = "/classify/split/{equip_type}/{equip_cd}/{job_instance_id}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/classify/split/{device_type}/{equip_type}/{equip_cd}/{job_instance_id}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Confirm classification")
 	public BaseResponse splitClassification(
+			@PathVariable("device_type") String deviceType,
 			@PathVariable("equip_type") String equipType,
 			@PathVariable("equip_cd") String equipCd, 
 			@PathVariable("job_instance_id") String jobInstanceId, 
@@ -406,12 +414,21 @@ public class DeviceProcessController {
 		
 		// 3. 소분류 이벤트 생성 
 		ClassifyRunEvent event = new ClassifyRunEvent(batch, EventConstants.EVENT_STEP_ALONE
-				, LogisCodeConstants.CLASSIFICATION_DEVICE_TABLET
+				, deviceType.toLowerCase()
 				, LogisCodeConstants.CLASSIFICATION_ACTION_MODIFY, jobInstanceId, job.getSubEquipCd()
 				, ValueUtil.isEmpty(reqQty) ? job.getPickQty() : reqQty
 				, ValueUtil.isEmpty(resQty) ? 1 : resQty);
 		
-		return new BaseResponse(true,null, this.logisServiceFinder.getClassificationService(batch).classify(event));		
+		// 4. 이벤트 발생 
+		this.eventPublisher.publishEvent(event);
+		
+		// 5. 이벤트 처리 결과 리턴 
+		if(event.isExecuted() == false) {
+			// 기능 실행중 에러가 발생 했습니다. ? 
+			throw new ElidomServiceException();
+		} else {
+			return new BaseResponse(true,null, event.getResult());
+		}	
 	}
 	
 	/**
@@ -422,9 +439,10 @@ public class DeviceProcessController {
 	 * @param jobInstanceId
 	 * @return
 	 */
-	@RequestMapping(value = "/classify/cancel/{equip_type}/{equip_cd}/{job_instance_id}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/classify/cancel/{device_type}/{equip_type}/{equip_cd}/{job_instance_id}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Cancel classification")
 	public BaseResponse cancelClassification(
+			@PathVariable("device_type") String deviceType,
 			@PathVariable("equip_type") String equipType,
 			@PathVariable("equip_cd") String equipCd, 
 			@PathVariable("job_instance_id") String jobInstanceId) {
@@ -440,11 +458,20 @@ public class DeviceProcessController {
 		
 		// 3. 소분류 이벤트 생성 
 		ClassifyRunEvent event = new ClassifyRunEvent(batch, EventConstants.EVENT_STEP_ALONE
-				, LogisCodeConstants.CLASSIFICATION_DEVICE_TABLET
+				, deviceType.toLowerCase()
 				, LogisCodeConstants.CLASSIFICATION_ACTION_CANCEL, jobInstanceId, job.getSubEquipCd()
 				, 0, 0);
 		
-		return new BaseResponse(true,null, this.logisServiceFinder.getClassificationService(batch).classify(event));		
+		// 4. 이벤트 발생 
+		this.eventPublisher.publishEvent(event);
+		
+		// 5. 이벤트 처리 결과 리턴 
+		if(event.isExecuted() == false) {
+			// 기능 실행중 에러가 발생 했습니다. ? 
+			throw new ElidomServiceException();
+		} else {
+			return new BaseResponse(true,null, event.getResult());
+		}	
 	}	
 	
 	/**
@@ -455,9 +482,10 @@ public class DeviceProcessController {
 	 * @param jobInstanceId
 	 * @return
 	 */
-	@RequestMapping(value = "/classify/undo/{equip_type}/{equip_cd}/{job_instance_id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/classify/undo/{device_type}/{equip_type}/{equip_cd}/{job_instance_id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Undo classification")
 	public BaseResponse undoClassification(
+			@PathVariable("device_type") String deviceType,
 			@PathVariable("equip_type") String equipType,
 			@PathVariable("equip_cd") String equipCd, 
 			@PathVariable("job_instance_id") String jobInstanceId) {

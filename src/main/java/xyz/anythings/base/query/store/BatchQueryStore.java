@@ -156,5 +156,13 @@ public class BatchQueryStore extends LogisBaseQueryStore {
 	public String getRackDpsBatchBoxInputTabDetailQuery() {
 		return this.getQueryByPath("batch/RackDpsBatchBoxInputTabDetail");
 	}
+	
+	/**
+	 * 소분류 처리를 주문 데이터에 반영 하기 위한 업데이트 대상 리스트 조회 쿼리 
+	 * @return
+	 */
+	public String getFindOrderQtyUpdateListQuery() {
+		return this.getQueryByPath("batch/FindOrderQtyUpdateList");
+	}
 
 }

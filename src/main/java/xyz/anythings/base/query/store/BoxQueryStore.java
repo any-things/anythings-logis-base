@@ -36,5 +36,13 @@ public class BoxQueryStore extends LogisBaseQueryStore {
 	public String getCreateBoxItemsDataByOrderQuery() {
 		return this.getQueryByPath("box/CreateBoxItemsDataByOrder");
 	}
+	
+	/**
+	 * 주문 정보를 기준으로 BoxItem 데이터 업데이트 쿼리 
+	 * @return
+	 */
+	public String getUpdateBoxItemDataByOrderQuery() {
+		return this.getQueryByPath("box/UpdateBoxItemDataByOrder");
+	}
 
 }
