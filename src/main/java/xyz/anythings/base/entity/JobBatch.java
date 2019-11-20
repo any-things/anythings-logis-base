@@ -4,12 +4,11 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional; 
+import org.springframework.transaction.annotation.Transactional;
 
 import xyz.anythings.base.LogisConstants;
 import xyz.anythings.gw.entity.IndConfigSet;
 import xyz.anythings.sys.AnyConstants;
-import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.elidom.dbist.annotation.Column;
 import xyz.elidom.dbist.annotation.GenerationRule;
@@ -17,16 +16,16 @@ import xyz.elidom.dbist.annotation.Index;
 import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.Relation;
 import xyz.elidom.dbist.annotation.Table;
-import xyz.elidom.dbist.dml.Filter;
 import xyz.elidom.dbist.dml.Query;
 import xyz.elidom.orm.IQueryManager;
-import xyz.elidom.sys.SysConstants;
-import xyz.elidom.sys.util.ThrowUtil;
 import xyz.elidom.util.BeanUtil;
 import xyz.elidom.util.ValueUtil;
 
-@Table(name = "job_batches", idStrategy = GenerationRule.UUID, uniqueFields="domainId,jobType,jobDate,jobSeq", indexes = {
-	@Index(name = "ix_job_batches_0", columnList = "domain_id,job_type,job_date,job_seq", unique = true)
+@Table(name = "job_batches", idStrategy = GenerationRule.UUID, indexes = {
+	@Index(name = "ix_job_batches_0", columnList = "domain_id,job_type,job_date,job_seq,status"),
+	@Index(name = "ix_job_batches_1", columnList = "domain_id,wms_batch_no"),
+	@Index(name = "ix_job_batches_2", columnList = "domain_id,batch_group_id"),
+	@Index(name = "ix_job_batches_3", columnList = "domain_id,equip_type,equip_cd")
 })
 public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	/**
@@ -405,19 +404,7 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 				this.indConfigSetId = refId;
 		}
 	}
-	
-	/**
-	 * 현재 상태
-	 * 
-	 * @param batchReceipt
-	 * @return
-	 */
-	public String getCurrentStatus() {
-		JobBatch batch = AnyEntityUtil.findEntityById(false, JobBatch.class, this.getId());
-		this.setStatus(batch.getStatus());
-		return batch.getStatus();
-	}
-	
+		
 	/**
 	 * 상태 업데이트, 즉시 반영
 	 *  
@@ -500,60 +487,7 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		BeanUtil.get(IQueryManager.class).insert(batch);
 		return batch;
 	}
-	
-	/**
-	 * ID로 작업 배치 조회
-	 *
-	 * @param stageCd Stage ID
-	 * @param id 배치 ID
-	 * @param withLock 테이블 락을 걸지 여부
-	 * @param exceptionWhenEmpty 조회 결과가 null이면 예외 발생 여부
-	 * @return
-	 */
-	public static JobBatch find(Long domainId, String id, boolean withLock, boolean exceptionWhenEmpty) {
-		Query condition = AnyOrmUtil.newConditionForExecution(domainId);
-		condition.addFilter(new Filter(SysConstants.ENTITY_FIELD_ID, id));
-		JobBatch jobBatch = withLock ?
-				BeanUtil.get(IQueryManager.class).selectByConditionWithLock(JobBatch.class, condition) :
-				BeanUtil.get(IQueryManager.class).selectByCondition(JobBatch.class, condition);
-
-		if(jobBatch == null && exceptionWhenEmpty) {
-			throw ThrowUtil.newNotFoundRecord("terms.menu.JobBatch", id);
-		}
-
-		return jobBatch;
-	}
-	
-	/**
-	 * 조건에 따른 주문 가공 데이터 건수를 조회하여 리턴
-	 *
-	 * @param filterNames
-	 * @param filterOpers
-	 * @param filterValues
-	 * @return
-	 */
-	public int preprocessCountByCondition(String filterNames, String filterOpers, String filterValues) {
-		Query condition = AnyOrmUtil.newConditionForExecution(this.domainId);
-		condition.addFilter("batchId", this.id);
-
-		if(ValueUtil.isNotEmpty(filterNames)) {
-			String[] names = filterNames.split(SysConstants.COMMA);
-			String[] opers = ValueUtil.isNotEmpty(filterOpers) ? filterOpers.split(SysConstants.COMMA) : SysConstants.EMPTY_STRING.split(SysConstants.COMMA);
-			String[] values = ValueUtil.isNotEmpty(filterValues) ? filterValues.split(SysConstants.COMMA) : SysConstants.EMPTY_STRING.split(SysConstants.COMMA);
-
-			for(int i = 0 ; i < names.length ; i++) {
-				condition.addFilter(new Filter(names[i], opers[i], values[i]));
-			}
-		}
-
-		if(this.isDasBatch() || this.isRtnBatch()) {
-			return BeanUtil.get(IQueryManager.class).selectSize(OrderPreprocess.class, condition);
-
-		} else {
-			return -1;
-		}
-	}
-	
+		
 	/**
 	 * DAS용 작업 배치인지 체크
 	 *
@@ -570,15 +504,6 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	 */
 	public boolean isRtnBatch() {
 		return ValueUtil.isEqualIgnoreCase(AnyConstants.JOB_TYPE_RTN, this.jobType);
-	}
-	
-	/**
-	 * 무오더 반품용 작업 배치인지 체크
-	 *
-	 * @return
-	 */
-	public boolean isRtn3Batch() {
-		return ValueUtil.isEqualIgnoreCase(AnyConstants.JOB_TYPE_RTN3, this.jobType);
 	}
 
 }

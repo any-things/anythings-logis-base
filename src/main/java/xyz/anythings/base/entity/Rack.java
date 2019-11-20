@@ -197,7 +197,7 @@ public class Rack extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	 * @param exceptionWhenEmpty
 	 * @return
 	 */
-	public static Rack findByRackCd(Long domainId,String rackCd, boolean exceptionWhenEmpty) {
+	public static Rack findByRackCd(Long domainId, String rackCd, boolean exceptionWhenEmpty) {
 		Query query = new Query();
 		Rack rack = null;
 

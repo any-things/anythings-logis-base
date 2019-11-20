@@ -1,6 +1,5 @@
 package xyz.anythings.base.rest;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -220,7 +219,9 @@ public class OrderPreprocessController extends AbstractRestService {
 	/**
 	 * 주문 가공 리셋
 	 * 
-	 * @param id
+	 * @param batchId
+	 * @param resetAll
+	 * @param items
 	 * @return
 	 */
 	@RequestMapping(value = "/{id}/reset_preprocess", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -230,13 +231,8 @@ public class OrderPreprocessController extends AbstractRestService {
 			@RequestParam(name = "reset_all", required = false) boolean resetAll,
 			@RequestBody List<Rack> items) {
 		
-		List<String> equipCdList= new ArrayList<String>();
 		JobBatch batch = this.checkBatch(batchId);
-		if(!items.isEmpty()) {
-			for(Rack item : items) {
-				equipCdList.add(item.getRackCd());
-			}
-		} 
+		List<String> equipCdList = AnyValueUtil.filterValueListBy(items, "rackCd");
 		this.preprocessService.resetPreprocess(batch, resetAll, equipCdList);
 		return ValueUtil.newMap("result", SysConstants.OK_STRING);
 	}
