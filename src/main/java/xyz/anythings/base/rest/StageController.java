@@ -114,16 +114,13 @@ public class StageController extends AbstractRestService {
 				if(stage.getCudFlag_().equalsIgnoreCase("u")) {
 					Stage befStage = this.findOne(stage.getId());
 					
-					// AreaCd 또는 StageCd 가 변경 되면 이벤트 발생  
-					if(ValueUtil.isNotEqual(befStage.getAreaCd(), stage.getAreaCd()) 
-						|| ValueUtil.isNotEqual(befStage.getStageCd(), stage.getStageCd())) {
-						
-						String befQueueName = domain.getMwSiteCd() + '/' + befStage.getAreaCd() + '/' + befStage.getStageCd();
-						queueModels.add(new LogisQueueNameModel(domain.getId(), stage.getCudFlag_(), domain.getMwSiteCd(),befQueueName , stage.getAreaCd(), stage.getStageCd()));
+					// StageCd 가 변경 되면 이벤트 발생  
+					if(ValueUtil.isNotEqual(befStage.getStageCd(), stage.getStageCd())) {
+						queueModels.add(new LogisQueueNameModel(domain.getId(), stage.getCudFlag_(), domain.getMwSiteCd(),befStage.getStageCd() , stage.getStageCd()));
 					}
 					
 				} else {
-					queueModels.add(new LogisQueueNameModel(domain.getId(), stage.getCudFlag_(), domain.getMwSiteCd(), null, stage.getAreaCd(), stage.getStageCd()));
+					queueModels.add(new LogisQueueNameModel(domain.getId(), stage.getCudFlag_(), domain.getMwSiteCd(), null, stage.getStageCd()));
 				}
 			}
 			
@@ -143,7 +140,7 @@ public class StageController extends AbstractRestService {
 		
 		// 조회 조건 셋팅 
 		Query condition = new Query();
-		condition.addSelect("areaCd","stageCd","domainId");
+		condition.addSelect("stageCd","domainId");
 		
 		// domainId 가 0 이 아니면 조회 조건 설정 
 		if(event.getDomainId() != 0) {
