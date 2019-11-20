@@ -64,16 +64,6 @@ public class IndicatorTestController {
 		return BeanUtil.get(IndicatorDispatcher.class).getIndicatorRequestService(indTest.getIndConfigSet().getIndType());
 	}
 	
-	/**
-	 * 표시기 서비스를 요청
-	 * 
-	 * @return
-	 */
-	public IIndRequestService getIndicatorRequestService() {
-		// FIXME 하드코딩 제거
-		return BeanUtil.get(IndicatorDispatcher.class).getIndicatorRequestService("mqbase");
-	}
-
 	@RequestMapping(value = "/unit_test", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Indicator Unit Test")
 	public Map<String, Object> unitTest(@RequestBody IndTest indTest) {
@@ -112,7 +102,7 @@ public class IndicatorTestController {
 		Map<String, List<IIndOnInfo>> indOnList = this.createIndOnInfoList(indTest);
 		
 		if(ValueUtil.isNotEmpty(indOnList)) {
-			return this.indicatorOnByInfo(Domain.currentDomainId(), indTest.getIndConfigSet().getStageCd(), indTest.getAction().getActionType(), indTest.getJobType(), indOnList);
+			return this.indicatorOnByInfo(Domain.currentDomainId(), indTest, indOnList);
 		} else {
 			// 점등할 정보가 없습니다.
 			return ThrowUtil.notFoundRecordMsg("terms.button.on");
@@ -189,18 +179,21 @@ public class IndicatorTestController {
 	 * 표시기 점등 ...
 	 * 
 	 * @param domainId
-	 * @param stageCd
-	 * @param actionType
-	 * @param jobType
+	 * @param indTest
 	 * @param indOnList
 	 * @return
 	 */
-	private String indicatorOnByInfo(Long domainId, String stageCd, String actionType, String jobType, Map<String, List<IIndOnInfo>> indOnInfo) {
+	private String indicatorOnByInfo(Long domainId, IndTest indTest, Map<String, List<IIndOnInfo>> indOnInfo) {
+		String actionType = indTest.getAction().getActionType();
+		String jobType = indTest.getJobType();
+		String stageCd = indTest.getIndConfigSet().getStageCd();
+		
 		if(ValueUtil.isEqualIgnoreCase(actionType, GwConstants.IND_ACTION_TYPE_PICK)) {
-			this.getIndicatorRequestService().requestIndListOn(domainId, stageCd, jobType, actionType, indOnInfo);
+			this.getIndicatorRequestService(indTest).requestIndListOn(domainId, stageCd, jobType, actionType, indOnInfo);
 			return FormatUtil.toUnderScoreJsonString(indOnInfo);
+			
 		} else {
-			if(this.indicatorOn(domainId, stageCd, actionType, jobType, indOnInfo)) {
+			if(this.indicatorOn(domainId, indTest, indOnInfo)) {
 				return FormatUtil.toUnderScoreJsonString(indOnInfo);
 			} else {
 				return null;
@@ -217,8 +210,13 @@ public class IndicatorTestController {
 	 * @param jobType
 	 * @param indOnInfo
 	 */
-	private boolean indicatorOn(Long domainId, String stageCd, String actionType, String jobType, Map<String, List<IIndOnInfo>> indOnInfo) {
-		IIndRequestService indReqSvc = this.getIndicatorRequestService();
+	private boolean indicatorOn(Long domainId, IndTest indTest, Map<String, List<IIndOnInfo>> indOnInfo) {
+		IIndRequestService indReqSvc = this.getIndicatorRequestService(indTest);
+		
+		String actionType = indTest.getAction().getActionType();
+		String jobType = indTest.getJobType();
+		String stageCd = indTest.getIndConfigSet().getStageCd();
+		
 		Iterator<String> indOnIter = indOnInfo.keySet().iterator();
 		int count = 0;
 		
