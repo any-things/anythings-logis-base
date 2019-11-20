@@ -1,10 +1,17 @@
 package xyz.anythings.base.entity;
 
+import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.elidom.dbist.annotation.Column;
 import xyz.elidom.dbist.annotation.GenerationRule;
 import xyz.elidom.dbist.annotation.Index;
 import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.Table;
+import xyz.elidom.dbist.dml.Filter;
+import xyz.elidom.dbist.dml.Query;
+import xyz.elidom.orm.IQueryManager;
+import xyz.elidom.sys.SysConstants;
+import xyz.elidom.sys.util.ThrowUtil;
+import xyz.elidom.util.BeanUtil;
 
 @Table(name = "orders", idStrategy = GenerationRule.UUID, indexes = {
 	@Index(name = "ix_orders_1", columnList = "batch_id,domain_id,order_no", unique=false)
@@ -525,4 +532,30 @@ public class Order extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	public void setStatus(String status) {
 		this.status = status;
 	}	
+	
+	/**
+	 * ID로 작업 배치 조회
+	 *
+	 * @param stageCd Stage ID
+	 * @param id 배치 ID
+	 * @param withLock 테이블 락을 걸지 여부
+	 * @param exceptionWhenEmpty 조회 결과가 null이면 예외 발생 여부
+	 * @return
+	 */
+	public static Order find(Long domainId, String batchId,String skuCd, boolean withLock, boolean exceptionWhenEmpty) {
+		Query condition = AnyOrmUtil.newConditionForExecution(domainId);
+		condition.addFilter("batch_id", batchId);
+		if(!skuCd.isEmpty())
+			condition.addFilter("sku_cd", skuCd);
+		
+		Order order = withLock ?
+				BeanUtil.get(IQueryManager.class).selectByConditionWithLock(Order.class, condition) :
+				BeanUtil.get(IQueryManager.class).selectByCondition(Order.class, condition);
+
+		if(order == null && exceptionWhenEmpty) {
+			throw ThrowUtil.newNotFoundRecord("terms.menu.Order", batchId);
+		}
+
+		return order;
+	}
 }
