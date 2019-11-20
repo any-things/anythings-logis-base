@@ -6,10 +6,8 @@ import xyz.elidom.dbist.annotation.GenerationRule;
 import xyz.elidom.dbist.annotation.Index;
 import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.Table;
-import xyz.elidom.dbist.dml.Filter;
 import xyz.elidom.dbist.dml.Query;
 import xyz.elidom.orm.IQueryManager;
-import xyz.elidom.sys.SysConstants;
 import xyz.elidom.sys.util.ThrowUtil;
 import xyz.elidom.util.BeanUtil;
 
@@ -17,6 +15,7 @@ import xyz.elidom.util.BeanUtil;
 	@Index(name = "ix_orders_1", columnList = "batch_id,domain_id,order_no", unique=false)
 })
 public class Order extends xyz.elidom.orm.entity.basic.ElidomStampHook {
+	
 	/**
 	 * SerialVersion UID
 	 */
@@ -36,7 +35,6 @@ public class Order extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	 * 상태 T : 대상분류    
 	 */
 	public static final String STATUS_TYPE = "T";
-
 	
 	/**
 	 * 상태 I : 작업 지시   
@@ -52,12 +50,6 @@ public class Order extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	 * 상태 R: 진행중
 	 */
 	public static final String STATUS_RUNNING = "R";
-	
-	
-	
-	
-
-	
 
 	@PrimaryKey
 	@Column (name = "id", nullable = false, length = 40)
