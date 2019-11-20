@@ -47,21 +47,24 @@ public interface IJobStatusService {
 	 * 2-1. 투입 정보 조회 (리스트)
 	 * 
 	 * @param batch
+	 * @param equipCd
 	 * @param stationCd
+	 * @param selectedInputId -- 탭 리스트 조회시 기본으로 선택될 탭 ID 
 	 * @return
 	 */
-	public List<JobInput> searchInputList(JobBatch batch, String stationCd);
+	public List<JobInput> searchInputList(JobBatch batch, String equipCd, String stationCd, String selectedInputId);
 	
 	/**
 	 * 2-1. 투입 정보 조회 (페이지네이션)
 	 * 
 	 * @param batch
-	 * @param stationCd
+	 * @param equipCd
+	 * @param status
 	 * @param page
 	 * @param limit
 	 * @return
 	 */
-	public Page<JobInput> paginateInputList(JobBatch batch, String stationCd, int page, int limit);
+	public Page<JobInput> paginateInputList(JobBatch batch, String equipCd, String status, int page, int limit);
 	
 	/**
 	 * 2-2. 투입 정보 조회 - 가장 최근에 투입된 투입 정보 조회
@@ -83,11 +86,11 @@ public interface IJobStatusService {
 	 * 3-1. 작업 조회 - 설비, 작업 존 별 투입 정보에 매핑된 작업 리스트 조회
 	 * 
 	 * @param batch
-	 * @param inputSeq
+	 * @param input
 	 * @param stationCd
 	 * @return
 	 */
-	public List<JobInstance> searchInputJobList(JobBatch batch, int inputSeq, String stationCd);
+	public List<JobInstance> searchInputJobList(JobBatch batch, JobInput input, String stationCd);
 	
 	/**
 	 * 3-1. 작업 조회 - 조회 조건으로 작업 리스트 조회

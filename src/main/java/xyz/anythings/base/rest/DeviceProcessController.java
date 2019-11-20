@@ -20,13 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.HandlerMapping;
 
 import xyz.anythings.base.LogisCodeConstants;
-import xyz.anythings.base.LogisConstants;
 import xyz.anythings.base.entity.BoxItem;
 import xyz.anythings.base.entity.BoxPack;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.JobInput;
 import xyz.anythings.base.entity.JobInstance;
-import xyz.anythings.base.entity.Rack;
 import xyz.anythings.base.entity.SKU;
 import xyz.anythings.base.event.EventConstants;
 import xyz.anythings.base.event.classfy.ClassifyRunEvent;
@@ -34,14 +32,13 @@ import xyz.anythings.base.event.rest.DeviceProcessRestEvent;
 import xyz.anythings.base.model.BatchProgressRate;
 import xyz.anythings.base.model.Category;
 import xyz.anythings.base.model.EquipBatchSet;
-import xyz.anythings.base.query.store.BatchQueryStore;
+import xyz.anythings.base.service.impl.LogisServiceDispatcher;
 import xyz.anythings.base.service.util.LogisServiceUtil;
 import xyz.anythings.sys.event.EventPublisher;
 import xyz.anythings.sys.model.BaseResponse;
 import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.exception.server.ElidomServiceException;
-import xyz.elidom.orm.IQueryManager;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
 import xyz.elidom.orm.system.annotation.service.ServiceDesc;
 import xyz.elidom.sys.entity.Domain;
@@ -60,11 +57,11 @@ import xyz.elidom.util.BeanUtil;
 @ServiceDesc(description = "Device Process Controller API")
 public class DeviceProcessController {
 	
+	/**
+	 * 서비스 디스패처
+	 */
 	@Autowired
-	BatchQueryStore batchQueryStore;
-	
-	@Autowired
-	IQueryManager queryManager;
+	private LogisServiceDispatcher serviceDispatcher;
 	
 	@Autowired
 	EventPublisher eventPublisher;
@@ -127,29 +124,10 @@ public class DeviceProcessController {
 	@RequestMapping(value = "/batch_progress_rate/{equip_type}/{equip_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Batch Progress Rate")
 	public BatchProgressRate batchProgressRate(@PathVariable("equip_type") String equipType, @PathVariable("equip_cd") String equipCd) {
-		
-		BatchProgressRate rate = new BatchProgressRate();
 		Long domainId = Domain.currentDomainId();
-		
-		// Rack 타입 공통 처리 
-		if(ValueUtil.isEqualIgnoreCase(LogisConstants.EQUIP_TYPE_RACK, equipType)) {
-			String qry = this.batchQueryStore.getRackBatchProgressRateQuery();
-			
-			EquipBatchSet equipBatchSet = LogisServiceUtil.findBatchByEquip(domainId, equipType, equipCd);
-			JobBatch batch = equipBatchSet.getBatch();
-			
-			Map<String,Object> params = ValueUtil.newMap("domainId,batchId,equipType", domainId, batch.getId(), equipType);
-			
-			if(ValueUtil.isNotEmpty(batch.getEquipCd())) {
-				params.put("equipCd", equipCd);
-			}
-			
-			rate = this.queryManager.selectBySql(qry, params, BatchProgressRate.class);
-		} else {
-			// TODO 다른 설비 추가 필요  
-		}
-		
-		return rate;
+		EquipBatchSet equipBatchSet = LogisServiceUtil.findBatchByEquip(domainId, equipType, equipCd);
+		JobBatch batch = equipBatchSet.getBatch();
+		return this.serviceDispatcher.getJobStatusService(batch).getBatchProgressSummary(batch);
 	}
 	/**
 	 * 고객사 코드 및 상품 코드로 상품 조회
@@ -569,35 +547,10 @@ public class DeviceProcessController {
 			@RequestParam(name = "status", required = false) String status) {
 		
 		Long domainId = Domain.currentDomainId();
-		
-		// 1. EQUIP , BATCH 조회
 		EquipBatchSet equipBatchSet = LogisServiceUtil.findBatchByEquip(domainId, equipType, equipCd);
 		JobBatch batch = equipBatchSet.getBatch();
 		
-		Map<String,Object> params = ValueUtil.newMap("domainId,equipType,batchId", domainId, equipType, batch.getId());
-		
-		// Rack 타입 공통 처리 
-		if(ValueUtil.isEqualIgnoreCase(LogisConstants.EQUIP_TYPE_RACK, equipType)) {
-			Rack rack = (Rack)equipBatchSet.getEquipEntity();
-			
-			String qry = "";
-			
-			if(ValueUtil.isNotEmpty(batch.getEquipCd())) {
-				params.put("equipCd", equipCd);
-			}
-			
-			// 2. DPS 일때 쿼리 
-			if(LogisConstants.isDpsJobType(rack.getJobType())){
-				qry = this.batchQueryStore.getRackDpsBatchInputListQuery();
-			} else {
-				// TODO 다른 job type 쿼리.. 
-			}
-			
-			return this.queryManager.selectPageBySql(qry, params, JobInput.class, page, limit);
-		} else {
-			// TODO 다른 설비 추가 필요  
-		}
-		return null;
+		return this.serviceDispatcher.getJobStatusService(batch).paginateInputList(batch, equipCd, status, page, limit);
 	}
 	
 	
@@ -616,16 +569,6 @@ public class DeviceProcessController {
 			@PathVariable("equip_cd") String equipCd,
 			@PathVariable("detail_id") String detailId) {
 		
-//		Long domainId = Domain.currentDomainId();
-		
-//		Map<String,Object> params = ValueUtil.newMap("domainId,equipType,equipCd", domainId, equipType, equipCd);
-		
-		// Rack 타입 공통 처리 
-		if(ValueUtil.isEqualIgnoreCase(LogisConstants.EQUIP_TYPE_RACK, equipType)) {
-			
-		} else {
-			// TODO 다른 설비 추가 필요  
-		}
 		return null;
 	}
 	
@@ -647,38 +590,10 @@ public class DeviceProcessController {
 		
 		Long domainId = Domain.currentDomainId();
 		
-		
-		// 1. EQUIP , BATCH 조회
 		EquipBatchSet equipBatchSet = LogisServiceUtil.findBatchByEquip(domainId, equipType, equipCd);
 		JobBatch batch = equipBatchSet.getBatch();
 		
-		Map<String,Object> params = ValueUtil.newMap("domainId,equipType,equipCd,equipZone,batchId", domainId, equipType, equipCd, equipZone, batch.getId());
-		// Rack 타입 공통 처리 
-		if(ValueUtil.isEqualIgnoreCase(LogisConstants.EQUIP_TYPE_RACK, equipType)) {
-			Rack rack = (Rack)equipBatchSet.getEquipEntity();
-			
-			String qry = "";
-			
-			// 2. DPS 일때 쿼리 
-			if(LogisConstants.isDpsJobType(rack.getJobType())){
-				qry = this.batchQueryStore.getRackDpsBatchBoxInputTabsQuery();
-				//params.put("viewOnlyMyJob", 1); // TODO : 내 작업 만 볼지 옵션 
-				
-				if(ValueUtil.isNotEmpty(selectedInputId)) {
-					params.put("selectedInputId", selectedInputId); //기준이 될 Bucket Input  ( ex) 박스 도착 후 조회 되는 리스트 )
-				}
-				
-			} else {
-				// TODO 다른 job type 쿼리.. 
-			}
-			
-			return this.queryManager.selectListBySql(qry, params, JobInput.class, 0, 0);
-		} else {
-			// TODO  다른 설비 ....
-		}
-		
-		// TODO 
-		return null;
+		return this.serviceDispatcher.getJobStatusService(batch).searchInputList(batch, equipCd, equipZone, selectedInputId);
 	}
 	
 	/**
@@ -698,36 +613,20 @@ public class DeviceProcessController {
 			@PathVariable("ind_on_flag") Boolean indOnFlag) {
 		
 		Long domainId = Domain.currentDomainId();
+		
+		EquipBatchSet equipBatchSet = LogisServiceUtil.findBatchByEquip(domainId, equipType, equipCd);
+		JobBatch batch = equipBatchSet.getBatch();
+		
 		// 1. JobInput 조회 
 		//  - 모든 작업 유형에 내 작업 외 다른 작업 까지 보기 선택된 경우에는 input 데이터가 null 
 		JobInput input = AnyEntityUtil.findEntityBy(domainId, false, JobInput.class, null, "id,equipType,equipCd,stationCd", jobInputId,equipType,equipCd,equipZone);
 		
-		// 1.1. input 이 Empty 면 현재 작업 존의 데이터가 없는 것. 
-		if(ValueUtil.isEmpty(input)) {
-			return null;
-		}
+		// 2. 서비스 호출 
+		List<JobInstance> retList = this.serviceDispatcher.getJobStatusService(batch).searchInputJobList(batch, input, equipZone);
 		
-		// 2. EQUIP , BATCH 조회
-		EquipBatchSet equipBatchSet = LogisServiceUtil.findBatchByEquip(domainId, equipType, equipCd);
-		JobBatch batch = equipBatchSet.getBatch();
-		List<JobInstance> resultList = null;
-		
-		// Rack 타입 공통 처리 
-		if(ValueUtil.isEqualIgnoreCase(LogisConstants.EQUIP_TYPE_RACK, equipType)) {
-			// 3. JobInstance 조회
-			// - side, gwPath 정보 추가 
-			String detailListQry = this.batchQueryStore.getRackDpsBatchBoxInputTabDetailQuery();
-			Map<String,Object> params = ValueUtil.newMap("domainId,batchId,equipType,equipCd,orderNo,equipZone,stageCd"
-										, domainId,batch.getId(),equipType,equipCd,input.getOrderNo(),equipZone,batch.getStageCd());
-			resultList = this.queryManager.selectListBySql(detailListQry, params, JobInstance.class, 0, 0);
-			
-		} else {
-			// TODO : 다른 설비들은? 
-		}
-		
-		// 4. indOnFlag 처리 
+		// 3. indOnFlag 처리 
 		// TODO 향후 지시기 불켜기 할까 말까 .. 
-		return resultList;
+		return retList;
 	}
 	
 	/**

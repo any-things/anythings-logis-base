@@ -25,27 +25,22 @@ import xyz.elidom.util.ValueUtil;
  * 
  * @author shortstop
  */
-public class AbstractJobStatusService extends AbstractExecutionService implements IJobStatusService {
+public abstract class AbstractJobStatusService extends AbstractExecutionService implements IJobStatusService {
 
 	@Autowired
-	BatchQueryStore batchQueryStore;
+	protected BatchQueryStore batchQueryStore;
 	
 	@Override
 	public BatchProgressRate getBatchProgressSummary(JobBatch batch) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<JobInput> searchInputList(JobBatch batch, String stationCd) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Page<JobInput> paginateInputList(JobBatch batch, String stationCd, int page, int limit) {
-		// TODO Auto-generated method stub
-		return null;
+		String qry = this.batchQueryStore.getRackBatchProgressRateQuery();
+		Map<String,Object> params = ValueUtil.newMap("domainId,batchId,equipType", batch.getDomainId(), batch.getId(), batch.getEquipType());
+		
+		// 배치에 호기가 지정되어 있으면 지정 된 호기에 대한 진행율 
+		if(ValueUtil.isNotEmpty(batch.getEquipCd())) {
+			params.put("equipCd", batch.getEquipCd());
+		}
+		
+		return this.queryManager.selectBySql(qry, params, BatchProgressRate.class);
 	}
 
 	@Override
@@ -69,12 +64,6 @@ public class AbstractJobStatusService extends AbstractExecutionService implement
 		batch.setLastInputSeq(lastInputSeq);
 		this.queryManager.update(batch, "lastInputSeq");
 		return lastInputSeq;
-	}
-
-	@Override
-	public List<JobInstance> searchInputJobList(JobBatch batch, int inputSeq, String stationCd) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
