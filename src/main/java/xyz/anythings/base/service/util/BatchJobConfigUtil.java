@@ -319,6 +319,19 @@ public class BatchJobConfigUtil {
 		return getConfigValue(batch, LogisConfigConstants.BOX_ID_UNIQE_SCOPE, true);
 	}
 	
+	
+	/**
+	 * 박스 ID 유일성 보장 범위 - G : 도메인 전체 유일, D : 날자별 유일, B : 배치 내 유일
+	 * 
+	 * @param batch
+	 * @param withExeption
+	 * @return
+	 */
+	public static String getBoxIdUniqueScope(JobBatch batch, boolean withExeption) {
+		// job.cmm.box.box_id.unique.scope
+		return getConfigValue(batch, LogisConfigConstants.BOX_ID_UNIQE_SCOPE, withExeption);
+	}
+	
 	/**
 	 * 확정 취소 기능 활성화 여부 
 	 * 

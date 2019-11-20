@@ -2,7 +2,7 @@
     #if($orderType == 'OT') -- 단수 / 단포 
     #else -- 합포 및 기타 등등 
         SELECT ORDER_NO
-        FROM (
+          FROM (
                 SELECT ORDER_NO
                 FROM (
                         SELECT ORDER_NO
