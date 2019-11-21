@@ -139,8 +139,8 @@ public class DeviceProcessController {
 	@RequestMapping(value = "/sku/find/{com_cd}/{sku_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Find sku for cliassification")
 	public SKU findSkuForClassify(@PathVariable("com_cd") String comCd, @PathVariable("sku_cd") String skuCd) {
-		// TODO 
-		return null;
+		long domainId = Domain.currentDomainId();
+		return this.serviceDispatcher.getSkuSearchService().findSku(domainId, comCd, skuCd, true);
 	}
 
 	/**
@@ -153,9 +153,14 @@ public class DeviceProcessController {
 	 */
 	@RequestMapping(value = "/sku/search_by_like/{equip_type}/{equip_cd}/{sku_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Search sku for cliassification")
-	public List<SKU> searchSkuCandidates(@PathVariable("equip_type") String equipType, @PathVariable("equip_cd") String equipCd, @PathVariable("sku_cd") String skuCd) {
-		// TODO 
-		return null;
+	public List<SKU> searchSkuCandidates(@PathVariable("equip_type") String equipType
+										, @PathVariable("equip_cd") String equipCd
+										, @PathVariable("sku_cd") String skuCd) {
+		Long domainId = Domain.currentDomainId();
+		EquipBatchSet equipBatchSet = LogisServiceUtil.findBatchByEquip(domainId, equipType, equipCd);
+		JobBatch batch = equipBatchSet.getBatch();
+		
+		return this.serviceDispatcher.getSkuSearchService().searchListInBatch(batch, skuCd, true, true);
 	}
 	
 	/**
@@ -167,9 +172,11 @@ public class DeviceProcessController {
 	 */
 	@RequestMapping(value = "/sku/search_by_batch/{batch_id}/{sku_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Search SKU List For Middle Classing")
-	public List<SKU> searchSkuListByBatch(@PathVariable("batch_id") String batchId, @PathVariable("sku_cd") String skuCd) {
-		// TODO
-		return null;
+	public List<SKU> searchSkuListByBatch(@PathVariable("batch_id") String batchId
+										, @PathVariable("sku_cd") String skuCd) {
+		
+		JobBatch batch = AnyEntityUtil.findEntityById(true, JobBatch.class, batchId);
+		return this.serviceDispatcher.getSkuSearchService().searchListInBatchGroup(batch, skuCd, true, true);
 	}
 	
 	/**
@@ -182,8 +189,8 @@ public class DeviceProcessController {
 	@RequestMapping(value = "/sku/search_by_batch_group/{batch_group_id}/{sku_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Search SKU List For Middle Classing")
 	public List<SKU> searchSkuListByBatchGroup(@PathVariable("batch_group_id") String batchGroupId, @PathVariable("sku_cd") String skuCd) {
-		// TODO
-		return null;
+		JobBatch batch = AnyEntityUtil.findEntityById(true, JobBatch.class, batchGroupId);
+		return this.serviceDispatcher.getSkuSearchService().searchListInBatchGroup(batch, skuCd, true, true);
 	}
 	
 	/**********************************************************************

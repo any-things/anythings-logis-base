@@ -97,7 +97,7 @@ public class BatchJobConfigUtil {
 		}
 		
 		// 3. 설정값이 없다면 exceptionWhenEmptyValue에 따라 예외 처리
-		if(exceptionWhenEmptyValue) {
+		if(ValueUtil.isEmpty(value) && exceptionWhenEmptyValue) {
 			throw ThrowUtil.newJobConfigNotSet(key);
 		}
 		
