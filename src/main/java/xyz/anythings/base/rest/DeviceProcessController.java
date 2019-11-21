@@ -787,7 +787,7 @@ public class DeviceProcessController {
 	 * 디바이스 관련 각 모듈에 특화된 REST GET 서비스 
 	 * DeviceProcessRestEvent 이벤트를 발생시켜 각 모듈에서 해당 로직 처리 
 	 */
-	@RequestMapping(value = "/{job_type}/**", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/dynamic/{job_type}/**", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Device Process Rest GET API")
 	public BaseResponse deviceProcessRestGetApi(
 			final HttpServletRequest request
@@ -802,7 +802,7 @@ public class DeviceProcessController {
 	 * 디바이스 관련 각 모듈에 특화된 REST PUT 서비스 
 	 * DeviceProcessRestEvent 이벤트를 발생시켜 각 모듈에서 해당 로직 처리 
 	 */
-	@RequestMapping(value = "/{job_type}/**", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/dynamic/{job_type}/**", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Device Process Rest PUT API")
 	public BaseResponse deviceProcessRestPutApi(
 			final HttpServletRequest request
@@ -819,7 +819,7 @@ public class DeviceProcessController {
 	 * 디바이스 관련 각 모듈에 특화된 REST POST 서비스 
 	 * DeviceProcessRestEvent 이벤트를 발생시켜 각 모듈에서 해당 로직 처리 
 	 */
-	@RequestMapping(value = "/{job_type}/**", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/dynamic/{job_type}/**", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public BaseResponse deviceProcessRestPostApi(
 			final HttpServletRequest request
 			, @PathVariable("job_type") String jobType
