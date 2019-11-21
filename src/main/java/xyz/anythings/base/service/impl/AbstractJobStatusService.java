@@ -40,19 +40,19 @@ public abstract class AbstractJobStatusService extends AbstractExecutionService 
 			params.put("equipCd", batch.getEquipCd());
 		}
 		
-		return this.queryManager.selectBySql(qry, params, BatchProgressRate.class);
+		return AnyEntityUtil.findItem(batch.getDomainId(), false, BatchProgressRate.class, qry, params);
 	}
 
 	@Override
 	public JobInput findLatestInput(JobBatch batch) {
 		String qry = this.batchQueryStore.getLatestJobInputQuery();
-		Map<String,Object> paramMap = ValueUtil.newMap("domainId,batchId,equipType", batch.getDomainId(), batch.getId(), batch.getEquipType());
+		Map<String,Object> params = ValueUtil.newMap("domainId,batchId,equipType", batch.getDomainId(), batch.getId(), batch.getEquipType());
 		
 		if(ValueUtil.isNotEmpty(batch.getEquipCd())) {
-			paramMap.put("equipCd", batch.getEquipCd());
+			params.put("equipCd", batch.getEquipCd());
 		}
 		
-		return this.queryManager.selectBySql(qry, paramMap, JobInput.class);
+		return AnyEntityUtil.findItem(batch.getDomainId(), false, JobInput.class, qry, params);  
 	}
 
 	@Override
