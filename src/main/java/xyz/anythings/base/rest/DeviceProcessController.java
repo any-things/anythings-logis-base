@@ -27,6 +27,8 @@ import xyz.anythings.base.entity.JobInput;
 import xyz.anythings.base.entity.JobInstance;
 import xyz.anythings.base.entity.SKU;
 import xyz.anythings.base.event.EventConstants;
+import xyz.anythings.base.event.IClassifyInEvent;
+import xyz.anythings.base.event.classfy.ClassifyInEvent;
 import xyz.anythings.base.event.classfy.ClassifyRunEvent;
 import xyz.anythings.base.event.rest.DeviceProcessRestEvent;
 import xyz.anythings.base.model.BatchProgressRate;
@@ -658,8 +660,10 @@ public class DeviceProcessController {
 			@RequestParam(name = "limit", required = false) Integer limit,
 			@RequestParam(name = "status", required = false) String status) {
 		
-		// TODO
-		return null;
+		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(Domain.currentDomainId(), equipType, equipCd);
+		IClassifyInEvent inputEvent = new ClassifyInEvent(equipBatchSet.getBatch(), EventConstants.EVENT_STEP_BEFORE, false, LogisCodeConstants.CLASSIFICATION_INPUT_TYPE_SKU, skuCd, 1);
+		inputEvent.setComCd(comCd);
+		return this.serviceDispatcher.getClassificationService(equipBatchSet.getBatch()).input(inputEvent);
 	}
 	
 	/**********************************************************************

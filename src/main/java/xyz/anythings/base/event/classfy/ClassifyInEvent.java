@@ -26,6 +26,10 @@ public class ClassifyInEvent extends ClassifyEvent implements IClassifyInEvent {
 	 * 투입 수량
 	 */
 	protected int inputQty;
+	/**
+	 * 고객사 코드
+	 */
+	protected String comCd;
 	
 	/**
 	 * 생성자 1
@@ -74,6 +78,14 @@ public class ClassifyInEvent extends ClassifyEvent implements IClassifyInEvent {
 	@Override
 	public void setInputCode(String inputCode) {
 		this.inputCode = inputCode;
+	}
+
+	public String getComCd() {
+		return comCd;
+	}
+
+	public void setComCd(String comCd) {
+		this.comCd = comCd;
 	}
 
 	@Override

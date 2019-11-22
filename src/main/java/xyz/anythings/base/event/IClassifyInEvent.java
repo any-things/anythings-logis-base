@@ -59,6 +59,20 @@ public interface IClassifyInEvent extends IClassifyEvent {
 	public void setInputCode(String inputCode);
 	
 	/**
+	 * 고객사 코드
+	 * 
+	 * @return
+	 */
+	public String getComCd();
+	
+	/**
+	 * 고객사 코드 설정
+	 * 
+	 * @param comCd
+	 */
+	public void setComCd(String comCd);
+	
+	/**
 	 * 투입 수량 리턴
 	 * 
 	 * @return

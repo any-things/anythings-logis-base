@@ -79,8 +79,9 @@ public interface IClassificationService {
 	 * 3-2. 분류 설비에 투입 처리
 	 * 
 	 * @param inputEvent
+	 * @return
 	 */
-	public void input(IClassifyInEvent inputEvent);
+	public Object input(IClassifyInEvent inputEvent);
 	
 	/**
 	 * 4-1. 소분류 : 분류 처리 작업
