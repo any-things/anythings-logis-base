@@ -156,10 +156,10 @@ public class DeviceProcessController {
 	public List<SKU> searchSkuCandidates(@PathVariable("equip_type") String equipType
 										, @PathVariable("equip_cd") String equipCd
 										, @PathVariable("sku_cd") String skuCd) {
-		Long domainId = Domain.currentDomainId();
-		EquipBatchSet equipBatchSet = LogisServiceUtil.findBatchByEquip(domainId, equipType, equipCd);
-		JobBatch batch = equipBatchSet.getBatch();
 		
+		Long domainId = Domain.currentDomainId();
+		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(domainId, equipType, equipCd);
+		JobBatch batch = equipBatchSet.getBatch();
 		return this.serviceDispatcher.getSkuSearchService().searchListInBatch(batch, skuCd, true, true);
 	}
 	

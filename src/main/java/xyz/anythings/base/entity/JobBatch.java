@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import xyz.anythings.base.LogisConstants;
 import xyz.anythings.gw.entity.IndConfigSet;
-import xyz.anythings.sys.AnyConstants;
 import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.elidom.dbist.annotation.Column;
 import xyz.elidom.dbist.annotation.GenerationRule;
@@ -486,24 +485,6 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		batch.setStatus(JobBatch.STATUS_RECEIVE);
 		BeanUtil.get(IQueryManager.class).insert(batch);
 		return batch;
-	}
-		
-	/**
-	 * DAS용 작업 배치인지 체크
-	 *
-	 * @return
-	 */
-	public boolean isDasBatch() {
-		return ValueUtil.isEqualIgnoreCase(AnyConstants.JOB_TYPE_DAS, this.jobType);
-	}
-	
-	/**
-	 * 반품용 작업 배치인지 체크
-	 *
-	 * @return
-	 */
-	public boolean isRtnBatch() {
-		return ValueUtil.isEqualIgnoreCase(AnyConstants.JOB_TYPE_RTN, this.jobType);
 	}
 
 }

@@ -39,22 +39,50 @@ public class LogisServiceUtil {
 	}
 	
 	/**
-	 * 설비 타입 / 코드로 설비 및 배치 찾기   
+	 * 설비 타입 / 코드로 설비 및 배치 찾기
+	 * 
 	 * @param domainId
 	 * @param equipType
 	 * @param equipCd
 	 */
 	public static EquipBatchSet findBatchByEquip(Long domainId, String equipType, String equipCd) {
-		
 		EquipBatchSet equipBatchSet = new EquipBatchSet();
 		
 		if(ValueUtil.isEqualIgnoreCase(LogisConstants.EQUIP_TYPE_RACK, equipType)) {
-			// 1. Rack Type 
 			Rack rack = checkValidRack(domainId, equipCd);
 			JobBatch batch = findBatch(domainId, rack.getBatchId(), false, true);
+			equipBatchSet.setEquipEntity(rack);
+			equipBatchSet.setBatch(batch);
+			
+		} else {
+			// TODO 기타 설비 추가 필요 함 .
+		}
+		
+		return equipBatchSet;
+	}
+	
+	/**
+	 * 설비 타입 / 코드로 설비 및 진행 중인 배치 찾기
+	 * 
+	 * @param domainId
+	 * @param equipType
+	 * @param equipCd
+	 * @return
+	 */
+	public static EquipBatchSet checkRunningBatch(Long domainId, String equipType, String equipCd) {
+		EquipBatchSet equipBatchSet = new EquipBatchSet();
+		
+		if(ValueUtil.isEqualIgnoreCase(LogisConstants.EQUIP_TYPE_RACK, equipType)) {
+			Rack rack = checkValidRack(domainId, equipCd);
+			JobBatch batch = findBatch(domainId, rack.getBatchId(), false, true);
+			if(ValueUtil.isNotEqual(batch.getStatus(), JobBatch.STATUS_RUNNING)) {
+				// 진행 중인 배치가 아닙니다.
+				throw ThrowUtil.newValidationErrorWithNoLog(true, SysMessageConstants.DOES_NOT_PROCEED, "terms.label.job_batch"); 
+			}
 			
 			equipBatchSet.setEquipEntity(rack);
 			equipBatchSet.setBatch(batch);
+			
 		} else {
 			// TODO 기타 설비 추가 필요 함 .
 		}

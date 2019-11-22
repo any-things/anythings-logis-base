@@ -99,6 +99,11 @@ public class JobConfigProfileService extends AbstractExecutionService implements
 		String stageKey = this.makeStageKey(domainId, stageCd);
 		this.configProfiles.remove(stageKey);
 	}
+	
+	@Override
+	public JobConfigSet getConfigSet(String batchId) {
+		return this.configProfiles.get(batchId);
+	}
 
 	@Override
 	public JobConfigSet addConfigSet(JobBatch batch) {

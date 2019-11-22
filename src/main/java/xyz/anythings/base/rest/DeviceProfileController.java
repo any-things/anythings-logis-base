@@ -16,11 +16,15 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import xyz.anythings.base.entity.DeviceProfile;
+import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.anythings.base.entity.DeviceConf;
 
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
 import xyz.elidom.orm.system.annotation.service.ServiceDesc;
+import xyz.elidom.sys.entity.Domain;
 import xyz.elidom.sys.system.service.AbstractRestService;
+import xyz.elidom.sys.util.ThrowUtil;
+import xyz.elidom.util.ValueUtil;
 import xyz.elidom.dbist.dml.Page;
 
 @RestController
@@ -101,6 +105,24 @@ public class DeviceProfileController extends AbstractRestService {
 	public List<DeviceConf> updateDeviceConf(@PathVariable("id") String id, @RequestBody List<DeviceConf> list) {
 		this.cudMultipleData(DeviceConf.class, list);
 		return this.findDeviceConf(id);
+	}
+	
+	@RequestMapping(value = "/configs/{device_type}/{stage_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Search device config details by device & stage")
+	public List<DeviceConf> searchConfigItems(@PathVariable("device_type") String deviceType, @PathVariable("stage_cd") String stageCd) {
+		// TODO Redis Cache에서 조회하도록 수정
+		xyz.elidom.dbist.dml.Query query = AnyOrmUtil.newConditionForExecution(Domain.currentDomainId());
+		query.addSelect("id");
+		query.addFilter(new Filter("stageCd", stageCd));
+		query.addFilter(new Filter("defaultFlag", true));
+		List<DeviceProfile> profiles = this.queryManager.selectList(DeviceProfile.class, query);
+		
+		if(ValueUtil.isNotEmpty(profiles)) {
+			DeviceProfile profile = profiles.get(0);
+			return this.findDeviceConf(profile.getId());
+		} else {
+			throw ThrowUtil.newDeviceConfigNotSet(stageCd);
+		}
 	}
 
 }

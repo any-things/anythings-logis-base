@@ -73,6 +73,14 @@ public interface IJobConfigProfileService {
 	public JobConfigSet addConfigSet(JobBatch batch);
 	
 	/**
+	 * 작업 배치 기본 작업 설정 프로파일 찾아 리턴
+	 * 
+	 * @param batchId
+	 * @return
+	 */
+	public JobConfigSet getConfigSet(String batchId);
+	
+	/**
 	 * 작업 배치와 설정 키로 작업 설정 값 조회
 	 * 
 	 * @param batch

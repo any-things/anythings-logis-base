@@ -1,7 +1,10 @@
 package xyz.anythings.base.entity;
 
+import java.util.List;
+
 import xyz.elidom.dbist.annotation.Column;
 import xyz.elidom.dbist.annotation.GenerationRule;
+import xyz.elidom.dbist.annotation.Ignore;
 import xyz.elidom.dbist.annotation.Index;
 import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.Table;
@@ -45,6 +48,9 @@ public class DeviceProfile extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	@Column (name = "default_flag", length = 1)
 	private Boolean defaultFlag;
+	
+	@Ignore
+	private List<DeviceConf> items;
   
 	public String getId() {
 		return id;
@@ -124,5 +130,14 @@ public class DeviceProfile extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setDefaultFlag(Boolean defaultFlag) {
 		this.defaultFlag = defaultFlag;
-	}	
+	}
+
+	public List<DeviceConf> getItems() {
+		return items;
+	}
+
+	public void setItems(List<DeviceConf> items) {
+		this.items = items;
+	}
+
 }
