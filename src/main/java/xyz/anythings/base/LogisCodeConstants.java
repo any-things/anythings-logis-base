@@ -87,6 +87,15 @@ public class LogisCodeConstants {
 	 */
 	public static final String CLASSIFICATION_ACTION_END = "end";
 	
+	/**
+	 * 작업 확정 취소
+	 */
+	public static final String CLASSIFICATION_ACTION_UNDO_PICK = "undo_pick";
+	/**
+	 * 풀 박스 취소
+	 */
+	public static final String CLASSIFICATION_ACTION_UNDO_BOX = "undo_box";
+	
 	
 	/**************************************************************
 	 * 

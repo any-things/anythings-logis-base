@@ -1,6 +1,7 @@
 package xyz.anythings.base.event.classfy;
 
 import xyz.anythings.base.entity.JobBatch;
+import xyz.anythings.base.entity.JobInstance;
 import xyz.anythings.base.event.IClassifyRunEvent;
 
 /**
@@ -18,7 +19,11 @@ public class ClassifyRunEvent extends ClassifyEvent implements IClassifyRunEvent
 	 */
 	protected String classifyAction;
 	/**
-	 * 작업 ID
+	 * 작업 인스턴스
+	 */
+	protected JobInstance jobInstance;
+	/**
+	 * 작업 인스턴스 ID
 	 */
 	protected String jobInstanceId;
 	/**
@@ -41,18 +46,37 @@ public class ClassifyRunEvent extends ClassifyEvent implements IClassifyRunEvent
 	 * @param eventStep
 	 * @param classifyDevice
 	 * @param classifyAction
-	 * @param jobInstanceId
-	 * @param cellCd
+	 * @param job
 	 * @param reqQty
 	 * @param resQty
 	 */
-	public ClassifyRunEvent(JobBatch batch, short eventStep, String classifyDevice, String classifyAction, String jobInstanceId, String cellCd, int reqQty, int resQty) {
+	public ClassifyRunEvent(JobBatch batch, short eventStep, String classifyDevice, String classifyAction, JobInstance job, int reqQty, int resQty) {
 		super(batch, eventStep);
 	
 		this.setClassifyDevice(classifyDevice);
 		this.setClassifyAction(classifyAction);
-		this.setJobInstanceId(jobInstanceId);
-		this.setCellCd(cellCd);
+		this.setJobInstance(job);
+		this.setReqQty(reqQty);
+		this.setResQty(resQty);
+	}
+	
+	/**
+	 * 소분류 분류 이벤트 생성자 1
+	 * 
+	 * @param batch
+	 * @param eventStep
+	 * @param classifyDevice
+	 * @param classifyAction
+	 * @param job
+	 * @param reqQty
+	 * @param resQty
+	 */
+	public ClassifyRunEvent(JobBatch batch, short eventStep, String classifyDevice, String classifyAction, JobInstance job) {
+		super(batch, eventStep);
+	
+		this.setClassifyDevice(classifyDevice);
+		this.setClassifyAction(classifyAction);
+		this.setJobInstance(job);
 		this.setReqQty(reqQty);
 		this.setResQty(resQty);
 	}
@@ -85,6 +109,21 @@ public class ClassifyRunEvent extends ClassifyEvent implements IClassifyRunEvent
 	@Override
 	public void setClassifyAction(String classifyAction) {
 		this.classifyAction = classifyAction;
+	}
+
+	@Override
+	public JobInstance getJobInstance() {
+		return jobInstance;
+	}
+
+	@Override
+	public void setJobInstance(JobInstance jobInstance) {
+		this.jobInstance = jobInstance;
+		
+		if(jobInstance != null) {
+			this.jobInstanceId = jobInstance.getId();
+			this.cellCd = jobInstance.getSubEquipCd();
+		}
 	}
 
 	@Override

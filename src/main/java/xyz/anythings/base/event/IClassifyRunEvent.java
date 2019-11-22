@@ -1,5 +1,7 @@
 package xyz.anythings.base.event;
 
+import xyz.anythings.base.entity.JobInstance;
+
 /**
  * 소분류 처리 이벤트
  * 
@@ -58,6 +60,20 @@ public interface IClassifyRunEvent extends IClassifyEvent {
 	 * @param classifyAction
 	 */
 	public void setClassifyAction(String classifyAction);
+	
+	/**
+	 * 작업 인스턴스
+	 * 
+	 * @return
+	 */
+	public JobInstance getJobInstance();
+
+	/**
+	 * 작업 인스턴스 설정
+	 * 
+	 * @param jobInstance
+	 */
+	public void setJobInstance(JobInstance jobInstance);
 	
 	/**
 	 * 작업 인스턴스 ID 리턴

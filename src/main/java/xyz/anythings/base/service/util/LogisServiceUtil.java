@@ -89,6 +89,24 @@ public class LogisServiceUtil {
 		
 		return equipBatchSet;
 	}
+	
+	/**
+	 * 설비 타입 / 코드로 설비 및 진행 중인 배치 찾기
+	 * 
+	 * @param domainId
+	 * @param batchId
+	 * @return
+	 */
+	public static JobBatch checkRunningBatch(Long domainId, String batchId) {
+		JobBatch batch = findBatch(domainId, batchId, false, true);
+		
+		if(ValueUtil.isNotEqual(batch.getStatus(), JobBatch.STATUS_RUNNING)) {
+			// 진행 중인 배치가 아닙니다.
+			throw ThrowUtil.newValidationErrorWithNoLog(true, SysMessageConstants.DOES_NOT_PROCEED, "terms.label.job_batch"); 
+		}
+		
+		return batch;
+	}
 
 	/**
 	 * regionCd로 호기 정보를 조회하고 현재 실행 가능한 상태인지 체크한 후 리턴  
