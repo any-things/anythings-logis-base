@@ -93,6 +93,15 @@ public interface IJobStatusService {
 	public List<JobInstance> searchInputJobList(JobBatch batch, JobInput input, String stationCd);
 	
 	/**
+	 * 3-1. 작업 조회 - 작업 배치 내에 피킹 중인 작업 리스트를 조회
+	 *  
+	 * @param batch
+	 * @param stationCd
+	 * @return
+	 */
+	public List<JobInstance> searchPickingJobList(JobBatch batch, String stationCd);
+	
+	/**
 	 * 3-1. 작업 조회 - 조회 조건으로 작업 리스트 조회
 	 * 
 	 * @param batch

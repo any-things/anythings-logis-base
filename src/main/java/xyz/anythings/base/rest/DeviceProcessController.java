@@ -574,7 +574,7 @@ public class DeviceProcessController {
 	 **********************************************************************/
 	
 	/**
-	 * 투입 리스트를 조회 (페이지네이션) 
+	 * 투입 리스트를 조회 (페이지네이션)
 	 * 
 	 * @param equipType
 	 * @param equipCd
@@ -592,31 +592,30 @@ public class DeviceProcessController {
 			@RequestParam(name = "limit", required = false) Integer limit,
 			@RequestParam(name = "status", required = false) String status) {
 		
-		Long domainId = Domain.currentDomainId();
-		EquipBatchSet equipBatchSet = LogisServiceUtil.findBatchByEquip(domainId, equipType, equipCd);
+		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(Domain.currentDomainId(), equipType, equipCd);
 		JobBatch batch = equipBatchSet.getBatch();
-		
 		return this.serviceDispatcher.getJobStatusService(batch).paginateInputList(batch, equipCd, status, page, limit);
 	}
 	
-	
 	/**
-	 * 투입 리스트를 상세 조회 
+	 * 투입 리스트 상세 조회 
 	 * 
 	 * @param equipType
 	 * @param equipCd
 	 * @param detailId
 	 * @return
 	 */
-	@RequestMapping(value = "/search/input_list/{equip_type}/{equip_cd}/{detail_id}/details", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	/*@RequestMapping(value = "/search/input_list/{equip_type}/{equip_cd}/{selected_input_id}/details", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Search Input list Details")
 	public Page<JobInput> searchInputListDetails(
 			@PathVariable("equip_type") String equipType,
 			@PathVariable("equip_cd") String equipCd,
-			@PathVariable("detail_id") String detailId) {
+			@PathVariable("selected_input_id") String selectedInputId) {
 		
-		return null;
-	}
+		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(Domain.currentDomainId(), equipType, equipCd);
+		JobBatch batch = equipBatchSet.getBatch();
+		return this.serviceDispatcher.getJobStatusService(batch).searchInputList(batch, equipCd, null, selectedInputId);
+	}*/
 	
 	/**
 	 * 투입 리스트를 조회 (리스트) 
@@ -624,6 +623,7 @@ public class DeviceProcessController {
 	 * @param equipType
 	 * @param equipCd
 	 * @param equipZone
+	 * @param selectedInputId
 	 * @return
 	 */
 	@RequestMapping(value = "/search/input_list/{equip_type}/{equip_cd}/{equip_zone}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -632,21 +632,44 @@ public class DeviceProcessController {
 			@PathVariable("equip_type") String equipType,
 			@PathVariable("equip_cd") String equipCd,
 			@PathVariable("equip_zone") String equipZone,
-			@RequestParam(name="selected_input_id", required=false) String selectedInputId) {
+			@RequestParam(name = "selected_input_id", required = false) String selectedInputId) {
+				
+		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(Domain.currentDomainId(), equipType, equipCd);
+		JobBatch batch = equipBatchSet.getBatch();
+		return this.serviceDispatcher.getJobStatusService(batch).searchInputList(batch, equipCd, equipZone, selectedInputId);
+	}
+	
+	/**
+	 * 작업 배치내 피킹 중인 상태의 작업 리스트를 조회
+	 * 
+	 * @param equipType
+	 * @param equipCd
+	 * @param stationCd
+	 * @return
+	 */
+	@RequestMapping(value = "/search/input_jobs/{equip_type}/{equip_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Search Input Job list")
+	public List<JobInstance> searchInputJobs(
+			@PathVariable("equip_type") String equipType,
+			@PathVariable("equip_cd") String equipCd,
+			@RequestParam(name = "station_cd", required = false) String stationCd) {
 		
-		Long domainId = Domain.currentDomainId();
-		
-		EquipBatchSet equipBatchSet = LogisServiceUtil.findBatchByEquip(domainId, equipType, equipCd);
+		// 1. 작업 배치 체크 및 조회
+		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(Domain.currentDomainId(), equipType, equipCd);
 		JobBatch batch = equipBatchSet.getBatch();
 		
-		return this.serviceDispatcher.getJobStatusService(batch).searchInputList(batch, equipCd, equipZone, selectedInputId);
+		// 2. 서비스 호출
+		return this.serviceDispatcher.getJobStatusService(batch).searchPickingJobList(batch, stationCd);
 	}
 	
 	/**
 	 * 장비 존 별 투입 작업 리스트를 조회 (리스트) 
 	 * 
 	 * @param jobInputId
+	 * @param equipType
+	 * @param equipCd
 	 * @param equipZone
+	 * @param indOnFlag
 	 * @return
 	 */
 	@RequestMapping(value = "/search/input_jobs/{job_input_id}/{equip_type}/{equip_cd}/{equip_zone}/{ind_on_flag}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -658,20 +681,21 @@ public class DeviceProcessController {
 			@PathVariable("equip_zone") String equipZone,
 			@PathVariable("ind_on_flag") Boolean indOnFlag) {
 		
+		// 1. 작업 배치 체크 및 조회
 		Long domainId = Domain.currentDomainId();
-		
-		EquipBatchSet equipBatchSet = LogisServiceUtil.findBatchByEquip(domainId, equipType, equipCd);
+		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(domainId, equipType, equipCd);
 		JobBatch batch = equipBatchSet.getBatch();
 		
-		// 1. JobInput 조회 
-		//  - 모든 작업 유형에 내 작업 외 다른 작업 까지 보기 선택된 경우에는 input 데이터가 null 
-		JobInput input = AnyEntityUtil.findEntityBy(domainId, false, JobInput.class, null, "id,equipType,equipCd,stationCd", jobInputId,equipType,equipCd,equipZone);
+		// 2. JobInput 조회 
+		JobInput input = AnyEntityUtil.findEntityBy(domainId, false, JobInput.class, "id,equipType,equipCd,stationCd", jobInputId, equipType, equipCd, equipZone);
 		
-		// 2. 서비스 호출 
+		// 3. 서비스 호출 
 		List<JobInstance> retList = this.serviceDispatcher.getJobStatusService(batch).searchInputJobList(batch, input, equipZone);
 		
-		// 3. indOnFlag 처리 
-		// TODO 향후 지시기 불켜기 할까 말까 .. 
+		// 4. TODO 표시기 점등
+		if(indOnFlag) {
+		}
+		
 		return retList;
 	}
 	
@@ -684,6 +708,7 @@ public class DeviceProcessController {
 	 * @param skuCd 상품 코드
 	 * @param page 현재 페이지
 	 * @param limit 페이지 당 레코드 수
+	 * @param status
 	 * @return
 	 */
 	@RequestMapping(value = "/input/sku/{equip_type}/{equip_cd}/{com_cd}/{sku_cd}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -698,7 +723,8 @@ public class DeviceProcessController {
 			@RequestParam(name = "status", required = false) String status) {
 		
 		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(Domain.currentDomainId(), equipType, equipCd);
-		IClassifyInEvent inputEvent = new ClassifyInEvent(equipBatchSet.getBatch(), EventConstants.EVENT_STEP_ALONE, false, LogisCodeConstants.CLASSIFICATION_INPUT_TYPE_SKU, skuCd, 1);
+		IClassifyInEvent inputEvent = new ClassifyInEvent(equipBatchSet.getBatch(), 
+				EventConstants.EVENT_STEP_ALONE, false, LogisCodeConstants.CLASSIFICATION_INPUT_TYPE_SKU, skuCd, 1);
 		inputEvent.setComCd(comCd);
 		return this.serviceDispatcher.getClassificationService(equipBatchSet.getBatch()).input(inputEvent);
 	}
@@ -823,6 +849,9 @@ public class DeviceProcessController {
 		return null;	
 	}
 
+	/**********************************************************************
+	 * 								Dynamic API  
+	 **********************************************************************/
 
 	/**
 	 * 디바이스 관련 각 모듈에 특화된 REST GET 서비스 
@@ -834,6 +863,7 @@ public class DeviceProcessController {
 			final HttpServletRequest request
 			, @PathVariable("job_type") String jobType
 			, @RequestParam Map<String,Object> paramMap) {
+		
         String finalPath = this.getRequestFinalPath(request);
         DeviceProcessRestEvent event = new DeviceProcessRestEvent(Domain.currentDomainId(), jobType, finalPath, RequestMethod.GET, paramMap);
         return this.restEventPublisher(event);
@@ -850,6 +880,7 @@ public class DeviceProcessController {
 			, @PathVariable("job_type") String jobType
 			, @RequestParam Map<String,Object> paramMap
 			, @RequestBody(required=false) Map<String,Object> requestBody) {
+		
         String finalPath = this.getRequestFinalPath(request);
         DeviceProcessRestEvent event = new DeviceProcessRestEvent(Domain.currentDomainId(), jobType, finalPath, RequestMethod.PUT, paramMap);
         event.setRequestPutBody(requestBody);
@@ -866,6 +897,7 @@ public class DeviceProcessController {
 			, @PathVariable("job_type") String jobType
 			, @RequestParam Map<String,Object> paramMap
 			, @RequestBody(required=false) List<Map<String,Object>> requestBody) {
+		
         String finalPath = this.getRequestFinalPath(request);
         DeviceProcessRestEvent event = new DeviceProcessRestEvent(Domain.currentDomainId(), jobType, finalPath, RequestMethod.POST, paramMap);
         event.setRequestPostBody(requestBody);
@@ -874,6 +906,7 @@ public class DeviceProcessController {
 	
 	/**
 	 * 디바이스 관련 이벤트 퍼블리셔 
+	 * 
 	 * @param event
 	 * @return
 	 */
@@ -883,18 +916,21 @@ public class DeviceProcessController {
 	}
 	
 	/**
-	 * path variable request 정리  
+	 * path variable request 정리
+	 * 
 	 * @param request
 	 * @return
 	 */
 	private String getRequestFinalPath(HttpServletRequest request) {
 		String path = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-        String bestMatchPattern = (String ) request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
+        String bestMatchPattern = (String) request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
 
         AntPathMatcher apm = new AntPathMatcher();
         String finalPath = apm.extractPathWithinPattern(bestMatchPattern, path);
         
-        if(finalPath.startsWith("/") == false) finalPath = "/" + finalPath;
+        if(!finalPath.startsWith(SysConstants.SLASH)) {
+        	finalPath = SysConstants.SLASH + finalPath;
+        }
         
         return finalPath;
 	}
