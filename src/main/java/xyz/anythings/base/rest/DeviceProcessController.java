@@ -207,11 +207,16 @@ public class DeviceProcessController {
 	 * @param equipCd
 	 * @return
 	 */
-	@RequestMapping(value = "/indicators/off/{equip_type}/{equip_cd}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/indicators/off/all/{equip_type}/{equip_cd}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Indicators off all of equipment")
 	public BaseResponse indicatorsOffAll(@PathVariable("equip_type") String equipType, @PathVariable("equip_cd") String equipCd) {
-		// TODO
-		return null;
+		// 1. 설비 정보로 부터 작업 배치 조회 
+		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(Domain.currentDomainId(), equipType, equipCd);
+		JobBatch batch = equipBatchSet.getBatch();
+		
+		// 2. 작업 배치 전체 표시기 소등
+		this.serviceDispatcher.getIndicationService(batch).indicatorOffAll(batch.getDomainId(), batch.getId());
+		return new BaseResponse(true);
 	}
 	
 	/**
@@ -219,17 +224,23 @@ public class DeviceProcessController {
 	 * 
 	 * @param equipType
 	 * @param equipCd
-	 * @param equipZone
+	 * @param stationCd
 	 * @return
 	 */
-	@RequestMapping(value = "/indicators/off/{equip_type}/{equip_cd}/{equip_zone}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/indicators/off/{equip_type}/{equip_cd}/{station_cd}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Indicators off all of zone")
 	public BaseResponse indicatorsOff(
 			@PathVariable("equip_type") String equipType, 
 			@PathVariable("equip_cd") String equipCd, 
-			@PathVariable("equip_zone") String equipZone) {
-		// TODO
-		return null;
+			@PathVariable("station_cd") String stationCd) {
+		
+		// 1. 설비 정보로 부터 작업 배치 조회 
+		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(Domain.currentDomainId(), equipType, equipCd);
+		JobBatch batch = equipBatchSet.getBatch();
+		
+		// 2. 작업 배치 내 작업 스테이션 영역의 표시기 소등
+		this.serviceDispatcher.getIndicationService(batch).indicatorListOff(batch.getDomainId(), equipType, equipCd, stationCd);
+		return new BaseResponse(true);
 	}
 
 	/**
@@ -240,28 +251,41 @@ public class DeviceProcessController {
 	 * @return
 	 */
 	@RequestMapping(value = "/indicators/restore/{equip_type}/{equip_cd}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiDesc(description = "Indicators off all of zone")
+	@ApiDesc(description = "Restore indicators of running job instances")
 	public BaseResponse restoreIndicators(@PathVariable("equip_type") String equipType, @PathVariable("equip_cd") String equipCd) {
-		// TODO
-		return null;
+		// 1. 설비 정보로 부터 작업 배치 조회 
+		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(Domain.currentDomainId(), equipType, equipCd);
+		JobBatch batch = equipBatchSet.getBatch();
+		
+		// 2. 작업 배치 내 표시기 진행 중인 작업에 대한 재점등
+		this.serviceDispatcher.getIndicationService(batch).restoreIndicatorsOn(batch);
+		return new BaseResponse(true);
 	}
 
 	/**
 	 * 투입 시퀀스, 장비 존 별 처리할 작업 / 처리한 작업 표시기 점등  
 	 * 
 	 * @param jobInputId
-	 * @param equipZone
+	 * @param stationCd
 	 * @param todoOrDone
 	 * @return
 	 */
-	@RequestMapping(value = "/indicators/restore/{job_input_id}/{equip_zone}/{mode}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiDesc(description = "Indicators off all of zone")
+	@RequestMapping(value = "/indicators/restore/{job_input_id}/{station_cd}/{mode}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Indicators off all of station area")
 	public BaseResponse restoreIndicators(
 			@PathVariable("job_input_id") String jobInputId, 
-			@PathVariable("equip_zone") String equipZone, 
+			@PathVariable("station_cd") String stationCd, 
 			@PathVariable("mode") String todoOrDone) {
-		// TODO
-		return null;
+		
+		// 1. JobInput 조회 
+		JobInput input = AnyEntityUtil.findEntityById(true, JobInput.class, jobInputId);
+		
+		// 1. 설비 정보로 부터 작업 배치 조회 
+		JobBatch batch = LogisServiceUtil.checkRunningBatch(input.getDomainId(), input.getBatchId());
+		
+		// 2. 작업 배치 내 표시기 진행 중인 작업에 대한 재점등
+		this.serviceDispatcher.getIndicationService(batch).restoreIndicatorsOn(batch, input.getInputSeq(), stationCd, todoOrDone);
+		return new BaseResponse(true);
 	}
 	
 	/**********************************************************************
@@ -345,7 +369,7 @@ public class DeviceProcessController {
 			@PathVariable("equip_cd") String equipCd, 
 			@PathVariable("job_instance_id") String jobInstanceId) {
 		
-		// 1. Equip 으로 Batch조회 
+		// 1. 설비 정보로 부터 Batch조회 
 		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(Domain.currentDomainId(), equipType, equipCd);
 		JobBatch batch = equipBatchSet.getBatch();
 		
@@ -411,7 +435,7 @@ public class DeviceProcessController {
 			// 기능 실행중 에러가 발생 했습니다. ? 
 			throw new ElidomServiceException();
 		} else {
-			return new BaseResponse(true,null, event.getResult());
+			return new BaseResponse(true, null, event.getResult());
 		}	
 	}
 	

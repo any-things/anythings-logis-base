@@ -46,10 +46,10 @@ public interface IIndicationService {
 	/**
 	 * 1-0. 표시기 점, 소등 요청 서비스
 	 * 
-	 * @param indType
+	 * @param batchId
 	 * @return
 	 */
-	public IIndRequestService getIndicatorRequestService(String indType);
+	public IIndRequestService getIndicatorRequestService(String batchId);
 	
 	/**
 	 * 1-1. 작업 배치로 게이트웨이 리스트를 조회
@@ -102,6 +102,24 @@ public interface IIndicationService {
 	 * @param finalEnd
 	 */
 	public void indicatorOnForPickEnd(JobInstance job, boolean finalEnd);
+	
+	/**
+	 * 1-7. 작업 배치 전체 표시기 소등 요청
+	 * 
+	 * @param domainId
+	 * @param batchId
+	 */
+	public void indicatorOffAll(Long domainId, String batchId);
+	
+	/**
+	 * 1-7. 호기의 작업 스테이션 영역의 표시기 소등 요청
+	 * 
+	 * @param domainId
+	 * @param equipType
+	 * @param equipCd
+	 * @param stationCd
+	 */
+	public void indicatorListOff(Long domainId, String equipType, String equipCd, String stationCd);
 	
 	/**
 	 * 1-7. 표시기 소등 요청
@@ -241,9 +259,8 @@ public interface IIndicationService {
 	 * 1-15. 작업 배치별, 게이트웨이 별 작업 리스트 조회 후 표시기 재점등
 	 * 
 	 * @param batch
-	 * @param gw
 	 */
-	public void restoreIndicatorsOn(JobBatch batch, Gateway gw);
+	public void restoreIndicatorsOn(JobBatch batch);
 	
 	/**
 	 * 1-16. 표시기 : 작업 배치, 투입 시퀀스, 장비 존 별 작업 리스트 조회 후 모드에 따라서 표시기 재점등
