@@ -23,10 +23,6 @@ public class ClassifyRunEvent extends ClassifyEvent implements IClassifyRunEvent
 	 */
 	protected JobInstance jobInstance;
 	/**
-	 * 작업 인스턴스 ID
-	 */
-	protected String jobInstanceId;
-	/**
 	 * 작업이 일어난 셀 코드
 	 */
 	protected String cellCd;
@@ -121,19 +117,8 @@ public class ClassifyRunEvent extends ClassifyEvent implements IClassifyRunEvent
 		this.jobInstance = jobInstance;
 		
 		if(jobInstance != null) {
-			this.jobInstanceId = jobInstance.getId();
 			this.cellCd = jobInstance.getSubEquipCd();
 		}
-	}
-
-	@Override
-	public String getJobInstanceId() {
-		return this.jobInstanceId;
-	}
-
-	@Override
-	public void setJobInstanceId(String jobInstanceId) {
-		this.jobInstanceId = jobInstanceId;
 	}
 
 	@Override

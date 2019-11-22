@@ -80,14 +80,14 @@ public interface IClassifyRunEvent extends IClassifyEvent {
 	 * 
 	 * @return
 	 */
-	public String getJobInstanceId();
+	//public String getJobInstanceId();
 	
 	/**
 	 * 작업 인스턴스 ID 설정
 	 * 
 	 * @param jobInstanceId
 	 */
-	public void setJobInstanceId(String jobInstanceId);
+	//public void setJobInstanceId(String jobInstanceId);
 	
 	/**
 	 * 분류 요청 수량 리턴 
