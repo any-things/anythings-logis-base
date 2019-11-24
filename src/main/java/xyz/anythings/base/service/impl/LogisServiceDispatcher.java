@@ -239,6 +239,16 @@ public class LogisServiceDispatcher implements BeanFactoryAware {
 	}
 	
 	/**
+	 * 작업에 따라 표시기 점,소등 서비스 컴포넌트를 찾아 리턴
+	 * 
+	 * @param job
+	 * @return
+	 */
+	public IIndicationService getIndicationService(JobInstance job) {
+		return this.getIndicationService(job.getJobType());
+	}
+	
+	/**
 	 * 작업 유형에 따른 표시기 점,소등 서비스 컴포넌트를 찾아서 리턴
 	 * 
 	 * @param jobType
