@@ -27,8 +27,11 @@ public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "id", nullable = false, length = 40)
 	private String id;
 
-	@Column (name = "batch_id", length = 40)
+	@Column (name = "batch_id", length = 40, nullable = false)
 	private String batchId;
+	
+	@Column (name = "stage_cd", length = 30)
+	private String stageCd;
 
 	@Column (name = "job_date", nullable = false, length = 10)
 	private String jobDate;
@@ -141,6 +144,14 @@ public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setBatchId(String batchId) {
 		this.batchId = batchId;
+	}
+
+	public String getStageCd() {
+		return stageCd;
+	}
+
+	public void setStageCd(String stageCd) {
+		this.stageCd = stageCd;
 	}
 
 	public String getJobDate() {

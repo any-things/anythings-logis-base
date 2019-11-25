@@ -12,6 +12,7 @@ import xyz.anythings.base.entity.WorkCell;
 import xyz.anythings.base.query.util.IndicatorQueryUtil;
 import xyz.anythings.gw.GwConstants;
 import xyz.anythings.gw.entity.Gateway;
+import xyz.anythings.gw.entity.IndConfigSet;
 import xyz.anythings.gw.service.IndicatorDispatcher;
 import xyz.anythings.gw.service.api.IIndRequestService;
 import xyz.anythings.gw.service.model.IIndOnInfo;
@@ -40,7 +41,16 @@ public class RuntimeIndServiceUtil {
 	 * @return
 	 */
 	public static IIndRequestService getIndicatorRequestService(JobBatch batch) {
-		return BeanUtil.get(IndicatorDispatcher.class).getIndicatorRequestServiceByBatch(batch.getId());
+		IndicatorDispatcher dispatcher = BeanUtil.get(IndicatorDispatcher.class);
+		IIndRequestService indReqSvc = dispatcher.getIndicatorRequestServiceByBatch(batch.getId());
+		
+		if(indReqSvc == null) {
+			IndConfigSet indConfigSet = batch.getIndConfigSet();
+			dispatcher.addIndicatorConfigSet(batch.getId(), indConfigSet);
+			indReqSvc = dispatcher.getIndicatorRequestServiceByBatch(batch.getId());
+		}
+		
+		return indReqSvc;
 	}
 	
 	/**
