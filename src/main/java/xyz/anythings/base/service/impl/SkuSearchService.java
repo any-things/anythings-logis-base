@@ -87,7 +87,7 @@ public class SkuSearchService extends AbstractLogisService implements ISkuSearch
 	
 	@Override
 	public List<SKU> searchListInBatch(JobBatch batch, String stationCd, String comCd, String skuCd, boolean todoOnly, boolean exceptionWhenEmpty) {
-		skuCd = this.validateSkuCd(batch, skuCd);
+		//skuCd = this.validateSkuCd(batch, skuCd);
 		String[] skuCodeFields = BatchJobConfigUtil.getSkuSearchConditionFields(batch);
 		
 		String sql = BeanUtil.get(BatchQueryStore.class).getSearchSkuInBatchQuery();
