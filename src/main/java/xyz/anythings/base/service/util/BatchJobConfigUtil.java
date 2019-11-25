@@ -85,15 +85,18 @@ public class BatchJobConfigUtil {
 	 */
 	public static String getConfigValue(JobBatch batch, String key, boolean exceptionWhenEmptyValue) {
 		String jobType = batch.getJobType().toLowerCase();
-		String jobTypeKey = key.replace("job.cmm", "job." + jobType);
+		//String jobTypeKey = key.replace("job.cmm", "job." + jobType);
 		JobConfigProfileService configSvc = getConfigSetService();
+		
+		String jobTypeKey = key.replace("job.cmm", jobType);
 		
 		// 1. 작업 유형에 따른 설정값 조회
 		String value = configSvc.getConfigValue(batch, jobTypeKey);
 		
 		// 2. 1값이 없다면 공통 설정값 조회
 		if(ValueUtil.isEmpty(value)) {
-			value = configSvc.getConfigValue(batch, key);
+			jobTypeKey = key.replace("job.cmm", "cmm");
+			value = configSvc.getConfigValue(batch, jobTypeKey);
 		}
 		
 		// 3. 설정값이 없다면 exceptionWhenEmptyValue에 따라 예외 처리

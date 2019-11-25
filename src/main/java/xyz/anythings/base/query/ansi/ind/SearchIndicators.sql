@@ -1,5 +1,5 @@
 SELECT
-	#if(indQueryFlag)
+	#if($indQueryFlag)
 		C.IND_CD, G.GW_NM AS GW_PATH
 	#else
 		DISTINCT(G.GW_NM) AS GW_PATH 
@@ -12,7 +12,7 @@ WHERE
 	I.DOMAIN_ID = :domainId
 	AND C.ACTIVE_FLAG = :activeFlag
 	#if($rackCd)
-	AND C.RACK_CD = :rackCd
+	AND C.EQUIP_CD = :rackCd
 	#end
 	#if($stationCd)
 	AND C.STATION_CD = :stationCd
@@ -28,6 +28,6 @@ WHERE
 	#end
 ORDER BY
 	G.GW_NM ASC
-#if(indQueryFlag)
+#if($indQueryFlag)
 	, C.CELL_SEQ ASC
 #end
