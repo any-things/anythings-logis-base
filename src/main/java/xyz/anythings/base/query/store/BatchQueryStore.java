@@ -165,4 +165,11 @@ public class BatchQueryStore extends LogisBaseQueryStore {
 		return this.getQueryByPath("batch/FindOrderQtyUpdateList");
 	}
 
+	/**
+	 * 단포 작업 화면 summary 정보 조회 쿼리 
+	 * @return
+	 */
+	public String getRackDpsSinglePackInformQuery() {
+		return this.getQueryByPath("batch/RackDpsSinglePackInform");
+	}
 }

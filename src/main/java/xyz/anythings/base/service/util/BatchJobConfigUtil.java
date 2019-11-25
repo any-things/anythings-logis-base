@@ -316,7 +316,7 @@ public class BatchJobConfigUtil {
 	 */
 	public static String getBoxIdUniqueScope(JobBatch batch) {
 		// job.cmm.box.box_id.unique.scope
-		return getConfigValue(batch, LogisConfigConstants.BOX_ID_UNIQE_SCOPE, true);
+		return getBoxIdUniqueScope(batch, true);
 	}
 	
 	
