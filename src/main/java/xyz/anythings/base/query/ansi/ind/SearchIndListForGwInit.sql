@@ -7,14 +7,14 @@ FROM
 WHERE
 	I.DOMAIN_ID = :domainId
 	AND C.ACTIVE_FLAG = :activeFlag
+	#if($stageCd)
+	AND G.STAGE_CD = :stageCd
+	#end
 	#if($equipType)
 	AND C.EQUIP_TYPE = :equipType
 	#end
 	#if($equipCd)
 	AND C.EQUIP_CD = :equipCd
-	#end
-	#if($stationCd)
-	AND C.STATION_CD = :stationCd
 	#end
 	#if($gwCd)
 	AND G.GW_CD = :gwCd

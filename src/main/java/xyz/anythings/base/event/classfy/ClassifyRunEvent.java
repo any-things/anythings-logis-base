@@ -73,8 +73,6 @@ public class ClassifyRunEvent extends ClassifyEvent implements IClassifyRunEvent
 		this.setClassifyDevice(classifyDevice);
 		this.setClassifyAction(classifyAction);
 		this.setJobInstance(job);
-		this.setReqQty(reqQty);
-		this.setResQty(resQty);
 	}
 
 	@Override
