@@ -95,8 +95,7 @@ public class BatchJobConfigUtil {
 		
 		// 2. 1값이 없다면 공통 설정값 조회
 		if(ValueUtil.isEmpty(value)) {
-			jobTypeKey = key.replace("job.cmm", "cmm");
-			value = configSvc.getConfigValue(batch, jobTypeKey);
+			value = configSvc.getConfigValue(batch, key);
 		}
 		
 		// 3. 설정값이 없다면 exceptionWhenEmptyValue에 따라 예외 처리
