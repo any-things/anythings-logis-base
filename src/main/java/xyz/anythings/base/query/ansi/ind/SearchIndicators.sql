@@ -11,6 +11,9 @@ FROM
 WHERE
 	I.DOMAIN_ID = :domainId
 	AND C.ACTIVE_FLAG = :activeFlag
+	#if($stageCd)
+	AND G.STAGE_CD = :stageCd
+	#end
 	#if($rackCd)
 	AND C.EQUIP_CD = :rackCd
 	#end
