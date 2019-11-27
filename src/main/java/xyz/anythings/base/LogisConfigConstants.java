@@ -341,46 +341,51 @@ public class LogisConfigConstants extends xyz.anythings.sys.ConfigConstants {
 	/**
 	 * DPS 설정 - DPS 셀에 할당할 대상 필드 (매장, 상품, 주문번호…)
 	 */
-	public static final String DPS_PREPROCESS_CELL_MAPPING_FIELD = "job.dps.preproces.cell.mapping.field";
+	public static final String DPS_PREPROCESS_CELL_MAPPING_FIELD = "dps.preproces.cell.mapping.field";
 	/**
 	 * DPS 설정 - 투입 박스 유형 (box / tray)
 	 */
-	public static final String DPS_INPUT_BOX_TYPE = "job.dps.input.box.type";
+	public static final String DPS_INPUT_BOX_TYPE = "dps.input.box.type";
 	/**
 	 * DPS 설정 - 호기별로 배치 분리 처리 여부
 	 */
-	public static final String DPS_BATCH_SPLIT_BY_RACK_ENABLED = "job.dps.batch.split-by-rack.enabled";
+	public static final String DPS_BATCH_SPLIT_BY_RACK_ENABLED = "dps.batch.split-by-rack.enabled";
 	/**
 	 * DPS 설정 - 박스 투입시 박스 타입 split 기준 ( 1,2 )
 	 */
-	public static final String DPS_INPUT_BOX_TYPE_SPLIT_INDEX = "job.dps.input.box.type.split.index";
+	public static final String DPS_INPUT_BOX_TYPE_SPLIT_INDEX = "dps.input.box.type.split.index";
 	/**
 	 * DPS 설정 - 피킹과 동시에 검수 처리할 것인지 여부
 	 */
-	public static final String DPS_PICK_WITH_INSPECTION_ENABLED = "job.dps.pick.with-inspection.enabled";
+	public static final String DPS_PICK_WITH_INSPECTION_ENABLED = "dps.pick.with-inspection.enabled";
 	/**
 	 * DPS 설정 - 완박스 바로 출고 대상 분류 여부
 	 */
-	public static final String DPS_PICK_1BOX_ENABLED = "job.dps.pick.1box.enabled";
+	public static final String DPS_PICK_1BOX_ENABLED = "dps.pick.1box.enabled";
 	/**
 	 * DPS 설정 - 단수 대상 분류 여부
 	 */
-	public static final String DPS_PICK_1SKU_1PCS_ENABLED = "job.dps.pick.1sku.1pcs.enabled";
+	public static final String DPS_PICK_1SKU_1PCS_ENABLED = "dps.pick.1sku.1pcs.enabled";
 	/**
 	 * DPS 설정 - 단포 대상 분류 여부
 	 */
-	public static final String DPS_PICK_1SKU_NPCS_ENABLED = "job.dps.pick.1sku.npcs.enabled";
+	public static final String DPS_PICK_1SKU_NPCS_ENABLED = "dps.pick.1sku.npcs.enabled";
 	/**
 	 * DPS 설정 - SKU 물량 Rank 선정 기준 데이터 범위 (일자)
 	 */
-	public static final String DPS_SKU_POPULAR_RANK_CALC_DAYS = "job.dps.sku.popula.rank.calc.days";
+	public static final String DPS_SKU_POPULAR_RANK_CALC_DAYS = "dps.sku.popula.rank.calc.days";
 	/**
 	 * DPS 설정 - 작업 스테이션에 대기할 박스 최대 개수 (-1이면 무한대)
 	 */
-	public static final String DPS_STATION_WAIT_POOL_COUNT = "job.dps.station.wait-pool.count";
+	public static final String DPS_STATION_WAIT_POOL_COUNT = "dps.station.wait-pool.count";
 	/**
 	 * DPS 설정 - 추천 로케이션 사용 여부
 	 */
-	public static final String DPS_SUPPLE_RECOMMEND_CELL_ENABLED = "job.dps.supple.recommend-cell.enabled";
+	public static final String DPS_SUPPLE_RECOMMEND_CELL_ENABLED = "dps.supple.recommend-cell.enabled";
+	/**
+	 * DPS 설정 - 작업 할당 스케줄러 사용 여부
+	 */
+	public static final String DPS_JOB_ASSIGN_SCHEDULING_ENABLE = "dps.job-assign.scheduling.enabled";
+
 
 }
