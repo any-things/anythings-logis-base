@@ -64,6 +64,16 @@ public interface IClassificationService {
 	 * @return
 	 */
 	public Category categorize(ICategorizeEvent event);
+	
+	/**
+	 * 셀에 공 박스를 매핑
+	 * 
+	 * @param batch
+	 * @param cellCd
+	 * @param boxId
+	 * @return
+	 */
+	public Object boxCellMapping(JobBatch batch, String cellCd, String boxId);
 		
 	/**
 	 * 3-1. 투입 ID로 유효성 체크 및 투입 유형을 찾아서 리턴 

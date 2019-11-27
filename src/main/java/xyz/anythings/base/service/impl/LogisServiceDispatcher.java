@@ -6,20 +6,23 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import xyz.anythings.base.LogisConstants;
 import xyz.anythings.base.entity.BoxPack;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.JobInstance;
+import xyz.anythings.base.service.api.IAssortService;
 import xyz.anythings.base.service.api.IBatchService;
 import xyz.anythings.base.service.api.IClassificationService;
-import xyz.anythings.base.service.api.IJobConfigProfileService;
 import xyz.anythings.base.service.api.IIndicationService;
 import xyz.anythings.base.service.api.IInstructionService;
 import xyz.anythings.base.service.api.IInvoiceNoService;
+import xyz.anythings.base.service.api.IJobConfigProfileService;
 import xyz.anythings.base.service.api.IJobStatusService;
 import xyz.anythings.base.service.api.IPreprocessService;
 import xyz.anythings.base.service.api.IReceiveBatchService;
 import xyz.anythings.base.service.api.ISkuSearchService;
 import xyz.anythings.base.service.api.IStockService;
+import xyz.elidom.util.ValueUtil;
 
 /**
  * 작업 유형에 따른 서비스를 찾아주는 컴포넌트
@@ -203,8 +206,72 @@ public class LogisServiceDispatcher implements BeanFactoryAware {
 	 * @return
 	 */
 	public IClassificationService getClassificationService(String jobType) {
+		// FIXME 아래 분기하는 것 외 다른 방법 찾기
+		String svcType = ValueUtil.isEqualIgnoreCase(jobType, LogisConstants.JOB_TYPE_DPS) ? "PickService" : "AssortService";
+		String classSvcType = jobType.toLowerCase() + svcType;
+		return (IClassificationService)this.beanFactory.getBean(classSvcType);
+	}
+	
+	/**
+	 * 작업 정보로 분류 서비스를 찾아 리턴
+	 * 
+	 * @param job
+	 * @return
+	 */
+	public IAssortService getPickService(JobInstance job) {
+		return this.getPickService(job.getJobType());
+	}
+	
+	/**
+	 * 박스 정보로 분류 서비스를 찾아 리턴
+	 * 
+	 * @param box
+	 * @return
+	 */
+	public IAssortService getPickService(BoxPack box) {
+		return this.getPickService(box.getJobType());
+	}
+	
+	/**
+	 * 작업 유형에 따른 분류 서비스 컴포넌트를 찾아서 리턴
+	 * 
+	 * @param jobType
+	 * @return
+	 */
+	public IAssortService getPickService(String jobType) {
+		String assortSvcType = jobType.toLowerCase() + "PickService";
+		return (IAssortService)this.beanFactory.getBean(assortSvcType);
+	}
+	
+	/**
+	 * 작업 정보로 분류 서비스를 찾아 리턴
+	 * 
+	 * @param job
+	 * @return
+	 */
+	public IAssortService getAssortService(JobInstance job) {
+		return this.getAssortService(job.getJobType());
+	}
+	
+	/**
+	 * 배치 정보로 분류 서비스를 찾아 리턴
+	 * 
+	 * @param batch
+	 * @return
+	 */
+	public IAssortService getAssortService(JobBatch batch) {
+		return this.getAssortService(batch.getJobType());
+	}
+	
+	/**
+	 * 작업 유형에 따른 분류 서비스 컴포넌트를 찾아서 리턴
+	 * 
+	 * @param jobType
+	 * @return
+	 */
+	public IAssortService getAssortService(String jobType) {
 		String assortSvcType = jobType.toLowerCase() + "AssortService";
-		return (IClassificationService)this.beanFactory.getBean(assortSvcType);
+		return (IAssortService)this.beanFactory.getBean(assortSvcType);
 	}
 
 	/**

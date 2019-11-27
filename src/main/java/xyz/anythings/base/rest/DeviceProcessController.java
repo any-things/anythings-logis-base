@@ -41,6 +41,7 @@ import xyz.anythings.sys.model.BaseResponse;
 import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.exception.server.ElidomServiceException;
+import xyz.elidom.orm.IQueryManager;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
 import xyz.elidom.orm.system.annotation.service.ServiceDesc;
 import xyz.elidom.sys.SysConstants;
@@ -61,16 +62,23 @@ import xyz.elidom.util.BeanUtil;
 public class DeviceProcessController {
 	
 	/**
+	 * 이벤트 퍼블리셔
+	 */
+	@Autowired
+	private IQueryManager queryManager;
+	/**
 	 * 서비스 디스패처
 	 */
 	@Autowired
 	private LogisServiceDispatcher serviceDispatcher;
-	
+	/**
+	 * 이벤트 퍼블리셔
+	 */
 	@Autowired
-	EventPublisher eventPublisher;
+	private EventPublisher eventPublisher;
 	
 	/**********************************************************************
-	 * 								공통 API  q
+	 * 								공통 API 
 	 **********************************************************************/
 	/**
 	 * 장비 업데이트 하라는 메시지를 장비 타입별로 publish
@@ -347,6 +355,64 @@ public class DeviceProcessController {
 		
 		// TODO 
 		return null;
+	}
+	
+	/**********************************************************************
+	 * 								박스 매핑 API 
+	 **********************************************************************/
+	/**
+	 * 셀과 박스 ID 매핑 
+	 * 
+	 * @param equipType
+	 * @param equipCd
+	 * @param subEquipCd
+	 * @param boxId
+	 * @param isSkipEquipCheck 셀이 equipCd에 소속되었는지 체크할 지 여부
+	 * @param isSkipBoxMapping 박스 매핑을 스킵할 지 여부
+	 * @return
+	 */
+	@RequestMapping(value = "/assign/cell_box/{equip_type}/{equip_cd}/{sub_equip_cd}/{box_id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Cell & Box Mapping")
+	public Object boxMappingByCellCd(
+			@PathVariable("equip_type") String equipType,
+			@PathVariable("equip_cd") String equipCd, 
+			@PathVariable("sub_equip_cd") String subEquipCd, 
+			@PathVariable("box_id") String boxId,
+			@RequestParam(name="skip_equip_check", required=false) boolean isSkipEquipCheck,
+			@RequestParam(name="skip_box_mapping", required=false) boolean isSkipBoxMapping) {
+		
+		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(Domain.currentDomainId(), equipType, equipCd);
+		JobBatch batch = equipBatchSet.getBatch();
+		return this.serviceDispatcher.getClassificationService(batch).boxCellMapping(batch, subEquipCd, boxId);
+	}
+	
+	/**
+	 * 셀과 박스 ID 매핑 (표시기 코드 사용)
+	 * 
+	 * @param equipType
+	 * @param equipCd
+	 * @param indCd
+	 * @param boxId
+	 * @param isSkipEquipCheck 셀이 equipCd에 소속되었는지 체크할 지 여부
+	 * @param isSkipBoxMapping 박스 매핑을 스킵할 지 여부
+	 * @return
+	 */
+	@RequestMapping(value = "/assign/ind_box/{equip_type}/{equip_cd}/{ind_cd}/{box_id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Cell & Box Mapping")
+	public Object boxMappingByIndCd(
+			@PathVariable("equip_type") String equipType,
+			@PathVariable("equip_cd") String equipCd,
+			@PathVariable("ind_cd") String indCd, 
+			@PathVariable("box_id") String boxId,
+			@RequestParam(name="skip_equip_check", required=false) boolean isSkipEquipCheck,
+			@RequestParam(name="skip_box_mapping", required=false) boolean isSkipBoxMapping) {
+		
+		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(Domain.currentDomainId(), equipType, equipCd);
+		JobBatch batch = equipBatchSet.getBatch();
+		String sql = "select cell_cd from cells where domain_id = :domainId and equip_type = :equipType and equip_cd = :equipCd and indCd = :indCd";
+		Map<String, Object> params = ValueUtil.newMap("domainId,equipType,equipCd,indCd", batch.getDomainId(), equipType, equipCd, indCd);
+		String subEquipCd = this.queryManager.selectBySql(sql, params, String.class);
+		return this.serviceDispatcher.getClassificationService(batch).boxCellMapping(batch, subEquipCd, boxId);
 	}
 	
 	/**********************************************************************
