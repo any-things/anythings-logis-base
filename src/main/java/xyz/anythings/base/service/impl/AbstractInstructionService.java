@@ -106,8 +106,8 @@ public class AbstractInstructionService extends AbstractExecutionService{
 	 */
 	private <T> List<T> searchEquipByJobBatchEquipCd(Class<T> clazz, JobBatch batch){
 		return AnyEntityUtil.searchEntitiesBy(batch.getDomainId(), false, clazz, null
-				, "areaCd,stageCd,equipCd,activeFlag,status"
-				, batch.getAreaCd(), batch.getStageCd(), batch.getEquipCd(), Boolean.TRUE, JobBatch.STATUS_RUNNING);	
+				, "areaCd,stageCd,equipCd,activeFlag,jobType"
+				, batch.getAreaCd(), batch.getStageCd(), batch.getEquipCd(), Boolean.TRUE, batch.getJobType());	
 	}
 	
 	/**
@@ -118,7 +118,7 @@ public class AbstractInstructionService extends AbstractExecutionService{
 	 */
 	private <T> List<T> searchEquipByJobBatch(Class<T> clazz, JobBatch batch){
 		return AnyEntityUtil.searchEntitiesBy(batch.getDomainId(), false, clazz, null
-				, "areaCd,stageCd,activeFlag,status"
-				, batch.getAreaCd(), batch.getStageCd(), Boolean.TRUE, JobBatch.STATUS_RUNNING);	
+				, "areaCd,stageCd,activeFlag,jobType"
+				, batch.getAreaCd(), batch.getStageCd(), Boolean.TRUE, batch.getJobType());	
 	}
 }
