@@ -446,7 +446,7 @@ public class DeviceProcessController {
 		ClassifyRunEvent event = new ClassifyRunEvent(batch, EventConstants.EVENT_STEP_ALONE
 				, deviceType.toLowerCase()
 				, LogisCodeConstants.CLASSIFICATION_ACTION_CONFIRM, job, job.getPickQty(), job.getPickQty());
-		
+		   
 		// 4. 이벤트 발생 
 		this.eventPublisher.publishEvent(event);
 		
@@ -591,18 +591,27 @@ public class DeviceProcessController {
 			@PathVariable("device_type") String deviceType,
 			@PathVariable("equip_type") String equipType,
 			@PathVariable("equip_cd") String equipCd, 
-			@PathVariable("job_instance_id") String jobInstanceId) {
+			@PathVariable("job_instance_id") String jobInstanceId,
+			@RequestParam(name = "req_qty", required = false) Integer req_qty,
+			@RequestParam(name = "box_id", required = false) String box_id) {
 		
-		// 1. 설비 정보로 Batch조회
+		// 1. 설비 정보로 Batch조회 
 		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(Domain.currentDomainId(), equipType, equipCd);
 		JobBatch batch = equipBatchSet.getBatch();
 		
 		// 2. JobInstance 조회 
 		JobInstance job = AnyEntityUtil.findEntityById(true, JobInstance.class, jobInstanceId);
 		
+		if(ValueUtil.isNotEmpty(box_id)){
+			job.setBoxId(box_id);
+		} 
+		
 		// 3. 소분류 이벤트 생성 
 		ClassifyRunEvent event = new ClassifyRunEvent(batch, EventConstants.EVENT_STEP_ALONE
-				, deviceType.toLowerCase(), LogisCodeConstants.CLASSIFICATION_ACTION_FULL, job);
+				, deviceType.toLowerCase()
+				, LogisCodeConstants.CLASSIFICATION_ACTION_FULL, job
+				, ValueUtil.isEmpty(req_qty) ? 0 : req_qty
+				, 1);
 		
 		// 4. 액션 실행
 		this.serviceDispatcher.getClassificationService(batch).classify(event);
