@@ -10,6 +10,8 @@ import xyz.anythings.base.event.main.BatchInstructEvent;
 import xyz.anythings.sys.event.model.EventResultSet;
 import xyz.anythings.sys.service.AbstractExecutionService;
 import xyz.anythings.sys.util.AnyEntityUtil;
+import xyz.anythings.sys.util.AnyOrmUtil;
+import xyz.elidom.dbist.dml.Query;
 import xyz.elidom.util.ValueUtil;
 
 /**
@@ -37,14 +39,9 @@ public class AbstractInstructionService extends AbstractExecutionService{
 			return null;
 		}
 		
-		// 1. 작업 대상 설비가 있으면 그대로 return 
+		// 2. 작업 대상 설비가 있으면 그대로 return 
 		if(ValueUtil.isNotEmpty(equipIdList)){
 			return this.searchEquipByIds(batch.getDomainId(), masterEntity, equipIdList);
-		}
-		
-		// 2. batch 에 작업 대상 설비 타입 및 코드 가 지정 되어 있으면 
-		if(ValueUtil.isNotEmpty(batch.getEquipCd())) {
-			return this.searchEquipByJobBatchEquipCd(masterEntity, batch);
 		}
 		
 		// 3. batch 에 작업 대상 설비 타입만 지정되어 있으면 
@@ -85,6 +82,42 @@ public class AbstractInstructionService extends AbstractExecutionService{
 		return event.getEventResultSet();
 	}
 	
+
+	/************** 배치 작업 병합 이벤트 처리  **************/
+	
+	/**
+	 * 작업 병합 시작 이벤트 처리 
+	 * @param eventStep
+	 * @param batch
+	 * @param batch
+	 * @return
+	 */
+	protected EventResultSet mergeBatchStartEvent(short eventStep, JobBatch mainBatch, JobBatch newBatch, List<?> equipList, Object... params) {
+		return this.instructBatchEvent(mainBatch.getDomainId(), EventConstants.EVENT_INSTRUCT_TYPE_MERGE, eventStep, mainBatch, equipList, newBatch, params);
+	}
+	
+	/**
+	 * 작업 병합 시작 이벤트 처리 
+	 * @param eventType
+	 * @param eventStep
+	 * @param batch
+	 * @return
+	 */
+	protected EventResultSet mergeBatchStartEvent(long domainId, short eventType, short eventStep, JobBatch mainBatch, List<?> equipList, Object... params) {
+		// 1. 이벤트 생성 
+		BatchInstructEvent event = new BatchInstructEvent(domainId, eventType, eventStep);
+		event.setJobBatch(mainBatch);
+		event.setJobType(mainBatch.getJobType());
+		event.setEquipType(mainBatch.getEquipType());
+		event.setEquipList(equipList);
+		event.setPayLoad(params);
+		
+		// 2. event publish
+		event = (BatchInstructEvent)this.eventPublisher.publishEvent(event);
+		
+		return event.getEventResultSet();
+	}
+	
 	
 	/***** 작업 대상 설비 마스터 조회  ******/
 	/**
@@ -95,20 +128,12 @@ public class AbstractInstructionService extends AbstractExecutionService{
 	 * @return
 	 */
 	private <T> List<T> searchEquipByIds(long domainId, Class<T> clazz, List<String> equipIdList){
-		return AnyEntityUtil.searchEntitiesBy(domainId, false, clazz, null, "id", equipIdList);
+		Query condition = AnyOrmUtil.newConditionForExecution(domainId);
+		condition.addFilter(LogisConstants.ENTITY_FIELD_ID,"in",equipIdList);
+		return this.queryManager.selectList(clazz,condition);
+//		return AnyEntityUtil.searchEntitiesBy(domainId, false, clazz, null, "id", equipIdList);
 	}
-	
-	/**
-	 * batch equipCd 정보로 설비 마스터 리스트 조회 
-	 * @param clazz
-	 * @param batch
-	 * @return
-	 */
-	private <T> List<T> searchEquipByJobBatchEquipCd(Class<T> clazz, JobBatch batch){
-		return AnyEntityUtil.searchEntitiesBy(batch.getDomainId(), false, clazz, null
-				, "areaCd,stageCd,equipCd,activeFlag,jobType"
-				, batch.getAreaCd(), batch.getStageCd(), batch.getEquipCd(), Boolean.TRUE, batch.getJobType());	
-	}
+
 	
 	/**
 	 * batch 정보로 설비 마스터 리스트 조회 
@@ -118,7 +143,7 @@ public class AbstractInstructionService extends AbstractExecutionService{
 	 */
 	private <T> List<T> searchEquipByJobBatch(Class<T> clazz, JobBatch batch){
 		return AnyEntityUtil.searchEntitiesBy(batch.getDomainId(), false, clazz, null
-				, "areaCd,stageCd,activeFlag,jobType"
-				, batch.getAreaCd(), batch.getStageCd(), Boolean.TRUE, batch.getJobType());	
+				, "areaCd,stageCd,activeFlag,jobType,batchId"
+				, batch.getAreaCd(), batch.getStageCd(), Boolean.TRUE, batch.getJobType(), batch.getId());	
 	}
 }

@@ -154,7 +154,7 @@ public class Order extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "order_type", length = 20)
 	private String orderType;
 
-	@Column (name = "class_cd", length = 30)
+	@Column (name = "class_cd", length = 40)
 	private String classCd;
 
 	@Column (name = "pack_type", length = 20)

@@ -108,6 +108,9 @@ public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "order_type", length = 20)
 	private String orderType;
 
+	@Column (name = "class_cd", length = 40)
+	private String classCd;
+
 	@Column (name = "status", length = 10)
 	private String status;
 
@@ -352,6 +355,14 @@ public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setOrderType(String orderType) {
 		this.orderType = orderType;
+	}
+	
+	public String getClassCd() {
+		return this.classCd;
+	}
+	
+	public void setClassCd(String classCd) {
+		this.classCd = classCd;
 	}
 
 	public String getStatus() {

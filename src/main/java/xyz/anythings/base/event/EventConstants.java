@@ -58,4 +58,10 @@ public class EventConstants {
 	 */
 	public static final short EVENT_INSTRUCT_TYPE_BOX_REQ = 30;
 	
+	/**
+	 * 배치 작업 병합 
+	 */
+	public static final short EVENT_INSTRUCT_TYPE_MERGE = 40;
+	
+	
 }
