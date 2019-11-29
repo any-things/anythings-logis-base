@@ -126,10 +126,14 @@ public class JobConfigProfileService extends AbstractExecutionService implements
 		
 		if(ValueUtil.isNotEmpty(batch.getJobConfigSetId())) {
 			JobConfigSet configSet = AnyEntityUtil.findEntityById(true, JobConfigSet.class, batch.getJobConfigSetId());
-			List<JobConfig> sourceItems = AnyEntityUtil.searchDetails(configSet.getDomainId(), JobConfig.class, "jobConfigSetId", configSet.getId());
-			configSet.setItems(sourceItems);
-			this.configProfiles.put(batch.getId(), configSet);
-			return configSet;
+			if(configSet != null) {
+				List<JobConfig> sourceItems = AnyEntityUtil.searchDetails(configSet.getDomainId(), JobConfig.class, "jobConfigSetId", configSet.getId());
+				configSet.setItems(sourceItems);
+				this.configProfiles.put(batch.getId(), configSet);
+				return configSet;
+			} else {
+				return null;
+			}
 		} else {
 			throw new ElidomRuntimeException("작업 배치 [" + batch.getId() + "]에 작업 설정 프로파일이 설정되지 않았습니다.");
 		}

@@ -151,9 +151,14 @@ public class AnythingsLogisBaseInitializer {
 		
 		if(ValueUtil.isNotEmpty(batches)) {
 			for(JobBatch batch : batches) {
-				IndConfigSet indConfigSet = this.queryManager.select(IndConfigSet.class, batch.getIndConfigSetId());
-				this.indConfigProfileSvc.addConfigSet(batch.getId(), indConfigSet);
 				this.jobConfigProfileSvc.addConfigSet(batch);
+				
+				if(ValueUtil.isNotEmpty(batch.getIndConfigSetId())) {
+					IndConfigSet indConfigSet = this.queryManager.select(IndConfigSet.class, batch.getIndConfigSetId());
+					if(indConfigSet != null) {
+						this.indConfigProfileSvc.addConfigSet(batch.getId(), indConfigSet);
+					}
+				}
 			}
 		}
 	}
