@@ -69,8 +69,17 @@ public class IndicatorQueryStore extends LogisBaseQueryStore {
 	 * 
 	 * @return
 	 */
-	public String searchBatchListByGateway() {
+	public String getSearchBatchListByGateway() {
 		return this.getQueryByPath("ind/SearchBatchListByGateway");
+	}
+	
+	/**
+	 * 장비에 소속된 게이트웨이 리스트를 조회 
+	 * 
+	 * @return
+	 */
+	public String getSearchGatewaysByEquip() {
+		return this.getQueryByPath("ind/SearchGateways");
 	}
 
 }

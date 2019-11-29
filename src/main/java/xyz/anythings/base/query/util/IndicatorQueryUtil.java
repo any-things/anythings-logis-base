@@ -116,7 +116,7 @@ public class IndicatorQueryUtil {
 	 * @return
 	 */
 	public static List<JobBatch> searchRunningBatchesByGwCd(Gateway gateway) {
-		String sql = BeanUtil.get(IndicatorQueryStore.class).searchBatchListByGateway();
+		String sql = BeanUtil.get(IndicatorQueryStore.class).getSearchBatchListByGateway();
 		Map<String, Object> params = ValueUtil.newMap("domainId,stageCd,gwCd", gateway.getDomainId(), gateway.getStageCd(), gateway.getGwCd());
 		return AnyEntityUtil.searchItems(gateway.getDomainId(), false, JobBatch.class, sql, params);
 	}
@@ -158,6 +158,21 @@ public class IndicatorQueryUtil {
 		String sql = BeanUtil.get(IndicatorQueryStore.class).getSearchIndListForGwInitQuery();
 		return AnyEntityUtil.searchItems(domainId, true, GatewayInitResIndList.class, sql, "domainId,gwCd,bizType,viewType,equipType,equipCd", domainId, gateway.getGwCd(), batch.getJobType(), viewType, batch.getEquipType(), batch.getEquipCd());
 	}*/
+	
+	/**
+	 * 장비 소속의 게이트웨이 리스트를 조회
+	 * 
+	 * @param domainId
+	 * @param stageCd
+	 * @param equipType
+	 * @param equipCd
+	 * @param stationCd
+	 * @return
+	 */
+	public static List<Gateway> searchGatewayListByEquip(Long domainId, String stageCd, String equipType, String equipCd, String stationCd) {
+		String sql = BeanUtil.get(IndicatorQueryStore.class).getSearchGatewaysByEquip();
+		return AnyEntityUtil.searchItems(domainId, true, Gateway.class, sql, "domainId,stageCd,equipType,equipCd,stationCd", domainId, stageCd, equipType, equipCd, stationCd);
+	}
 
 	/**
 	 * Gateway Code로 Gateway Path 조회

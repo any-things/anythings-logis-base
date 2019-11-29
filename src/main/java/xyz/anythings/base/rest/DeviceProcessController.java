@@ -223,7 +223,7 @@ public class DeviceProcessController {
 		JobBatch batch = equipBatchSet.getBatch();
 		
 		// 2. 작업 배치 전체 표시기 소등
-		this.serviceDispatcher.getIndicationService(batch).indicatorOffAll(batch.getDomainId(), batch.getId());
+		this.serviceDispatcher.getIndicationService(batch).indicatorOffAll(batch);
 		return new BaseResponse(true);
 	}
 	
@@ -247,7 +247,7 @@ public class DeviceProcessController {
 		JobBatch batch = equipBatchSet.getBatch();
 		
 		// 2. 작업 배치 내 작업 스테이션 영역의 표시기 소등
-		this.serviceDispatcher.getIndicationService(batch).indicatorListOff(batch.getDomainId(), equipType, equipCd, stationCd);
+		this.serviceDispatcher.getIndicationService(batch).indicatorListOff(batch.getDomainId(), batch.getStageCd(), equipType, equipCd, stationCd);
 		return new BaseResponse(true);
 	}
 

@@ -106,40 +106,48 @@ public interface IIndicationService {
 	/**
 	 * 1-7. 작업 배치 전체 표시기 소등 요청
 	 * 
-	 * @param domainId
-	 * @param batchId
+	 * @param batch
 	 */
-	public void indicatorOffAll(Long domainId, String batchId);
+	public void indicatorOffAll(JobBatch batch);
 	
 	/**
 	 * 1-7. 호기의 작업 스테이션 영역의 표시기 소등 요청
 	 * 
 	 * @param domainId
+	 * @param stageCd
 	 * @param equipType
 	 * @param equipCd
 	 * @param stationCd
 	 */
-	public void indicatorListOff(Long domainId, String equipType, String equipCd, String stationCd);
+	public void indicatorListOff(Long domainId, String stageCd, String equipType, String equipCd, String stationCd);
 	
 	/**
 	 * 1-7. 표시기 소등 요청
 	 * 
 	 * @param domainId
-	 * @param batchId
-	 * @param jobType
-	 * @param gwCd
+	 * @param stageCd
+	 * @param gwPath
 	 * @param indCd
 	 */
-	public void indicatorOff(Long domainId, String batchId, String jobType, String gwCd, String indCd);
+	public void indicatorOff(Long domainId, String stageCd, String gwPath, String indCd);
+	
+	/**
+	 * 1-7. 표시기 소등 요청
+	 * 
+	 * @param domainId
+	 * @param stageCd
+	 * @param indCd
+	 */
+	public void indicatorOff(Long domainId, String stageCd, String indCd);
 	
 	/**
 	 * 1-8. 표시기에 박스 매핑 점등 요청
 	 * 
 	 * @param batch
-	 * @param gwCd
+	 * @param gwPath
 	 * @param indCd
 	 */
-	public void displayForBoxMapping(JobBatch batch, String gwCd, String indCd);
+	public void displayForBoxMapping(JobBatch batch, String gwPath, String indCd);
 	
 	/**
 	 * 1-8. 표시기에 박스 매핑 점등 요청
@@ -153,10 +161,10 @@ public interface IIndicationService {
 	 * 1-9. 표시기에 박스 매핑이 안 된 에러
 	 * 
 	 * @param batch
-	 * @param gwCd
+	 * @param gwPath
 	 * @param indCd
 	 */
-	public void displayForNoBoxError(JobBatch batch, String gwCd, String indCd);
+	public void displayForNoBoxError(JobBatch batch, String gwPath, String indCd);
 	
 	/**
 	 * 1-9. 표시기에 박스 매핑이 안 된 에러
@@ -171,72 +179,74 @@ public interface IIndicationService {
 	 * 
 	 * @param domainId
 	 * @param batchId
+	 * @param stageCd
 	 * @param jobType
-	 * @param gwCd
+	 * @param gwPath
 	 * @param indCd
-	 * @param firstSegStr
-	 * @param secondSegStr
-	 * @param thirdSegStr
+	 * @param showStr
 	 */
-	public void displayForString(Long domainId, String batchId, String jobType, String gwCd, String indCd, String firstSegStr, String secondSegStr, String thirdSegStr);
+	public void displayForString(Long domainId, String batchId, String stageCd, String jobType, String gwPath, String indCd, String showStr);
 	
 	/**
 	 * 1-10. 표시기에 문자열 표시
 	 * 
 	 * @param domainId
 	 * @param batchId
+	 * @param stageCd
 	 * @param jobType
 	 * @param indCd
-	 * @param firstSegStr
-	 * @param secondSegStr
-	 * @param thirdSegStr
+	 * @param showStr
 	 */
-	public void displayForString(Long domainId, String batchId, String jobType, String indCd, String firstSegStr, String secondSegStr, String thirdSegStr);
+	public void displayForString(Long domainId, String batchId, String stageCd, String jobType, String indCd, String showStr);
 	
 	/**
 	 * 1-11. 표시기에 셀 코드 표시
 	 * 
 	 * @param domainId
 	 * @param batchId
+	 * @param stageCd
 	 * @param jobType
-	 * @param gwCd
+	 * @param gwPath
 	 * @param indCd
 	 * @param cellCd
 	 */
-	public void displayForCellCd(Long domainId, String batchId, String jobType, String gwCd, String indCd, String cellCd);
+	public void displayForCellCd(Long domainId, String batchId, String stageCd, String jobType, String gwPath, String indCd, String cellCd);
 	
 	/**
 	 * 1-11. 표시기에 셀 코드 표시
 	 * 
 	 * @param domainId
 	 * @param batchId
+	 * @param stageCd
 	 * @param jobType
 	 * @param indCd
 	 * @param cellCd
 	 */
-	public void displayForCellCd(Long domainId, String batchId, String jobType, String indCd, String cellCd);
+	public void displayForCellCd(Long domainId, String batchId, String stageCd, String jobType, String indCd, String cellCd);
 	
 	/**
 	 * 1-12. 표시기에 표시기 코드 표시
 	 * 
 	 * @param domainId
 	 * @param batchId
+	 * @param stageCd
 	 * @param jobType
-	 * @param gwCd
+	 * @param gwPath
 	 * @param indCd
 	 * @param cellCd
 	 */
-	public void displayForIndCd(Long domainId, String batchId, String jobType, String gwCd, String indCd, String cellCd);
+	public void displayForIndCd(Long domainId, String batchId, String stageCd, String jobType, String gwPath, String indCd, String cellCd);
 	
 	/**
 	 * 1-12. 표시기에 표시기 코드 표시
 	 * 
 	 * @param domainId
 	 * @param batchId
+	 * @param stageCd
 	 * @param indCd
 	 * @param cellCd
 	 */
-	public void displayForIndCd(Long domainId, String batchId, String jobType, String indCd, String cellCd);
+	public void displayForIndCd(Long domainId, String batchId, String stageCd, String jobType, String indCd, String cellCd);
 	
 	/**
 	 * 1-13. 투입 이벤트로 표시기 점등
