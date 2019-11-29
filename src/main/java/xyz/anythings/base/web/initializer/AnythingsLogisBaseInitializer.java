@@ -14,6 +14,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import xyz.anythings.base.config.ModuleProperties;
+import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.query.store.BatchQueryStore;
 import xyz.anythings.base.query.store.BoxQueryStore;
 import xyz.anythings.base.query.store.ConfigQueryStore;
@@ -22,11 +23,14 @@ import xyz.anythings.base.query.store.IndicatorQueryStore;
 import xyz.anythings.base.query.store.InstructionQueryStore;
 import xyz.anythings.base.query.store.PreprocessQueryStore;
 import xyz.anythings.base.service.impl.JobConfigProfileService;
+import xyz.anythings.gw.entity.IndConfigSet;
+import xyz.anythings.gw.service.IndConfigProfileService;
 import xyz.elidom.orm.IQueryManager;
 import xyz.elidom.sys.config.ModuleConfigSet;
 import xyz.elidom.sys.entity.Domain;
 import xyz.elidom.sys.system.service.api.IEntityFieldCache;
 import xyz.elidom.sys.system.service.api.IServiceFinder;
+import xyz.elidom.util.ValueUtil;
 
 /**
  * Anythings Logis Base Startup시 Framework 초기화 클래스 
@@ -79,7 +83,10 @@ public class AnythingsLogisBaseInitializer {
 	private EtcQueryStore etcQueryStore;
 	
 	@Autowired
-	private JobConfigProfileService configSetSvc;
+	private JobConfigProfileService jobConfigProfileSvc;
+	
+	@Autowired
+	private IndConfigProfileService indConfigProfileSvc;
 
 	@EventListener({ ContextRefreshedEvent.class })
 	public void refresh(ContextRefreshedEvent event) {
@@ -96,6 +103,7 @@ public class AnythingsLogisBaseInitializer {
 		this.scanServices();
 		this.initQueryStores();
 		this.initStageConfigProfiles();
+		this.initBatchIndConfigProfiles();
 		
 		this.logger.info("Anythings Logistics Base module initialized!");
     }
@@ -130,7 +138,23 @@ public class AnythingsLogisBaseInitializer {
 		List<Domain> domainList = this.queryManager.selectListBySql(sql, new HashMap<String, Object>(1), Domain.class, 0, 0);
 		
 		for(Domain domain : domainList) {
-			this.configSetSvc.buildStageConfigSet(domain.getId());
+			this.jobConfigProfileSvc.buildStageConfigSet(domain.getId());
+		}
+	}
+
+	/**
+	 * 작업 배치별 표시기 설정 프로파일 초기화 
+	 */
+	private void initBatchIndConfigProfiles() {
+		String sql = "select id, ind_config_set_id, job_config_set_id from job_batches where status = 'RUN' order by id";
+		List<JobBatch> batches = this.queryManager.selectListBySql(sql, new HashMap<String, Object>(1), JobBatch.class, 0, 0);
+		
+		if(ValueUtil.isNotEmpty(batches)) {
+			for(JobBatch batch : batches) {
+				IndConfigSet indConfigSet = this.queryManager.select(IndConfigSet.class, batch.getIndConfigSetId());
+				this.indConfigProfileSvc.addConfigSet(batch.getId(), indConfigSet);
+				this.jobConfigProfileSvc.addConfigSet(batch);
+			}
 		}
 	}
 
