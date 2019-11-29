@@ -29,7 +29,7 @@ public class LogisServiceUtil {
 	 * @return
 	 */
 	public static JobBatch findBatch(Long domainId, String batchId, boolean withLock, boolean exceptionWhenEmpty) {
-		JobBatch batch = AnyEntityUtil.findEntityBy(domainId, exceptionWhenEmpty, withLock, JobBatch.class, null, SysConstants.ENTITY_FIELD_ID, batchId);
+		JobBatch batch = AnyEntityUtil.findEntityBy(domainId, false, withLock, JobBatch.class, null, SysConstants.ENTITY_FIELD_ID, batchId);
 
 		if(batch == null && exceptionWhenEmpty) {
 			throw ThrowUtil.newNotFoundRecord("terms.menu.JobBatch", batchId);
