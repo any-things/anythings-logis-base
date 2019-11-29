@@ -363,7 +363,7 @@ public class JobBatchController extends AbstractRestService {
 	 * @param id
 	 * @return
 	 */
-	@RequestMapping(value = "/{id}/close_batch", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/{id}/close_batch", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Close batch")
 	public Map<String, Object> closeBatch(@RequestParam(name = "id", required = true) String id) {
 
