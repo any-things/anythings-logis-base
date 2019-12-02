@@ -47,7 +47,7 @@ public class JobBatchController extends AbstractRestService {
 		return JobBatch.class;
 	}
 
-	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE) 
 	@ApiDesc(description = "Search (Pagination) By Search Conditions")
 	public Page<?> index(@RequestParam(name = "page", required = false) Integer page,
 			@RequestParam(name = "limit", required = false) Integer limit,

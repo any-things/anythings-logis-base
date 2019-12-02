@@ -172,4 +172,14 @@ public class BatchQueryStore extends LogisBaseQueryStore {
 	public String getRackDpsSinglePackInformQuery() {
 		return this.getQueryByPath("batch/RackDpsSinglePackInform");
 	}
+	
+	/**
+	 * JobInstances 요약 정보 조회
+	 *
+	 * @return
+	 */
+	public String getJobInstancesSummaryDataQuery() {
+		return this.getQueryByPath("batch/JobInstancesSummaryData");
+	}
+	
 }
