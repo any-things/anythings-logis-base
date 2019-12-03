@@ -179,7 +179,7 @@ public class BatchService extends AbstractQueryService implements IBatchService 
 	
 	/**
 	 * JobBatch 상태를 작업 완료 상태로, 배치 완료 시간을 endedAt으로 변경
-	 *
+	 * 
 	 * @param batch
 	 * @param finishedAt
 	 */
