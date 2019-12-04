@@ -119,7 +119,10 @@ public class DeviceProfileController extends AbstractRestService {
 		
 		if(ValueUtil.isNotEmpty(profiles)) {
 			DeviceProfile profile = profiles.get(0);
-			return this.findDeviceConf(profile.getId());
+			query = new xyz.elidom.dbist.dml.Query();
+			query.addSelect("name", "value");
+			query.addFilter(new Filter("deviceProfileId", profile.getId()));
+			return this.queryManager.selectList(DeviceConf.class, query);
 		} else {
 			throw ThrowUtil.newDeviceConfigNotSet(stageCd);
 		}
