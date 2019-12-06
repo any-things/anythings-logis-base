@@ -46,7 +46,6 @@ public interface IAssortService extends IClassificationService {
 	 */
 	public IBoxingService getBoxingService(Object ... params);
 	
-	
 	/**
 	 * 2-2. 투입 : 배치 작업에 단건 상품 투입 
 	 * 
@@ -143,7 +142,6 @@ public interface IAssortService extends IClassificationService {
 	 * @return
 	 */
 	public JobInstance splitJob(JobInstance job, WorkCell workCell, int splitQty);
-	
 	
 	/**
 	 * 3-9. 소분류 : 스테이션 영역에 투입된 작업 분류 처리 완료 여부 체크

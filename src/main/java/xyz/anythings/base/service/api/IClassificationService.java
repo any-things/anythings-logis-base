@@ -78,12 +78,12 @@ public interface IClassificationService {
 	/**
 	 * 3-1. 투입 ID로 유효성 체크 및 투입 유형을 찾아서 리턴 
 	 * 
-	 * @param domainId
+	 * @param batch
 	 * @param inputId
 	 * @param params
 	 * @return LogisCodeConstants.CLASSIFICATION_INPUT_TYPE_...
 	 */
-	public String checkInput(Long domainId, String inputId, Object ... params);
+	public String checkInput(JobBatch batch, String inputId, Object ... params);
 	
 	/**
 	 * 3-2. 분류 설비에 투입 처리

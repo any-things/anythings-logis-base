@@ -4,6 +4,7 @@ import xyz.anythings.base.LogisConfigConstants;
 import xyz.anythings.base.LogisConstants;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.service.impl.JobConfigProfileService;
+import xyz.anythings.sys.util.AnyValueUtil;
 import xyz.elidom.sys.util.ThrowUtil;
 import xyz.elidom.sys.util.ValueUtil;
 import xyz.elidom.util.BeanUtil;
@@ -176,6 +177,18 @@ public class BatchJobConfigUtil {
 	}
 	
 	/**
+	 * 상품 코드가 유효한 지 체크
+	 * 
+	 * @param batch
+	 * @param skuCd
+	 * @return
+	 */
+	public static boolean isSkuCdValid(JobBatch batch, String skuCd) {
+		String skuCdRule = getSkuCdValidationRule(batch);
+		return AnyValueUtil.checkValidateByRegExpr(skuCdRule, skuCd);
+	}
+	
+	/**
 	 * 서버 사이드에서 박스 ID 유효성 체크를 위한 룰
 	 * 
 	 * @param batch
@@ -184,6 +197,18 @@ public class BatchJobConfigUtil {
 	public static String getBoxIdValidationRule(JobBatch batch) {
 		// job.cmm.server.validate.box_id.rule					
 		return getConfigValue(batch, LogisConfigConstants.VALIDATION_RULE_BOXID, true);
+	}
+	
+	/**
+	 * 박스 ID가 유효한 지 체크
+	 * 
+	 * @param batch
+	 * @param boxId
+	 * @return
+	 */
+	public static boolean isBoxIdValid(JobBatch batch, String boxId) {
+		String boxIdRule = getBoxIdValidationRule(batch);
+		return AnyValueUtil.checkValidateByRegExpr(boxIdRule, boxId);
 	}
 	
 	/**
@@ -198,6 +223,18 @@ public class BatchJobConfigUtil {
 	}
 	
 	/**
+	 *  셀 코드가 유효한 지 체크
+	 * 
+	 * @param batch
+	 * @param cellCd
+	 * @return
+	 */
+	public static boolean isCellCdValid(JobBatch batch, String cellCd) {
+		String cellCdRule = getCellCdValidationRule(batch);
+		return AnyValueUtil.checkValidateByRegExpr(cellCdRule, cellCd);
+	}
+	
+	/**
 	 * 서버 사이드에서 표시기 코드 유효성 체크를 위한 룰
 	 * 
 	 * @param batch
@@ -206,6 +243,18 @@ public class BatchJobConfigUtil {
 	public static String getIndCdValidationRule(JobBatch batch) {
 		// job.cmm.server.validate.ind_cd.rule			
 		return getConfigValue(batch, LogisConfigConstants.VALIDATION_RULE_INDCD, true);
+	}
+	
+	/**
+	 *  표시기 코드가 유효한 지 체크
+	 * 
+	 * @param batch
+	 * @param indCd
+	 * @return
+	 */
+	public static boolean isIndCdValid(JobBatch batch, String indCd) {
+		String indCdRule = getIndCdValidationRule(batch);
+		return AnyValueUtil.checkValidateByRegExpr(indCdRule, indCd);
 	}
 	
 	/**
@@ -220,6 +269,18 @@ public class BatchJobConfigUtil {
 	}
 	
 	/**
+	 *  랙 코드가 유효한 지 체크
+	 * 
+	 * @param batch
+	 * @param rackCd
+	 * @return
+	 */
+	public static boolean isRackCdValid(JobBatch batch, String rackCd) {
+		String rackCdRule = getIndCdValidationRule(batch);
+		return AnyValueUtil.checkValidateByRegExpr(rackCdRule, rackCd);
+	}
+	
+	/**
 	 * 서버 사이드에서 송장번호 유효성 체크를 위한 룰
 	 * 
 	 * @param batch
@@ -228,6 +289,18 @@ public class BatchJobConfigUtil {
 	public static String getInvoiceNoValidationRule(JobBatch batch) {
 		// job.cmm.server.validate.invoice_no.rule
 		return getConfigValue(batch, LogisConfigConstants.VALIDATION_RULE_INVNO, true);
+	}
+	
+	/**
+	 *  송장 번호가 유효한 지 체크
+	 * 
+	 * @param invoiceNo
+	 * @param rackCd
+	 * @return
+	 */
+	public static boolean isInvoiceNoValid(JobBatch batch, String invoiceNo) {
+		String invoiceNoRule = getInvoiceNoValidationRule(batch);
+		return AnyValueUtil.checkValidateByRegExpr(invoiceNoRule, invoiceNo);
 	}
 	
 	/**

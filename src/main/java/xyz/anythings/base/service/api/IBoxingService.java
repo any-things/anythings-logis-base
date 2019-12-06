@@ -63,7 +63,7 @@ public interface IBoxingService {
 	 * @param params
 	 * @return
 	 */
-	public Boolean assignBoxToCell(JobBatch batch, String cellCd, String boxId, Object ... params);
+	public Object assignBoxToCell(JobBatch batch, String cellCd, String boxId, Object ... params);
 	
 	/**
 	 * 2-2. 작업 준비 : 셀에 할당된 박스 ID 해제

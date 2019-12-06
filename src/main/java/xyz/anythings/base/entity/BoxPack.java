@@ -11,6 +11,27 @@ public class BoxPack extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	 * SerialVersion UID
 	 */
 	private static final long serialVersionUID = 258512479109046063L;
+	
+	/**
+	 * 박싱 대기
+	 */
+	public static final String BOX_STATUS_WAIT = "W";
+	/**
+	 * 박싱 완료
+	 */
+	public static final String BOX_STATUS_BOXED = "B";
+	/**
+	 * 검수 완료
+	 */
+	public static final String BOX_STATUS_EXAMED = "E";
+	/**
+	 * 포장 완료
+	 */
+	public static final String BOX_STATUS_PACKED = "P";
+	/**
+	 * 전송 완료
+	 */
+	public static final String BOX_STATUS_REPORTED = "R";
 
 	@PrimaryKey
 	@Column (name = "id", nullable = false, length = 40)

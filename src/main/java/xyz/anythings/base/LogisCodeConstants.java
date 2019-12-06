@@ -156,4 +156,31 @@ public class LogisCodeConstants {
 	 * 박스 유형  : 박스 
 	 */
 	public static final String BOX_TYPE_BOX = "BOX";
+	
+	/**************************************************************
+	 * 
+	 * 투입 코드 유형
+	 * 
+	 **************************************************************/
+
+	/**
+	 * 투입 유형 : 박스 ID
+	 */
+	public static final String INPUT_TYPE_BOX_ID = "BOX_ID";
+	/**
+	 * 투입 유형 : 상품 코드 
+	 */
+	public static final String INPUT_TYPE_SKU_CD = "SKU_CD";
+	/**
+	 * 투입 유형 : 랙 코드 
+	 */
+	public static final String INPUT_TYPE_RACK_CD = "RACK_CD";
+	/**
+	 * 투입 유형 : 셀 코드 
+	 */
+	public static final String INPUT_TYPE_CELL_CD = "CELL_CD";
+	/**
+	 * 투입 유형 : 표시기 코드 
+	 */
+	public static final String INPUT_TYPE_IND_CD = "IND_CD";
 }
