@@ -29,6 +29,7 @@ import xyz.anythings.base.entity.SKU;
 import xyz.anythings.base.event.EventConstants;
 import xyz.anythings.base.event.IClassifyInEvent;
 import xyz.anythings.base.event.classfy.ClassifyInEvent;
+import xyz.anythings.base.event.classfy.ClassifyOutEvent;
 import xyz.anythings.base.event.classfy.ClassifyRunEvent;
 import xyz.anythings.base.event.rest.DeviceProcessRestEvent;
 import xyz.anythings.base.model.BatchProgressRate;
@@ -451,8 +452,7 @@ public class DeviceProcessController {
 		this.eventPublisher.publishEvent(event);
 		
 		// 5. 이벤트 처리 결과 리턴 
-		if(event.isExecuted() == false) {
-			// 기능 실행중 에러가 발생 했습니다. ? 
+		if(!event.isExecuted()) {
 			throw new ElidomServiceException();
 		} else {
 			return new BaseResponse(true,null, event.getResult());
@@ -497,8 +497,7 @@ public class DeviceProcessController {
 		this.eventPublisher.publishEvent(event);
 		
 		// 5. 이벤트 처리 결과 리턴 
-		if(event.isExecuted() == false) {
-			// 기능 실행중 에러가 발생 했습니다. ? 
+		if(!event.isExecuted()) {
 			throw new ElidomServiceException();
 		} else {
 			return new BaseResponse(true, null, event.getResult());
@@ -536,8 +535,7 @@ public class DeviceProcessController {
 		this.eventPublisher.publishEvent(event);
 		
 		// 5. 이벤트 처리 결과 리턴 
-		if(event.isExecuted() == false) {
-			// 기능 실행중 에러가 발생 했습니다. ? 
+		if(!event.isExecuted()) {
 			throw new ElidomServiceException();
 		} else {
 			return new BaseResponse(true,null, event.getResult());
@@ -592,8 +590,8 @@ public class DeviceProcessController {
 			@PathVariable("equip_type") String equipType,
 			@PathVariable("equip_cd") String equipCd, 
 			@PathVariable("job_instance_id") String jobInstanceId,
-			@RequestParam(name = "req_qty", required = false) Integer req_qty,
-			@RequestParam(name = "box_id", required = false) String box_id) {
+			@RequestParam(name = "req_qty", required = false) Integer reqQty,
+			@RequestParam(name = "box_id", required = false) String boxId) {
 		
 		// 1. 설비 정보로 Batch조회 
 		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(Domain.currentDomainId(), equipType, equipCd);
@@ -602,16 +600,15 @@ public class DeviceProcessController {
 		// 2. JobInstance 조회 
 		JobInstance job = AnyEntityUtil.findEntityById(true, JobInstance.class, jobInstanceId);
 		
-		if(ValueUtil.isNotEmpty(box_id)){
-			job.setBoxId(box_id);
-		} 
-		
 		// 3. 소분류 이벤트 생성 
-		ClassifyRunEvent event = new ClassifyRunEvent(batch, EventConstants.EVENT_STEP_ALONE
+		ClassifyOutEvent event = new ClassifyOutEvent(batch, EventConstants.EVENT_STEP_ALONE
 				, deviceType.toLowerCase()
 				, LogisCodeConstants.CLASSIFICATION_ACTION_FULL, job
-				, ValueUtil.isEmpty(req_qty) ? 0 : req_qty
+				, ValueUtil.isEmpty(reqQty) ? 0 : reqQty
 				, 1);
+		
+		event.getWorkCell().setBoxId(boxId);
+		event.setBoxId(boxId);
 		
 		// 4. 액션 실행
 		this.serviceDispatcher.getClassificationService(batch).classify(event);
@@ -628,8 +625,16 @@ public class DeviceProcessController {
 	@RequestMapping(value = "/fullbox_all/{equip_type}/{equip_cd}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Batch fullbox")
 	public BaseResponse batchFullbox(@PathVariable("equip_type") String equipType,  @PathVariable("equip_cd") String equipCd) {
-		// TODO
-		return null;
+		
+		// 1. 설비 정보로 작업 배치 조회 
+		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(Domain.currentDomainId(), equipType, equipCd);
+		JobBatch batch = equipBatchSet.getBatch();
+		
+		// 2. 배치 풀 박스 처리
+		this.serviceDispatcher.getAssortService(batch).getBoxingService().batchBoxing(batch);
+		
+		// 3. 응답
+		return new BaseResponse(true, SysConstants.OK_STRING, null);
 	}
 	
 	/**
@@ -651,20 +656,19 @@ public class DeviceProcessController {
 			@PathVariable("cell_cd") String cellCd, 
 			@PathVariable("box_id") String boxId) {
 		
-		// 1. 설비 정보로 Batch조회
+		// 1. 설비 정보로 작업 배치 조회
 		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(Domain.currentDomainId(), equipType, equipCd);
 		JobBatch batch = equipBatchSet.getBatch();
 		
-		// 2. 소분류 이벤트 생성 
-		ClassifyRunEvent event = new ClassifyRunEvent(batch, EventConstants.EVENT_STEP_ALONE
-				, deviceType.toLowerCase(), LogisCodeConstants.CLASSIFICATION_ACTION_UNDO_BOX, null);
+		// 2. 박스 조회 
+		BoxPack box = AnyEntityUtil.findEntityById(false, BoxPack.class, boxId);
 		
-		event.setCellCd(cellCd);
-		// FIXME BoxID 설정 필요
-		//event.setBoxId(boxId);
+		if(box == null) {
+			box = AnyEntityUtil.findEntityBy(batch.getDomainId(), true, true, BoxPack.class, null, "domainId,batchId,boxId", batch.getDomainId(), batch.getId(), boxId);
+			this.serviceDispatcher.getAssortService(batch).cancelBoxing(batch.getDomainId(), box);
+		}
 		
-		// 4. 액션 실행
-		this.serviceDispatcher.getClassificationService(batch).classify(event);
+		// 3. 액션 실행
 		return new BaseResponse(true, SysConstants.OK_STRING, null);
 	}
 	

@@ -5,6 +5,19 @@ package xyz.anythings.base.event;
  * 
  * @author shortstop
  */
-public interface IClassifyOutEvent extends IClassifyEvent {
+public interface IClassifyOutEvent extends IClassifyRunEvent {
 
+	/**
+	 * 박스 ID
+	 * 
+	 * @return
+	 */
+	public String getBoxId();
+	
+	/**
+	 * 박스 ID 설정
+	 * 
+	 * @param boxId
+	 */
+	public void setBoxId(String boxId);
 }

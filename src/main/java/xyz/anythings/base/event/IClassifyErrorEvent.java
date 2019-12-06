@@ -23,7 +23,7 @@ public interface IClassifyErrorEvent extends IBatchBasedEvent {
 	 * @param executionEvent
 	 */
 	public void setClassifyRunEvent(IClassifyRunEvent executionEvent);
-	
+		
 	/**
 	 * 작업 인스턴스 리턴
 	 * 

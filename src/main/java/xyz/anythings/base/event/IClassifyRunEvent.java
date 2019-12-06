@@ -1,6 +1,7 @@
 package xyz.anythings.base.event;
 
 import xyz.anythings.base.entity.JobInstance;
+import xyz.anythings.base.entity.WorkCell;
 
 /**
  * 소분류 처리 이벤트
@@ -43,6 +44,20 @@ public interface IClassifyRunEvent extends IClassifyEvent {
 	public void setCellCd(String cellCd);
 	
 	/**
+	 * 작업 셀 리턴
+	 * 
+	 * @return
+	 */
+	public WorkCell getWorkCell();
+	
+	/**
+	 * 작업 셀 설정
+	 * 
+	 * @param workCell
+	 */
+	public void setWorkCell(WorkCell workCell);
+	
+	/**
 	 * 분류 액션을 리턴 - 확정 처리, 취소 처리, 수량 조절, Fullbox ....
 	 * LogisCodeConstants.CLASSIFICATION_ACTION_CONFIRM
 	 * LogisCodeConstants.CLASSIFICATION_ACTION_MODIFY
@@ -74,21 +89,7 @@ public interface IClassifyRunEvent extends IClassifyEvent {
 	 * @param jobInstance
 	 */
 	public void setJobInstance(JobInstance jobInstance);
-	
-	/**
-	 * 작업 인스턴스 ID 리턴
-	 * 
-	 * @return
-	 */
-	//public String getJobInstanceId();
-	
-	/**
-	 * 작업 인스턴스 ID 설정
-	 * 
-	 * @param jobInstanceId
-	 */
-	//public void setJobInstanceId(String jobInstanceId);
-	
+		
 	/**
 	 * 분류 요청 수량 리턴 
 	 * 

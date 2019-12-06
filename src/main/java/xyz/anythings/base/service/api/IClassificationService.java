@@ -112,10 +112,10 @@ public interface IClassificationService {
 	/**
 	 * 5-1. 기타 : 배치 내 모든 분류 작업이 완료되었는지 여부 
 	 * 
-	 * @param batchId
+	 * @param batch
 	 * @return
 	 */
-	public boolean checkEndClassifyAll(String batchId);
+	public boolean checkEndClassifyAll(JobBatch batch);
 		
 	/**
 	 * 5-2. 기타 : 분류 서비스 모듈별 작업 시작 중 추가 처리

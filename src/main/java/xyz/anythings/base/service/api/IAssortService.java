@@ -1,10 +1,10 @@
 package xyz.anythings.base.service.api;
 
 import xyz.anythings.base.entity.BoxPack;
-import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.JobInstance;
 import xyz.anythings.base.entity.WorkCell;
 import xyz.anythings.base.event.IClassifyInEvent;
+import xyz.anythings.base.event.IClassifyOutEvent;
 import xyz.anythings.base.event.IClassifyRunEvent;
 
 /**
@@ -111,27 +111,27 @@ public interface IAssortService extends IClassificationService {
 	/**
 	 * 3-5. 소분류 : 박스 처리
 	 * 
-	 * @param exeEvent 분류 작업 이벤트
+	 * @param outEvent 분류 작업 이벤트
 	 * @return
 	 */
-	public BoxPack fullBoxing(IClassifyRunEvent exeEvent);
+	public BoxPack fullBoxing(IClassifyOutEvent outEvent);
 	
 	/**
 	 * 3-6. 소분류 : 수량 조정 후 박스 처리  
 	 * 
-	 * @param exeEvent 분류 작업 이벤트
+	 * @param outEvent 분류 작업 이벤트
 	 * @return 박스 처리 결과
 	 */
-	public BoxPack partialFullboxing(IClassifyRunEvent exeEvent);
+	public BoxPack partialFullboxing(IClassifyOutEvent outEvent);
 	
 	/**
 	 * 3-7. 소분류 : Boxing 취소
 	 * 
 	 * @param domainId
-	 * @param boxPackId
+	 * @param boxPack
 	 * @return
 	 */
-	public BoxPack cancelBoxing(Long domainId, String boxPackId);
+	public BoxPack cancelBoxing(Long domainId, BoxPack boxPack);
 	
 	/**
 	 * 3-8. 기타 : 작업 정보의 처리 수량을 splitQty 수량으로 분할 처리 후 분할 처리한 작업을 리턴
@@ -146,22 +146,20 @@ public interface IAssortService extends IClassificationService {
 	/**
 	 * 3-9. 소분류 : 스테이션 영역에 투입된 작업 분류 처리 완료 여부 체크
 	 * 
-	 * @param batch
-	 * @param stationCd
 	 * @param job
+	 * @param stationCd
 	 * @return
 	 */
-	public boolean checkStationJobsEnd(JobBatch batch, String stationCd, JobInstance job);
+	public boolean checkStationJobsEnd(JobInstance job, String stationCd);
 	
 	/**
 	 * 3-10. 소분류 : 셀 분류 완료 여부 체크
 	 * 
-	 * @param batch
-	 * @param stationCd
 	 * @param job
+	 * @param finalEndCheck
 	 * @return
 	 */
-	public boolean checkCellAssortEnd(JobBatch batch, String stationCd, JobInstance job);
+	public boolean checkCellAssortEnd(JobInstance job, boolean finalEndCheck);
 
 	/**
 	 * 3-11. 소분류 : 셀 별 분류 작업에 대한 최종 완료 처리
@@ -172,4 +170,14 @@ public interface IAssortService extends IClassificationService {
 	 * @return
 	 */
 	public boolean finishAssortCell(JobInstance job, WorkCell workCell, boolean finalEndFlag);
+	
+	/**
+	 * 박싱 처리를 위해 작업 배치 내 셀 내에서 처리할 작업 조회
+	 * 
+	 * @param domainId
+	 * @param batchId
+	 * @param cellCd
+	 * @return
+	 */
+	public JobInstance findLatestJobForBoxing(Long domainId, String batchId, String cellCd);
 }

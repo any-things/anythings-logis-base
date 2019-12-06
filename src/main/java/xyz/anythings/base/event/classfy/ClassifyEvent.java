@@ -11,6 +11,10 @@ import xyz.anythings.base.event.main.BatchRootEvent;
  */
 public class ClassifyEvent extends BatchRootEvent implements IClassifyEvent {
 
+	public ClassifyEvent(short eventStep) {
+		super(eventStep);
+	}
+	
 	public ClassifyEvent(JobBatch batch, short eventStep) {
 		super(batch, eventStep);
 	}

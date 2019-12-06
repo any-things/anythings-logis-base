@@ -2,7 +2,9 @@ package xyz.anythings.base.event.classfy;
 
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.JobInstance;
+import xyz.anythings.base.entity.WorkCell;
 import xyz.anythings.base.event.IClassifyRunEvent;
+import xyz.anythings.sys.util.AnyEntityUtil;
 
 /**
  * 소분류 분류 이벤트 구현
@@ -13,7 +15,7 @@ public class ClassifyRunEvent extends ClassifyEvent implements IClassifyRunEvent
 	/**
 	 * 분류 장비
 	 */
-	protected String classfyDevice;
+	protected String classifyDevice;
 	/**
 	 * 분류 액션
 	 */
@@ -27,6 +29,10 @@ public class ClassifyRunEvent extends ClassifyEvent implements IClassifyRunEvent
 	 */
 	protected String cellCd;
 	/**
+	 * 작업이 일어나 작업 셀 
+	 */
+	protected WorkCell workCell;
+	/**
 	 * 처리 요청 수량
 	 */
 	protected int reqQty;
@@ -37,6 +43,25 @@ public class ClassifyRunEvent extends ClassifyEvent implements IClassifyRunEvent
 	
 	/**
 	 * 소분류 분류 이벤트 생성자 1
+	 * 
+	 * @param eventStep
+	 */
+	public ClassifyRunEvent(short eventStep) {
+		super(eventStep);
+	}
+	
+	/**
+	 * 소분류 분류 이벤트 생성자 2
+	 * 
+	 * @param batch
+	 * @param eventStep
+	 */
+	public ClassifyRunEvent(JobBatch batch, short eventStep) {
+		super(batch, eventStep);
+	}
+	
+	/**
+	 * 소분류 분류 이벤트 생성자 3
 	 * 
 	 * @param batch
 	 * @param eventStep
@@ -57,15 +82,33 @@ public class ClassifyRunEvent extends ClassifyEvent implements IClassifyRunEvent
 	}
 	
 	/**
-	 * 소분류 분류 이벤트 생성자 1
+	 * 소분류 분류 이벤트 생성자 4
 	 * 
-	 * @param batch
 	 * @param eventStep
 	 * @param classifyDevice
 	 * @param classifyAction
 	 * @param job
 	 * @param reqQty
 	 * @param resQty
+	 */
+	public ClassifyRunEvent(short eventStep, String classifyDevice, String classifyAction, JobInstance job, int reqQty, int resQty) {
+		super(eventStep);
+	
+		this.setClassifyDevice(classifyDevice);
+		this.setClassifyAction(classifyAction);
+		this.setJobInstance(job);
+		this.setReqQty(reqQty);
+		this.setResQty(resQty);
+	}
+	
+	/**
+	 * 소분류 분류 이벤트 생성자 5
+	 * 
+	 * @param batch
+	 * @param eventStep
+	 * @param classifyDevice
+	 * @param classifyAction
+	 * @param job
 	 */
 	public ClassifyRunEvent(JobBatch batch, short eventStep, String classifyDevice, String classifyAction, JobInstance job) {
 		super(batch, eventStep);
@@ -74,15 +117,31 @@ public class ClassifyRunEvent extends ClassifyEvent implements IClassifyRunEvent
 		this.setClassifyAction(classifyAction);
 		this.setJobInstance(job);
 	}
+	
+	/**
+	 * 소분류 분류 이벤트 생성자 6
+	 * 
+	 * @param eventStep
+	 * @param classifyDevice
+	 * @param classifyAction
+	 * @param job
+	 */
+	public ClassifyRunEvent(short eventStep, String classifyDevice, String classifyAction, JobInstance job) {
+		super(eventStep);
+	
+		this.setClassifyDevice(classifyDevice);
+		this.setClassifyAction(classifyAction);
+		this.setJobInstance(job);
+	}
 
 	@Override
 	public String getClassifyDevice() {
-		return this.classfyDevice;
+		return this.classifyDevice;
 	}
 
 	@Override
 	public void setClassifyDevice(String classifyDevice) {
-		this.classfyDevice = classifyDevice;
+		this.classifyDevice = classifyDevice;
 	}
 
 	@Override
@@ -116,6 +175,14 @@ public class ClassifyRunEvent extends ClassifyEvent implements IClassifyRunEvent
 		
 		if(jobInstance != null) {
 			this.cellCd = jobInstance.getSubEquipCd();
+			
+			if(this.jobBatch == null) {
+				this.setJobBatch(AnyEntityUtil.findEntityById(true, JobBatch.class, jobInstance.getBatchId()));
+			}
+			
+			if(this.workCell == null) {
+				this.setWorkCell(AnyEntityUtil.findEntityBy(jobInstance.getDomainId(), true, true, WorkCell.class, null, "domainId,batchId,cellCd", jobInstance.getDomainId(), jobInstance.getBatchId(), this.cellCd));
+			}
 		}
 	}
 
@@ -137,6 +204,16 @@ public class ClassifyRunEvent extends ClassifyEvent implements IClassifyRunEvent
 	@Override
 	public void setResQty(int resQty) {
 		this.resQty = resQty;
+	}
+
+	@Override
+	public WorkCell getWorkCell() {
+		return this.workCell;
+	}
+
+	@Override
+	public void setWorkCell(WorkCell workCell) {
+		this.workCell = workCell;
 	}
 
 }

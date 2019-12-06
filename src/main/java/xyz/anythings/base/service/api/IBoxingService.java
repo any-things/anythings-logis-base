@@ -114,11 +114,4 @@ public interface IBoxingService {
 	 */
 	public BoxPack cancelFullboxing(BoxPack box);
 	
-	/**
-	 * 셀 분류 최종 완료
-	 * 
-	 * @param workCell
-	 */
-	//public void completeCellAssortFinally(WorkCell workCell);
-
 }
