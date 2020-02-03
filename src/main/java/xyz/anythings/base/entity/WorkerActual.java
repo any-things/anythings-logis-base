@@ -2,10 +2,15 @@ package xyz.anythings.base.entity;
 
 import xyz.elidom.dbist.annotation.Column;
 import xyz.elidom.dbist.annotation.GenerationRule;
+import xyz.elidom.dbist.annotation.Index;
 import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.Table;
 
-@Table(name = "worker_actuals", idStrategy = GenerationRule.UUID)
+@Table(name = "worker_actuals", idStrategy = GenerationRule.UUID, indexes = {
+	@Index(name = "ix_worker_actuals_0", columnList = "domain_id,worker_id,job_date,work_type"),
+	@Index(name = "ix_worker_actuals_1", columnList = "domain_id,worker_id,area_cd,stage_cd,equip_type,equip_cd"),
+	@Index(name = "ix_worker_actuals_2", columnList = "domain_id,worker_id,started_at,finished_at")
+})
 public class WorkerActual extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	/**
 	 * SerialVersion UID
@@ -16,6 +21,12 @@ public class WorkerActual extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "id", nullable = false, length = 40)
 	private String id;
 
+	@Column (name = "worker_id", length = 32)
+	private String workerId;
+	
+	@Column (name = "worker_name", length = 30)
+	private String workerName;
+	
 	@Column (name = "job_date", length = 10)
 	private String jobDate;
 
@@ -55,6 +66,22 @@ public class WorkerActual extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public String getWorkerId() {
+		return workerId;
+	}
+
+	public String getWorkerName() {
+		return workerName;
+	}
+
+	public void setWorkerName(String workerName) {
+		this.workerName = workerName;
+	}
+
+	public void setWorkerId(String workerId) {
+		this.workerId = workerId;
 	}
 
 	public String getJobDate() {
