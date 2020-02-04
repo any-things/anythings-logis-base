@@ -343,6 +343,10 @@ public class LogisConfigConstants extends xyz.anythings.sys.ConfigConstants {
 	 */
 	public static final String DPS_PREPROCESS_CELL_MAPPING_FIELD = "dps.preproces.cell.mapping.field";
 	/**
+	 * DPS 설정 - 방면분류를 위한 주문 매핑 필드 (주문의 class2_cd에 복사할 필드명)
+	 */
+	public static final String DPS_CLASSIFICATION2_MAPPING_FIELD = "dps.out.classification.mapping.field";
+	/**
 	 * DPS 설정 - 투입 박스 유형 (box / tray)
 	 */
 	public static final String DPS_INPUT_BOX_TYPE = "dps.input.box.type";

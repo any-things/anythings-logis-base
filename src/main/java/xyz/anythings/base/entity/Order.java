@@ -154,8 +154,17 @@ public class Order extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "order_type", length = 20)
 	private String orderType;
 
+	/**
+	 * 소분류 용
+	 */
 	@Column (name = "class_cd", length = 40)
 	private String classCd;
+	
+	/**
+	 * 방면 분류 용
+	 */
+	@Column (name = "box_class_cd", length = 40)
+	private String boxClassCd;
 
 	@Column (name = "pack_type", length = 20)
 	private String packType;
@@ -459,6 +468,14 @@ public class Order extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setClassCd(String classCd) {
 		this.classCd = classCd;
+	}
+
+	public String getBoxClassCd() {
+		return boxClassCd;
+	}
+
+	public void setBoxClassCd(String boxClassCd) {
+		this.boxClassCd = boxClassCd;
 	}
 
 	public String getPackType() {
