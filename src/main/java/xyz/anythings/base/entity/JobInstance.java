@@ -12,10 +12,10 @@ import xyz.elidom.sys.util.ValueUtil;
 @Table(name = "job_instances", idStrategy = GenerationRule.UUID, indexes = {
 	@Index(name = "ix_job_instances_1", columnList = "batch_id,domain_id"),
 	@Index(name = "ix_job_instances_2", columnList = "order_no,batch_id"),
-	@Index(name = "ix_job_instances_3", columnList = "box_id"),
-	@Index(name = "ix_job_instances_4", columnList = "equip_type,equip_cd,cell_cd,batch_id"),
-	@Index(name = "ix_job_instances_5", columnList = "job_date,job_seq,batch_id"),
-	@Index(name = "ix_job_instances_6", columnList = "input_seq,cell_cd,sku_cd,status,batch_id")
+	@Index(name = "ix_job_instances_3", columnList = "box_id,invoice_id,batch_id"),
+	@Index(name = "ix_job_instances_4", columnList = "status,equip_type,equip_cd,sub_equip_cd,batch_id"),
+	@Index(name = "ix_job_instances_5", columnList = "status,job_date,job_seq,batch_id"),
+	@Index(name = "ix_job_instances_6", columnList = "input_seq,sub_equip_cd,sku_cd,status,batch_id")
 })
 public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	/**
@@ -108,8 +108,17 @@ public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "order_type", length = 20)
 	private String orderType;
 
-	@Column (name = "class_cd", length = 40)
+	/**
+	 * 소 분류 용
+	 */
+	@Column (name = "class_cd", length = 30)
 	private String classCd;
+	
+	/**
+	 * 방면 분류 용
+	 */
+	@Column (name = "box_class_cd", length = 30)
+	private String boxClassCd;
 
 	@Column (name = "status", length = 10)
 	private String status;
@@ -363,6 +372,14 @@ public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	
 	public void setClassCd(String classCd) {
 		this.classCd = classCd;
+	}
+
+	public String getBoxClassCd() {
+		return boxClassCd;
+	}
+
+	public void setBoxClassCd(String boxClassCd) {
+		this.boxClassCd = boxClassCd;
 	}
 
 	public String getStatus() {

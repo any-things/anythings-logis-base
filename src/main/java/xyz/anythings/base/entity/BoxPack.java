@@ -2,10 +2,17 @@ package xyz.anythings.base.entity;
 
 import xyz.elidom.dbist.annotation.Column;
 import xyz.elidom.dbist.annotation.GenerationRule;
+import xyz.elidom.dbist.annotation.Index;
 import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.Table;
 
-@Table(name = "box_packs", idStrategy = GenerationRule.UUID)
+@Table(name = "box_packs", idStrategy = GenerationRule.UUID, indexes = {
+	@Index(name = "ix_box_packs_0", columnList = "domain_id,batch_id,wcs_batch_no,wms_batch_no"),
+	@Index(name = "ix_box_packs_1", columnList = "domain_id,stage_cd,job_date,job_seq"),
+	@Index(name = "ix_box_packs_2", columnList = "domain_id,batch_id,equip_type,equip_cd,sub_equip_cd,status"),
+	@Index(name = "ix_box_packs_3", columnList = "domain_id,order_no,box_id,invoice_id"),
+	@Index(name = "ix_box_packs_4", columnList = "domain_id,batch_id,class_cd,box_class_cd,sku_cd,shop_cd")
+})
 public class BoxPack extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	/**
 	 * SerialVersion UID
@@ -118,8 +125,17 @@ public class BoxPack extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "box_wt_max", length = 19)
 	private Float boxWtMax;
 
+	/**
+	 * 소분류 용
+	 */
 	@Column (name = "class_cd", length = 30)
 	private String classCd;
+	
+	/**
+	 * 방면 분류 용
+	 */
+	@Column (name = "box_class_cd", length = 30)
+	private String boxClassCd;
 
 	@Column (name = "pack_type", length = 20)
 	private String packType;
@@ -390,6 +406,14 @@ public class BoxPack extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setClassCd(String classCd) {
 		this.classCd = classCd;
+	}
+
+	public String getBoxClassCd() {
+		return boxClassCd;
+	}
+
+	public void setBoxClassCd(String boxClassCd) {
+		this.boxClassCd = boxClassCd;
 	}
 
 	public String getPackType() {

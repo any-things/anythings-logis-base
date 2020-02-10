@@ -12,7 +12,11 @@ import xyz.elidom.sys.util.ThrowUtil;
 import xyz.elidom.util.BeanUtil;
 
 @Table(name = "orders", idStrategy = GenerationRule.UUID, indexes = {
-	@Index(name = "ix_orders_1", columnList = "batch_id,domain_id,order_no", unique=false)
+	@Index(name = "ix_orders_0", columnList = "domain_id,batch_id,order_no", unique=false),
+	@Index(name = "ix_orders_1", columnList = "domain_id,batch_id,wms_batch_no,wcs_batch_no"),
+	@Index(name = "ix_orders_2", columnList = "domain_id,job_date,job_seq,area_cd,stage_cd,equip_type,equip_cd,sub_equip_cd,status"),
+	@Index(name = "ix_orders_3", columnList = "domain_id,batch_id,box_id,invoice_id,box_type_cd"),
+	@Index(name = "ix_orders_4", columnList = "domain_id,batch_id,class_cd,box_class_cd,sku_cd,shop_cd")
 })
 public class Order extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	
@@ -157,13 +161,13 @@ public class Order extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	/**
 	 * 소분류 용
 	 */
-	@Column (name = "class_cd", length = 40)
+	@Column (name = "class_cd", length = 30)
 	private String classCd;
 	
 	/**
 	 * 방면 분류 용
 	 */
-	@Column (name = "box_class_cd", length = 40)
+	@Column (name = "box_class_cd", length = 30)
 	private String boxClassCd;
 
 	@Column (name = "pack_type", length = 20)
