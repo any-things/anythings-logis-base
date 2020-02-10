@@ -11,7 +11,7 @@ import xyz.elidom.dbist.annotation.Table;
 	@Index(name = "ix_box_packs_1", columnList = "domain_id,stage_cd,job_date,job_seq"),
 	@Index(name = "ix_box_packs_2", columnList = "domain_id,batch_id,equip_type,equip_cd,sub_equip_cd,status"),
 	@Index(name = "ix_box_packs_3", columnList = "domain_id,order_no,box_id,invoice_id"),
-	@Index(name = "ix_box_packs_4", columnList = "domain_id,batch_id,class_cd,box_class_cd,sku_cd,shop_cd")
+	@Index(name = "ix_box_packs_4", columnList = "domain_id,batch_id,class_cd,box_class_cd,shop_cd")
 })
 public class BoxPack extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	/**
