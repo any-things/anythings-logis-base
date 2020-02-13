@@ -29,7 +29,7 @@ import xyz.elidom.dbist.dml.Page;
  *  5. 기타
  *  	1) 배치별 (B2B - 상품별, B2C - 주문별) 셀에 남은 총 처리할 수량 계산
  *  	2) 배치별 (B2B - 상품별, B2C - 주문별) 셀에 박싱 되지 않은 분류 처리한 누적 분류 수량
- *  	3) 배치별 (B2B - 상품별, B2C - 주문별) 셀에 박싱 되지 않은 분류 처리할 남은 수량 계산
+ *  	3) 배치별 (B2B - 상품별, B2C - 주문별) 셀에 박싱 되지 않은 분류 처리할 남은 수량 searchInputList계산
  * 
  * @author shortstop
  */
@@ -49,7 +49,7 @@ public interface IJobStatusService {
 	 * @param batch
 	 * @param equipCd
 	 * @param stationCd
-	 * @param selectedInputId -- 탭 리스트 조회시 기본으로 선택될 탭 ID 
+	 * @param selectedInputId -- 탭 리스트 조회시 기본으로 선택될 기준 탭 (투입) ID 
 	 * @return
 	 */
 	public List<JobInput> searchInputList(JobBatch batch, String equipCd, String stationCd, String selectedInputId);

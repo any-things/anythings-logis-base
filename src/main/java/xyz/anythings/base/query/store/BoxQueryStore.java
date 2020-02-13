@@ -15,6 +15,15 @@ public class BoxQueryStore extends LogisBaseQueryStore {
 	 * 
 	 * @return
 	 */
+	public String getFindLatestBoxOfCellQuery() {
+		return this.getQueryByPath("box/FindLatestBoxOfCell");
+	}
+	
+	/**
+	 * JobInput 기준으로 박스 ID 유니크 여부를 확인 하는 쿼리   
+	 * 
+	 * @return
+	 */
 	public String getBoxIdUniqueCheckQuery() {
 		return this.getQueryByPath("box/BoxIdUniqueCheck");
 	}

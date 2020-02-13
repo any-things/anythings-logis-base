@@ -19,6 +19,19 @@ public class JobInput extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	 * SerialVersion UID
 	 */
 	private static final long serialVersionUID = 605913873681399709L;
+	
+	/**
+	 * 투입 상태 : 대기 (W)
+	 */
+	public static final String INPUT_STATUS_WAIT = "W";
+	/**
+	 * 투입 상태 : 진행 (R)
+	 */
+	public static final String INPUT_STATUS_RUNNING = "R";
+	/**
+	 * 투입 상태 : 완료 (F)
+	 */
+	public static final String INPUT_STATUS_FINISHED = "F";
 
 	@PrimaryKey
 	@Column (name = "id", nullable = false, length = 40)
