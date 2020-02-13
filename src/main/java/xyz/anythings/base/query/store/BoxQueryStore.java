@@ -38,7 +38,8 @@ public class BoxQueryStore extends LogisBaseQueryStore {
 	}
 	
 	/**
-	 * 주문 정보를 기준으로 BoxItem 데이터 업데이트 쿼리 
+	 * 주문 정보를 기준으로 BoxItem 데이터 상태 업데이트 쿼리
+	 * 
 	 * @return
 	 */
 	public String getUpdateBoxItemDataByOrderQuery() {

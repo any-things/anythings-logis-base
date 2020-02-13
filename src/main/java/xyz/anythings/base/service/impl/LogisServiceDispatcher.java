@@ -12,7 +12,9 @@ import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.JobInstance;
 import xyz.anythings.base.service.api.IAssortService;
 import xyz.anythings.base.service.api.IBatchService;
+import xyz.anythings.base.service.api.IBoxingService;
 import xyz.anythings.base.service.api.IClassificationService;
+import xyz.anythings.base.service.api.IDeviceService;
 import xyz.anythings.base.service.api.IIndicationService;
 import xyz.anythings.base.service.api.IInstructionService;
 import xyz.anythings.base.service.api.IInvoiceNoService;
@@ -66,7 +68,12 @@ public class LogisServiceDispatcher implements BeanFactoryAware {
 	 */
 	@Autowired
 	private InvoiceNoService invoiceNoService;
-
+	/**
+	 * 장비 서비스
+	 */
+	@Autowired
+	private DeviceService deviceService;
+	
 	@Override
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
 		this.beanFactory = beanFactory;
@@ -170,6 +177,15 @@ public class LogisServiceDispatcher implements BeanFactoryAware {
 	}
 	
 	/**
+	 * 장비 서비스를 찾아서 리턴
+	 * 
+	 * @return
+	 */
+	public IDeviceService getDeviceService() {
+		return this.deviceService;
+	}
+	
+	/**
 	 * 배치의 작업 유형에 따른 분류 서비스 컴포넌트를 찾아서 리턴
 	 * 
 	 * @param batch
@@ -210,6 +226,47 @@ public class LogisServiceDispatcher implements BeanFactoryAware {
 		String svcType = ValueUtil.isEqualIgnoreCase(jobType, LogisConstants.JOB_TYPE_DPS) ? "PickService" : "AssortService";
 		String classSvcType = jobType.toLowerCase() + svcType;
 		return (IClassificationService)this.beanFactory.getBean(classSvcType);
+	}
+	
+	/**
+	 * 작업 정보로 박싱 서비스를 찾아 리턴
+	 * 
+	 * @param batch
+	 * @return
+	 */
+	public IBoxingService getBoxingService(JobBatch batch) {
+		return this.getBoxingService(batch.getJobType());
+	}
+	
+	/**
+	 * 작업 정보로 박싱 서비스를 찾아 리턴
+	 * 
+	 * @param job
+	 * @return
+	 */
+	public IBoxingService getBoxingService(JobInstance job) {
+		return this.getBoxingService(job.getJobType());
+	}
+	
+	/**
+	 * 박스 정보로 박싱 서비스를 찾아 리턴
+	 * 
+	 * @param box
+	 * @return
+	 */
+	public IBoxingService getBoxingService(BoxPack box) {
+		return this.getBoxingService(box.getJobType());
+	}
+	
+	/**
+	 * 작업 유형에 따른 박싱 서비스 컴포넌트를 찾아서 리턴
+	 * 
+	 * @param jobType
+	 * @return
+	 */
+	public IBoxingService getBoxingService(String jobType) {
+		String boxingSvcType = jobType.toLowerCase() + "BoxingService";
+		return (IBoxingService)this.beanFactory.getBean(boxingSvcType);
 	}
 	
 	/**

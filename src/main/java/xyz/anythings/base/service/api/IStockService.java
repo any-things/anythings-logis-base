@@ -126,6 +126,33 @@ public interface IStockService {
 	public void finishStocktaking(Long domainId, String stocktakingId);
 
 	/**
+	 * 재고 조정 처리
+	 * 
+	 * @param domainId
+	 * @param trxCd 트랜잭션 코드 
+	 * @param equipType 설비 유형 
+	 * @param equipCd 설비 코드 
+	 * @param cellCd 셀 코드 
+	 * @param comCd 고객사 코드 
+	 * @param skuCd 상품 코드 
+	 * @param addQty 추가 (혹은 감소) 수량
+	 */
+	public void adjustStock(Long domainId, String trxCd, String equipType, String equipCd, String cellCd, String comCd, String skuCd, int addQty);
+	
+	/**
+	 * 피킹 재고 차감
+	 * 
+	 * @param domainId
+	 * @param equipType 설비 유형 
+	 * @param equipCd 설비 코드 
+	 * @param cellCd 셀 코드 
+	 * @param comCd 고객사 코드 
+	 * @param skuCd 상품 코드 
+	 * @param addQty 추가 (혹은 감소) 수량
+	 */
+	public void removeStockForPicking(Long domainId, String equipType, String equipCd, String cellCd, String comCd, String skuCd, int addQty);
+	
+	/**
 	 * 재고 실사 시 재고 조정 처리 
 	 * 
 	 * @param domainId

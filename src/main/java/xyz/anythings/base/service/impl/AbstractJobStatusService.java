@@ -15,7 +15,6 @@ import xyz.anythings.base.entity.JobInstance;
 import xyz.anythings.base.model.BatchProgressRate;
 import xyz.anythings.base.query.store.BatchQueryStore;
 import xyz.anythings.base.service.api.IJobStatusService;
-import xyz.anythings.sys.service.AbstractExecutionService;
 import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.util.ValueUtil;
@@ -25,7 +24,7 @@ import xyz.elidom.util.ValueUtil;
  * 
  * @author shortstop
  */
-public abstract class AbstractJobStatusService extends AbstractExecutionService implements IJobStatusService {
+public abstract class AbstractJobStatusService extends AbstractLogisService implements IJobStatusService {
 
 	@Autowired
 	protected BatchQueryStore batchQueryStore;

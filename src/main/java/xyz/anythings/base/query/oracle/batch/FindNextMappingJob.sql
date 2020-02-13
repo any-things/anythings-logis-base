@@ -1,4 +1,4 @@
-#if($mapColumn == 'ORDER') -- 주문 기준 맵핑 
+#if($mapColumn == 'order_no') -- 주문 기준 맵핑 
     #if($orderType == 'OT') -- 단수 / 단포 
 		SELECT ID
 		  FROM (
@@ -68,6 +68,6 @@
             )
         WHERE ROWNUM = 1 
     #end
-#elseif($mapColumn == 'SKU') -- 상품 기준 맵핑 
-#elseif($mapColumn == 'SHOP') -- 샵 기준 맵핑 
+#elseif($mapColumn == 'sku_cd') -- 상품 기준 맵핑 
+#elseif($mapColumn == 'shop_cd') -- 샵 기준 맵핑 
 #end

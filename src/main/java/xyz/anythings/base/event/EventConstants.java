@@ -44,34 +44,39 @@ public class EventConstants {
 	/** BatchInstructEvent ================       **/
 	
 	/**
-	 * 배치 대상 분류 
-	 */
-	public static final short EVENT_INSTRUCT_TYPE_CLASSIFICATION = 10;
-	
-	/**
 	 * 배치 작업 지시 
 	 */
-	public static final short EVENT_INSTRUCT_TYPE_INSTRUCT = 20;
+	public static final short EVENT_INSTRUCT_TYPE_INSTRUCT = 10;
 	
 	/**
-	 * 배치 작업 지시 후 박스 요청  
+	 * 배치 작업 지시 취소
 	 */
-	public static final short EVENT_INSTRUCT_TYPE_BOX_REQ = 30;
+	public static final short EVENT_INSTRUCT_TYPE_INSTRUCT_CANCEL = 20;
 	
 	/**
 	 * 배치 작업 병합 
 	 */
-	public static final short EVENT_INSTRUCT_TYPE_MERGE = 40;
+	public static final short EVENT_INSTRUCT_TYPE_MERGE = 30;
+	
+	/**
+	 * 배치 대상 분류 
+	 */
+	public static final short EVENT_INSTRUCT_TYPE_CLASSIFICATION = 40;
+	
+	/**
+	 * 배치 작업 지시 후 박스 요청  
+	 */
+	public static final short EVENT_INSTRUCT_TYPE_BOX_REQ = 50;
 	
 	/**
 	 * 토털 피킹  
 	 */
-	public static final short EVENT_INSTRUCT_TYPE_TOTAL_PICKING = 50;
+	public static final short EVENT_INSTRUCT_TYPE_TOTAL_PICKING = 60;
 	
 	/**
 	 * 추천 로케이션 
 	 */
-	public static final short EVENT_INSTRUCT_TYPE_RECOMMEND_CELLS = 50;	
+	public static final short EVENT_INSTRUCT_TYPE_RECOMMEND_CELLS = 70;	
 	
 	
 }

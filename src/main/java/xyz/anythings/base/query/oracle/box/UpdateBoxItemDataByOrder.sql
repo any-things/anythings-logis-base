@@ -1,5 +1,5 @@
 UPDATE BOX_ITEMS X
-   SET X.STATUS = 'A'
+   SET X.STATUS = :status
      , X.PICKED_QTY = (SELECT Y.PICKED_QTY FROM ORDERS Y 
                         WHERE Y.DOMAIN_ID = X.DOMAIN_ID
                           AND Y.ID = X.ORDER_ID)

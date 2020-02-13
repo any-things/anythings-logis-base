@@ -12,7 +12,7 @@ import xyz.anythings.base.service.api.IInvoiceNoService;
  * @author shortstop
  */
 @Component
-public class InvoiceNoService implements IInvoiceNoService {
+public class InvoiceNoService extends AbstractLogisService implements IInvoiceNoService {
 
 	@Override
 	public int generateInvoiceNo(Long domainId, String stageCd, String comCd, Object... params) {

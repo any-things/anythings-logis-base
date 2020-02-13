@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
- 
+
 import xyz.anythings.base.LogisConstants;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.JobInstance;
@@ -16,7 +16,6 @@ import xyz.anythings.base.model.RtnJobInstancesSummary;
 import xyz.anythings.base.query.store.BatchQueryStore;
 import xyz.anythings.base.service.api.IBatchService;
 import xyz.anythings.base.util.LogisBaseUtil;
-import xyz.anythings.sys.service.AbstractQueryService;
 import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.elidom.dbist.dml.Filter;
@@ -34,14 +33,13 @@ import xyz.elidom.util.ValueUtil;
  * @author shortstop
  */
 @Component
-public class BatchService extends AbstractQueryService implements IBatchService {
+public class BatchService extends AbstractLogisService implements IBatchService {
 	
 	/**
 	 * 쿼리 스토어
 	 */
 	@Autowired
 	private BatchQueryStore queryStore;
-	 
 	
 	@Override
 	public String newJobBatchId(Long domainId, String stageCd, Object... params) {
@@ -197,6 +195,5 @@ public class BatchService extends AbstractQueryService implements IBatchService 
 		
 		this.queryManager.update(batch, "resultPcs","progressRate","uph", "status", "finishedAt");
 	}
-	
 
 }

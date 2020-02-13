@@ -2,7 +2,7 @@ UPDATE JOB_INSTANCES X
    SET X.INPUT_SEQ = :inputSeq
      , X.BOX_ID = :boxId
      , X.COLOR_CD = :colorCd
-     , X.STATUS = DECODE(X.ORDER_TYPE , 'OT', 'P','I') -- 단포 작업은 Picking , 합포 작업은 Input 
+     , X.STATUS = DECODE(X.ORDER_TYPE , 'OT', 'P', 'I') -- 단포 작업은 Picking , 합포 작업은 Input 
      , X.INPUT_AT = :inputAt
      , X.BOX_PACK_ID = :boxPackId
      , X.UPDATER_ID = :userId

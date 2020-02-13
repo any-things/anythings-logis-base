@@ -24,6 +24,10 @@ public class BoxPack extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	 */
 	public static final String BOX_STATUS_WAIT = "W";
 	/**
+	 * 분류 중
+	 */
+	public static final String BOX_STATUS_ASSORT = "A";
+	/**
 	 * 박싱 완료
 	 */
 	public static final String BOX_STATUS_BOXED = "B";

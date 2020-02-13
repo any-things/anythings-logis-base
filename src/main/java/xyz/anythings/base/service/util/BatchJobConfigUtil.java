@@ -387,13 +387,14 @@ public class BatchJobConfigUtil {
 	 * 박스 ID 유일성 보장 범위 - G : 도메인 전체 유일, D : 날자별 유일, B : 배치 내 유일
 	 * 
 	 * @param batch
+	 * @param defaultValue
 	 * @return
 	 */
-	public static String getBoxIdUniqueScope(JobBatch batch) {
+	public static String getBoxIdUniqueScope(JobBatch batch, String defaultValue) {
 		// job.cmm.box.box_id.unique.scope
-		return getBoxIdUniqueScope(batch, true);
+		String uniqueScope = getBoxIdUniqueScope(batch, false);
+		return ValueUtil.isEmpty(uniqueScope) ? defaultValue : uniqueScope;
 	}
-	
 	
 	/**
 	 * 박스 ID 유일성 보장 범위 - G : 도메인 전체 유일, D : 날자별 유일, B : 배치 내 유일

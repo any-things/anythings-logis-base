@@ -1,10 +1,7 @@
 package xyz.anythings.base.service.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import xyz.anythings.base.entity.JobConfigSet;
 import xyz.anythings.base.service.api.IClassificationService;
-import xyz.anythings.sys.service.AbstractExecutionService;
 
 
 /**
@@ -12,13 +9,7 @@ import xyz.anythings.sys.service.AbstractExecutionService;
  *  
  * @author yang
  */
-public abstract class AbstractClassificationService extends AbstractExecutionService implements IClassificationService {
-	
-	/**
-	 * 서비스 디스패처
-	 */
-	@Autowired
-	protected LogisServiceDispatcher serviceDispatcher;
+public abstract class AbstractClassificationService extends AbstractLogisService implements IClassificationService {
 	
 	@Override
 	public JobConfigSet getJobConfigSet(String batchId) {
