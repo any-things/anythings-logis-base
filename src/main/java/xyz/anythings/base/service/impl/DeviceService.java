@@ -16,15 +16,29 @@ import xyz.anythings.base.service.api.IDeviceService;
 public class DeviceService extends AbstractLogisService implements IDeviceService {
 
 	@Override
-	public List<JobConfig> searchWorkerDeviceSettings(Long domainId, String deviceType, String deviceId) {
+	public List<JobConfig> searchDeviceSettings(Long domainId, String deviceType, String deviceId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void sendMessageToWorkerDevice(Long domainId, String equipType, String equipCd, String equipZone, String notiType, String message) {
-		// RefreshEvent event = new RefreshEvent(domainId, equipType, equipCd, equipZone, notiType, message);
-		// this.eventPublisher.publishEvent(event);
+	public void sendDeviceSettings(Long domainId, String deviceType, String deviceId, List<JobConfig> deviceSettings) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void sendMessageToDevice(Long domainId, String equipType, String equipCd, String stationCd, String notiType,
+			String message) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void sendMessageToDevice(Long domainId, String deviceType, String equipType, String equipCd,
+			String stationCd, String notiType, String message) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override

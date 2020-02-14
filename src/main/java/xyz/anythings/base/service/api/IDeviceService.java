@@ -9,9 +9,10 @@ import xyz.anythings.base.entity.JobConfig;
  * 
  *  1. 모바일 작업자 장비
  *  	1) KIOSK / 태블릿 / PDA 등 장비에서 사용할 설정 리스트 조회
- *  	2) 모바일 장비에 메시지 전송
- *  	3) 모바일 장비 업데이트 내역 보기
- *  	4) 모바일 장비 업데이트 메시지 전송
+ *  	2) 장비에 장비 설정 사항을 메시지로 전달 
+ *  	3) 모바일 장비에 메시지 전송
+ *  	4) 모바일 장비 업데이트 내역 보기
+ *  	5) 모바일 장비 업데이트 메시지 전송
  *  
  * @author shortstop
  */
@@ -25,22 +26,45 @@ public interface IDeviceService {
 	 * @param deviceId
 	 * @return
 	 */
-	public List<JobConfig> searchWorkerDeviceSettings(Long domainId, String deviceType, String deviceId);
+	public List<JobConfig> searchDeviceSettings(Long domainId, String deviceType, String deviceId);
 	
 	/**
-	 * 1-2. 작업자 모바일 장비에 메시지 전송
+	 * 1-2. 장비에 장비 설정 사항을 메시지로 전달 
+	 * 
+	 * @param domainId
+	 * @param deviceType
+	 * @param deviceId
+	 * @param deviceSettings
+	 */
+	public void sendDeviceSettings(Long domainId, String deviceType, String deviceId, List<JobConfig> deviceSettings);
+	
+	/**
+	 * 1-3. 작업자 모바일 장비에 메시지 전송
 	 * 
 	 * @param domainId
 	 * @param equipType
 	 * @param equipCd
-	 * @param equipZone
+	 * @param stationCd
 	 * @param notiType
 	 * @param message
 	 */
-	public void sendMessageToWorkerDevice(Long domainId, String equipType, String equipCd, String equipZone, String notiType, String message);
+	public void sendMessageToDevice(Long domainId, String equipType, String equipCd, String stationCd, String notiType, String message);
+	
+	/**
+	 * 1-3. 작업자 모바일 장비에 메시지 전송
+	 * 
+	 * @param domainId
+	 * @param deviceType
+	 * @param equipType
+	 * @param equipCd
+	 * @param stationCd
+	 * @param notiType
+	 * @param message
+	 */
+	public void sendMessageToDevice(Long domainId, String deviceType, String equipType, String equipCd, String stationCd, String notiType, String message);
 		
 	/**
-	 * 1-3. 모바일 장비 업데이트 내역 보기
+	 * 1-4. 모바일 장비 업데이트 내역 보기
 	 * 
 	 * @param domainId
 	 * @param deviceType
@@ -49,7 +73,7 @@ public interface IDeviceService {
 	public List<String> searchUpdateItems(Long domainId, String deviceType);
 	
 	/**
-	 * 1-4. 모바일 장비 업데이트 메시지 전송
+	 * 1-5. 모바일 장비 업데이트 메시지 전송
 	 * 
 	 * @param domainId
 	 * @param deviceType
