@@ -83,7 +83,7 @@ public interface IJobStatusService {
 	public Integer findNextInputSeq(JobBatch batch);
 	
 	/**
-	 * 3-1. 작업 조회 - 설비, 작업 존 별 투입 정보에 매핑된 작업 리스트 조회
+	 * 3-1. 작업 조회 - 설비, 작업 존 별 투입 정보에 매핑된 투입 작업 리스트 조회
 	 * 
 	 * @param batch
 	 * @param input
@@ -93,13 +93,32 @@ public interface IJobStatusService {
 	public List<JobInstance> searchInputJobList(JobBatch batch, JobInput input, String stationCd);
 	
 	/**
-	 * 3-1. 작업 조회 - 작업 배치 내에 피킹 중인 작업 리스트를 조회
-	 *  
+	 * 3-1. 작업 조회 - 작업 배치 내에 모든 조회 조건으로 투입 작업 리스트를 조회
+	 * 
 	 * @param batch
-	 * @param stationCd
+	 * @param condition
 	 * @return
 	 */
-	public List<JobInstance> searchPickingJobList(JobBatch batch, String stationCd);
+	public List<JobInstance> searchInputJobList(JobBatch batch, Map<String, Object> condition);
+	
+	/**
+	 * 3-1. 작업 조회 - 작업 배치 내에 피킹 중인 작업 리스트를 조회
+	 *  
+	 * @param batch 작업 배치 
+	 * @param stationCd 작업 스테이션 
+	 * @param classCd 소분류 코드 (일반적으로 B2C인 경우 주문 번호, B2B 출고인 경우 매장 코드, 반품인 경우 상품 코드
+	 * @return
+	 */
+	public List<JobInstance> searchPickingJobList(JobBatch batch, String stationCd, String classCd);
+	
+	/**
+	 * 3-1. 작업 조회 - 작업 배치 내에 모든 조회 조건으로 작업 리스트를 조회
+	 *  
+	 * @param batch 작업 배치 
+	 * @param condition 조회 조건 
+	 * @return
+	 */
+	public List<JobInstance> searchPickingJobList(JobBatch batch, Map<String, Object> condition);
 	
 	/**
 	 * 3-1. 작업 조회 - 조회 조건으로 작업 리스트 조회

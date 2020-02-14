@@ -187,7 +187,7 @@ public abstract class AbstractJobStatusService extends AbstractLogisService impl
 	 * @param batch
 	 * @param condition
 	 */
-	private void addBatchConditions(JobBatch batch, Map<String, Object> condition) {
+	protected void addBatchConditions(JobBatch batch, Map<String, Object> condition) {
 		if(!condition.containsKey("domainId")) {
 			condition.put("domainId", batch.getDomainId());
 		}

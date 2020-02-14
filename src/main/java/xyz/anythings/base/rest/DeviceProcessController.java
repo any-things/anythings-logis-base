@@ -40,7 +40,10 @@ import xyz.anythings.base.service.util.LogisServiceUtil;
 import xyz.anythings.sys.event.EventPublisher;
 import xyz.anythings.sys.model.BaseResponse;
 import xyz.anythings.sys.util.AnyEntityUtil;
+import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.elidom.dbist.dml.Page;
+import xyz.elidom.dbist.dml.Query;
+import xyz.elidom.exception.server.ElidomRuntimeException;
 import xyz.elidom.exception.server.ElidomServiceException;
 import xyz.elidom.orm.IQueryManager;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
@@ -743,10 +746,11 @@ public class DeviceProcessController {
 	}
 	
 	/**
-	 * 작업 배치내 피킹 중인 상태의 작업 리스트를 조회
+	 * 작업 배치내 작업 중인 투입 정보의 작업 리스트를 조회
 	 * 
 	 * @param equipType
 	 * @param equipCd
+	 * @param jobInputId
 	 * @param stationCd
 	 * @return
 	 */
@@ -755,14 +759,35 @@ public class DeviceProcessController {
 	public List<JobInstance> searchInputJobs(
 			@PathVariable("equip_type") String equipType,
 			@PathVariable("equip_cd") String equipCd,
+			@RequestParam(name = "job_input_id", required = false) String jobInputId,
 			@RequestParam(name = "station_cd", required = false) String stationCd) {
 		
 		// 1. 작업 배치 체크 및 조회
 		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(Domain.currentDomainId(), equipType, equipCd);
 		JobBatch batch = equipBatchSet.getBatch();
+		JobInput input = null;
 		
-		// 2. 서비스 호출
-		return this.serviceDispatcher.getJobStatusService(batch).searchPickingJobList(batch, stationCd);
+		// 2. 투입 ID가 있다면 투입 정보 조회
+		if(ValueUtil.isNotEmpty(jobInputId)) {
+			input = this.queryManager.select(JobInput.class, jobInputId);
+		}
+		
+		// 3. 투입 정보를 찾지 못했다면 스테이션에 현재 진행 중인 투입 정보 조회
+		if(input == null) {
+			Query condition = AnyOrmUtil.newConditionForExecution(batch.getDomainId());
+			condition.addFilter("batchId", batch.getId());
+			condition.addFilter("stationCd", stationCd);
+			condition.addFilter("status", JobInput.INPUT_STATUS_RUNNING);
+			input = this.queryManager.selectByCondition(JobInput.class, condition);
+		}
+		
+		// 4. 투입 정보가 있다면 투입 정보로 피킹할 작업을 조회 
+		if(input != null) {
+			return this.serviceDispatcher.getJobStatusService(batch).searchInputJobList(batch, input, stationCd);
+		// 5. 투입 정보가 없다면 에러
+		} else {
+			throw new ElidomRuntimeException("작업 스테이션 [" + stationCd + "]에서 현재 진행 중인 투입 정보가 없어서 피킹 작업을 찾을 수 없습니다.");
+		}
 	}
 	
 	/**
