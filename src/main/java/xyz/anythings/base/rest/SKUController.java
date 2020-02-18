@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import xyz.anythings.base.entity.SKU;
+import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
 import xyz.elidom.orm.system.annotation.service.ServiceDesc;
+import xyz.elidom.sys.entity.Domain;
 import xyz.elidom.sys.system.service.AbstractRestService;
 
 @RestController
@@ -76,6 +78,12 @@ public class SKUController extends AbstractRestService {
 	@ApiDesc(description = "Create, Update or Delete multiple at one time")
 	public Boolean multipleUpdate(@RequestBody List<SKU> list) {
 		return this.cudMultipleData(this.entityClass(), list);
+	}
+
+	@RequestMapping(value = "/find/{com_cd}/{sku_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Find by Sku Cd")
+	public SKU findBySkuCd(@PathVariable("com_cd") String comCd, @PathVariable("sku_cd") String skuCd) {
+		return AnyEntityUtil.findEntityBy(Domain.currentDomainId(), true, SKU.class, null, "comCd,skuCd", comCd, skuCd);
 	}
 
 }

@@ -3,6 +3,7 @@ package xyz.anythings.base.service.api;
 import java.util.List;
 
 import xyz.anythings.base.entity.DeviceConf;
+import xyz.anythings.base.model.IDevice;
 
 /**
  * 작업자들이 사용하는 모바일 장비 요청을 처리하는 서비스 API
@@ -17,6 +18,17 @@ import xyz.anythings.base.entity.DeviceConf;
  * @author shortstop
  */
 public interface IDeviceService {
+	
+	/**
+	 * 1-0. 장비 유형, 장비 코드로 장비 조회
+	 * 
+	 * @param domainId
+	 * @param stageCd
+	 * @param deviceType
+	 * @param deviceId
+	 * @return
+	 */
+	public IDevice findDevice(Long domainId, String stageCd, String deviceType, String deviceId);
 
 	/**
 	 * 1-1. KIOSK, 태블릿, PDA 등 작업자 장비 설정 정보 조회

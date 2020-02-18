@@ -32,10 +32,31 @@ public interface IStockService {
 	 * 
 	 * @param domainId
 	 * @param cellCd
+	 * @param exceptionWhenEmpty
+	 * @return
+	 */
+	public Stock findStock(Long domainId, String cellCd, boolean exceptionWhenEmpty);
+	
+	/**
+	 * 셀의 binIndex 위치의 재고 조회
+	 * 
+	 * @param domainId
+	 * @param cellCd
 	 * @param binIndex
 	 * @return
 	 */
 	public Stock findStock(Long domainId, String cellCd, Integer binIndex);
+	
+	/**
+	 * 셀의 binIndex 위치의 재고 조회
+	 * 
+	 * @param domainId
+	 * @param cellCd
+	 * @param binIndex
+	 * @param exceptionWhenEmpty
+	 * @return
+	 */
+	public Stock findStock(Long domainId, String cellCd, Integer binIndex, boolean exceptionWhenEmpty);
 	
 	/**
 	 * 셀 재고 조회
@@ -53,30 +74,50 @@ public interface IStockService {
 	 * @param batch
 	 * @param cellCd
 	 * @param skuCd
+	 * @param exceptionWhenEmpty
 	 * @return
 	 */
-	public Stock findStock(JobBatch batch, String cellCd, String skuCd);
+	public Stock findStock(Long domainId, String cellCd, String skuCd, boolean exceptionWhenEmpty);
 	
 	/**
-	 * 고정식 여부에 skuCd가 적치되어 있는 로케이션 조회 
+	 * 고정식 여부에 skuCd가 적치되어 있는 셀 조회 
 	 * 
 	 * @param domainId
+	 * @param stageCd
+	 * @param equipType
+	 * @param equipCd
 	 * @param fixedFlag
 	 * @param comCd
 	 * @param skuCd
 	 * @return
 	 */
-	public List<Cell> searchCellsBySku(Long domainId, boolean fixedFlag, String comCd, String skuCd);
+	public List<Cell> searchCellsBySku(Long domainId, String stageCd, String equipType, String equipCd, boolean fixedFlag, String comCd, String skuCd);
+	
+	/**
+	 * 고정식 여부에 skuCd가 적치되어 있는 재고 조회 
+	 * 
+	 * @param domainId
+	 * @param stageCd
+	 * @param equipType
+	 * @param equipCd
+	 * @param fixedFlag
+	 * @param comCd
+	 * @param skuCd
+	 * @return
+	 */
+	public List<Stock> searchStocksBySku(Long domainId, String stageCd, String equipType, String equipCd, boolean fixedFlag, String comCd, String skuCd);
 	
 	/**
 	 * 추천 로케이션 조회 
 	 * 
+	 * @param domainId
 	 * @param equipType
 	 * @param equipCd
-	 * @param sku
+	 * @param comCd
+	 * @param skuCd
 	 * @return
 	 */
-	public List<String> searchRecommendCells(String equipType, String equipCd, SKU sku);
+	public List<String> searchRecommendCells(Long domainId, String equipType, String equipCd, String comCd, String skuCd);
 	
 	/**
 	 * 재고 보충을 위한 상품 투입 수량 계산 
@@ -85,7 +126,7 @@ public interface IStockService {
 	 * @param stock
 	 * @return
 	 */
-	public int calcSkuInputQty(JobBatch batch, Stock stock);
+	public int calcSkuSupplementQty(JobBatch batch, Stock stock);
 	
 	/**
 	 * 재고 보충

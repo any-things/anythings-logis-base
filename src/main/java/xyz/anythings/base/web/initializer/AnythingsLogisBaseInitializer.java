@@ -22,6 +22,7 @@ import xyz.anythings.base.query.store.EtcQueryStore;
 import xyz.anythings.base.query.store.IndicatorQueryStore;
 import xyz.anythings.base.query.store.InstructionQueryStore;
 import xyz.anythings.base.query.store.PreprocessQueryStore;
+import xyz.anythings.base.query.store.StockQueryStore;
 import xyz.anythings.base.service.impl.JobConfigProfileService;
 import xyz.anythings.gw.entity.IndConfigSet;
 import xyz.anythings.gw.service.IndConfigProfileService;
@@ -80,6 +81,9 @@ public class AnythingsLogisBaseInitializer {
 	private BoxQueryStore boxQueryStore;
 	
 	@Autowired
+	private StockQueryStore stockQueryStore;
+	
+	@Autowired
 	private EtcQueryStore etcQueryStore;
 	
 	@Autowired
@@ -128,6 +132,7 @@ public class AnythingsLogisBaseInitializer {
 		this.preprocessQueryStore.initQueryStore(dbType);
 		this.etcQueryStore.initQueryStore(dbType);
 		this.boxQueryStore.initQueryStore(dbType);
+		this.stockQueryStore.initQueryStore(dbType);
 	}
 	
 	/**

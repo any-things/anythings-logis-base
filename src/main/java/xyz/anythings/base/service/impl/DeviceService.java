@@ -1,6 +1,7 @@
 package xyz.anythings.base.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -45,50 +46,62 @@ public class DeviceService extends AbstractLogisService implements IDeviceServic
 	private MqSender mqSender;
 	
 	@Override
-	public List<DeviceConf> searchDeviceSettings(Long domainId, String stageCd, String deviceType, String deviceId) {
+	public IDevice findDevice(Long domainId, String stageCd, String deviceType, String deviceId) {
+		Map<String, Object> params = ValueUtil.newMap("domainId,stageCd", domainId, stageCd);
+		IDevice device = null;
 		
-		Query condition = AnyOrmUtil.newConditionForExecution(domainId);
-		condition.addFilter("stageCd", stageCd);
-		Class<?> clazz = null;
-		
-		if(ValueUtil.isEqualIgnoreCase(deviceType, LogisConstants.DEVICE_KIOSK)) {
-			condition.addFilter("kioskCd", deviceId);
-			clazz = Kiosk.class;
+		if(ValueUtil.isNotEmpty(deviceId)) {
+			Class<?> clazz = null;
 			
-		} else if(ValueUtil.isEqualIgnoreCase(deviceType, LogisConstants.DEVICE_TABLET)) {
-			condition.addFilter("tabletCd", deviceId);
-			clazz = Tablet.class;
+			if(ValueUtil.isEqualIgnoreCase(deviceType, LogisConstants.DEVICE_KIOSK)) {
+				params.put("kioskCd", deviceId);
+				clazz = Kiosk.class;
+				
+			} else if(ValueUtil.isEqualIgnoreCase(deviceType, LogisConstants.DEVICE_TABLET)) {
+				params.put("tabletCd", deviceId);
+				clazz = Tablet.class;
+				
+			} else if(ValueUtil.isEqualIgnoreCase(deviceType, LogisConstants.DEVICE_PDA)) {
+				params.put("pdaCd", deviceId);
+				clazz = PDA.class;
+			}
 			
-		} else if(ValueUtil.isEqualIgnoreCase(deviceType, LogisConstants.DEVICE_PDA)) {
-			condition.addFilter("pdaCd", deviceId);
-			clazz = PDA.class;
+			device = (IDevice)this.queryManager.selectByCondition(clazz, params);
 		}
 		
-		IDevice device = (IDevice)this.queryManager.selectByCondition(clazz, condition);
+		return device;
+	}
+	
+	@Override
+	public List<DeviceConf> searchDeviceSettings(Long domainId, String stageCd, String deviceType, String deviceId) {
+		
+		IDevice device = this.findDevice(domainId, stageCd, deviceType, deviceId);
+		DeviceProfile deviceProfile = null;
+		
+		Query condition = AnyOrmUtil.newConditionForExecution(domainId);
+		condition.addSelect("id");
+		condition.addFilter("stageCd", stageCd);
 		
 		if(device == null) {
-			return null;
+			condition.addFilter("defaultFlag", true);
+			deviceProfile = this.queryManager.selectByCondition(DeviceProfile.class, condition);
 			
 		} else {
-			condition = AnyOrmUtil.newConditionForExecution(domainId);
-			condition.addFilter("stageCd", device.getStageCd());
 			condition.addFilter("deviceType", deviceType);
 			condition.addFilter("equipType", device.getEquipType());
 			condition.addFilter("equipCd", device.getEquipCd());
-			DeviceProfile deviceProfile = this.queryManager.selectByCondition(DeviceProfile.class, condition);
+			deviceProfile = this.queryManager.selectByCondition(DeviceProfile.class, condition);
 			
 			if(deviceProfile == null) {
+				condition.removeFilter("deviceType");
 				condition.removeFilter("equipType");
 				condition.removeFilter("equipCd");
+				condition.addFilter("defaultFlag", true);
 				deviceProfile = this.queryManager.selectByCondition(DeviceProfile.class, condition);
-				
-				if(deviceProfile == null) {
-					condition.removeFilter("deviceType");
-					condition.addFilter("defaultFlag", true);
-					deviceProfile = this.queryManager.selectByCondition(DeviceProfile.class, condition);
-				}
 			}
-			
+		}
+		
+		if(deviceProfile != null) {
 			condition = AnyOrmUtil.newConditionForExecution(domainId);
 			condition.addSelect("name", "description", "value");
 			condition.addFilter("deviceProfileId", deviceProfile.getId());
@@ -104,6 +117,9 @@ public class DeviceService extends AbstractLogisService implements IDeviceServic
 			}
 			
 			return settings;
+			
+		} else {
+			return null;
 		}
 	}
 
