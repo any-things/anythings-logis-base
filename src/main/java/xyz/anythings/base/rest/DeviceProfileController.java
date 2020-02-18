@@ -3,6 +3,7 @@ package xyz.anythings.base.rest;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,16 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import xyz.anythings.base.entity.DeviceConf;
 import xyz.anythings.base.entity.DeviceProfile;
-import xyz.anythings.sys.util.AnyOrmUtil;
+import xyz.anythings.base.service.api.IDeviceService;
 import xyz.elidom.dbist.dml.Filter;
 import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
 import xyz.elidom.orm.system.annotation.service.ServiceDesc;
 import xyz.elidom.sys.entity.Domain;
-import xyz.elidom.sys.entity.Setting;
 import xyz.elidom.sys.system.service.AbstractRestService;
-import xyz.elidom.sys.util.ThrowUtil;
-import xyz.elidom.util.ValueUtil;
 
 @RestController
 @Transactional
@@ -34,6 +32,9 @@ import xyz.elidom.util.ValueUtil;
 @ServiceDesc(description = "DeviceProfile Service API")
 public class DeviceProfileController extends AbstractRestService {
 
+	@Autowired
+	private IDeviceService deviceService;
+	
 	@Override
 	protected Class<?> entityClass() {
 		return DeviceProfile.class;
@@ -110,35 +111,7 @@ public class DeviceProfileController extends AbstractRestService {
 	@RequestMapping(value = "/configs/{device_type}/{stage_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Search device config details by device & stage")
 	public List<DeviceConf> searchConfigItems(@PathVariable("device_type") String deviceType, @PathVariable("stage_cd") String stageCd) {
-
-		// TODO Redis Cache에서 조회하도록 수정		
-		xyz.elidom.dbist.dml.Query query = AnyOrmUtil.newConditionForExecution(Domain.currentDomainId());
-		query.addSelect("id");
-		query.addFilter(new Filter("stageCd", stageCd));
-		query.addFilter(new Filter("defaultFlag", true));
-		List<DeviceProfile> profiles = this.queryManager.selectList(DeviceProfile.class, query);
-		
-		if(ValueUtil.isNotEmpty(profiles)) {
-			DeviceProfile profile = profiles.get(0);
-			query = new xyz.elidom.dbist.dml.Query();
-			query.addSelect("name", "description", "value");
-			query.addFilter(new Filter("deviceProfileId", profile.getId()));
-			List<DeviceConf> settings = this.queryManager.selectList(DeviceConf.class, query);
-			
-			query = AnyOrmUtil.newConditionForExecution(Domain.currentDomainId());
-			query.addSelect("name", "description", "value");
-			query.addFilter(new Filter("category", "device"));
-			List<Setting> deviceSettings = this.queryManager.selectList(Setting.class, query);
-			
-			for(Setting deviceSetting : deviceSettings) {
-				DeviceConf conf = ValueUtil.populate(deviceSetting, new DeviceConf());
-				settings.add(conf);
-			}
-
-			return settings;
-		} else {
-			throw ThrowUtil.newDeviceConfigNotSet(stageCd);
-		}
+		return this.deviceService.searchDeviceSettings(Domain.currentDomainId(), stageCd, deviceType, null);
 	}
 
 }

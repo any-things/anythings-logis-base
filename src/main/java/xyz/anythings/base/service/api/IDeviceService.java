@@ -2,7 +2,7 @@ package xyz.anythings.base.service.api;
 
 import java.util.List;
 
-import xyz.anythings.base.entity.JobConfig;
+import xyz.anythings.base.entity.DeviceConf;
 
 /**
  * 작업자들이 사용하는 모바일 장비 요청을 처리하는 서비스 API
@@ -22,11 +22,12 @@ public interface IDeviceService {
 	 * 1-1. KIOSK, 태블릿, PDA 등 작업자 장비 설정 정보 조회
 	 * 
 	 * @param domainId
+	 * @param stageCd
 	 * @param deviceType
 	 * @param deviceId
 	 * @return
 	 */
-	public List<JobConfig> searchDeviceSettings(Long domainId, String deviceType, String deviceId);
+	public List<DeviceConf> searchDeviceSettings(Long domainId, String stageCd, String deviceType, String deviceId);
 	
 	/**
 	 * 1-2. 장비에 장비 설정 사항을 메시지로 전달 
@@ -36,32 +37,36 @@ public interface IDeviceService {
 	 * @param deviceId
 	 * @param deviceSettings
 	 */
-	public void sendDeviceSettings(Long domainId, String deviceType, String deviceId, List<JobConfig> deviceSettings);
+	public void sendDeviceSettings(Long domainId, String deviceType, String deviceId, List<DeviceConf> deviceSettings);
 	
 	/**
 	 * 1-3. 작업자 모바일 장비에 메시지 전송
 	 * 
 	 * @param domainId
+	 * @param stageCd
 	 * @param equipType
 	 * @param equipCd
 	 * @param stationCd
-	 * @param notiType
+	 * @param sideCd
+	 * @param jobType
+	 * @param command
 	 * @param message
+	 * @param sendData
 	 */
-	public void sendMessageToDevice(Long domainId, String equipType, String equipCd, String stationCd, String notiType, String message);
+	public void sendMessageToDevice(Long domainId, String stageCd, String equipType, String equipCd, String stationCd, String sideCd, String jobType, String command, String message, Object sendData);
 	
 	/**
 	 * 1-3. 작업자 모바일 장비에 메시지 전송
 	 * 
 	 * @param domainId
 	 * @param deviceType
-	 * @param equipType
-	 * @param equipCd
-	 * @param stationCd
-	 * @param notiType
+	 * @param deviceId
+	 * @param jobType
+	 * @param command
 	 * @param message
+	 * @param sendData
 	 */
-	public void sendMessageToDevice(Long domainId, String deviceType, String equipType, String equipCd, String stationCd, String notiType, String message);
+	public void sendMessageToDevice(Long domainId, String deviceType, String deviceId, String jobType, String command, String message, Object sendData);
 		
 	/**
 	 * 1-4. 모바일 장비 업데이트 내역 보기

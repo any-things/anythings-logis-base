@@ -25,6 +25,23 @@ public class LogisConstants extends AnyConstants {
 	 * 사이드 T : 전체
 	 */
 	public static final String SIDE_TOTAL = "T";
+	
+	/**
+	 * 장비 유형 ALL
+	 */
+	public static final String DEVICE_ALL = "all";
+	/**
+	 * 장비 유형 Kiosk
+	 */
+	public static final String DEVICE_KIOSK = "kiosk";
+	/**
+	 * 장비 유형 Tablet
+	 */
+	public static final String DEVICE_TABLET = "tablet";
+	/**
+	 * 장비 유형 PDA
+	 */
+	public static final String DEVICE_PDA = "pda";
 
 	/**
 	 * 분류 작업 유형 : Rack

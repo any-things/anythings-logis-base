@@ -1,5 +1,6 @@
 package xyz.anythings.base.entity;
 
+import xyz.anythings.base.model.IDevice;
 import xyz.elidom.dbist.annotation.Column;
 import xyz.elidom.dbist.annotation.GenerationRule;
 import xyz.elidom.dbist.annotation.Index;
@@ -10,7 +11,7 @@ import xyz.elidom.dbist.annotation.Table;
 	@Index(name = "ix_kiosks_0", columnList = "domain_id,kiosk_ip", unique = true),
 	@Index(name = "ix_kiosks_1", columnList = "domain_id,stage_cd")
 })
-public class Kiosk extends xyz.elidom.orm.entity.basic.ElidomStampHook {
+public class Kiosk extends xyz.elidom.orm.entity.basic.ElidomStampHook implements IDevice {
 	/**
 	 * SerialVersion UID
 	 */
