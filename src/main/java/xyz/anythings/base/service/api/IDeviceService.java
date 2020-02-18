@@ -43,6 +43,7 @@ public interface IDeviceService {
 	 * 1-3. 작업자 모바일 장비에 메시지 전송
 	 * 
 	 * @param domainId
+	 * @param deviceType
 	 * @param stageCd
 	 * @param equipType
 	 * @param equipCd
@@ -53,7 +54,7 @@ public interface IDeviceService {
 	 * @param message
 	 * @param sendData
 	 */
-	public void sendMessageToDevice(Long domainId, String stageCd, String equipType, String equipCd, String stationCd, String sideCd, String jobType, String command, String message, Object sendData);
+	public void sendMessageToDevice(Long domainId, String deviceType, String stageCd, String equipType, String equipCd, String stationCd, String sideCd, String jobType, String command, String message, Object sendData);
 	
 	/**
 	 * 1-3. 작업자 모바일 장비에 메시지 전송

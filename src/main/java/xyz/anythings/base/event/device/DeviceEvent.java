@@ -71,44 +71,46 @@ public class DeviceEvent extends SysEvent implements IDeviceEvent {
 	 * 생성자 2
 	 * 
 	 * @param domainId
-	 * @param command
-	 * @param message
+	 * @param deviceType
 	 * @param stageCd
 	 * @param equipType
 	 * @param equipCd
 	 * @param stationCd
 	 * @param sideCd
 	 * @param jobType
+	 * @param command
+	 * @param message
 	 */
-	public DeviceEvent(Long domainId, String command, String message, String stageCd, String equipType, String equipCd, String stationCd, String sideCd, String jobType) {
+	public DeviceEvent(Long domainId, String deviceType, String stageCd, String equipType, String equipCd, String stationCd, String sideCd, String jobType, String command, String message) {
 		this.domainId = domainId;
-		this.command = command;
-		this.message = message;
+		this.deviceType = deviceType;
 		this.stageCd = stageCd;
 		this.equipType = equipType;
 		this.equipCd = equipCd;
 		this.stationCd = stationCd;
 		this.sideCd = sideCd;
 		this.jobType = jobType;
+		this.command = command;
+		this.message = message;
 	}
 	
 	/**
 	 * 생성자 3
 	 * 
 	 * @param domainId
-	 * @param command
-	 * @param message
 	 * @param deviceType
 	 * @param deviceId
 	 * @param jobType
+	 * @param command
+	 * @param message
 	 */
-	public DeviceEvent(Long domainId, String command, String message, String deviceType, String deviceId, String jobType) {
+	public DeviceEvent(Long domainId, String deviceType, String deviceId, String jobType, String command, String message) {
 		this.domainId = domainId;
-		this.command = command;
-		this.message = message;
 		this.deviceType = deviceType;
 		this.deviceId = deviceId;
 		this.jobType = jobType;
+		this.command = command;
+		this.message = message;
 	}
 	
 	@Override

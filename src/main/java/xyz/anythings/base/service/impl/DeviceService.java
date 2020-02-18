@@ -109,14 +109,14 @@ public class DeviceService extends AbstractLogisService implements IDeviceServic
 
 	@Override
 	public void sendDeviceSettings(Long domainId, String deviceType, String deviceId, List<DeviceConf> deviceSettings) {
-		DeviceEvent event = new DeviceEvent(domainId, DeviceCommand.COMMAND_SETTING, null, deviceType, deviceId, null);
+		DeviceEvent event = new DeviceEvent(domainId, deviceType, deviceId, null, DeviceCommand.COMMAND_SETTING, null);
 		event.setSendData(deviceSettings);
 		this.eventPublisher.publishEvent(event);
 	}
 
 	@Override
-	public void sendMessageToDevice(Long domainId, String stageCd, String equipType, String equipCd, String stationCd, String sideCd, String jobType, String command, String message, Object sendData) {
-		DeviceEvent event = new DeviceEvent(domainId, command, message, stageCd, equipType, equipCd, stationCd, sideCd, jobType);
+	public void sendMessageToDevice(Long domainId, String deviceType, String stageCd, String equipType, String equipCd, String stationCd, String sideCd, String jobType, String command, String message, Object sendData) {
+		DeviceEvent event = new DeviceEvent(domainId, deviceType, stageCd, equipType, equipCd, stationCd, sideCd, jobType, command, message);
 		if(sendData != null) {
 			event.setSendData(sendData);
 		}
@@ -126,7 +126,7 @@ public class DeviceService extends AbstractLogisService implements IDeviceServic
 
 	@Override
 	public void sendMessageToDevice(Long domainId, String deviceType, String deviceId, String jobType, String command, String message, Object sendData) {
-		DeviceEvent event = new DeviceEvent(domainId, command, message, deviceType, deviceId, jobType);
+		DeviceEvent event = new DeviceEvent(domainId, deviceType, deviceId, jobType, command, message);
 		if(sendData != null) {
 			event.setSendData(sendData);
 		}
@@ -143,7 +143,7 @@ public class DeviceService extends AbstractLogisService implements IDeviceServic
 	@Override
 	public void sendDeviceUpdateMessage(Long domainId, String deviceType) {
 		List<String> updateItems = this.searchUpdateItems(domainId, deviceType);
-		DeviceEvent event = new DeviceEvent(domainId, DeviceCommand.COMMAND_SETTING, null, deviceType, null, null);
+		DeviceEvent event = new DeviceEvent(domainId, deviceType, null, null, DeviceCommand.COMMAND_SETTING, null);
 		event.setSendData(updateItems);
 		this.eventPublisher.publishEvent(event);
 	}
