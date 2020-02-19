@@ -2,9 +2,13 @@ package xyz.anythings.base.entity;
 
 import xyz.elidom.dbist.annotation.Column;
 import xyz.elidom.dbist.annotation.GenerationRule;
+import xyz.elidom.dbist.annotation.Ignore;
 import xyz.elidom.dbist.annotation.Index;
 import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.Table;
+import xyz.elidom.orm.IQueryManager;
+import xyz.elidom.sys.util.ValueUtil;
+import xyz.elidom.util.BeanUtil;
 
 /**
  * 재고 관리
@@ -103,6 +107,12 @@ public class Stock extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	@Column (name = "status", length = 10)
 	private String status;
+	
+	@Ignore
+	private Integer prevStockQty;
+	
+	@Ignore
+	private Integer prevLoadQty;
   
 	public String getId() {
 		return id;
@@ -173,6 +183,7 @@ public class Stock extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	}
 
 	public void setStockQty(Integer stockQty) {
+		this.prevStockQty = this.stockQty;
 		this.stockQty = stockQty;
 	}
 
@@ -181,6 +192,7 @@ public class Stock extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	}
 
 	public void setLoadQty(Integer loadQty) {
+		this.prevLoadQty = this.loadQty;
 		this.loadQty = loadQty;
 	}
 
@@ -264,6 +276,22 @@ public class Stock extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 			binIndex = 1;
 		}
 	}
+	
+	@Override
+	public void afterCreate() {
+		super.afterCreate();
+		
+		StockHist hist = new StockHist();
+		hist.setCellCd(this.cellCd);
+		hist.setBinIndex(this.binIndex);
+		hist.setComCd(this.comCd);
+		hist.setSkuCd(this.skuCd);
+		hist.setTranCd(ValueUtil.isEmpty(this.lastTranCd) ? Stock.TRX_CREATE : this.lastTranCd);
+		hist.setPrevStockQty(0);
+		hist.setStockQty(this.stockQty);
+		hist.setInQty(this.stockQty);
+		BeanUtil.get(IQueryManager.class).insert(hist);
+	}
 
 	@Override
 	public void beforeUpdate() {
@@ -272,6 +300,29 @@ public class Stock extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		if(binIndex == null || binIndex == 0) {
 			binIndex = 1;
 		}
+	}
+
+	@Override
+	public void afterUpdate() {
+		super.afterUpdate();
+		
+		StockHist hist = new StockHist();
+		hist.setCellCd(this.cellCd);
+		hist.setBinIndex(this.binIndex);
+		hist.setComCd(this.comCd);
+		hist.setSkuCd(this.skuCd);
+		hist.setTranCd(this.lastTranCd);
+		hist.setPrevStockQty(this.prevStockQty);
+		hist.setStockQty(this.stockQty);
+		int inOutQty = this.stockQty - this.prevStockQty;
+		
+		if(inOutQty > 0) {
+			hist.setInQty(inOutQty);
+		} else if(inOutQty < 0) {
+			hist.setOutQty(inOutQty);
+		}
+		
+		BeanUtil.get(IQueryManager.class).insert(hist);
 	}
 
 }
