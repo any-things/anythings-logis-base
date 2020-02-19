@@ -36,7 +36,7 @@ public class Order extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	public static final String STATUS_CANCEL = "C";
 	
 	/**
-	 * 상태 T : 대상분류    
+	 * 상태 T : 대상 분류    
 	 */
 	public static final String STATUS_TYPE = "T";
 	
@@ -51,9 +51,14 @@ public class Order extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	public static final String STATUS_ASSIGN = "A";
 	
 	/**
-	 * 상태 R: 진행중
+	 * 상태 R : 진행 중
 	 */
 	public static final String STATUS_RUNNING = "R";
+	
+	/**
+	 * 상태 F : 완료
+	 */
+	public static final String STATUS_FINISHED = "F";
 
 	@PrimaryKey
 	@Column (name = "id", nullable = false, length = 40)
