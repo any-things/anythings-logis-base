@@ -1,12 +1,12 @@
 #if($uniqueScope == 'G')
 SELECT COUNT(1) AS DUP_CNT
-  FROM JOB_INPUTS
+  FROM BOX_PACKS
  WHERE DOMAIN_ID = :domainId
    AND BOX_ID = :boxId
 #end
 #if($uniqueScope == 'D')
 SELECT COUNT(1) AS DUP_CNT
-  FROM JOB_INPUTS X
+  FROM BOX_PACKS X
      , (SELECT DOMAIN_ID, ID
           FROM JOB_BATCHES
          WHERE (DOMAIN_ID, JOB_DATE) 
@@ -21,7 +21,7 @@ SELECT COUNT(1) AS DUP_CNT
 #end
 #if($uniqueScope == 'B')
 SELECT COUNT(1) AS DUP_CNT
-  FROM JOB_INPUTS
+  FROM BOX_PACKS
  WHERE DOMAIN_ID = :domainId
    AND BATCH_ID = :batchId
    AND BOX_ID = :boxId

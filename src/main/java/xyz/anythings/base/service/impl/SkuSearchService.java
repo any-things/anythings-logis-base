@@ -59,7 +59,7 @@ public class SkuSearchService extends AbstractLogisService implements ISkuSearch
 	
 	@Override
 	public List<SKU> searchListInBatchGroup(JobBatch batch, String comCd, String skuCd, boolean todoOnly, boolean exceptionWhenEmpty) {		
-		skuCd = this.validateSkuCd(batch, skuCd);
+		//skuCd = this.validateSkuCd(batch, skuCd);
 		String[] skuCodeFields = BatchJobConfigUtil.getSkuSearchConditionFields(batch);
 		
 		String sql = BeanUtil.get(BatchQueryStore.class).getSearchSkuInBatchGroupQuery();
@@ -89,8 +89,8 @@ public class SkuSearchService extends AbstractLogisService implements ISkuSearch
 	public List<SKU> searchListInBatch(JobBatch batch, String stationCd, String comCd, String skuCd, boolean todoOnly, boolean exceptionWhenEmpty) {
 		//skuCd = this.validateSkuCd(batch, skuCd);
 		String[] skuCodeFields = BatchJobConfigUtil.getSkuSearchConditionFields(batch);
-		
 		String sql = BeanUtil.get(BatchQueryStore.class).getSearchSkuInBatchQuery();
+		
 		Map<String, Object> params = ValueUtil.newMap("domainId,batchId,comCd", batch.getDomainId(), batch.getId(), comCd);
 		if(todoOnly) {
 			params.put(SysConstants.ENTITY_FIELD_STATUS, LogisConstants.JOB_STATUS_WIPC);
