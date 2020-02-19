@@ -17,15 +17,6 @@ import xyz.anythings.base.entity.Stocktaking;
  */
 @Component
 public interface IStockService {
-
-	/**
-	 * 셀 재고 조회
-	 * 
-	 * @param domainId
-	 * @param cellCd
-	 * @return
-	 */
-	public Stock findStock(Long domainId, String cellCd);
 	
 	/**
 	 * 셀 재고 조회
@@ -36,17 +27,7 @@ public interface IStockService {
 	 * @return
 	 */
 	public Stock findStock(Long domainId, String cellCd, boolean exceptionWhenEmpty);
-	
-	/**
-	 * 셀의 binIndex 위치의 재고 조회
-	 * 
-	 * @param domainId
-	 * @param cellCd
-	 * @param binIndex
-	 * @return
-	 */
-	public Stock findStock(Long domainId, String cellCd, Integer binIndex);
-	
+		
 	/**
 	 * 셀의 binIndex 위치의 재고 조회
 	 * 
@@ -57,27 +38,119 @@ public interface IStockService {
 	 * @return
 	 */
 	public Stock findStock(Long domainId, String cellCd, Integer binIndex, boolean exceptionWhenEmpty);
-	
+		
 	/**
-	 * 셀 재고 조회
+	 * 재고 정보를 조회 
 	 * 
-	 * @param domainId
-	 * @param locCd
+	 * @param batch
+	 * @param cellCd
+	 * @param comCd
 	 * @param skuCd
+	 * @param exceptionWhenEmpty
 	 * @return
 	 */
-	public Stock findStock(Long domainId, String cellCd, String skuCd);
+	public Stock findStock(Long domainId, String cellCd, String comCd, String skuCd, boolean exceptionWhenEmpty);
 	
 	/**
 	 * 재고 정보를 조회 
 	 * 
 	 * @param batch
 	 * @param cellCd
+	 * @param binIndex
+	 * @param comCd
 	 * @param skuCd
 	 * @param exceptionWhenEmpty
 	 * @return
 	 */
-	public Stock findStock(Long domainId, String cellCd, String skuCd, boolean exceptionWhenEmpty);
+	public Stock findStock(Long domainId, String cellCd, Integer binIndex, String comCd, String skuCd, boolean exceptionWhenEmpty);
+	
+	/**
+	 * 셀 재고 조회 없으면 생성
+	 * 
+	 * @param domainId
+	 * @param cellCd
+	 * @return
+	 */
+	public Stock findOrCreateStock(Long domainId, String cellCd);
+	
+	/**
+	 * 셀 재고 조회 없으면 생성
+	 * 
+	 * @param domainId
+	 * @param locCd
+	 * @param comCd
+	 * @param skuCd
+	 * @return
+	 */
+	public Stock findOrCreateStock(Long domainId, String cellCd, String comCd, String skuCd);
+	
+	/**
+	 * 셀 재고 조회 없으면 생성
+	 * 
+	 * @param domainId
+	 * @param locCd
+	 * @param binIndex
+	 * @param comCd
+	 * @param skuCd
+	 * @return
+	 */
+	public Stock findOrCreateStock(Long domainId, String cellCd, Integer binIndex, String comCd, String skuCd);
+	
+	/**
+	 * 셀 재고 조회 없으면 생성
+	 * 
+	 * @param domainId
+	 * @param cellCd
+	 * @param binIndex
+	 * @return
+	 */
+	public Stock findOrCreateStock(Long domainId, String cellCd, Integer binIndex);
+	
+	/**
+	 * 재고 생성
+	 * 
+	 * @param domainId
+	 * @param cellCd
+	 * @param binIndex
+	 * @param comCd
+	 * @param skuCd
+	 * @param skuNm
+	 * @return
+	 */
+	public Stock createStock(Long domainId, String cellCd, Integer binIndex, String comCd, String skuCd, String skuNm);
+	
+	/**
+	 * 재고 추가
+	 * 
+	 * @param stock
+	 * @param tranCd
+	 * @param addQty
+	 * @return
+	 */
+	public Stock addStock(Stock stock, String tranCd, int addQty);
+	
+	/**
+	 * 재고 차감
+	 * 
+	 * @param stock
+	 * @param tranCd
+	 * @param removeQty
+	 * @return
+	 */
+	public Stock removeStock(Stock stock, String tranCd, int removeQty);
+	
+	/**
+	 * 재고 조정 처리
+	 * 
+	 * @param domainId
+	 * @param trxCd 트랜잭션 코드 
+	 * @param cellCd 셀 코드 
+	 * @param comCd 고객사 코드 
+	 * @param skuCd 상품 코드 
+	 * @param adjustQty 추가 (혹은 감소) 수량
+	 * @return
+	 */
+	public Stock adjustStock(Long domainId, String trxCd, String cellCd, String comCd, String skuCd, int adjustQty);
 	
 	/**
 	 * 고정식 여부에 skuCd가 적치되어 있는 셀 조회 
@@ -165,20 +238,6 @@ public interface IStockService {
 	 * @param stocktakingId
 	 */
 	public void finishStocktaking(Long domainId, String stocktakingId);
-
-	/**
-	 * 재고 조정 처리
-	 * 
-	 * @param domainId
-	 * @param trxCd 트랜잭션 코드 
-	 * @param equipType 설비 유형 
-	 * @param equipCd 설비 코드 
-	 * @param cellCd 셀 코드 
-	 * @param comCd 고객사 코드 
-	 * @param skuCd 상품 코드 
-	 * @param addQty 추가 (혹은 감소) 수량
-	 */
-	public void adjustStock(Long domainId, String trxCd, String equipType, String equipCd, String cellCd, String comCd, String skuCd, int addQty);
 	
 	/**
 	 * 피킹 재고 차감
@@ -201,8 +260,9 @@ public interface IStockService {
 	 * @param indCd
 	 * @param fromQty
 	 * @param toQty
+	 * @return
 	 */
-	public void adjustStock(Long domainId, String stocktakingId, String indCd, int fromQty, int toQty);
+	public Stock adjustStock(Long domainId, String stocktakingId, String indCd, int fromQty, int toQty);
 
 	/**
 	 * 오늘 날짜에 해당하는 센터 및 호기에 해당하는 가장 최신의 재고 실사 정보 조회 

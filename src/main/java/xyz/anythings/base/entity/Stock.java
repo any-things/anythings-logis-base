@@ -20,6 +20,31 @@ public class Stock extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	 * SerialVersion UID
 	 */
 	private static final long serialVersionUID = 196960417590117264L;
+	
+	/**
+	 * 트랜잭션 - 재고 생성 (create) 
+	 */
+	public static final String TRX_CREATE = "create";
+	/**
+	 * 트랜잭션 - 재고 투입 (in) 
+	 */
+	public static final String TRX_IN = "in";
+	/**
+	 * 트랜잭션 - 재고 빼기 (out) 
+	 */
+	public static final String TRX_OUT = "out";
+	/**
+	 * 트랜잭션 - 재고 조정 (adjust) 
+	 */
+	public static final String TRX_ADJUST = "adjust";
+	/**
+	 * 트랜잭션 - 재고 보충 (supply) 
+	 */
+	public static final String TRX_SUPPLEMENT = "supply";
+	/**
+	 * 트랜잭션 - 피킹 (pick) 
+	 */
+	public static final String TRX_PICK = "pick";
 
 	@PrimaryKey
 	@Column (name = "id", nullable = false, length = 40)
@@ -72,6 +97,9 @@ public class Stock extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	
 	@Column (name = "expired_at", length = 20)
 	private String expiredAt;
+	
+	@Column (name = "last_tran_cd", length = 30)
+	private String lastTranCd;
 
 	@Column (name = "status", length = 10)
 	private String status;
@@ -212,11 +240,38 @@ public class Stock extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.expiredAt = expiredAt;
 	}
 
+	public String getLastTranCd() {
+		return lastTranCd;
+	}
+
+	public void setLastTranCd(String lastTranCd) {
+		this.lastTranCd = lastTranCd;
+	}
+
 	public String getStatus() {
 		return status;
 	}
 
 	public void setStatus(String status) {
 		this.status = status;
-	}	
+	}
+	
+	@Override
+	public void beforeCreate() {
+		super.beforeCreate();
+		
+		if(binIndex == null || binIndex == 0) {
+			binIndex = 1;
+		}
+	}
+
+	@Override
+	public void beforeUpdate() {
+		super.beforeUpdate();
+		
+		if(binIndex == null || binIndex == 0) {
+			binIndex = 1;
+		}
+	}
+
 }
