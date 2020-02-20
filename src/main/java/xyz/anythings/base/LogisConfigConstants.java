@@ -391,5 +391,8 @@ public class LogisConfigConstants extends xyz.anythings.sys.ConfigConstants {
 	 */
 	public static final String DPS_JOB_ASSIGN_SCHEDULING_ENABLE = "dps.job-assign.scheduling.enabled";
 
-
+	/**
+	 * DPS 설정 - 박스 요청 프로세스 사용 여부
+	 */
+	public static final String DPS_PREPROCESS_BOX_REQUEST_ENABLED = "dps.preprocess.box-request.enabled";
 }
