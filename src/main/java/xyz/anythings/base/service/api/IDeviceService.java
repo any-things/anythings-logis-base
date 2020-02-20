@@ -80,9 +80,18 @@ public interface IDeviceService {
 	 * @param sendData
 	 */
 	public void sendMessageToDevice(Long domainId, String deviceType, String deviceId, String jobType, String command, String message, Object sendData);
+	
+	/**
+	 * 1-4. 작업자 모바일 장비에 메시지 전송
+	 * 
+	 * @param domainId
+	 * @param deviceType
+	 * @param message
+	 */
+	public void sendMessageToDevice(Long domainId, String deviceType, String message);
 		
 	/**
-	 * 1-4. 모바일 장비 업데이트 내역 보기
+	 * 1-5. 모바일 장비 업데이트 내역 보기
 	 * 
 	 * @param domainId
 	 * @param deviceType
@@ -91,7 +100,7 @@ public interface IDeviceService {
 	public List<String> searchUpdateItems(Long domainId, String deviceType);
 	
 	/**
-	 * 1-5. 모바일 장비 업데이트 메시지 전송
+	 * 1-6. 모바일 장비 업데이트 메시지 전송
 	 * 
 	 * @param domainId
 	 * @param deviceType

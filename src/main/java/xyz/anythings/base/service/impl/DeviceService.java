@@ -164,6 +164,12 @@ public class DeviceService extends AbstractLogisService implements IDeviceServic
 		this.eventPublisher.publishEvent(event);
 	}
 
+	@Override
+	public void sendMessageToDevice(Long domainId, String deviceType, String message) {
+		DeviceEvent event = new DeviceEvent(domainId, deviceType, null, null, DeviceCommand.COMMAND_INFO, message);
+		this.eventPublisher.publishEvent(event);
+	}
+	
 	@Async
 	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMPLETION, classes = IDeviceEvent.class)	
 	public void receiveDeviceEvent(IDeviceEvent event) {

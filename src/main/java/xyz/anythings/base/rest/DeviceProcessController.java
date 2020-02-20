@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.AntPathMatcher;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.HandlerMapping;
 
 import xyz.anythings.base.LogisCodeConstants;
+import xyz.anythings.base.LogisConstants;
 import xyz.anythings.base.entity.BoxItem;
 import xyz.anythings.base.entity.BoxPack;
 import xyz.anythings.base.entity.JobBatch;
@@ -37,8 +36,8 @@ import xyz.anythings.base.model.Category;
 import xyz.anythings.base.model.EquipBatchSet;
 import xyz.anythings.base.service.impl.LogisServiceDispatcher;
 import xyz.anythings.base.service.util.LogisServiceUtil;
-import xyz.anythings.sys.event.EventPublisher;
 import xyz.anythings.sys.model.BaseResponse;
+import xyz.anythings.sys.rest.DynamicControllerSupport;
 import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.elidom.dbist.dml.Page;
@@ -51,7 +50,6 @@ import xyz.elidom.orm.system.annotation.service.ServiceDesc;
 import xyz.elidom.sys.SysConstants;
 import xyz.elidom.sys.entity.Domain;
 import xyz.elidom.sys.util.ValueUtil;
-import xyz.elidom.util.BeanUtil;
 
 /**
  * 작업자 디바이스와의 인터페이스 API
@@ -63,10 +61,10 @@ import xyz.elidom.util.BeanUtil;
 @ResponseStatus(HttpStatus.OK)
 @RequestMapping("/rest/device_process")
 @ServiceDesc(description = "Device Process Controller API")
-public class DeviceProcessController {
+public class DeviceProcessController extends DynamicControllerSupport {
 	
 	/**
-	 * 이벤트 퍼블리셔
+	 * 쿼리 매니저
 	 */
 	@Autowired
 	private IQueryManager queryManager;
@@ -75,11 +73,6 @@ public class DeviceProcessController {
 	 */
 	@Autowired
 	private LogisServiceDispatcher serviceDispatcher;
-	/**
-	 * 이벤트 퍼블리셔
-	 */
-	@Autowired
-	private EventPublisher eventPublisher;
 	
 	/**********************************************************************
 	 * 								공통 API 
@@ -93,8 +86,9 @@ public class DeviceProcessController {
 	@RequestMapping(value = "/publish/device_update/{device_type}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Publish device update message")
 	public BaseResponse publishDeviceUpdate(@PathVariable("device_type") String deviceType) {
-		// TODO
-		return new BaseResponse(true, null);
+		
+		this.serviceDispatcher.getDeviceService().sendDeviceUpdateMessage(Domain.currentDomainId(), deviceType);
+		return new BaseResponse(true, LogisConstants.OK_STRING);
 	}
 	
 	/**
@@ -106,7 +100,10 @@ public class DeviceProcessController {
 	@RequestMapping(value = "/release_notes/{device_type}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Release notes of device type")
 	public List<Map<String, Object>> releaseNotesOfDevice(@PathVariable("device_type") String deviceType) {
-		// TODO 
+		
+		//List<String> releaseNotes = this.serviceDispatcher.getDeviceService().searchUpdateItems(Domain.currentDomainId(), deviceType);
+		
+		// TODO
 		List<Map<String, Object>> releaseNotes = new ArrayList<Map<String, Object>>(5);
 		releaseNotes.add(ValueUtil.newMap("seq,content", 1, "디자인 테마 변경"));
 		releaseNotes.add(ValueUtil.newMap("seq,content", 2, "메뉴 아이콘 변경"));
@@ -123,10 +120,11 @@ public class DeviceProcessController {
 	 * @return
 	 */
 	@RequestMapping(value = "/publish/message/{device_type}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiDesc(description = "Publish device update message")
+	@ApiDesc(description = "Publish device message")
 	public BaseResponse publishDeviceMessage(@PathVariable("device_type") String deviceType, @RequestBody String message) {
-		// TODO 
-		return new BaseResponse(true, null);
+		
+		this.serviceDispatcher.getDeviceService().sendMessageToDevice(Domain.currentDomainId(), deviceType, message);
+		return new BaseResponse(true, LogisConstants.OK_STRING);
 	}
 	
 	/**
@@ -140,11 +138,11 @@ public class DeviceProcessController {
 	@ApiDesc(description = "Batch Progress Rate")
 	public BatchProgressRate batchProgressRate(@PathVariable("equip_type") String equipType, @PathVariable("equip_cd") String equipCd) {
 		
-		Long domainId = Domain.currentDomainId();
-		EquipBatchSet equipBatchSet = LogisServiceUtil.findBatchByEquip(domainId, equipType, equipCd);
+		EquipBatchSet equipBatchSet = LogisServiceUtil.findBatchByEquip(Domain.currentDomainId(), equipType, equipCd);
 		JobBatch batch = equipBatchSet.getBatch();
 		return this.serviceDispatcher.getJobStatusService(batch).getBatchProgressSummary(batch);
 	}
+	
 	/**
 	 * 고객사 코드 및 상품 코드로 상품 조회
 	 * 
@@ -822,6 +820,7 @@ public class DeviceProcessController {
 		
 		// 4. TODO 표시기 점등
 		if(indOnFlag) {
+			
 		}
 		
 		return retList;
@@ -1020,6 +1019,7 @@ public class DeviceProcessController {
 	 * DeviceProcessRestEvent 이벤트를 발생시켜 각 모듈에서 해당 로직 처리 
 	 */
 	@RequestMapping(value = "/dynamic/{job_type}/**", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Device Process Rest POST API")
 	public BaseResponse deviceProcessRestPostApi(
 			final HttpServletRequest request
 			, @PathVariable("job_type") String jobType
@@ -1030,37 +1030,6 @@ public class DeviceProcessController {
         DeviceProcessRestEvent event = new DeviceProcessRestEvent(Domain.currentDomainId(), jobType, finalPath, RequestMethod.POST, paramMap);
         event.setRequestPostBody(requestBody);
         return this.restEventPublisher(event);
-	}
-	
-	/**
-	 * 디바이스 관련 이벤트 퍼블리셔 
-	 * 
-	 * @param event
-	 * @return
-	 */
-	private BaseResponse restEventPublisher(DeviceProcessRestEvent event) {
-		BeanUtil.get(EventPublisher.class).publishEvent(event);
-		return event.getReturnResult();
-	}
-	
-	/**
-	 * path variable request 정리
-	 * 
-	 * @param request
-	 * @return
-	 */
-	private String getRequestFinalPath(HttpServletRequest request) {
-		String path = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-        String bestMatchPattern = (String) request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
-
-        AntPathMatcher apm = new AntPathMatcher();
-        String finalPath = apm.extractPathWithinPattern(bestMatchPattern, path);
-        
-        if(!finalPath.startsWith(SysConstants.SLASH)) {
-        	finalPath = SysConstants.SLASH + finalPath;
-        }
-        
-        return finalPath;
 	}
 			
 }

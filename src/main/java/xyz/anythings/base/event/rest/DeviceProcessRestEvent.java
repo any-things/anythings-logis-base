@@ -22,20 +22,31 @@ public class DeviceProcessRestEvent extends SysRestEvent{
 	public String jobType;
 
 	/**
-	 * 클라이언트에 넘겨줄 결과 
+	 * 생성자 1
+	 * 
+	 * @param domainId
+	 * @param jobType
+	 * @param restPath
+	 * @param requestMethod
 	 */
-	public BaseResponse returnResult;
-
 	public DeviceProcessRestEvent(long domainId, String jobType, String restPath, RequestMethod requestMethod) {
 		this(domainId, jobType, restPath, requestMethod, null);
 	}
 	
-	public DeviceProcessRestEvent(long domainId, String jobType, String restPath, RequestMethod requestMethod, Map<String,Object> requestParams) {
-		super(domainId, restPath,requestMethod, requestParams);
+	/**
+	 * 생성자 2
+	 * 
+	 * @param domainId
+	 * @param jobType
+	 * @param restPath
+	 * @param requestMethod
+	 * @param requestParams
+	 */
+	public DeviceProcessRestEvent(long domainId, String jobType, String restPath, RequestMethod requestMethod, Map<String, Object> requestParams) {
+		super(domainId, restPath, requestMethod, requestParams);
 		this.setJobType(jobType);
 		this.setReturnResult(new BaseResponse(false,"NOT_EXECUTION"));
 	}
-	
 
 	public String getJobType() {
 		return jobType;
@@ -44,20 +55,13 @@ public class DeviceProcessRestEvent extends SysRestEvent{
 	public void setJobType(String jobType) {
 		this.jobType = jobType;
 	}
-
-
-	public BaseResponse getReturnResult() {
-		return returnResult;
-	}
-
-	public void setReturnResult(BaseResponse returnResult) {
-		this.returnResult = returnResult;
-	}
 	
 	public boolean checkCondition(String restPath, String jobType) {
-		if(super.checkCondition(restPath) == false) return false;
-		
-		return ValueUtil.isEqualIgnoreCase(jobType, this.getJobType());
+		if(!super.checkCondition(restPath)) {
+			return false;
+		} else {
+			return ValueUtil.isEqualIgnoreCase(jobType, this.getJobType());
+		}
 	}
 
 }
