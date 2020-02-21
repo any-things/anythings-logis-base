@@ -14,7 +14,7 @@ WITH T_INSTANCES AS (
              WHERE DOMAIN_ID = :domainId
                AND EQUIP_TYPE = :equipType
                AND EQUIP_CD = :equipCd
-               AND STATION_CD = :equipZone) Y
+               AND STATION_CD = :stationCd) Y
      WHERE X.DOMAIN_ID = Y.DOMAIN_ID
        AND X.EQUIP_TYPE = Y.EQUIP_TYPE
        AND X.EQUIP_CD = Y.EQUIP_CD
@@ -25,7 +25,7 @@ T_GWS AS (
        FROM (
             SELECT *
               FROM INDICATORS
-             WHERE (DOMAIN_ID, IND_CD ) in (SELECT DOMAIN_ID, IND_CD FROM T_INSTANCES)
+             WHERE (DOMAIN_ID, IND_CD) in (SELECT DOMAIN_ID, IND_CD FROM T_INSTANCES)
             ) X
           , (
              SELECT DOMAIN_ID, GW_CD , GW_NM
@@ -39,5 +39,4 @@ T_GWS AS (
 SELECT X.*, Y.GW_CD, Y.GW_NM AS GW_PATH
   FROM T_INSTANCES X
      , T_GWS Y
- WHERE X.IND_CD = Y.IND_CD 
-  
+ WHERE X.IND_CD = Y.IND_CD

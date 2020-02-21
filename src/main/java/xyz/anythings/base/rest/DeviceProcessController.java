@@ -794,17 +794,17 @@ public class DeviceProcessController extends DynamicControllerSupport {
 	 * @param jobInputId
 	 * @param equipType
 	 * @param equipCd
-	 * @param equipZone
+	 * @param stationCd
 	 * @param indOnFlag
 	 * @return
 	 */
-	@RequestMapping(value = "/search/input_jobs/{job_input_id}/{equip_type}/{equip_cd}/{equip_zone}/{ind_on_flag}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/search/input_jobs/{job_input_id}/{equip_type}/{equip_cd}/{station_cd}/{ind_on_flag}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Search Input Job list")
 	public List<JobInstance> searchInputJobs(
 			@PathVariable("job_input_id") String jobInputId, 
 			@PathVariable("equip_type") String equipType,
 			@PathVariable("equip_cd") String equipCd,
-			@PathVariable("equip_zone") String equipZone,
+			@PathVariable("station_cd") String stationCd,
 			@PathVariable("ind_on_flag") Boolean indOnFlag) {
 		
 		// 1. 작업 배치 체크 및 조회
@@ -813,10 +813,10 @@ public class DeviceProcessController extends DynamicControllerSupport {
 		JobBatch batch = equipBatchSet.getBatch();
 		
 		// 2. JobInput 조회 
-		JobInput input = AnyEntityUtil.findEntityBy(domainId, false, JobInput.class, "id,equipType,equipCd,stationCd", jobInputId, equipType, equipCd, equipZone);
+		JobInput input = AnyEntityUtil.findEntityBy(domainId, false, JobInput.class, null, "id,equipType,equipCd,stationCd", jobInputId, equipType, equipCd, stationCd);
 		
 		// 3. 서비스 호출 
-		List<JobInstance> retList = this.serviceDispatcher.getJobStatusService(batch).searchInputJobList(batch, input, equipZone);
+		List<JobInstance> retList = this.serviceDispatcher.getJobStatusService(batch).searchInputJobList(batch, input, stationCd);
 		
 		// 4. TODO 표시기 점등
 		if(indOnFlag) {

@@ -314,7 +314,7 @@ public class Stock extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		hist.setTranCd(this.lastTranCd);
 		hist.setPrevStockQty(this.prevStockQty);
 		hist.setStockQty(this.stockQty);
-		int inOutQty = this.stockQty - this.prevStockQty;
+		int inOutQty = ValueUtil.toInteger(this.stockQty, 0) - ValueUtil.toInteger(this.prevStockQty, 0);
 		
 		if(inOutQty > 0) {
 			hist.setInQty(inOutQty);

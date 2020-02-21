@@ -1,5 +1,6 @@
 package xyz.anythings.base.event.classfy;
 
+import xyz.anythings.base.LogisConstants;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.JobInstance;
 import xyz.anythings.base.entity.WorkCell;
@@ -180,7 +181,7 @@ public class ClassifyRunEvent extends ClassifyEvent implements IClassifyRunEvent
 				this.setJobBatch(AnyEntityUtil.findEntityById(true, JobBatch.class, jobInstance.getBatchId()));
 			}
 			
-			if(this.workCell == null) {
+			if(LogisConstants.isB2BJobType(jobInstance.getJobType()) && this.workCell == null) {
 				this.setWorkCell(AnyEntityUtil.findEntityBy(jobInstance.getDomainId(), true, true, WorkCell.class, null, "domainId,batchId,cellCd", jobInstance.getDomainId(), jobInstance.getBatchId(), this.cellCd));
 			}
 		}
