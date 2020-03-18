@@ -101,6 +101,12 @@ public class BoxPack extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	@Column (name = "invoice_id", length = 40)
 	private String invoiceId;
+	
+	/**
+	 * 주문 유형
+	 */
+	@Column (name = "order_type", length = 20)
+	private String orderType;	
 
 	@Column (name = "box_type_cd", length = 30)
 	private String boxTypeCd;
@@ -330,6 +336,14 @@ public class BoxPack extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setInvoiceId(String invoiceId) {
 		this.invoiceId = invoiceId;
+	}
+	
+	public String getOrderType() {
+		return orderType;
+	}
+
+	public void setOrderType(String orderType) {
+		this.orderType = orderType;
 	}
 
 	public String getBoxTypeCd() {
