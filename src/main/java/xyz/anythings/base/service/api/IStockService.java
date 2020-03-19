@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import xyz.anythings.base.entity.Cell;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.SKU;
 import xyz.anythings.base.entity.Stock;
@@ -104,12 +103,11 @@ public interface IStockService {
 	 * @return
 	 */
 	public Stock adjustStock(Long domainId, String trxCd, String cellCd, String comCd, String skuCd, int adjustQty);
-	
+		
 	/**
-	 * 고정식 여부에 skuCd가 적치되어 있는 셀 조회 
+	 * 고정식 여부에 skuCd가 적치되어 있는 재고 조회 
 	 * 
 	 * @param domainId
-	 * @param stageCd
 	 * @param equipType
 	 * @param equipCd
 	 * @param fixedFlag
@@ -117,13 +115,12 @@ public interface IStockService {
 	 * @param skuCd
 	 * @return
 	 */
-	public List<Cell> searchCellsBySku(Long domainId, String stageCd, String equipType, String equipCd, boolean fixedFlag, String comCd, String skuCd);
+	public List<Stock> searchStocksBySku(Long domainId, String equipType, String equipCd, String comCd, String skuCd);
 	
 	/**
 	 * 고정식 여부에 skuCd가 적치되어 있는 재고 조회 
 	 * 
 	 * @param domainId
-	 * @param stageCd
 	 * @param equipType
 	 * @param equipCd
 	 * @param fixedFlag
@@ -131,7 +128,7 @@ public interface IStockService {
 	 * @param skuCd
 	 * @return
 	 */
-	public List<Stock> searchStocksBySku(Long domainId, String stageCd, String equipType, String equipCd, boolean fixedFlag, String comCd, String skuCd);
+	public List<Stock> searchStocksBySku(Long domainId, String equipType, String equipCd, Boolean fixedFlag, String comCd, String skuCd);
 	
 	/**
 	 * 추천 로케이션 조회 
@@ -141,9 +138,18 @@ public interface IStockService {
 	 * @param equipCd
 	 * @param comCd
 	 * @param skuCd
+	 * @param fixedFlag
 	 * @return
 	 */
-	public List<String> searchRecommendCells(Long domainId, String equipType, String equipCd, String comCd, String skuCd);
+	public List<Stock> searchRecommendCells(Long domainId, String equipType, String equipCd, String comCd, String skuCd, Boolean fixedFlag);
+	
+	/**
+	 * 로케이션의 주문, 할당, 재고 수량 계산 
+	 * 
+	 * @param stock
+	 * @return
+	 */
+	public Stock calcuateOrderStock(Stock stock);
 	
 	/**
 	 * 재고 보충을 위한 상품 투입 수량 계산 

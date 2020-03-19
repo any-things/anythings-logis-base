@@ -81,6 +81,14 @@ public interface ISkuSearchService {
 	public List<SKU> searchListInBatch(JobBatch batch, String stationCd, String comCd, String skuCd, boolean todoOnly, boolean exceptionWhenEmpty);
 	
 	/**
+	 * 상품 코드 or 상품 바코드 or 기타 바코드로 상품 마스터에서 상품 조회
+	 * 
+	 * @param skuCd 상품 코드 혹은 상품 바코드 등
+	 * @return
+	 */
+	public List<SKU> searchList(JobBatch batch, String skuCd);
+	
+	/**
 	 * SKU 키(고객사 코드, 상품 코드)로 창고 내 SKU 조회
 	 * 
 	 * @param domainId
@@ -103,18 +111,6 @@ public interface ISkuSearchService {
 	 * @return
 	 */
 	public SKU findSku(Long domainId, String stageCd, String comCd, String skuCd, String skuBarcd, boolean exceptionFlag);
-	
-	/**
-	 * 고객사 코드, 박스 바코드로 SKU 조회
-	 * 
-	 * @param domainId
-	 * @param stageCd 스테이지 코드
-	 * @param comCd 고객사 코드
-	 * @param boxBarcd 박스 바코드
-	 * @param exceptionFlag
-	 * @return
-	 */
-	public SKU findSkuByBoxBarcd(Long domainId, String stageCd, String comCd, String boxBarcd, boolean exceptionFlag);
 	
 	/**
 	 * 조회 조건으로 SKU 조회

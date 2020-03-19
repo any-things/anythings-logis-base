@@ -12,9 +12,14 @@ import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.SKU;
 import xyz.anythings.base.entity.Stock;
 import xyz.anythings.base.entity.Stocktaking;
+import xyz.anythings.base.model.EquipBatchSet;
 import xyz.anythings.base.query.store.StockQueryStore;
 import xyz.anythings.base.service.api.IStockService;
+import xyz.anythings.base.service.util.LogisServiceUtil;
 import xyz.anythings.sys.util.AnyEntityUtil;
+import xyz.anythings.sys.util.AnyOrmUtil;
+import xyz.elidom.dbist.dml.Query;
+import xyz.elidom.sys.entity.Domain;
 import xyz.elidom.sys.util.ValueUtil;
 
 /**
@@ -25,6 +30,9 @@ import xyz.elidom.sys.util.ValueUtil;
 @Component
 public class StockService extends AbstractLogisService implements IStockService {
 
+	/**
+	 * 재고 쿼리 스토어
+	 */
 	@Autowired
 	private StockQueryStore stockQueryStore;
 	
@@ -141,21 +149,48 @@ public class StockService extends AbstractLogisService implements IStockService 
 	}
 	
 	@Override
-	public List<Cell> searchCellsBySku(Long domainId, String stageCd, String equipType, String equipCd, boolean fixedFlag, String comCd, String skuCd) {
-		String sql = this.stockQueryStore.getSearchCellsQuery();
-		return AnyEntityUtil.searchItems(domainId, false, Cell.class, sql, "domainId,stageCd,equipType,equipCd,comCd,skuCd", domainId, stageCd, equipType, equipCd, comCd, skuCd);
+	public List<Stock> searchStocksBySku(Long domainId, String equipType, String equipCd, String comCd, String skuCd) {
+		String sql = this.stockQueryStore.getSearchStocksQuery();
+		return AnyEntityUtil.searchItems(domainId, false, Stock.class, sql, "domainId,equipType,equipCd,comCd,skuCd", domainId, equipType, equipCd, comCd, skuCd);
 	}
 	
 	@Override
-	public List<Stock> searchStocksBySku(Long domainId, String stageCd, String equipType, String equipCd, boolean fixedFlag, String comCd, String skuCd) {
+	public List<Stock> searchStocksBySku(Long domainId, String equipType, String equipCd, Boolean fixedFlag, String comCd, String skuCd) {
 		String sql = this.stockQueryStore.getSearchStocksQuery();
-		return AnyEntityUtil.searchItems(domainId, false, Stock.class, sql, "domainId,stageCd,equipType,equipCd,comCd,skuCd", domainId, stageCd, equipType, equipCd, comCd, skuCd);
+		return AnyEntityUtil.searchItems(domainId, false, Stock.class, sql, "domainId,equipType,equipCd,comCd,skuCd", domainId, equipType, equipCd, comCd, skuCd);
 	}
 
 	@Override
-	public List<String> searchRecommendCells(Long domainId, String equipType, String equipCd, String comCd, String skuCd) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Stock> searchRecommendCells(Long domainId, String equipType, String equipCd, String comCd, String skuCd, Boolean fixedFlag) {
+		// 1. 조회 조건
+		Query condition = AnyOrmUtil.newConditionForExecution(domainId);
+		condition.addSelect("cellCd");
+		condition.addFilter("equipType", equipType);
+		condition.addFilter("equipCd", equipCd);
+		condition.addFilter("comCd", comCd);
+		condition.addFilter("skuCd", skuCd);
+		
+		if(fixedFlag != null) {
+			condition.addFilter("fixedFlag", fixedFlag);
+		}
+		
+		return this.queryManager.selectList(Stock.class, condition);
+	}
+	
+	@Override
+	public Stock calcuateOrderStock(Stock stock) {
+		// 1. 고정식인 경우 
+		if(stock.getFixedFlag() != null && stock.getFixedFlag()) {
+			stock.setStockQty(stock.getMaxStockQty() - stock.getLoadQty() - stock.getAllocQty());
+			return stock;			
+			
+		// 2. 자유식인 경우 
+		} else {
+			EquipBatchSet equipBatchSet = LogisServiceUtil.findBatchByEquip(Domain.currentDomainId(), stock.getEquipType(), stock.getEquipCd());
+			int supplementQty = this.calcSkuSupplementQty(equipBatchSet.getBatch(), stock);
+			stock.setStockQty(supplementQty);
+			return stock;
+		}
 	}
 
 	@Override

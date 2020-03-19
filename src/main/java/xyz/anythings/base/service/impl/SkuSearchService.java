@@ -1,7 +1,9 @@
 package xyz.anythings.base.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.regex.Pattern;
 
 import org.springframework.stereotype.Component;
@@ -20,6 +22,7 @@ import xyz.elidom.dbist.dml.Query;
 import xyz.elidom.sys.SysConstants;
 import xyz.elidom.sys.util.ThrowUtil;
 import xyz.elidom.util.BeanUtil;
+import xyz.elidom.util.FormatUtil;
 import xyz.elidom.util.ValueUtil;
 
 /**
@@ -103,6 +106,25 @@ public class SkuSearchService extends AbstractLogisService implements ISkuSearch
 		return this.searchSkuList(skuCd, sql, params, exceptionWhenEmpty);
 	}
 	
+	@Override
+	public List<SKU> searchList(JobBatch batch, String skuCd) {
+		String[] skuCodeFields = BatchJobConfigUtil.getSkuSearchConditionFields(batch);
+		String selectFields = "*"; //BatchJobConfigUtil.getSkuSearchSelectFields(batch);
+		Map<String, Object> params = new HashMap<String, Object>();
+		
+		StringJoiner sql = new StringJoiner(LogisConstants.LINE_SEPARATOR);
+		sql.add("SELECT ").add(selectFields).add(" FROM SKU WHERE ");
+
+		int idx = 0;
+		for(String skuCodeField : skuCodeFields) {
+			params.put(skuCodeField, skuCd);
+			sql.add((idx > 0 ? "or" : "") + " " + FormatUtil.toUnderScore(skuCodeField) + " = :" + skuCodeField);
+			idx++;
+		}
+		
+		return this.queryManager.selectListBySql(sql.toString(), params, SKU.class, 0, 0);
+	}
+	
 	/**
 	 * 조회 쿼리, 파라미터로 상품 조회
 	 * 
@@ -139,11 +161,6 @@ public class SkuSearchService extends AbstractLogisService implements ISkuSearch
 	@Override
 	public SKU findSku(Long domainId, String stageCd, String comCd, String skuCd, String skuBarcd, boolean exceptionFlag) {
 		return findSKU(domainId, exceptionFlag, StageJobConfigUtil.getSearchSkuFields(stageCd, null), "comCd,skuCd,skuBarcd", comCd, skuCd, skuBarcd);
-	}
-
-	@Override
-	public SKU findSkuByBoxBarcd(Long domainId, String stageCd, String comCd, String boxBarcd, boolean exceptionFlag) {
-		return findSKU(domainId, exceptionFlag, StageJobConfigUtil.getSearchSkuFields(stageCd, null), "comCd,boxBarcd", comCd, boxBarcd);
 	}
 	
 	@Override

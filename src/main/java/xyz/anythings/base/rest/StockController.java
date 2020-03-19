@@ -91,48 +91,48 @@ public class StockController extends AbstractRestService {
 		return this.cudMultipleData(this.entityClass(), list);
 	}
 
-	@RequestMapping(value = "/find_stock/{cell_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/find_by_cell/{equip_type}/{equip_cd}/{cell_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Find Stock By Cell Code")
-	public Stock findStock(@PathVariable("cell_cd") String cellCd) {
+	public Stock findStock(@PathVariable("equip_type") String equipType, @PathVariable("equip_cd") String equipCd, @PathVariable("cell_cd") String cellCd) {
 		
 		Stock stock = this.stockService.findOrCreateStock(Domain.currentDomainId(), cellCd);
 		
-		if(stock == null) {
-			// 재고를 찾을 수 없습니다.
-			throw ThrowUtil.newNotFoundRecord("term.label.stock");
+		if(ValueUtil.isNotEqual(stock.getEquipType(), equipType) || ValueUtil.isNotEqual(stock.getEquipCd(), equipCd)) {
+			// 현재 호기의 로케이션이 아닙니다. 
+			throw ThrowUtil.newValidationErrorWithNoLog(true, "IS_NOT_LOCATION_OF_CURRENT_REGION");
 		}
 		
 		return stock;
 	}
 	
-	@RequestMapping(value = "/find_stock/{equip_type}/{equip_cd}/{com_cd}/{sku_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiDesc(description = "Find Stock By Cell")
-	public Stock findStock(
+	@RequestMapping(value = "/search_by_sku/{equip_type}/{equip_cd}/{com_cd}/{sku_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Search Stocks By SKU")
+	public List<Stock> searchStocksBySku(
 			@PathVariable("equip_type") String equipType,
 			@PathVariable("equip_cd") String equipCd,
 			@PathVariable("com_cd") String comCd,
 			@PathVariable("sku_cd") String skuCd) {
 		
-		// TODO
-		return null;
+		return this.stockService.searchStocksBySku(Domain.currentDomainId(), equipType, equipCd, comCd, skuCd);
 	}
 	
 	@RequestMapping(value = "/recommend_cells/{equip_type}/{equip_cd}/{com_cd}/{sku_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Search Recommendation Cells")
-	public List<String> recommendCells(
+	public List<Stock> recommendCells(
 			@PathVariable("equip_type") String equipType,
 			@PathVariable("equip_cd") String equipCd,
 			@PathVariable("com_cd") String comCd,
 			@PathVariable("sku_cd") String skuCd,
 			@RequestParam(name = "fixed_flag", required = false) Boolean fixedFlag) {
 		
-		return this.stockService.searchRecommendCells(Domain.currentDomainId(), equipType, equipCd, comCd, skuCd);
+		return this.stockService.searchRecommendCells(Domain.currentDomainId(), equipType, equipCd, comCd, skuCd, fixedFlag);
 	}
 	
-	@RequestMapping(value = "/find_order_stock/{rack_cd}/{cell_cd}/{com_cd}/{sku_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiDesc(description = "Find Order Stock By Cell and SKU")
+	@RequestMapping(value = "/calc_order_stock/{equip_type}/{equip_cd}/{cell_cd}/{com_cd}/{sku_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Calculate Order Stock By Cell and SKU")
 	public Stock findOrderStock(
-			@PathVariable("rack_cd") String rackCd,
+			@PathVariable("equip_type") String equipType,
+			@PathVariable("equip_cd") String equipCd,
 			@PathVariable("cell_cd") String cellCd,
 			@PathVariable("com_cd") String comCd,
 			@PathVariable("sku_cd") String skuCd,
