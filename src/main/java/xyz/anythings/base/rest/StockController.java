@@ -2,6 +2,7 @@ package xyz.anythings.base.rest;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,12 +14,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import xyz.anythings.base.entity.SKU;
 import xyz.anythings.base.entity.Stock;
-
+import xyz.anythings.base.service.api.IStockService;
+import xyz.anythings.sys.util.AnyEntityUtil;
+import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
 import xyz.elidom.orm.system.annotation.service.ServiceDesc;
+import xyz.elidom.sys.entity.Domain;
 import xyz.elidom.sys.system.service.AbstractRestService;
-import xyz.elidom.dbist.dml.Page;
+import xyz.elidom.sys.util.ThrowUtil;
+import xyz.elidom.util.ValueUtil;
 
 @RestController
 @Transactional
@@ -26,6 +32,12 @@ import xyz.elidom.dbist.dml.Page;
 @RequestMapping("/rest/stocks")
 @ServiceDesc(description = "Stock Service API")
 public class StockController extends AbstractRestService {
+	
+	/**
+	 * 재고 서비스
+	 */
+	@Autowired
+	private IStockService stockService;
 
 	@Override
 	protected Class<?> entityClass() {
@@ -79,4 +91,84 @@ public class StockController extends AbstractRestService {
 		return this.cudMultipleData(this.entityClass(), list);
 	}
 
+	@RequestMapping(value = "/find_stock/{cell_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Find Stock By Cell Code")
+	public Stock findStock(@PathVariable("cell_cd") String cellCd) {
+		
+		Stock stock = this.stockService.findOrCreateStock(Domain.currentDomainId(), cellCd);
+		
+		if(stock == null) {
+			// 재고를 찾을 수 없습니다.
+			throw ThrowUtil.newNotFoundRecord("term.label.stock");
+		}
+		
+		return stock;
+	}
+	
+	@RequestMapping(value = "/find_stock/{equip_type}/{equip_cd}/{com_cd}/{sku_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Find Stock By Cell")
+	public Stock findStock(
+			@PathVariable("equip_type") String equipType,
+			@PathVariable("equip_cd") String equipCd,
+			@PathVariable("com_cd") String comCd,
+			@PathVariable("sku_cd") String skuCd) {
+		
+		// TODO
+		return null;
+	}
+	
+	@RequestMapping(value = "/recommend_cells/{equip_type}/{equip_cd}/{com_cd}/{sku_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Search Recommendation Cells")
+	public List<String> recommendCells(
+			@PathVariable("equip_type") String equipType,
+			@PathVariable("equip_cd") String equipCd,
+			@PathVariable("com_cd") String comCd,
+			@PathVariable("sku_cd") String skuCd,
+			@RequestParam(name = "fixed_flag", required = false) Boolean fixedFlag) {
+		
+		return this.stockService.searchRecommendCells(Domain.currentDomainId(), equipType, equipCd, comCd, skuCd);
+	}
+	
+	@RequestMapping(value = "/find_order_stock/{rack_cd}/{cell_cd}/{com_cd}/{sku_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Find Order Stock By Cell and SKU")
+	public Stock findOrderStock(
+			@PathVariable("rack_cd") String rackCd,
+			@PathVariable("cell_cd") String cellCd,
+			@PathVariable("com_cd") String comCd,
+			@PathVariable("sku_cd") String skuCd,
+			@RequestParam(name = "fixed_flag", required = false) Boolean fixedFlag) {
+		
+		// TODO
+		return null;
+	}
+	
+	@RequestMapping(value = "/load_stock/{rack_cd}/{cell_cd}/{com_cd}/{sku_cd}/{qty_unit}/{load_qty}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Load Stock")
+	public Stock loadStock(
+			@PathVariable("rack_cd") String rackCd,
+			@PathVariable("cell_cd") String cellCd,
+			@PathVariable("com_cd") String comCd,
+			@PathVariable("sku_cd") String skuCd,
+			@PathVariable("qty_unit") String qtyUnit,
+			@PathVariable("load_qty") Integer loadQty) {
+		
+		// 1. Validation
+		Long domainId = Domain.currentDomainId();
+		SKU sku = AnyEntityUtil.findEntityBy(domainId, true, SKU.class, null, "comCd,skuCd", comCd, skuCd);
+
+		// 2. 수량 단위가 박스 단위이면 박스 수량과 적치 수량을 곱해서 처리 
+		if(ValueUtil.isEqualIgnoreCase("B", qtyUnit)) {
+			loadQty = sku.getBoxInQty() * loadQty;
+		}
+
+		// 3. 재고 조회
+		Stock stock = this.stockService.findOrCreateStock(domainId, cellCd, comCd, skuCd);
+		
+		// 4. 재고 보충
+		stock = this.stockService.addStock(stock, Stock.TRX_IN, loadQty);
+
+		// 5. 재고 리턴
+		return stock;
+	}
+	
 }

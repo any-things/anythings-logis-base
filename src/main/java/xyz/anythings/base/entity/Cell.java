@@ -7,7 +7,11 @@ import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.Table;
 
 @Table(name = "cells", idStrategy = GenerationRule.UUID, uniqueFields="domainId,cellCd", indexes = {
-	@Index(name = "ix_cells_0", columnList = "domain_id,cell_cd", unique = true)
+	@Index(name = "ix_cells_0", columnList = "domain_id,cell_cd", unique = true),
+	@Index(name = "ix_cells_1", columnList = "domain_id,ind_cd"),
+	@Index(name = "ix_cells_2", columnList = "domain_id,equip_type,equip_cd,cell_seq"),
+	@Index(name = "ix_cells_3", columnList = "domain_id,station_cd"),
+	@Index(name = "ix_cells_4", columnList = "domain_id,active_flag")
 })
 public class Cell extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	/**
@@ -34,14 +38,17 @@ public class Cell extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "wms_cell_cd", length = 30)
 	private String wmsCellCd;
 
-	@Column (name = "bin_count", length = 12)
-	private Integer binCount;
-
 	@Column (name = "equip_zone", length = 30)
 	private String equipZone;
 
+	@Column (name = "ind_group_cd", length = 30)
+	private String indGroupCd;
+	
 	@Column (name = "ind_cd", length = 30)
 	private String indCd;
+	
+	@Column (name = "ind_seq", length = 12)
+	private Integer indSeq;	
 
 	@Column (name = "channel_no", length = 40)
 	private String channelNo;
@@ -109,14 +116,6 @@ public class Cell extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.wmsCellCd = wmsCellCd;
 	}
 
-	public Integer getBinCount() {
-		return binCount;
-	}
-
-	public void setBinCount(Integer binCount) {
-		this.binCount = binCount;
-	}
-
 	public String getEquipZone() {
 		return equipZone;
 	}
@@ -125,12 +124,28 @@ public class Cell extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.equipZone = equipZone;
 	}
 
+	public String getIndGroupCd() {
+		return indGroupCd;
+	}
+
+	public void setIndGroupCd(String indGroupCd) {
+		this.indGroupCd = indGroupCd;
+	}
+
 	public String getIndCd() {
 		return indCd;
 	}
 
 	public void setIndCd(String indCd) {
 		this.indCd = indCd;
+	}
+	
+	public Integer getIndSeq() {
+		return indSeq;
+	}
+
+	public void setIndSeq(Integer indSeq) {
+		this.indSeq = indSeq;
 	}
 
 	public String getChannelNo() {

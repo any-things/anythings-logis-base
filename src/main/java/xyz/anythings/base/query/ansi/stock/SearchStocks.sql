@@ -16,9 +16,6 @@ where
 	#if($skuCd)
 	and sku_cd = :skuCd
 	#end
-	#if($binIndex)
-	and bin_index = :binIndex
-	#end
 	#if($fixedFlag)
 	and fixed_flag = :fixedFlag
 	#end

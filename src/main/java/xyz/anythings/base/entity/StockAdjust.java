@@ -30,9 +30,6 @@ public class StockAdjust extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "cell_cd", nullable = false, length = 30)
 	private String cellCd;
 	
-	@Column (name = "bin_index", length = 5)
-	private Integer binIndex;
-
 	@Column (name = "com_cd", nullable = false, length = 30)
 	private String comCd;
 
@@ -70,14 +67,6 @@ public class StockAdjust extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setCellCd(String cellCd) {
 		this.cellCd = cellCd;
-	}
-
-	public Integer getBinIndex() {
-		return binIndex;
-	}
-
-	public void setBinIndex(Integer binIndex) {
-		this.binIndex = binIndex;
 	}
 
 	public String getComCd() {

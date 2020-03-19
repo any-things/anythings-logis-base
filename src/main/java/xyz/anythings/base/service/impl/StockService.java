@@ -34,76 +34,49 @@ public class StockService extends AbstractLogisService implements IStockService 
 	}
 
 	@Override
-	public Stock findStock(Long domainId, String cellCd, Integer binIndex, boolean exceptionWhenEmpty) {
-		return AnyEntityUtil.findEntityBy(domainId, exceptionWhenEmpty, Stock.class, null, "domainId,cellCd,binIndex", domainId, cellCd, binIndex);
-	}
-
-	@Override
 	public Stock findStock(Long domainId, String cellCd, String comCd, String skuCd, boolean exceptionWhenEmpty) {
 		return AnyEntityUtil.findEntityBy(domainId, exceptionWhenEmpty, Stock.class, null, "domainId,cellCd,comCd,skuCd", domainId, cellCd, comCd, skuCd);
 	}
 
 	@Override
-	public Stock findStock(Long domainId, String cellCd, Integer binIndex, String comCd, String skuCd, boolean exceptionWhenEmpty) {
-		return AnyEntityUtil.findEntityBy(domainId, exceptionWhenEmpty, Stock.class, null, "domainId,cellCd,binIndex,comCd,skuCd", domainId, cellCd, binIndex, comCd, skuCd);
-	}
-	
-	@Override
 	public Stock findOrCreateStock(Long domainId, String cellCd) {
 		Stock stock = this.findStock(domainId, cellCd, false);
 		if(stock == null) {
-			stock = this.createStock(domainId, cellCd, null, null, null, null);
+			stock = this.createStock(domainId, cellCd, null, null, null);
 		}
 		
 		return stock;
 	}
 	
-	@Override
-	public Stock findOrCreateStock(Long domainId, String cellCd, Integer binIndex) {
-		Stock stock = this.findStock(domainId, cellCd, binIndex, false);
-		if(stock == null) {
-			stock = this.createStock(domainId, cellCd, binIndex, null, null, null);
-		}
-		
-		return stock;
-	}
-
 	@Override
 	public Stock findOrCreateStock(Long domainId, String cellCd, String comCd, String skuCd) {
 		Stock stock = this.findStock(domainId, cellCd, false);
 		if(stock == null) {
-			stock = this.createStock(domainId, cellCd, null, null, null, null);
+			stock = this.createStock(domainId, cellCd, null, null, null);
 		}
 		
 		return stock;
 	}
 
 	@Override
-	public Stock findOrCreateStock(Long domainId, String cellCd, Integer binIndex, String comCd, String skuCd) {
-		Stock stock = this.findStock(domainId, cellCd, binIndex, comCd, skuCd, false);
-		if(stock == null) {
-			stock = this.createStock(domainId, cellCd, binIndex, comCd, skuCd, null);
-		}
-		
-		return stock;
-	}
-	
-	@Override
-	public Stock createStock(Long domainId, String cellCd, Integer binIndex, String comCd, String skuCd, String skuNm) {
+	public Stock createStock(Long domainId, String cellCd, String comCd, String skuCd, String skuNm) {
 		Cell cell = AnyEntityUtil.findEntityBy(domainId, true, Cell.class, null, "domainId,cellCd", domainId, cellCd);
+		Stock stock = new Stock();
 		
 		if(ValueUtil.isEmpty(skuNm) && ValueUtil.isNotEmpty(skuCd)) {
-			String sql = "select sku_nm from sku where com_cd = :comCd and sku_cd = :skuCd";
-			skuNm = AnyEntityUtil.findItem(domainId, false, String.class, sql, "comCd,skuCd", comCd, skuCd);
+			SKU sku = AnyEntityUtil.findEntityBy(domainId, true, SKU.class, "sku_cd,sku_barcd,sku_nm", "comCd,skuCd", comCd, skuCd);
+			stock.setSkuCd(skuCd);
+			stock.setSkuNm(sku.getSkuNm());
+			stock.setSkuBarcd(sku.getSkuBarcd());
+		} else {
+			stock.setSkuCd(skuCd);
+			stock.setSkuNm(skuNm);			
 		}
-		
-		Stock stock = new Stock();
+				
 		stock.setCellCd(cellCd);
 		stock.setEquipType(cell.getEquipType());
 		stock.setEquipCd(cell.getEquipCd());
 		stock.setComCd(comCd);
-		stock.setSkuCd(skuCd);
-		stock.setSkuNm(skuNm);
 		stock.setActiveFlag(cell.getActiveFlag());
 		stock.setLoadQty(0);
 		stock.setAllocQty(0);
@@ -242,12 +215,12 @@ public class StockService extends AbstractLogisService implements IStockService 
 
 	@Override
 	public void removeStockForPicking(Long domainId, String equipType, String equipCd, String cellCd, String comCd, String skuCd, int pickQty) {
-		// 2.1 Lock 을 걸고 재고 조회 TODO : BIN 인덱스 사용하는 경우 처리 
+		// 1. Lock 을 걸고 재고 조회 
 		Stock stock = AnyEntityUtil.findEntityBy(domainId, true, true, Stock.class, null, "equipType,equipCd,cellCd,comCd,skuCd", equipType, equipCd, cellCd, comCd, skuCd);
 		stock.setAllocQty(stock.getAllocQty() - pickQty);
 		stock.setPickedQty(stock.getPickedQty() + pickQty);
 		
-		// 2.2 재고 업데이트 
+		// 2. 재고 업데이트 
 		this.queryManager.update(stock, "allocQty", "pickedQty", LogisConstants.ENTITY_FIELD_UPDATED_AT);		
 	}
 

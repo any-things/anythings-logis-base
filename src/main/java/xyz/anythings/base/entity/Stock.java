@@ -15,9 +15,11 @@ import xyz.elidom.util.BeanUtil;
  * 
  * @author shortstop
  */
-@Table(name = "stocks", idStrategy = GenerationRule.UUID, uniqueFields="domainId,equipType,equipCd,cellCd,binIndex,comCd,skuCd", indexes = {
-	@Index(name = "ix_stocks_0", columnList = "domain_id,equip_type,equip_cd,cell_cd,bin_index,com_cd,sku_cd", unique = true),
-	@Index(name = "ix_stocks_1", columnList = "domain_id,cell_cd")
+@Table(name = "stocks", idStrategy = GenerationRule.UUID, uniqueFields="domainId,equipType,equipCd,cellCd", indexes = {
+	@Index(name = "ix_stocks_0", columnList = "domain_id,equip_type,equip_cd,cell_cd", unique = true),
+	@Index(name = "ix_stocks_1", columnList = "domain_id,cell_cd"),
+	@Index(name = "ix_stocks_2", columnList = "domain_id,equip_type,equip_cd"),
+	@Index(name = "ix_stocks_3", columnList = "domain_id,com_cd,sku_cd")
 })
 public class Stock extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	/**
@@ -63,14 +65,14 @@ public class Stock extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "cell_cd", nullable = false, length = 30)
 	private String cellCd;
 	
-	@Column (name = "bin_index", length = 5)
-	private Integer binIndex;
-
 	@Column (name = "com_cd", length = 30)
 	private String comCd;
 
 	@Column (name = "sku_cd", length = 30)
 	private String skuCd;
+	
+	@Column (name = "sku_barcd", length = 30)
+	private String skuBarcd;
 
 	@Column (name = "sku_nm", length = 200)
 	private String skuNm;
@@ -108,9 +110,14 @@ public class Stock extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "status", length = 10)
 	private String status;
 	
+	/**
+	 * 이전 재고 수량 
+	 */
 	@Ignore
 	private Integer prevStockQty;
-	
+	/**
+	 * 이전 적치 수량
+	 */
 	@Ignore
 	private Integer prevLoadQty;
   
@@ -146,14 +153,6 @@ public class Stock extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.cellCd = cellCd;
 	}
 	
-	public Integer getBinIndex() {
-		return binIndex;
-	}
-
-	public void setBinIndex(Integer binIndex) {
-		this.binIndex = binIndex;
-	}
-
 	public String getComCd() {
 		return comCd;
 	}
@@ -168,6 +167,14 @@ public class Stock extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setSkuCd(String skuCd) {
 		this.skuCd = skuCd;
+	}
+
+	public String getSkuBarcd() {
+		return skuBarcd;
+	}
+
+	public void setSkuBarcd(String skuBarcd) {
+		this.skuBarcd = skuBarcd;
 	}
 
 	public String getSkuNm() {
@@ -269,21 +276,11 @@ public class Stock extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	}
 	
 	@Override
-	public void beforeCreate() {
-		super.beforeCreate();
-		
-		if(binIndex == null || binIndex == 0) {
-			binIndex = 1;
-		}
-	}
-	
-	@Override
 	public void afterCreate() {
 		super.afterCreate();
 		
 		StockHist hist = new StockHist();
 		hist.setCellCd(this.cellCd);
-		hist.setBinIndex(this.binIndex);
 		hist.setComCd(this.comCd);
 		hist.setSkuCd(this.skuCd);
 		hist.setTranCd(ValueUtil.isEmpty(this.lastTranCd) ? Stock.TRX_CREATE : this.lastTranCd);
@@ -294,21 +291,11 @@ public class Stock extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	}
 
 	@Override
-	public void beforeUpdate() {
-		super.beforeUpdate();
-		
-		if(binIndex == null || binIndex == 0) {
-			binIndex = 1;
-		}
-	}
-
-	@Override
 	public void afterUpdate() {
 		super.afterUpdate();
 		
 		StockHist hist = new StockHist();
 		hist.setCellCd(this.cellCd);
-		hist.setBinIndex(this.binIndex);
 		hist.setComCd(this.comCd);
 		hist.setSkuCd(this.skuCd);
 		hist.setTranCd(this.lastTranCd);
