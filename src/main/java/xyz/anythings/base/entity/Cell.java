@@ -41,9 +41,6 @@ public class Cell extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "equip_zone", length = 30)
 	private String equipZone;
 
-	@Column (name = "ind_group_cd", length = 30)
-	private String indGroupCd;
-	
 	@Column (name = "ind_cd", length = 30)
 	private String indCd;
 	
@@ -122,14 +119,6 @@ public class Cell extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setEquipZone(String equipZone) {
 		this.equipZone = equipZone;
-	}
-
-	public String getIndGroupCd() {
-		return indGroupCd;
-	}
-
-	public void setIndGroupCd(String indGroupCd) {
-		this.indGroupCd = indGroupCd;
 	}
 
 	public String getIndCd() {
