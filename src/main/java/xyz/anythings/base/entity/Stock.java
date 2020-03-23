@@ -109,7 +109,17 @@ public class Stock extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	@Column (name = "status", length = 10)
 	private String status;
-	
+
+	/**
+	 * 총 주문 수량
+	 */
+	@Ignore
+	private Integer orderQty;
+	/**
+	 * 재고 투입 수량
+	 */
+	@Ignore
+	private Integer inputQty;
 	/**
 	 * 이전 재고 수량 
 	 */
@@ -275,6 +285,22 @@ public class Stock extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.status = status;
 	}
 	
+	public Integer getOrderQty() {
+		return orderQty;
+	}
+
+	public void setOrderQty(Integer orderQty) {
+		this.orderQty = orderQty;
+	}
+
+	public Integer getInputQty() {
+		return inputQty;
+	}
+
+	public void setInputQty(Integer inputQty) {
+		this.inputQty = inputQty;
+	}
+
 	@Override
 	public void afterCreate() {
 		super.afterCreate();

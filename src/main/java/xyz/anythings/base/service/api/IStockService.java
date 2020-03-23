@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.SKU;
 import xyz.anythings.base.entity.Stock;
 import xyz.anythings.base.entity.Stocktaking;
@@ -152,13 +151,26 @@ public interface IStockService {
 	public Stock calcuateOrderStock(Stock stock);
 	
 	/**
+	 * 상품별 현재 배치의 재고 현황 조회
+	 * 
+	 * @param domainId
+	 * @param batchId
+	 * @param equipType
+	 * @param equipCd
+	 * @param comCd
+	 * @param skuCd
+	 * @return
+	 */
+	public Stock calculateSkuOrderStock(Long domainId, String batchId, String equipType, String equipCd, String comCd, String skuCd);
+		
+	/**
 	 * 재고 보충을 위한 상품 투입 수량 계산 
 	 * 
-	 * @param batch
+	 * @param batchId
 	 * @param stock
 	 * @return
 	 */
-	public int calcSkuSupplementQty(JobBatch batch, Stock stock);
+	public int calcSkuInputQty(String batchId, Stock stock);
 	
 	/**
 	 * 재고 보충

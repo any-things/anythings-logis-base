@@ -19,7 +19,6 @@ import xyz.anythings.base.service.util.LogisServiceUtil;
 import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.elidom.dbist.dml.Query;
-import xyz.elidom.sys.entity.Domain;
 import xyz.elidom.sys.util.ValueUtil;
 
 /**
@@ -164,11 +163,14 @@ public class StockService extends AbstractLogisService implements IStockService 
 	public List<Stock> searchRecommendCells(Long domainId, String equipType, String equipCd, String comCd, String skuCd, Boolean fixedFlag) {
 		// 1. 조회 조건
 		Query condition = AnyOrmUtil.newConditionForExecution(domainId);
-		condition.addSelect("cellCd");
+		condition.addSelect("cellCd", "fixedFlag");
 		condition.addFilter("equipType", equipType);
-		condition.addFilter("equipCd", equipCd);
 		condition.addFilter("comCd", comCd);
 		condition.addFilter("skuCd", skuCd);
+		
+		if(equipCd != null) {
+			condition.addFilter("equipCd", equipCd);
+		}
 		
 		if(fixedFlag != null) {
 			condition.addFilter("fixedFlag", fixedFlag);
@@ -186,18 +188,28 @@ public class StockService extends AbstractLogisService implements IStockService 
 			
 		// 2. 자유식인 경우 
 		} else {
-			EquipBatchSet equipBatchSet = LogisServiceUtil.findBatchByEquip(Domain.currentDomainId(), stock.getEquipType(), stock.getEquipCd());
-			int supplementQty = this.calcSkuSupplementQty(equipBatchSet.getBatch(), stock);
-			stock.setStockQty(supplementQty);
-			return stock;
+			// TODO 호기별 구분하는 옵션이냐 아니냐에 따라서 equipCd가 들어갈 지 말지 결정되어야 함 
+			EquipBatchSet equipBatchSet = LogisServiceUtil.findBatchByEquip(stock.getDomainId(), stock.getEquipType(), stock.getEquipCd());
+			JobBatch batch = equipBatchSet.getBatch();
+			Stock stockQty = this.calculateSkuOrderStock(stock.getDomainId(), batch.getId(), stock.getEquipType(), null, stock.getComCd(), stock.getSkuCd());
+			stockQty.setOrderQty(stockQty.getOrderQty() - stockQty.getAllocQty() - stockQty.getPickedQty());
+			return stockQty;
 		}
 	}
-
+	
 	@Override
-	public int calcSkuSupplementQty(JobBatch batch, Stock stock) {
+	public int calcSkuInputQty(String batchId, Stock stock) {
 		String sql = this.stockQueryStore.getCalcSkuSupplementQtyQuery();
-		Map<String, Object> params = ValueUtil.newMap("domainId,batchId,cellCd,comCd,skuCd", batch.getDomainId(), batch.getId(), stock.getCellCd(), stock.getComCd(), stock.getSkuCd());
-		return this.queryManager.selectBySql(sql, params, Integer.class);
+		Map<String, Object> params = ValueUtil.newMap("domainId,batchId,equipType,equipCd,cellCd,comCd,skuCd", stock.getDomainId(), batchId, stock.getEquipType(), stock.getEquipCd(), stock.getCellCd(), stock.getComCd(), stock.getSkuCd());
+		Stock stockStatus = this.queryManager.selectBySql(sql, params, Stock.class);
+		return stockStatus.getInputQty();
+	}
+	
+	@Override
+	public Stock calculateSkuOrderStock(Long domainId, String batchId, String equipType, String equipCd, String comCd, String skuCd) {
+		String sql = this.stockQueryStore.getCalcSkuSupplementQtyQuery();
+		Map<String, Object> params = ValueUtil.newMap("domainId,batchId,equipType,equipCd,comCd,skuCd", domainId, batchId, equipType, equipCd, comCd, skuCd);
+		return this.queryManager.selectBySql(sql, params, Stock.class);
 	}
 
 	@Override
@@ -254,6 +266,10 @@ public class StockService extends AbstractLogisService implements IStockService 
 		Stock stock = AnyEntityUtil.findEntityBy(domainId, true, true, Stock.class, null, "equipType,equipCd,cellCd,comCd,skuCd", equipType, equipCd, cellCd, comCd, skuCd);
 		stock.setAllocQty(stock.getAllocQty() - pickQty);
 		stock.setPickedQty(stock.getPickedQty() + pickQty);
+		
+		if(stock.getAllocQty() < 0) {
+			stock.setAllocQty(0);
+		}
 		
 		// 2. 재고 업데이트 
 		this.queryManager.update(stock, "allocQty", "pickedQty", LogisConstants.ENTITY_FIELD_UPDATED_AT);		

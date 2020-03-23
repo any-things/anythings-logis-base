@@ -15,8 +15,9 @@ import xyz.elidom.sys.util.ValueUtil;
 import xyz.elidom.util.BeanUtil;
 
 @Table(name = "racks", idStrategy = GenerationRule.UUID, uniqueFields = "domainId,rackCd", indexes = {
-		@Index(name = "ix_racks_0", columnList = "domain_id,rack_cd", unique = true),
-		@Index(name = "ix_racks_1", columnList = "domain_id,stage_cd") })
+	@Index(name = "ix_racks_0", columnList = "domain_id,rack_cd", unique = true),
+	@Index(name = "ix_racks_1", columnList = "domain_id,stage_cd") 
+})
 public class Rack extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	/**
 	 * SerialVersion UID

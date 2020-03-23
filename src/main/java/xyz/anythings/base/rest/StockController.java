@@ -14,9 +14,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.SKU;
 import xyz.anythings.base.entity.Stock;
+import xyz.anythings.base.model.EquipBatchSet;
 import xyz.anythings.base.service.api.IStockService;
+import xyz.anythings.base.service.util.LogisServiceUtil;
 import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
@@ -92,7 +95,7 @@ public class StockController extends AbstractRestService {
 	}
 
 	@RequestMapping(value = "/find_by_cell/{equip_type}/{equip_cd}/{cell_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiDesc(description = "Find Stock By Cell Code")
+	@ApiDesc(description = "DPS Find Stock By Cell Code")
 	public Stock findStock(@PathVariable("equip_type") String equipType, @PathVariable("equip_cd") String equipCd, @PathVariable("cell_cd") String cellCd) {
 		
 		Stock stock = this.stockService.findOrCreateStock(Domain.currentDomainId(), cellCd);
@@ -106,7 +109,7 @@ public class StockController extends AbstractRestService {
 	}
 	
 	@RequestMapping(value = "/search_by_sku/{equip_type}/{equip_cd}/{com_cd}/{sku_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiDesc(description = "Search Stocks By SKU")
+	@ApiDesc(description = "DPS Search Stocks By SKU")
 	public List<Stock> searchStocksBySku(
 			@PathVariable("equip_type") String equipType,
 			@PathVariable("equip_cd") String equipCd,
@@ -117,7 +120,7 @@ public class StockController extends AbstractRestService {
 	}
 	
 	@RequestMapping(value = "/recommend_cells/{equip_type}/{equip_cd}/{com_cd}/{sku_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiDesc(description = "Search Recommendation Cells")
+	@ApiDesc(description = "DPS Search Recommendation Cells")
 	public List<Stock> recommendCells(
 			@PathVariable("equip_type") String equipType,
 			@PathVariable("equip_cd") String equipCd,
@@ -125,7 +128,37 @@ public class StockController extends AbstractRestService {
 			@PathVariable("sku_cd") String skuCd,
 			@RequestParam(name = "fixed_flag", required = false) Boolean fixedFlag) {
 		
-		return this.stockService.searchRecommendCells(Domain.currentDomainId(), equipType, equipCd, comCd, skuCd, fixedFlag);
+		//return this.stockService.searchRecommendCells(Domain.currentDomainId(), equipType, equipCd, comCd, skuCd, fixedFlag);
+		return this.stockService.searchRecommendCells(Domain.currentDomainId(), equipType, null, comCd, skuCd, fixedFlag);
+	}
+	
+	@RequestMapping(value = "/find_order_stock/{equip_type}/{equip_cd}/{com_cd}/{sku_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "DPS Find Order Stock By SKU")
+	public Stock findOrderStock(
+			@PathVariable("equip_type") String equipType,
+			@PathVariable("equip_cd") String equipCd,
+			@PathVariable("com_cd") String comCd,
+			@PathVariable("sku_cd") String skuCd) {
+
+		Long domainId = Domain.currentDomainId();
+		EquipBatchSet equipBatchSet = LogisServiceUtil.findBatchByEquip(domainId, equipType, equipCd);
+		JobBatch batch = equipBatchSet.getBatch();
+		
+		//Stock stock = this.stockService.calculateSkuOrderStock(domainId, batch.getId(), equipType, equipCd, comCd, skuCd);
+		Stock stock = this.stockService.calculateSkuOrderStock(domainId, batch.getId(), equipType, null, comCd, skuCd);
+		
+		if(stock != null && stock.getOrderQty() > 0) {
+			stock.setEquipType(equipType);
+			stock.setEquipCd(equipCd);
+			stock.setOrderQty(stock.getOrderQty() - stock.getAllocQty() - stock.getPickedQty());
+		} else {
+			stock = new Stock();
+			stock.setOrderQty(0);
+			stock.setStockQty(0);
+			stock.setInputQty(0);
+		}
+		
+		return stock;
 	}
 	
 	@RequestMapping(value = "/calc_order_stock/{equip_type}/{equip_cd}/{cell_cd}/{com_cd}/{sku_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -138,8 +171,8 @@ public class StockController extends AbstractRestService {
 			@PathVariable("sku_cd") String skuCd,
 			@RequestParam(name = "fixed_flag", required = false) Boolean fixedFlag) {
 		
-		// TODO
-		return null;
+		Stock stock = this.stockService.findOrCreateStock(Domain.currentDomainId(), cellCd, comCd, skuCd);
+		return this.stockService.calcuateOrderStock(stock);
 	}
 	
 	@RequestMapping(value = "/load_stock/{rack_cd}/{cell_cd}/{com_cd}/{sku_cd}/{qty_unit}/{load_qty}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
