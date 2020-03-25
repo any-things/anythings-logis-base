@@ -7,7 +7,9 @@ import xyz.elidom.dbist.annotation.GenerationRule;
 import xyz.elidom.dbist.annotation.Table;
 
 @Table(name = "sku", idStrategy = GenerationRule.UUID, uniqueFields="domainId,comCd,skuCd", indexes = {
-	@Index(name = "ix_sku_0", columnList = "domain_id,com_cd,sku_cd", unique = true)
+	@Index(name = "ix_sku_0", columnList = "domain_id,com_cd,sku_cd", unique = true),
+	@Index(name = "ix_sku_1", columnList = "domain_id,sku_barcd"),
+	@Index(name = "ix_sku_2", columnList = "domain_id,box_barcd")
 })
 public class SKU extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	/**
@@ -25,77 +27,62 @@ public class SKU extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "sku_cd", nullable = false, length = 30)
 	private String skuCd;
 
-	@Column (name = "sku_class", length = 20)
-	private String skuClass;
-
 	@Column (name = "sku_nm", nullable = false, length = 200)
 	private String skuNm;
-
-	@Column (name = "eng_sku_nm", length = 200)
-	private String engSkuNm;
-
+	
+	@Column (name = "sku_desc", length = 200)
+	private String skuDesc;
+	
 	@Column (name = "sku_type", length = 20)
 	private String skuType;
-
-	@Column (name = "box_in_qty", length = 12)
-	private Integer boxInQty;
-
+	
+	@Column (name = "sku_class", length = 40)
+	private String skuClass;
+	
 	@Column (name = "sku_barcd", length = 30)
 	private String skuBarcd;
+	
+	@Column (name = "box_barcd", length = 30)
+	private String boxBarcd;
+
+	@Column (name = "sku_barcd2", length = 30)
+	private String skuBarcd2;
+
+	@Column (name = "sku_barcd3", length = 30)
+	private String skuBarcd3;
+	
+	@Column (name = "barcd_type", length = 20)
+	private String barcdType;
+	
+	@Column (name = "box_in_qty", length = 12)
+	private Integer boxInQty;
 
 	@Column (name = "plt_box_qty", length = 12)
 	private Integer pltBoxQty;
 
-	@Column (name = "box_barcd", length = 30)
-	private String boxBarcd;
+	@Column (name = "season_cd", length = 30)
+	private String seasonCd;
+	
+	@Column (name = "brand_cd", length = 30)
+	private String brandCd;
+	
+	@Column (name = "style_cd", length = 30)
+	private String styleCd;
 
-	@Column (name = "box_wt", length = 19)
-	private Float boxWt;
+	@Column (name = "size_cd", length = 30)
+	private String sizeCd;
 
-	@Column (name = "sku_wt", length = 19)
-	private Float skuWt;
-
+	@Column (name = "color_cd", length = 30)
+	private String colorCd;
+	
 	@Column (name = "expire_period", length = 12)
 	private Integer expirePeriod;
-
-	@Column (name = "cell_cd", length = 30)
-	private String cellCd;
-
-	@Column (name = "image_url")
-	private String imageUrl;
-
+	
 	@Column (name = "supplier_cd", length = 30)
 	private String supplierCd;
 
 	@Column (name = "supplier_nm", length = 100)
 	private String supplierNm;
-
-	@Column (name = "style_cd", length = 30)
-	private String styleCd;
-
-	@Column (name = "style_nm", length = 40)
-	private String styleNm;
-
-	@Column (name = "size_cd", length = 30)
-	private String sizeCd;
-
-	@Column (name = "size_nm", length = 40)
-	private String sizeNm;
-
-	@Column (name = "box_type_cd", length = 30)
-	private String boxTypeCd;
-
-	@Column (name = "color_cd", length = 30)
-	private String colorCd;
-
-	@Column (name = "color_nm", length = 40)
-	private String colorNm;
-
-	@Column (name = "brand_cd", length = 30)
-	private String brandCd;
-
-	@Column (name = "brand_nm", length = 100)
-	private String brandNm;
 
 	@Column (name = "sku_price", length = 19)
 	private Float skuPrice;
@@ -111,27 +98,12 @@ public class SKU extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	@Column (name = "sku_vol", length = 19)
 	private Float skuVol;
-
-	@Column (name = "box_len", length = 19)
-	private Float boxLen;
-
-	@Column (name = "box_wd", length = 19)
-	private Float boxWd;
-
-	@Column (name = "box_ht", length = 19)
-	private Float boxHt;
-
-	@Column (name = "box_vol", length = 19)
-	private Float boxVol;
-
-	@Column (name = "barcd_type", length = 20)
-	private String barcdType;
-
-	@Column (name = "sku_barcd2", length = 30)
-	private String skuBarcd2;
-
-	@Column (name = "sku_barcd3", length = 30)
-	private String skuBarcd3;
+	
+	@Column (name = "sku_wt", length = 19)
+	private Float skuWt;
+	
+	@Column (name = "box_type_cd", length = 30)
+	private String boxTypeCd;
 
 	@Column (name = "wt_unit", length = 6)
 	private String wtUnit;
@@ -142,12 +114,15 @@ public class SKU extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "vol_unit", length = 6)
 	private String volUnit;
 
-	@Column (name = "sku_rank", length = 12)
-	private Integer skuRank;
+	@Column (name = "cell_cd", length = 30)
+	private String cellCd;
+
+	@Column (name = "image_url", length = 255)
+	private String imageUrl;
 
 	@Column (name = "del_flag", length = 1)
 	private Boolean delFlag;
-  
+
 	public String getId() {
 		return id;
 	}
@@ -172,14 +147,6 @@ public class SKU extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.skuCd = skuCd;
 	}
 
-	public String getSkuClass() {
-		return skuClass;
-	}
-
-	public void setSkuClass(String skuClass) {
-		this.skuClass = skuClass;
-	}
-
 	public String getSkuNm() {
 		return skuNm;
 	}
@@ -188,12 +155,12 @@ public class SKU extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.skuNm = skuNm;
 	}
 
-	public String getEngSkuNm() {
-		return engSkuNm;
+	public String getSkuDesc() {
+		return skuDesc;
 	}
 
-	public void setEngSkuNm(String engSkuNm) {
-		this.engSkuNm = engSkuNm;
+	public void setSkuDesc(String skuDesc) {
+		this.skuDesc = skuDesc;
 	}
 
 	public String getSkuType() {
@@ -204,12 +171,12 @@ public class SKU extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.skuType = skuType;
 	}
 
-	public Integer getBoxInQty() {
-		return boxInQty;
+	public String getSkuClass() {
+		return skuClass;
 	}
 
-	public void setBoxInQty(Integer boxInQty) {
-		this.boxInQty = boxInQty;
+	public void setSkuClass(String skuClass) {
+		this.skuClass = skuClass;
 	}
 
 	public String getSkuBarcd() {
@@ -220,14 +187,6 @@ public class SKU extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.skuBarcd = skuBarcd;
 	}
 
-	public Integer getPltBoxQty() {
-		return pltBoxQty;
-	}
-
-	public void setPltBoxQty(Integer pltBoxQty) {
-		this.pltBoxQty = pltBoxQty;
-	}
-
 	public String getBoxBarcd() {
 		return boxBarcd;
 	}
@@ -236,20 +195,84 @@ public class SKU extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.boxBarcd = boxBarcd;
 	}
 
-	public Float getBoxWt() {
-		return boxWt;
+	public String getSkuBarcd2() {
+		return skuBarcd2;
 	}
 
-	public void setBoxWt(Float boxWt) {
-		this.boxWt = boxWt;
+	public void setSkuBarcd2(String skuBarcd2) {
+		this.skuBarcd2 = skuBarcd2;
 	}
 
-	public Float getSkuWt() {
-		return skuWt;
+	public String getSkuBarcd3() {
+		return skuBarcd3;
 	}
 
-	public void setSkuWt(Float skuWt) {
-		this.skuWt = skuWt;
+	public void setSkuBarcd3(String skuBarcd3) {
+		this.skuBarcd3 = skuBarcd3;
+	}
+
+	public String getBarcdType() {
+		return barcdType;
+	}
+
+	public void setBarcdType(String barcdType) {
+		this.barcdType = barcdType;
+	}
+
+	public Integer getBoxInQty() {
+		return boxInQty;
+	}
+
+	public void setBoxInQty(Integer boxInQty) {
+		this.boxInQty = boxInQty;
+	}
+
+	public Integer getPltBoxQty() {
+		return pltBoxQty;
+	}
+
+	public void setPltBoxQty(Integer pltBoxQty) {
+		this.pltBoxQty = pltBoxQty;
+	}
+
+	public String getSeasonCd() {
+		return seasonCd;
+	}
+
+	public void setSeasonCd(String seasonCd) {
+		this.seasonCd = seasonCd;
+	}
+
+	public String getBrandCd() {
+		return brandCd;
+	}
+
+	public void setBrandCd(String brandCd) {
+		this.brandCd = brandCd;
+	}
+
+	public String getStyleCd() {
+		return styleCd;
+	}
+
+	public void setStyleCd(String styleCd) {
+		this.styleCd = styleCd;
+	}
+
+	public String getSizeCd() {
+		return sizeCd;
+	}
+
+	public void setSizeCd(String sizeCd) {
+		this.sizeCd = sizeCd;
+	}
+
+	public String getColorCd() {
+		return colorCd;
+	}
+
+	public void setColorCd(String colorCd) {
+		this.colorCd = colorCd;
 	}
 
 	public Integer getExpirePeriod() {
@@ -258,22 +281,6 @@ public class SKU extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setExpirePeriod(Integer expirePeriod) {
 		this.expirePeriod = expirePeriod;
-	}
-
-	public String getCellCd() {
-		return cellCd;
-	}
-
-	public void setCellCd(String cellCd) {
-		this.cellCd = cellCd;
-	}
-
-	public String getImageUrl() {
-		return imageUrl;
-	}
-
-	public void setImageUrl(String imageUrl) {
-		this.imageUrl = imageUrl;
 	}
 
 	public String getSupplierCd() {
@@ -290,78 +297,6 @@ public class SKU extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setSupplierNm(String supplierNm) {
 		this.supplierNm = supplierNm;
-	}
-
-	public String getStyleCd() {
-		return styleCd;
-	}
-
-	public void setStyleCd(String styleCd) {
-		this.styleCd = styleCd;
-	}
-
-	public String getStyleNm() {
-		return styleNm;
-	}
-
-	public void setStyleNm(String styleNm) {
-		this.styleNm = styleNm;
-	}
-
-	public String getSizeCd() {
-		return sizeCd;
-	}
-
-	public void setSizeCd(String sizeCd) {
-		this.sizeCd = sizeCd;
-	}
-
-	public String getSizeNm() {
-		return sizeNm;
-	}
-
-	public void setSizeNm(String sizeNm) {
-		this.sizeNm = sizeNm;
-	}
-
-	public String getBoxTypeCd() {
-		return boxTypeCd;
-	}
-
-	public void setBoxTypeCd(String boxTypeCd) {
-		this.boxTypeCd = boxTypeCd;
-	}
-
-	public String getColorCd() {
-		return colorCd;
-	}
-
-	public void setColorCd(String colorCd) {
-		this.colorCd = colorCd;
-	}
-
-	public String getColorNm() {
-		return colorNm;
-	}
-
-	public void setColorNm(String colorNm) {
-		this.colorNm = colorNm;
-	}
-
-	public String getBrandCd() {
-		return brandCd;
-	}
-
-	public void setBrandCd(String brandCd) {
-		this.brandCd = brandCd;
-	}
-
-	public String getBrandNm() {
-		return brandNm;
-	}
-
-	public void setBrandNm(String brandNm) {
-		this.brandNm = brandNm;
 	}
 
 	public Float getSkuPrice() {
@@ -404,60 +339,20 @@ public class SKU extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.skuVol = skuVol;
 	}
 
-	public Float getBoxLen() {
-		return boxLen;
+	public Float getSkuWt() {
+		return skuWt;
 	}
 
-	public void setBoxLen(Float boxLen) {
-		this.boxLen = boxLen;
+	public void setSkuWt(Float skuWt) {
+		this.skuWt = skuWt;
 	}
 
-	public Float getBoxWd() {
-		return boxWd;
+	public String getBoxTypeCd() {
+		return boxTypeCd;
 	}
 
-	public void setBoxWd(Float boxWd) {
-		this.boxWd = boxWd;
-	}
-
-	public Float getBoxHt() {
-		return boxHt;
-	}
-
-	public void setBoxHt(Float boxHt) {
-		this.boxHt = boxHt;
-	}
-
-	public Float getBoxVol() {
-		return boxVol;
-	}
-
-	public void setBoxVol(Float boxVol) {
-		this.boxVol = boxVol;
-	}
-
-	public String getBarcdType() {
-		return barcdType;
-	}
-
-	public void setBarcdType(String barcdType) {
-		this.barcdType = barcdType;
-	}
-
-	public String getSkuBarcd2() {
-		return skuBarcd2;
-	}
-
-	public void setSkuBarcd2(String skuBarcd2) {
-		this.skuBarcd2 = skuBarcd2;
-	}
-
-	public String getSkuBarcd3() {
-		return skuBarcd3;
-	}
-
-	public void setSkuBarcd3(String skuBarcd3) {
-		this.skuBarcd3 = skuBarcd3;
+	public void setBoxTypeCd(String boxTypeCd) {
+		this.boxTypeCd = boxTypeCd;
 	}
 
 	public String getWtUnit() {
@@ -484,12 +379,20 @@ public class SKU extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.volUnit = volUnit;
 	}
 
-	public Integer getSkuRank() {
-		return skuRank;
+	public String getCellCd() {
+		return cellCd;
 	}
 
-	public void setSkuRank(Integer skuRank) {
-		this.skuRank = skuRank;
+	public void setCellCd(String cellCd) {
+		this.cellCd = cellCd;
+	}
+
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
 	}
 
 	public Boolean getDelFlag() {
@@ -498,5 +401,6 @@ public class SKU extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setDelFlag(Boolean delFlag) {
 		this.delFlag = delFlag;
-	}	
+	}
+
 }
