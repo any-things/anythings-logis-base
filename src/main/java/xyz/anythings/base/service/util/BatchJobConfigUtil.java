@@ -53,6 +53,7 @@ import xyz.elidom.util.BeanUtil;
  *  - job.cmm.order.delete.when.order_cancel		주문 취소시 데이터 삭제 여부
  *  - job.cmm.assigned-cell.indicator.enabled		작업지시 시점에 표시기에 할당 셀 표시 활성화 여부
  *  - job.cmm.trade-statement.template				거래명세서 템플릿 이름을 설정
+ *  - job.cmm.reboot.enabled.when.batch.start		작업배치 시에 게이트웨이 리부팅 할 지 여부
  *	
  * @author shortstop
  */
@@ -105,6 +106,22 @@ public class BatchJobConfigUtil {
 		}
 		
 		return value;
+	}
+	
+	/**
+	 * 작업 배치 범위 내에 설정 내용을 키로 조회해서 리턴
+	 *  
+	 * @param batch
+	 * @param key
+	 * @param defaultValue
+	 * @return
+	 */
+	public static String getConfigValue(JobBatch batch, String key, String defaultValue) {
+		// 1. 기본값 조회
+		String value = getConfigValue(batch, key, false);
+		
+		// 2. 설정값이 없다면 defaultValue 리턴
+		return ValueUtil.isEmpty(value) ? defaultValue : value;
 	}
 	
 	/**
@@ -652,6 +669,18 @@ public class BatchJobConfigUtil {
 	}
 	
 	/**
+	 * 작업지시 시점에 게이트웨이 리부팅 활성화 여부
+	 * 
+	 * @param batch
+	 * @return
+	 */
+	public static boolean isGwRebootWhenInstruction(JobBatch batch) {
+		// job.cmm.reboot.enabled.when.batch.start
+		String boolVal = getConfigValue(batch, LogisConfigConstants.GW_REBOOT_WHEN_BATCH_START_ENABLED, true);
+		return ValueUtil.toBoolean(boolVal);
+	}
+	
+	/**
 	 * 작업지시 시점에 표시기에 할당 셀 표시 활성화 여부
 	 * 
 	 * @param batch
@@ -674,4 +703,16 @@ public class BatchJobConfigUtil {
 		return getConfigValue(batch, LogisConfigConstants.BOX_TRADE_STATEMENT_TEMPLATE, true);
 	}
 	
+	/**
+	 * 작업 배치 마감시에 Fullbox 안 된 것이 있으면 일괄 풀 박스 처리 여부
+	 * 
+	 * @param batch
+	 * @return
+	 */
+	public static boolean isBatchFullboxWhenClosingEnabled(JobBatch batch) {
+		// job.cmm.batch-fullbox.when.closing.enabled
+		String boolVal = getConfigValue(batch, LogisConfigConstants.BATCH_FULLBOX_WHEN_CLOSING_ENABLED, "false");	
+		return ValueUtil.toBoolean(boolVal);
+	}
+
 }

@@ -29,6 +29,12 @@ WHERE
 	#if($sideCd)
 	AND C.SIDE_CD = :sideCd
 	#end
+	#if($indCd)
+	AND I.IND_CD = :indCd
+	#end
+	#if($cellCd)
+	AND C.CELL_CD = :cellCd
+	#end
 ORDER BY
 	G.GW_NM ASC
 #if($indQueryFlag)

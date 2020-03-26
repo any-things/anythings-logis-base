@@ -69,6 +69,14 @@ public interface IIndicationService {
 	public List<JobInstance> searchJobsForIndOn(JobBatch batch, Map<String, Object> condition);
 	
 	/**
+	 * 게이트웨이 리부팅
+	 * 
+	 * @param batch
+	 * @param router
+	 */
+	public void rebootGateway(JobBatch batch, Gateway router);
+	
+	/**
 	 * 1-3. 작업 리스트로 표시기 점등
 	 * 
 	 * @param batch

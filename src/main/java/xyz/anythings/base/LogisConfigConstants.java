@@ -159,9 +159,17 @@ public class LogisConfigConstants extends xyz.anythings.sys.ConfigConstants {
 	 * 								5. 작업 지시 설정 
 	 **********************************************************************/
 	/**
+	 * 작업지시 시점에 게이트웨이 리부팅 할 지 여부
+	 */
+	public static final String GW_REBOOT_WHEN_BATCH_START_ENABLED = "job.cmm.reboot.enabled.when.batch.start";
+	/**
 	 * 작업지시 시점에 표시기에 할당 셀 표시 활성화 여부
 	 */
 	public static final String ASSIGNED_CELL_INDICATION_ENABLED = "job.cmm.assigned-cell.indicator.enabled";
+	/**
+	 * 배치 마감시에 풀 박스 처리 안 된 모든 셀에 대해서 풀 박스 처리할 것인지 여부
+	 */
+	public static final String BATCH_FULLBOX_WHEN_CLOSING_ENABLED = "job.cmm.batch-fullbox.when.closing.enabled";	
 	
 	/**********************************************************************
 	 * 								6. 투입 모드 설정 
