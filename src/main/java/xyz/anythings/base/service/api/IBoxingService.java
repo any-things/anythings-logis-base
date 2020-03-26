@@ -114,4 +114,14 @@ public interface IBoxingService {
 	 */
 	public BoxPack cancelFullboxing(BoxPack box);
 	
+	/**
+	 * 박스 ID가 이미 사용된 것인지 체크
+	 * 
+	 * @param batch
+	 * @param boxId
+	 * @param exceptionWhenBoxIdUsed
+	 * @return
+	 */
+	public boolean isUsedBoxId(JobBatch batch, String boxId, boolean exceptionWhenBoxIdUsed);
+	
 }
