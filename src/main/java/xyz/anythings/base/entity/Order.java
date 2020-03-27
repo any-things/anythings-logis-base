@@ -12,7 +12,7 @@ import xyz.elidom.sys.util.ThrowUtil;
 import xyz.elidom.util.BeanUtil;
 
 @Table(name = "orders", idStrategy = GenerationRule.UUID, indexes = {
-	@Index(name = "ix_orders_0", columnList = "domain_id,batch_id,order_no", unique=false),
+	@Index(name = "ix_orders_0", columnList = "domain_id,batch_id,order_no"),
 	@Index(name = "ix_orders_1", columnList = "domain_id,batch_id,wms_batch_no,wcs_batch_no"),
 	@Index(name = "ix_orders_2", columnList = "domain_id,job_date,job_seq,area_cd,stage_cd,equip_type,equip_cd,sub_equip_cd,status"),
 	@Index(name = "ix_orders_3", columnList = "domain_id,batch_id,box_id,invoice_id,box_type_cd"),
@@ -64,7 +64,7 @@ public class Order extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "id", nullable = false, length = 40)
 	private String id;
 
-	@Column (name = "batch_id", length = 40)
+	@Column (name = "batch_id", nullable = false, length = 40)
 	private String batchId;
 
 	@Column (name = "wms_batch_no", length = 40)
@@ -76,7 +76,7 @@ public class Order extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "job_date", nullable = false, length = 10)
 	private String jobDate;
 
-	@Column (name = "job_seq", nullable = false, length = 12)
+	@Column (name = "job_seq", length = 12)
 	private Integer jobSeq;
 
 	@Column (name = "job_type", length = 20)
@@ -88,7 +88,7 @@ public class Order extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "order_no", nullable = false, length = 40)
 	private String orderNo;
 
-	@Column (name = "order_line_no", nullable = false, length = 40)
+	@Column (name = "order_line_no", length = 40)
 	private String orderLineNo;
 
 	@Column (name = "order_detail_id", length = 40)
@@ -100,7 +100,7 @@ public class Order extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "cust_order_line_no", length = 40)
 	private String custOrderLineNo;
 
-	@Column (name = "com_cd", nullable = false, length = 30)
+	@Column (name = "com_cd", length = 30)
 	private String comCd;
 
 	@Column (name = "area_cd", length = 30)
@@ -109,7 +109,7 @@ public class Order extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "stage_cd", length = 30)
 	private String stageCd;
 
-	@Column (name = "equip_type", nullable = false, length = 30)
+	@Column (name = "equip_type", length = 30)
 	private String equipType;
 
 	@Column (name = "equip_cd", length = 30)
