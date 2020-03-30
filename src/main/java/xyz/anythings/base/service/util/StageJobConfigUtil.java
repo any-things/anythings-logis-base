@@ -1,6 +1,8 @@
 package xyz.anythings.base.service.util;
 
 import xyz.anythings.base.LogisConfigConstants;
+import xyz.anythings.base.LogisConstants;
+import xyz.anythings.base.entity.JobConfigSet;
 import xyz.anythings.base.service.impl.JobConfigProfileService;
 import xyz.elidom.sys.entity.Domain;
 import xyz.elidom.sys.util.ThrowUtil;
@@ -107,19 +109,27 @@ public class StageJobConfigUtil {
 	 */
 	public static String getConfigValue(String stageCd, String jobType, String key, boolean exceptionWhenEmptyValue) {
 		JobConfigProfileService configSvc = getConfigSetService();
+		String value = null;
 		
 		// 1. 작업 유형에 따른 설정값 조회
-		String value = configSvc.getStageConfigValue(Domain.currentDomainId(), stageCd, key);
+		if(ValueUtil.isNotEmpty(jobType)) {
+			String jobTypeKey = key.replace("cmm.", jobType.toLowerCase() + LogisConstants.DOT);
+			value = configSvc.getStageConfigValue(Domain.currentDomainId(), stageCd, jobTypeKey);
+		}
 		
 		// 2. 1값이 없다면 공통 설정값 조회
-		if(ValueUtil.isEmpty(value) && ValueUtil.isNotEmpty(jobType)) {
-			String jobTypeKey = key.replace(jobType.toLowerCase() + ".", "cmm.");
-			value = configSvc.getStageConfigValue(Domain.currentDomainId(), stageCd, jobTypeKey);
+		if(ValueUtil.isEmpty(value)) {
+			value = configSvc.getStageConfigValue(Domain.currentDomainId(), stageCd, key);
 		}
 		
 		// 3. 설정값이 없다면 exceptionWhenEmptyValue에 따라 예외 처리
 		if(ValueUtil.isEmpty(value) && exceptionWhenEmptyValue) {
-			throw ThrowUtil.newJobConfigNotSet(key);
+			JobConfigSet confSet = configSvc.getStageConfigSet(Domain.currentDomainId(), stageCd);
+			if(confSet != null) {
+				throw ThrowUtil.newJobConfigNotSet(confSet.getConfSetCd(), key);
+			} else {
+				throw ThrowUtil.newJobConfigNotSet(key);
+			}
 		}
 		
 		return value;
@@ -388,7 +398,7 @@ public class StageJobConfigUtil {
 	 */
 	public static String getSkuBarcdMaxLength(String stageCd, String jobType) {
 		// cmm.sku.barcode.max.length
-		return getConfigValue(stageCd, null, "cmm.sku.barcode.max.length", true);
+		return getConfigValue(stageCd, jobType, "cmm.sku.barcode.max.length", true);
 	}
 	
 	/**
@@ -400,7 +410,7 @@ public class StageJobConfigUtil {
 	 */
 	public static String getSearchSkuFields(String stageCd, String jobType) {
 		// cmm.sku.search.code.fields
-		return getConfigValue(stageCd, null, "cmm.sku.search.code.fields", true);
+		return getConfigValue(stageCd, jobType, "cmm.sku.search.code.fields", true);
 	}
 	
 	/**
@@ -412,7 +422,7 @@ public class StageJobConfigUtil {
 	 */
 	public static String getBoxOutClassCodeField(String stageCd, String jobType) {
 		// cmm.box.out.class.field
-		return getConfigValue(stageCd, null, "cmm.box.out.class.field", true);
+		return getConfigValue(stageCd, jobType, "cmm.box.out.class.field", true);
 	}
 	
 	/**
@@ -424,7 +434,7 @@ public class StageJobConfigUtil {
 	 */
 	public static String getCellMappingTargetField(String stageCd, String jobType) {
 		// cmm.cell.mapping.target.field
-		return getConfigValue(stageCd, null, "cmm.cell.mapping.target.field", true);
+		return getConfigValue(stageCd, jobType, "cmm.cell.mapping.target.field", true);
 	}
 	
 	/**
@@ -436,7 +446,7 @@ public class StageJobConfigUtil {
 	 */
 	public static String getIndicatorType(String stageCd, String jobType) {
 		// cmm.indicator.type
-		return getConfigValue(stageCd, null, "cmm.indicator.type", true);
+		return getConfigValue(stageCd, jobType, "cmm.indicator.type", true);
 	}
 	
 	/**
@@ -448,7 +458,7 @@ public class StageJobConfigUtil {
 	 */
 	public static boolean isOrderDeleteWhenOrderCancel(String stageCd, String jobType) {
 		// cmm.order.delete.when.order_cancel
-		String boolVal = getConfigValue(stageCd, null, "cmm.order.delete.when.order_cancel", true);
+		String boolVal = getConfigValue(stageCd, jobType, "cmm.order.delete.when.order_cancel", true);
 		return ValueUtil.toBoolean(boolVal);
 	}
 	
@@ -461,7 +471,7 @@ public class StageJobConfigUtil {
 	 */
 	public static String getOrderGroupField(String stageCd, String jobType) {
 		// cmm.order.ordergroup.field
-		return getConfigValue(stageCd, null, "cmm.order.ordergroup.field", true);
+		return getConfigValue(stageCd, jobType, "cmm.order.ordergroup.field", true);
 	}
 
 }
