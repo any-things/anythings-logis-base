@@ -34,14 +34,8 @@ public class WorkCell extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "com_cd", length = 30)
 	private String comCd;
 
-	@Column (name = "shop_cd", length = 30)
-	private String shopCd;
-
-	@Column (name = "sku_cd", length = 30)
-	private String skuCd;
-
-	@Column (name = "order_no", length = 30)
-	private String orderNo;
+	@Column (name = "class_cd", length = 30)
+	private String classCd;
 
 	@Column (name = "box_id", length = 40)
 	private String boxId;
@@ -109,28 +103,12 @@ public class WorkCell extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.comCd = comCd;
 	}
 
-	public String getShopCd() {
-		return shopCd;
+	public String getClassCd() {
+		return classCd;
 	}
 
-	public void setShopCd(String shopCd) {
-		this.shopCd = shopCd;
-	}
-
-	public String getSkuCd() {
-		return skuCd;
-	}
-
-	public void setSkuCd(String skuCd) {
-		this.skuCd = skuCd;
-	}
-
-	public String getOrderNo() {
-		return orderNo;
-	}
-
-	public void setOrderNo(String orderNo) {
-		this.orderNo = orderNo;
+	public void setClassCd(String classCd) {
+		this.classCd = classCd;
 	}
 
 	public String getBoxId() {
