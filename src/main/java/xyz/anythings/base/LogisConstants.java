@@ -159,7 +159,7 @@ public class LogisConstants extends AnyConstants {
 	/**
 	 * 로케이션 단위의 작업 완료 후 Fullbox가 필요한 상태 : ENDING
 	 */
-	public static final String CELL_JOB_STATUS_END = "ENDING";
+	public static final String CELL_JOB_STATUS_ENDING = "ENDING";
 	/**
 	 * 로케이션 단위의 작업 최종 완료 상태 : ENDED
 	 */
@@ -182,7 +182,7 @@ public class LogisConstants extends AnyConstants {
 	/**
 	 * 로케이션 단위의 작업 최종 완료, 완료 중 상태
 	 */
-	public static final List<String> CELL_JOB_STATUS_END_LIST = ValueUtil.newStringList(CELL_JOB_STATUS_BOXED, CELL_JOB_STATUS_END);
+	public static final List<String> CELL_JOB_STATUS_END_LIST = ValueUtil.newStringList(CELL_JOB_STATUS_ENDED, CELL_JOB_STATUS_ENDING);
 		
 	/**
 	 * 색상 - RED

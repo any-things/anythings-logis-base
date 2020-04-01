@@ -186,7 +186,7 @@ public class RuntimeIndServiceUtil {
 				String gwPath = null; //cell.getGwPath();
 				
 				if(ValueUtil.isNotEmpty(jobStatus)) {
-					if(ValueUtil.isEqual(LogisConstants.CELL_JOB_STATUS_END, jobStatus)) {
+					if(ValueUtil.isEqual(LogisConstants.CELL_JOB_STATUS_ENDING, jobStatus)) {
 						String bizId = ValueUtil.isEmpty(cell.getJobInstanceId()) ? cell.getIndCd() : cell.getJobInstanceId();
 						indSendService.requestIndEndDisplay(cell.getDomainId(), batch.getStageCd(), batch.getJobType(), gwPath, cell.getIndCd(), bizId, false);
 						
