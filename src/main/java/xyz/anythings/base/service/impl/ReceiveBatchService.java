@@ -14,6 +14,7 @@ import xyz.anythings.base.event.EventConstants;
 import xyz.anythings.base.event.main.BatchReceiveEvent;
 import xyz.anythings.base.service.api.IReceiveBatchService;
 import xyz.anythings.sys.event.model.EventResultSet;
+import xyz.anythings.sys.event.model.SysEvent;
 import xyz.anythings.sys.service.AbstractExecutionService;
 import xyz.elidom.core.entity.Code;
 import xyz.elidom.core.entity.CodeDetail;
@@ -66,7 +67,7 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 		// 3. 각 작업 유형별로 이벤트 전달
 		for(CodeDetail detail : details) { 
 			String jobType = detail.getName();
-			this.readyToReceiveEvent(EventConstants.EVENT_STEP_BEFORE, domainId, jobType, areaCd, stageCd, comCd, jobDate, batchReceipt, params);
+			this.readyToReceiveEvent(SysEvent.EVENT_STEP_BEFORE, domainId, jobType, areaCd, stageCd, comCd, jobDate, batchReceipt, params);
 		}
 		
 		// 4. 수신 정보가 있는지 체크 
@@ -105,7 +106,7 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 		
 		// 4. 작업 유형별 순차적으로 주문 수신 
 		for(String jobType : jobTypes) {
-			this.startToReceiveEvent(EventConstants.EVENT_STEP_BEFORE, jobType, receipt);
+			this.startToReceiveEvent(SysEvent.EVENT_STEP_BEFORE, jobType, receipt);
 			
 			// 5. 에러 발생시 수신 중단 
 			if(ValueUtil.isEqualIgnoreCase(receipt.getStatus(), LogisConstants.COMMON_STATUS_ERROR)) {
@@ -129,7 +130,7 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 	 */
 	public int cancelBatch(JobBatch batch) {
 		// 취소 이벤트 발생 - 각 모듈에서 알아서 처리
-		EventResultSet befResult = this.cancelBatchEvent(EventConstants.EVENT_STEP_BEFORE, batch);		
+		EventResultSet befResult = this.cancelBatchEvent(SysEvent.EVENT_STEP_BEFORE, batch);		
 		return (int)befResult.getResult();	
 	}
 		
@@ -246,7 +247,7 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 		receiptEvent.setJobDate(jobDate);
 		receiptEvent.setJobBatch(batch);
 		receiptEvent.setReceiptData(receiptData);
-		receiptEvent.setPayLoad(params);
+		receiptEvent.setPayload(params);
 		
 		// 2. Event Publish
 		receiptEvent = (BatchReceiveEvent)this.eventPublisher.publishEvent(receiptEvent);

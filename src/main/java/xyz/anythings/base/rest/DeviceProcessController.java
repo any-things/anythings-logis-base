@@ -25,7 +25,6 @@ import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.JobInput;
 import xyz.anythings.base.entity.JobInstance;
 import xyz.anythings.base.entity.SKU;
-import xyz.anythings.base.event.EventConstants;
 import xyz.anythings.base.event.IClassifyInEvent;
 import xyz.anythings.base.event.classfy.ClassifyInEvent;
 import xyz.anythings.base.event.classfy.ClassifyOutEvent;
@@ -36,6 +35,7 @@ import xyz.anythings.base.model.Category;
 import xyz.anythings.base.model.EquipBatchSet;
 import xyz.anythings.base.service.impl.LogisServiceDispatcher;
 import xyz.anythings.base.service.util.LogisServiceUtil;
+import xyz.anythings.sys.event.model.SysEvent;
 import xyz.anythings.sys.model.BaseResponse;
 import xyz.anythings.sys.rest.DynamicControllerSupport;
 import xyz.anythings.sys.util.AnyEntityUtil;
@@ -445,7 +445,7 @@ public class DeviceProcessController extends DynamicControllerSupport {
 		JobInstance job = AnyEntityUtil.findEntityById(true, JobInstance.class, jobInstanceId);
 		
 		// 3. 소분류 이벤트 생성 
-		ClassifyRunEvent event = new ClassifyRunEvent(batch, EventConstants.EVENT_STEP_ALONE
+		ClassifyRunEvent event = new ClassifyRunEvent(batch, SysEvent.EVENT_STEP_ALONE
 				, deviceType.toLowerCase()
 				, LogisCodeConstants.CLASSIFICATION_ACTION_CONFIRM, job, job.getPickQty(), job.getPickQty());
 		   
@@ -488,7 +488,7 @@ public class DeviceProcessController extends DynamicControllerSupport {
 		JobInstance job = AnyEntityUtil.findEntityById(true, JobInstance.class, jobInstanceId);
 		
 		// 3. 소분류 이벤트 생성 
-		ClassifyRunEvent event = new ClassifyRunEvent(batch, EventConstants.EVENT_STEP_ALONE
+		ClassifyRunEvent event = new ClassifyRunEvent(batch, SysEvent.EVENT_STEP_ALONE
 				, deviceType.toLowerCase()
 				, LogisCodeConstants.CLASSIFICATION_ACTION_MODIFY, job
 				, ValueUtil.isEmpty(reqQty) ? job.getPickQty() : reqQty
@@ -529,7 +529,7 @@ public class DeviceProcessController extends DynamicControllerSupport {
 		JobInstance job = AnyEntityUtil.findEntityById(true, JobInstance.class, jobInstanceId);
 		
 		// 3. 소분류 이벤트 생성 
-		ClassifyRunEvent event = new ClassifyRunEvent(batch, EventConstants.EVENT_STEP_ALONE
+		ClassifyRunEvent event = new ClassifyRunEvent(batch, SysEvent.EVENT_STEP_ALONE
 				, deviceType.toLowerCase(), LogisCodeConstants.CLASSIFICATION_ACTION_CANCEL, job);
 		
 		// 4. 이벤트 발생 
@@ -568,7 +568,7 @@ public class DeviceProcessController extends DynamicControllerSupport {
 		JobInstance job = AnyEntityUtil.findEntityById(true, JobInstance.class, jobInstanceId);
 		
 		// 3. 소분류 이벤트 생성 
-		ClassifyRunEvent event = new ClassifyRunEvent(batch, EventConstants.EVENT_STEP_ALONE
+		ClassifyRunEvent event = new ClassifyRunEvent(batch, SysEvent.EVENT_STEP_ALONE
 				, deviceType.toLowerCase(), LogisCodeConstants.CLASSIFICATION_ACTION_UNDO_PICK, job);
 		
 		// 4. 액션 실행
@@ -602,7 +602,7 @@ public class DeviceProcessController extends DynamicControllerSupport {
 		JobInstance job = AnyEntityUtil.findEntityById(true, JobInstance.class, jobInstanceId);
 		
 		// 3. 소분류 이벤트 생성 
-		ClassifyOutEvent event = new ClassifyOutEvent(batch, EventConstants.EVENT_STEP_ALONE
+		ClassifyOutEvent event = new ClassifyOutEvent(batch, SysEvent.EVENT_STEP_ALONE
 				, deviceType.toLowerCase()
 				, LogisCodeConstants.CLASSIFICATION_ACTION_FULL, job
 				, ValueUtil.isEmpty(reqQty) ? 0 : reqQty
@@ -851,7 +851,7 @@ public class DeviceProcessController extends DynamicControllerSupport {
 		
 		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(Domain.currentDomainId(), equipType, equipCd);
 		IClassifyInEvent inputEvent = new ClassifyInEvent(equipBatchSet.getBatch(), 
-				EventConstants.EVENT_STEP_ALONE, false, LogisCodeConstants.CLASSIFICATION_INPUT_TYPE_SKU, skuCd, 1);
+				SysEvent.EVENT_STEP_ALONE, false, LogisCodeConstants.CLASSIFICATION_INPUT_TYPE_SKU, skuCd, 1);
 		inputEvent.setComCd(comCd);
 		return this.serviceDispatcher.getClassificationService(equipBatchSet.getBatch()).input(inputEvent);
 	}

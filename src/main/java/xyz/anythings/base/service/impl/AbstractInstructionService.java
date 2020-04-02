@@ -136,7 +136,7 @@ public class AbstractInstructionService extends AbstractLogisService {
 		event.setJobType(batch.getJobType());
 		event.setEquipType(batch.getEquipType());
 		event.setEquipList(equipList);
-		event.setPayLoad(params);
+		event.setPayload(params);
 		
 		// 2. event publish
 		event = (BatchInstructEvent)this.eventPublisher.publishEvent(event);

@@ -134,19 +134,5 @@ public interface IBatchBasedEvent {
 	 * @param isExecuted
 	 */
 	public void setExecuted(boolean isExecuted);
-	
-	/**
-	 * 페이로드 리턴
-	 * 
-	 * @return
-	 */
-	public Object[] getPayload();
-	
-	/**
-	 * 페이로드 설정
-	 * 
-	 * @param payload
-	 */
-	public void setPayLoad(Object[] payload);
-		
+
 }

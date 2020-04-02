@@ -43,11 +43,12 @@ public class BatchService extends AbstractLogisService implements IBatchService 
 	
 	@Override
 	public String newJobBatchId(Long domainId, String stageCd, Object... params) {
-		return LogisBaseUtil.newJobBatchId(domainId);
+		return LogisBaseUtil.newJobBatchId(domainId, stageCd);
 	}
 
 	@Override
 	public BatchProgressRate dailyProgressRate(Long domainId, String stageCd, String jobDate) {
+		// TODO 스테이지 전체 작업 진행율 - 프로시져 -> 쿼리로 변경 ...
 		// 1. 조회 조건 
 		Map<String, Object> params = ValueUtil.newMap("P_IN_DOMAIN_ID,P_IN_JOB_DATE,P_IN_STAGE_CD", Domain.currentDomainId(), jobDate, stageCd);
 		// 2. 프로시져 콜 
@@ -161,8 +162,8 @@ public class BatchService extends AbstractLogisService implements IBatchService 
 	 * @return
 	 */
 	protected int resetRackAssignment(JobBatch batch) {
-		Map<String, Object> params = ValueUtil.newMap("domainId,equipCd,batchId,status", batch.getDomainId(), batch.getEquipCd(),batch.getId(),LogisConstants.COMMON_STATUS_WAIT);
-	  	return this.queryManager.executeBySql("UPDATE RACKS SET STATUS = :status, BATCH_ID = '' WHERE DOMAIN_ID = :domainId AND RACK_CD = :equipCd", params);
+		Map<String, Object> params = ValueUtil.newMap("domainId,equipCd,batchId", batch.getDomainId(), batch.getEquipCd(), batch.getId());
+	  	return this.queryManager.executeBySql("UPDATE RACKS SET STATUS = null, BATCH_ID = null WHERE DOMAIN_ID = :domainId AND RACK_CD = :equipCd", params);
 	}
 	
 	/**

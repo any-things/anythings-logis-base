@@ -5,7 +5,10 @@ import java.util.HashMap;
 
 import xyz.anythings.base.entity.BatchReceiptItem;
 import xyz.anythings.base.entity.JobBatch;
+import xyz.anythings.base.event.EventConstants;
+import xyz.anythings.base.event.main.IdGenerationEvent;
 import xyz.anythings.base.query.store.EtcQueryStore;
+import xyz.anythings.sys.event.EventPublisher;
 import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.elidom.dbist.dml.Query;
 import xyz.elidom.orm.IQueryManager;
@@ -13,6 +16,7 @@ import xyz.elidom.sys.SysConstants;
 import xyz.elidom.util.BeanUtil;
 import xyz.elidom.util.DateUtil;
 import xyz.elidom.util.ThreadUtil;
+import xyz.elidom.util.ValueUtil;
 
 /**
  * 물류 베이스 유틸리티
@@ -38,12 +42,22 @@ public class LogisBaseUtil {
 	}
 	
 	/**
-	 * 작업 배치 ID 
+	 * 작업 배치 ID 생성
 	 * 
-	 * @domainId
+	 * @param domainId
+	 * @param stageCd
 	 * @return
 	 */
-	public static synchronized String newJobBatchId(Long domainId) {
+	public static synchronized String newJobBatchId(Long domainId, String stageCd) {
+		// 사이트 별 이벤트 생성 룰이 있다면 사용  
+		IdGenerationEvent event = new IdGenerationEvent(domainId, stageCd, EventConstants.EVENT_ID_GENERATION_BATCH_ID);
+		event = (IdGenerationEvent)BeanUtil.get(EventPublisher.class).publishEvent(event);
+		
+		if(event.isAfterEventCancel()) {
+			return ValueUtil.toString(event.getResult());
+		}
+		
+		// 없다면 기본 배치 ID 생성 룰 사용 
 		String newBatchId = null;
 		IQueryManager queryMgr = BeanUtil.get(IQueryManager.class);
 		int count = 1;

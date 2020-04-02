@@ -1,27 +1,18 @@
 package xyz.anythings.base.event;
 
 /**
- * 작업 관련 Root 이벤트 
+ * 작업 관련 Root 이벤트
+ * 
  * @author yang
- *
  */
 public class EventConstants {
+		
+	/** IdGenerationEvent ================       **/
 	
-	
-	/** BatchRootEvent ================       **/
 	/**
-	 * 이벤트 전 처리 
+	 * 배치 수신 서머리 정보 수집 타입
 	 */
-	public static final short EVENT_STEP_BEFORE = 1;
-	/**
-	 * 이벤트 후 처리 
-	 */
-	public static final short EVENT_STEP_AFTER = 2;
-	/**
-	 * 이벤트 단독
-	 */
-	public static final short EVENT_STEP_ALONE = 3;
-	
+	public static final short EVENT_ID_GENERATION_BATCH_ID = 10;
 	
 	/** BatchReceiveEvent ================       **/
 	
@@ -40,6 +31,28 @@ public class EventConstants {
 	 */
 	public static final short EVENT_RECEIVE_TYPE_CANCEL = 30;
 	
+	/** BatchPreprocerssEvent ================       **/
+	
+	/**
+	 * 주문 가공 액션 - 주문 가공 요약 정보 조회
+	 */
+	public static final short EVENT_PREPROCESS_SUMMARY = 10;
+	/**
+	 * 주문 가공 액션 - 설비 수동 할당
+	 */
+	public static final short EVENT_PREPROCESS_EQUIP_MANUAL_ASSIGN = 20;
+	/**
+	 * 주문 가공 액션 - 설비 자동 할당
+	 */
+	public static final short EVENT_PREPROCESS_EQUIP_AUTO_ASSIGN = 30;
+	/**
+	 * 주문 가공 액션 - 셀/슈트 할당
+	 */
+	public static final short EVENT_PREPROCESS_SUB_EQUIP_ASSIGN = 40;
+	/**
+	 * 주문 가공 액션 - 주문 가공 완료
+	 */
+	public static final short EVENT_PREPROCESS_COMPLETE = 50;
 	
 	/** BatchInstructEvent ================       **/
 	
@@ -76,7 +89,6 @@ public class EventConstants {
 	/**
 	 * 추천 로케이션 
 	 */
-	public static final short EVENT_INSTRUCT_TYPE_RECOMMEND_CELLS = 70;	
-	
+	public static final short EVENT_INSTRUCT_TYPE_RECOMMEND_CELLS = 70;
 	
 }
