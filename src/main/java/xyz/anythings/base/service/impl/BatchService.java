@@ -1,6 +1,7 @@
 package xyz.anythings.base.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -34,18 +35,9 @@ public class BatchService extends AbstractLogisService {
 	}
 
 	public BatchProgressRate dailyProgressRate(Long domainId, String stageCd, String jobDate) {
-		// TODO 스테이지 전체 작업 진행율 - 프로시져 -> 쿼리로 변경 ...
-		
-//		// 1. 조회 조건 
-//		Map<String, Object> params = ValueUtil.newMap("P_IN_DOMAIN_ID,P_IN_JOB_DATE,P_IN_STAGE_CD", Domain.currentDomainId(), jobDate, stageCd);
-//		// 2. 프로시져 콜 
-//		Map<?, ?> progress = this.queryManager.callReturnProcedure("SP_DAILY_JOB_PROGRESS", params, Map.class);
-//		// 3. 최종 결과 리턴 
-//		BatchProgressRate progressRage = new BatchProgressRate();
-//		progressRage.parseResult(progress);
-//		return progressRage;
-		
-		return null;
+		String sql = this.batchQueryStore.getDailyProgressRateQuery();
+		Map<String, Object> params = ValueUtil.newMap("domainId,jobDate,stageCd", domainId, jobDate, stageCd);
+		return this.queryManager.selectBySql(sql, params, BatchProgressRate.class);
 	}
 
 	public JobBatch findRunningBatch(Long domainId, String stageCd, String equipType, String equipCd) {

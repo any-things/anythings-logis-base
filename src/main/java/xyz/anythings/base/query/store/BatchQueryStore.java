@@ -57,30 +57,12 @@ public class BatchQueryStore extends LogisBaseQueryStore {
 	}
 	
 	/**
-	 * Rack 타입 배치 진행율 쿼리
+	 * 기본 배치 진행율 쿼리
 	 * 
 	 * @return
 	 */
-	public String getRackBatchProgressRateQuery() {
-		return this.getQueryByPath("batch/RackBatchProgressRate");
-	}
-	
-	/**
-	 * Rack DPS 투입 가능 박스 수 쿼리
-	 * 
-	 * @return
-	 */
-	public String getRackDpsBatchInputableBoxQuery() {
-		return this.getQueryByPath("batch/RackDpsBatchInputableBox");
-	}
-	
-	/**
-	 * Rack DPS 투입 리스트 쿼리
-	 * 
-	 * @return
-	 */
-	public String getRackDpsBatchInputListQuery() {
-		return this.getQueryByPath("batch/RackDpsBatchInputList");
+	public String getBatchProgressRateQuery() {
+		return this.getQueryByPath("batch/BatchProgressRate");
 	}
 	
 	/*** BatchReceipt 관련 데이터 쿼리 ***/
@@ -95,7 +77,6 @@ public class BatchQueryStore extends LogisBaseQueryStore {
 	
 	/**
 	 * BatchReceipt 조회
-	 * 상세 Item 에 Order 타입이 있는 Case
 	 * 
 	 * @return
 	 */
@@ -111,75 +92,5 @@ public class BatchQueryStore extends LogisBaseQueryStore {
 	public String getLatestJobInputQuery() {
 		return this.getQueryByPath("batch/LastestJobInput");
 	}
-	
-	/**
-	 * 다음 맵핑할 작업 정보 조회
-	 * 
-	 * @return
-	 */
-	public String getFindNextMappingJobQuery() {
-		return this.getQueryByPath("batch/FindNextMappingJob");
-	}
-	
-	/**
-	 * 배치 instances 데이터 에서 Input 데이터 생성 쿼리
-	 * 
-	 * @return
-	 */
-	public String getRackDpsBatchNewInputDataQuery() {
-		return this.getQueryByPath("batch/RackDpsBatchNewInputData");
-	}
-	
-	/**
-	 * instance 테이블에 boxId 및 seq 정보 update 쿼리
-	 * 
-	 * @return
-	 */
-	public String getRackDpsBatchMapBoxIdAndSeqQuery() {
-		return this.getQueryByPath("batch/RackDpsBatchMapBoxIdAndSeq");
-	}
-	
-	/**
-	 * Rack DPS 작업의 투입 탭 리스트 쿼리
-	 * 
-	 * @return
-	 */
-	public String getRackDpsBatchBoxInputTabsQuery() {
-		return this.getQueryByPath("batch/RackDpsBatchBoxInputTabs");
-	}
-	
-	/**
-	 * Rack DPS 작업의 투입 탭 상세 리스트 쿼리
-	 * 
-	 * @return
-	 */
-	public String getRackDpsBatchBoxInputTabDetailQuery() {
-		return this.getQueryByPath("batch/RackDpsBatchBoxInputTabDetail");
-	}
-	
-	/**
-	 * 소분류 처리를 주문 데이터에 반영 하기 위한 업데이트 대상 리스트 조회 쿼리
-	 * 
-	 * @return
-	 */
-	/*public String getFindOrderQtyUpdateListQuery() {
-		return this.getQueryByPath("batch/FindOrderQtyUpdateList");
-	}*/
-	
-	/**
-	 * JobInstances 요약 정보 조회
-	 *
-	 * @return
-	 */
-	public String getJobInstancesSummaryDataQuery() {
-		return this.getQueryByPath("batch/JobInstancesSummaryData");
-	}
-	
-	/**
-	 * 단포 작업 화면 summary 정보 조회 쿼리 
-	 * @return
-	 */
-	/*public String getRackDpsSinglePackInformQuery() {
-		return this.getQueryByPath("batch/RackDpsSinglePackInform");
-	}*/
+
 }

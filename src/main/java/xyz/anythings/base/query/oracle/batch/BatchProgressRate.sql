@@ -1,19 +1,20 @@
 WITH T_JOBS AS (
-    SELECT ORDER_NO, COM_CD, SKU_CD
+    SELECT CLASS_CD, COM_CD, SKU_CD
          , PICK_QTY, PICKED_QTY
          , PICK_QTY - PICKED_QTY AS MINUS_QTY
       FROM (
-            SELECT ORDER_NO, COM_CD, SKU_CD
+            SELECT CLASS_CD, COM_CD, SKU_CD
                  , PICK_QTY, NVL(PICKED_QTY, 0) AS PICKED_QTY
               FROM JOB_INSTANCES
              WHERE DOMAIN_ID = :domainId
                AND BATCH_ID = :batchId
+             #if($equipCd)
                AND EQUIP_TYPE = :equipType
+             #end
              #if($equipCd)
                AND EQUIP_CD = :equipCd
              #end
-               AND ORDER_TYPE = 'MT'
-               AND STATUS NOT IN ('C','D') -- 작업 취소 , 주문 취소가 아닌 것 
+               AND STATUS NOT IN ('C', 'D') -- 작업 취소 , 주문 취소가 아닌 것 
            )
 ),
 T_PCS AS (
@@ -31,9 +32,9 @@ T_SKU AS (
 T_ORDER AS (
     SELECT COUNT(1) PLAN_ORDER, SUM(ACTUAL_ORDER) AS ACTUAL_ORDER
       FROM (
-            SELECT ORDER_NO, DECODE(SUM(PICKED_QTY), SUM(PICK_QTY), 1, 0) AS ACTUAL_ORDER
+            SELECT CLASS_CD, DECODE(SUM(PICKED_QTY), SUM(PICK_QTY), 1, 0) AS ACTUAL_ORDER
               FROM T_JOBS
-             GROUP BY ORDER_NO
+             GROUP BY CLASS_CD
            )
 )
 SELECT PLAN_PCS, ACTUAL_PCS, PLAN_SKU, ACTUAL_SKU, PLAN_ORDER, ACTUAL_ORDER

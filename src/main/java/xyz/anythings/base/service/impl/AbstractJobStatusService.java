@@ -45,15 +45,15 @@ public abstract class AbstractJobStatusService extends AbstractLogisService impl
 	@Override
 	public BatchProgressRate getBatchProgressSummary(JobBatch batch) {
 		
-		String qry = this.batchQueryStore.getRackBatchProgressRateQuery();
-		Map<String,Object> params = ValueUtil.newMap("domainId,batchId,equipType", batch.getDomainId(), batch.getId(), batch.getEquipType());
+		String sql = this.batchQueryStore.getBatchProgressRateQuery();
+		Map<String, Object> params = ValueUtil.newMap("domainId,batchId", batch.getDomainId(), batch.getId());
 		
 		// 배치에 호기가 지정되어 있으면 지정된 호기에 대한 진행율 
 		if(ValueUtil.isNotEmpty(batch.getEquipCd())) {
 			params.put("equipCd", batch.getEquipCd());
 		}
 		
-		return AnyEntityUtil.findItem(batch.getDomainId(), false, BatchProgressRate.class, qry, params);
+		return AnyEntityUtil.findItem(batch.getDomainId(), false, BatchProgressRate.class, sql, params);
 	}
 
 	@Override
