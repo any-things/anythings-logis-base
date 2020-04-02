@@ -1,7 +1,5 @@
 package xyz.anythings.base.model;
 
-import java.util.Map;
-
 /**
  * 작업 배치 진행율
  * 
@@ -9,17 +7,17 @@ import java.util.Map;
  */
 public class BatchProgressRate {
 	/**
-	 * ORDER 예정량
+	 * 주문 예정량
 	 */
 	private Integer planOrder;
 	/**
-	 * ORDER 처리량
+	 * 주문 처리량
 	 */
 	private Integer actualOrder;
 	/**
-	 * ORDER 진행율
+	 * 주문 진행율
 	 */
-	private Integer rateOrder;
+	private Float rateOrder;
 	/**
 	 * SKU 예정량
 	 */
@@ -31,7 +29,7 @@ public class BatchProgressRate {
 	/**
 	 * SKU 진행율
 	 */
-	private Integer rateSku;
+	private Float rateSku;
 	/**
 	 * PCS 예정량
 	 */
@@ -43,7 +41,11 @@ public class BatchProgressRate {
 	/**
 	 * PCS 진행율
 	 */
-	private Integer ratePcs;
+	private Float ratePcs;
+	/**
+	 * 시간당 분류 개수 
+	 */
+	private Float uph;
 	
 	public Integer getPlanOrder() {
 		return planOrder;
@@ -61,11 +63,11 @@ public class BatchProgressRate {
 		this.actualOrder = actualOrder;
 	}
 	
-	public Integer getRateOrder() {
+	public Float getRateOrder() {
 		return rateOrder;
 	}
 	
-	public void setRateOrder(Integer rateOrder) {
+	public void setRateOrder(Float rateOrder) {
 		this.rateOrder = rateOrder;
 	}
 	
@@ -85,11 +87,11 @@ public class BatchProgressRate {
 		this.actualSku = actualSku;
 	}
 	
-	public Integer getRateSku() {
+	public Float getRateSku() {
 		return rateSku;
 	}
 	
-	public void setRateSku(Integer rateSku) {
+	public void setRateSku(Float rateSku) {
 		this.rateSku = rateSku;
 	}
 	
@@ -109,16 +111,20 @@ public class BatchProgressRate {
 		this.actualPcs = actualPcs;
 	}
 	
-	public Integer getRatePcs() {
+	public Float getRatePcs() {
 		return ratePcs;
 	}
 	
-	public void setRatePcs(Integer ratePcs) {
+	public void setRatePcs(Float ratePcs) {
 		this.ratePcs = ratePcs;
 	}
 
-	public void parseResult(Map<?, ?> progress) {
-		// TODO 결과 셋 파싱 -> 값 설정
+	public Float getUph() {
+		return uph;
+	}
+
+	public void setUph(Float uph) {
+		this.uph = uph;
 	}
 
 }

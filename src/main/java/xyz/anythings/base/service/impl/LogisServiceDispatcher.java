@@ -44,11 +44,6 @@ public class LogisServiceDispatcher implements BeanFactoryAware {
 	@Autowired
 	private ReceiveBatchService receiveBatchService;
 	/**
-	 * 배치 서비스
-	 */
-	@Autowired
-	private BatchService batchService;
-	/**
 	 * 설정 셋 서비스
 	 */
 	@Autowired
@@ -103,9 +98,31 @@ public class LogisServiceDispatcher implements BeanFactoryAware {
 	 * 
 	 * @return
 	 */
-	public IBatchService getBatchService() {
-		return this.batchService;
+	public IBatchService getBatchService(JobBatch batch) {
+		return this.getBatchService(batch);
 	}
+	
+	/**
+	 * 작업 유형에 따른 배치 서비스 컴포넌트를 찾아서 리턴
+	 * 
+	 * @param jobType
+	 * @return
+	 */
+	public IBatchService getBatchService(JobInstance job) {
+		String batchSvcType = job.getJobType().toLowerCase() + "BatchService";
+		return (IBatchService)this.beanFactory.getBean(batchSvcType);
+	}
+	
+	/**
+	 * 작업 유형에 따른 배치 서비스 컴포넌트를 찾아서 리턴
+	 * 
+	 * @param jobType
+	 * @return
+	 */
+	public IBatchService getBatchService(String jobType) {
+		String batchSvcType = jobType.toLowerCase() + "BatchService";
+		return (IBatchService)this.beanFactory.getBean(batchSvcType);
+	}	
 	
 	/**
 	 * 배치의 작업 유형에 따른 주문 가공 서비스 컴포넌트를 찾아서 리턴

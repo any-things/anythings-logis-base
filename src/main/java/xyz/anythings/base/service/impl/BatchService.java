@@ -1,29 +1,17 @@
 package xyz.anythings.base.service.impl;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import xyz.anythings.base.LogisConstants;
 import xyz.anythings.base.entity.JobBatch;
-import xyz.anythings.base.entity.JobInstance;
-import xyz.anythings.base.entity.Order;
 import xyz.anythings.base.model.BatchProgressRate;
-import xyz.anythings.base.model.RtnJobInstancesSummary;
 import xyz.anythings.base.query.store.BatchQueryStore;
-import xyz.anythings.base.service.api.IBatchService;
 import xyz.anythings.base.util.LogisBaseUtil;
 import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.anythings.sys.util.AnyOrmUtil;
-import xyz.elidom.dbist.dml.Filter;
 import xyz.elidom.dbist.dml.Query;
-import xyz.elidom.exception.server.ElidomValidationException;
-import xyz.elidom.orm.OrmConstants;
-import xyz.elidom.sys.entity.Domain;
-import xyz.elidom.sys.util.MessageUtil;
 import xyz.elidom.sys.util.ThrowUtil;
 import xyz.elidom.util.ValueUtil;
 
@@ -33,33 +21,33 @@ import xyz.elidom.util.ValueUtil;
  * @author shortstop
  */
 @Component
-public class BatchService extends AbstractLogisService implements IBatchService {
+public class BatchService extends AbstractLogisService {
 	
 	/**
 	 * 쿼리 스토어
 	 */
 	@Autowired
-	private BatchQueryStore queryStore;
+	private BatchQueryStore batchQueryStore;
 	
-	@Override
 	public String newJobBatchId(Long domainId, String stageCd, Object... params) {
 		return LogisBaseUtil.newJobBatchId(domainId, stageCd);
 	}
 
-	@Override
 	public BatchProgressRate dailyProgressRate(Long domainId, String stageCd, String jobDate) {
 		// TODO 스테이지 전체 작업 진행율 - 프로시져 -> 쿼리로 변경 ...
-		// 1. 조회 조건 
-		Map<String, Object> params = ValueUtil.newMap("P_IN_DOMAIN_ID,P_IN_JOB_DATE,P_IN_STAGE_CD", Domain.currentDomainId(), jobDate, stageCd);
-		// 2. 프로시져 콜 
-		Map<?, ?> progress = this.queryManager.callReturnProcedure("SP_DAILY_JOB_PROGRESS", params, Map.class);
-		// 3. 최종 결과 리턴 
-		BatchProgressRate progressRage = new BatchProgressRate();
-		progressRage.parseResult(progress);
-		return progressRage;
+		
+//		// 1. 조회 조건 
+//		Map<String, Object> params = ValueUtil.newMap("P_IN_DOMAIN_ID,P_IN_JOB_DATE,P_IN_STAGE_CD", Domain.currentDomainId(), jobDate, stageCd);
+//		// 2. 프로시져 콜 
+//		Map<?, ?> progress = this.queryManager.callReturnProcedure("SP_DAILY_JOB_PROGRESS", params, Map.class);
+//		// 3. 최종 결과 리턴 
+//		BatchProgressRate progressRage = new BatchProgressRate();
+//		progressRage.parseResult(progress);
+//		return progressRage;
+		
+		return null;
 	}
 
-	@Override
 	public JobBatch findRunningBatch(Long domainId, String stageCd, String equipType, String equipCd) {
 		String filterNames = "domainId,stageCd,equipType,status";
 		List<Object> filterValues = ValueUtil.newList(domainId, stageCd, equipType, JobBatch.STATUS_RUNNING);
@@ -72,129 +60,47 @@ public class BatchService extends AbstractLogisService implements IBatchService 
 		return AnyEntityUtil.findEntityBy(domainId, false, JobBatch.class, filterNames, filterValues.toArray());
 	}
 
-	@Override
 	public List<JobBatch> searchRunningBatchList(Long domainId, String stageCd, String jobType, String jobDate) {
 		return AnyEntityUtil.searchEntitiesBy(domainId, false, JobBatch.class, "stageCd,jobType,jobDate", stageCd, jobType, jobDate);
 	}
 
-	@Override
 	public List<JobBatch> searchRunningMainBatchList(Long domainId, String stageCd, String jobType, String jobDate) {
 		String sql = "select * from job_batches where domain_id = :domainId and stage_cd = :stageCd and job_type = :jobType and job_date = :jobDate and id = batch_group_id";
 		return AnyEntityUtil.searchItems(domainId, false, JobBatch.class, sql, "domainId,stageCd,jobType,jobDate", domainId, stageCd, jobType, jobDate);
 	}
 	
-	@Override
 	public void isPossibleCloseBatch(JobBatch batch, boolean closeForcibly) {
-		// 1. 작업 배치 상태 체크
-		if(ValueUtil.isNotEqual(batch.getStatus(), JobBatch.STATUS_RUNNING)) {
-			// 진행 중인 작업배치가 아닙니다
-			throw ThrowUtil.newStatusIsNotIng("terms.label.job_batch");
-		}
-
-		Query condition = AnyOrmUtil.newConditionForExecution(batch.getDomainId());
-		condition.addFilter(new Filter("batchId", batch.getId()));
-
-		// 2. batchId별 수신 주문이 존재하는지 체크
-		int count = this.queryManager.selectSize(Order.class, condition);
-		if(count == 0) {
-			// 해당 배치의 주문정보가 없습니다 --> 주문을 찾을 수 없습니다.
-			throw ThrowUtil.newNotFoundRecord("terms.label.order");
-		}
-
-		// 3. batchId별 작업 실행 데이터 체크
-		count = this.queryManager.selectSize(JobInstance.class, condition);
-		if(count == 0) {
-			// 해당 배치의 작업실행 정보가 없습니다 --> 작업을 찾을 수 없습니다.
-			throw ThrowUtil.newNotFoundRecord("terms.label.job");
-		}
-
-		// 4. batchId별 작업 실행 데이터 중에 완료되지 않은 것이 있는지 체크
-		if(!closeForcibly) {
-			condition.addFilter("status", OrmConstants.IN, LogisConstants.JOB_STATUS_WIPC);		 
-			if(this.queryManager.selectSize(JobInstance.class, condition) > 0) {
-				// {0} 등 {1}개의 호기에서 작업이 끝나지 않았습니다.
-				String msg = MessageUtil.getMessage("MPS_NOT_CLOSED_IN_REGIONS", "{0} 등 {1}개의 호기에서 작업이 끝나지 않았습니다.", ValueUtil.toList(batch.getEquipCd(), "1"));
-				throw new ElidomValidationException(msg);
-			}
-		}	 		
+		this.serviceDispatcher.getBatchService(batch).isPossibleCloseBatch(batch, closeForcibly);
 	}
 
-	@Override 
-	public int closeBatch(JobBatch batch, boolean forcibly) {
-		// 1. 작업 마감 가능 여부 체크 
-		this.isPossibleCloseBatch(batch, forcibly);
-
-		// 2. 해당 배치에 대한 고정식이 아닌 호기들에 소속된 로케이션을 모두 찾아서 리셋
-		this.resetRackAssignment(batch);
-
-		// 3. OREDER_PREPROCESS 삭제
-		this.deletePreprocess(batch);
-
-		// 4. JobBatch 상태 변경
-		this.updateJobBatchFinished(batch, new Date());
-		
-		return 0;
+	public void closeBatch(JobBatch batch, boolean forcibly) {
+		this.serviceDispatcher.getBatchService(batch).closeBatch(batch, forcibly);
 	}
 
-	@Override
 	public void isPossibleCloseBatchGroup(Long domainId, String batchGroupId, boolean closeForcibly) {
-		// TODO Auto-generated method stub
-		
+		JobBatch batch = this.findByBatchGroupId(domainId, batchGroupId);
+		this.serviceDispatcher.getBatchService(batch).isPossibleCloseBatchGroup(domainId, batchGroupId, closeForcibly);
 	}
 
-	@Override
 	public int closeBatchGroup(Long domainId, String batchGroupId, boolean forcibly) {
-		// TODO Auto-generated method stub
-		return 0;
+		JobBatch batch = this.findByBatchGroupId(domainId, batchGroupId);
+		return this.serviceDispatcher.getBatchService(batch).closeBatchGroup(domainId, batchGroupId, forcibly);
 	}
 
-	@Override
 	public void isPossibleCancelBatch(JobBatch batch) {
-		// TODO Auto-generated method stub
-		
+		this.serviceDispatcher.getBatchService(batch).isPossibleCancelBatch(batch);
 	}
-	
-	/**
-	 * TODO 각 모듈의 AssortService의 batchCloseAction으로 이동
-	 * 해당 배치의 호기에 소속된 로케이션을 모두 찾아서 리셋
-	 *
-	 * @param batch
-	 * @return
-	 */
-	protected int resetRackAssignment(JobBatch batch) {
-		Map<String, Object> params = ValueUtil.newMap("domainId,equipCd,batchId", batch.getDomainId(), batch.getEquipCd(), batch.getId());
-	  	return this.queryManager.executeBySql("UPDATE RACKS SET STATUS = null, BATCH_ID = null WHERE DOMAIN_ID = :domainId AND RACK_CD = :equipCd", params);
-	}
-	
-	/**
-	 * 주문 가공 정보를 모두 삭제한다.
-	 *
-	 * @param batch
-	 * @return
-	 */
-	protected void deletePreprocess(JobBatch batch) {
-		this.queryManager.executeBySql("DELETE ORDER_PREPROCESSES WHERE BATCH_ID= :batchId", ValueUtil.newMap("batchId", batch.getId()));
-	}
-	
-	/**
-	 * JobBatch 상태를 작업 완료 상태로, 배치 완료 시간을 endedAt으로 변경
-	 * 
-	 * @param batch
-	 * @param finishedAt
-	 */
-	protected void updateJobBatchFinished(JobBatch batch, Date finishedAt) {
-		String query = queryStore.getJobInstancesSummaryDataQuery();
-		Map<String,Object> params = ValueUtil.newMap("domainId,batchId", batch.getDomainId(), batch.getId());
+
+	private JobBatch findByBatchGroupId(Long domainId, String batchGroupId) {
+		Query condition = AnyOrmUtil.newConditionForExecution(domainId, 1, 1);
+		condition.addFilter("batchGroupId", batchGroupId);
+		condition.addSelect("id", "job_type");
+		List<JobBatch> batches = this.queryManager.selectList(JobBatch.class, condition);
+		if(batches.isEmpty()) {
+			throw ThrowUtil.newNotFoundRecord("terms.menu.JobBatch");
+		} 
 		
-		RtnJobInstancesSummary result = this.queryManager.selectBySql(query, params, RtnJobInstancesSummary.class);
-		
-		batch.setResultPcs(result.getResultQty());
-		batch.setUph(result.getJobUph()); 
-		batch.setProgressRate(result.getProgressRate());
-		batch.setStatus(JobBatch.STATUS_END);
-		batch.setFinishedAt(finishedAt);
-		
-		this.queryManager.update(batch, "resultPcs","progressRate","uph", "status", "finishedAt");
+		return batches.get(0);		
 	}
 
 }
