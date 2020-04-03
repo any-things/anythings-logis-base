@@ -83,8 +83,8 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "job_date", nullable = false, length = 10)
 	private String jobDate;
 
-	@Column (name = "job_seq", nullable = false, length = 12)
-	private Integer jobSeq;
+	@Column (name = "job_seq", length = 12)
+	private String jobSeq;
 
 	@Column (name = "area_cd", length = 30)
 	private String areaCd;
@@ -208,11 +208,11 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.jobDate = jobDate;
 	}
 
-	public Integer getJobSeq() {
+	public String getJobSeq() {
 		return jobSeq;
 	}
 
-	public void setJobSeq(Integer jobSeq) {
+	public void setJobSeq(String jobSeq) {
 		this.jobSeq = jobSeq;
 	}
 
@@ -423,7 +423,7 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.setStatus(status);
 		
 		if(ValueUtil.isEqual(JobBatch.STATUS_CANCEL, status)) {
-			this.setJobSeq(0);
+			this.setJobSeq("0");
 			BeanUtil.get(IQueryManager.class).update(this, "jobSeq", "status");
 		} else {
 			BeanUtil.get(IQueryManager.class).update(this, "status");
@@ -450,7 +450,8 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		condition.addFilter("jobDate", jobDate);
 		condition.addOrder("jobSeq", false);
 		List<JobBatch> jobSeqList = queryManager.selectList(JobBatch.class, condition);
-		return (ValueUtil.isEmpty(jobSeqList) ? 0 : jobSeqList.get(0).getJobSeq());
+		String maxJobSeq = (ValueUtil.isEmpty(jobSeqList) ? "0" : jobSeqList.get(0).getJobSeq());
+		return ValueUtil.toInteger(maxJobSeq);
 	}
 	
 	/**
@@ -463,7 +464,7 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	 * @return
 	 */
 	@Transactional(propagation=Propagation.REQUIRES_NEW) 
-	public static JobBatch createJobBatch(String batchId, int jobSeq, BatchReceipt batchReceipt, BatchReceiptItem receiptItem) {
+	public static JobBatch createJobBatch(String batchId, String jobSeq, BatchReceipt batchReceipt, BatchReceiptItem receiptItem) {
 		JobBatch batch = new JobBatch();
 		batch.setId(batchId);
 		batch.setBatchGroupId(batchId);
