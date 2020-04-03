@@ -17,7 +17,7 @@ import xyz.elidom.sys.util.ThrowUtil;
 import xyz.elidom.util.ValueUtil;
 
 /**
- * IBatchService 기본 구현
+ * 배치 서비스 Facade
  * 
  * @author shortstop
  */
