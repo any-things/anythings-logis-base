@@ -127,6 +127,9 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	
 	@Column (name = "uph", length = 19)
 	private Float uph;
+	
+	@Column (name = "equip_runtime", length = 12)
+	private Integer equipRuntime;
 
 	@Column (name = "instructed_at", type = xyz.elidom.dbist.annotation.ColumnType.DATETIME)
 	private Date instructedAt;
@@ -326,6 +329,14 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setUph(Float uph) {
 		this.uph = uph;
+	}
+
+	public Integer getEquipRuntime() {
+		return equipRuntime;
+	}
+
+	public void setEquipRuntime(Integer equipRuntime) {
+		this.equipRuntime = equipRuntime;
 	}
 
 	public Date getInstructedAt() {
