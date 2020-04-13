@@ -311,7 +311,7 @@ public class LogisConfigConstants extends xyz.anythings.sys.ConfigConstants {
 	 * 								11. DAS 설정 
 	 **********************************************************************/
 	/**
-	 * DAS 셀에 할당할 대상 필드 (매장, 상품, 주문번호…)
+	 * DAS 셀에 할당할 대상 필드 (매장, 상품, 주문 번호…)
 	 */
 	public static final String DAS_PREPROCESS_CELL_MAPPING_FIELD = "job.das.preproces.cell.mapping.field";
 	/**
@@ -321,7 +321,7 @@ public class LogisConfigConstants extends xyz.anythings.sys.ConfigConstants {
 	/**
 	 * DAS 설정 - KIOSK 중분류 화면에서 표시 수량을 주문 수량으로 표시 할 것인지 분류 처리한 수량을 제외하고 표시 할 것인지 (fix/filter)
 	 */
-	public static final String DAS_MIDDLEASSORT_PCS_FIX = "job.das.middleassort.display.qty.mode";
+	public static final String DAS_MIDDLEASSORT_DISPLAY_QTY_MODE = "job.das.middleassort.display.qty.mode";
 	/**
 	 * DAS 설정 - DAS KIOSK 중분류 화면에서 호기 정렬 옵션
 	 */
@@ -339,14 +339,14 @@ public class LogisConfigConstants extends xyz.anythings.sys.ConfigConstants {
 	 * 								12. 반품 설정 
 	 **********************************************************************/
 	/**
-	 * 반품 설정 - 셀 - SKU 매핑 시점 (P:주문가공시, A:분류 시)
+	 * 반품 설정 - 셀 - 박스 매핑 시점 (P: 주문 가공시, A: 분류 시)
 	 */
-	public static final String RTN_CELL_SKU_MAPPING_POINT = "job.rtn.cell-sku.mapping.point";
+	public static final String RTN_CELL_BOXID_MAPPING_POINT = "job.rtn.cell-boxid.mapping.point";
 	/**
 	 * 반품 설정 - 셀에 할당할 대상 필드 (매장, 상품, 주문번호…)
 	 */
 	public static final String RTN_PREPROCESS_CELL_MAPPING_FIELD = "job.rtn.preproces.cell.mapping.field";
-
+	
 	/**********************************************************************
 	 * 								13. DPS 설정 
 	 **********************************************************************/
