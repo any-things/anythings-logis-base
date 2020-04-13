@@ -271,6 +271,10 @@ public class LogisConfigConstants extends xyz.anythings.sys.ConfigConstants {
 	 */
 	public static final String BOX_OUT_CLASS_FIELD = "job.cmm.box.out.class.field";
 	/**
+	 * 박스 - 셀 매핑 선 매핑 여부
+	 */
+	public static final String BOX_CELL_MAPPING_POINT = "job.cmm.box.cell.mapping.point";	
+	/**
 	 * 박스 실적 보고 여부
 	 */
 	public static final String BOX_RESULT_REPORT_ENABLED = "job.cmm.box.result.report.enabled";

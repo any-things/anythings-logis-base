@@ -23,6 +23,7 @@ import xyz.elidom.util.BeanUtil;
  *  - job.cmm.server.validate.ind_cd.rule			서버 사이드에서 표시기 코드 유효성 체크를 위한 룰
  *  - job.cmm.server.validate.rack_cd.rule			서버 사이드에서 랙 코드 유효성 체크를 위한 룰
  *  - job.cmm.server.validate.invoice_no.rule		서버 사이드에서 송장번호 유효성 체크를 위한 룰
+ *  - job.cmm.box.cell.mapping.point				박스 셀 매핑 시점
  *  - job.cmm.box.result.report.enabled				박스 실적 보고 여부 
  *  - job.cmm.box.result.report.point				박스 실적 전송 시점
  *  - job.cmm.box.cancel.enabled					박스 취소 기능 활성화 여부 
@@ -167,7 +168,7 @@ public class BatchJobConfigUtil {
 	 */
 	public static boolean isNeedCheckSkucdValidation(JobBatch batch) {
 		// job.cmm.sku.skucd.validation.enabled
-		String boolVal = getConfigValue(batch, LogisConfigConstants.VALIDATION_SKUCD_ENABLED, "false");
+		String boolVal = getConfigValue(batch, LogisConfigConstants.VALIDATION_SKUCD_ENABLED, LogisConstants.FALSE_STRING);
 		return ValueUtil.toBoolean(boolVal);
 	}
 	
@@ -305,7 +306,7 @@ public class BatchJobConfigUtil {
 	 */
 	public static String getInvoiceNoValidationRule(JobBatch batch) {
 		// job.cmm.server.validate.invoice_no.rule
-		return getConfigValue(batch, LogisConfigConstants.VALIDATION_RULE_INVNO, "false");
+		return getConfigValue(batch, LogisConfigConstants.VALIDATION_RULE_INVNO, LogisConstants.FALSE_STRING);
 	}
 	
 	/**
@@ -321,6 +322,17 @@ public class BatchJobConfigUtil {
 	}
 	
 	/**
+	 * 박스 - 셀 매핑을 분류 처리 전에 하는지 즉 선 매핑 여부
+	 * 
+	 * @param batch
+	 * @return
+	 */
+	public static boolean isPreviousBoxCellMapping(JobBatch batch) {
+		String boolVal = getConfigValue(batch, LogisConfigConstants.BOX_CELL_MAPPING_POINT, LogisConstants.TRUE_STRING);
+		return ValueUtil.toBoolean(boolVal);
+	}
+	
+	/**
 	 * 박스 실적 보고 여부
 	 * 
 	 * @param batch
@@ -328,7 +340,7 @@ public class BatchJobConfigUtil {
 	 */
 	public static boolean isBoxResultReportEnabled(JobBatch batch) {
 		// job.cmm.box.result.report.enabled
-		String boolVal = getConfigValue(batch, LogisConfigConstants.BOX_RESULT_REPORT_ENABLED, "false");
+		String boolVal = getConfigValue(batch, LogisConfigConstants.BOX_RESULT_REPORT_ENABLED, LogisConstants.FALSE_STRING);
 		return ValueUtil.toBoolean(boolVal);
 	}
 	
@@ -351,7 +363,7 @@ public class BatchJobConfigUtil {
 	 */
 	public static boolean isBoxResultCancelEnabled(JobBatch batch) {
 		// job.cmm.box.cancel.enabled
-		String boolVal = getConfigValue(batch, LogisConfigConstants.BOX_CANCEL_ENABLED, "false");
+		String boolVal = getConfigValue(batch, LogisConfigConstants.BOX_CANCEL_ENABLED, LogisConstants.FALSE_STRING);
 		return ValueUtil.toBoolean(boolVal);
 	}
 	
@@ -363,7 +375,7 @@ public class BatchJobConfigUtil {
 	 */
 	public static boolean isBoxWeightMeasureEnabled(JobBatch batch) {
 		// job.cmm.box.weight.enabled
-		String boolVal = getConfigValue(batch, LogisConfigConstants.BOX_WEIGHT_ENABLED, "false");
+		String boolVal = getConfigValue(batch, LogisConfigConstants.BOX_WEIGHT_ENABLED, LogisConstants.FALSE_STRING);
 		return ValueUtil.toBoolean(boolVal);
 	}
 	
@@ -432,7 +444,7 @@ public class BatchJobConfigUtil {
 	 */
 	public static boolean isUndoPickedEnabled(JobBatch batch) {
 		// job.cmm.pick.cancel.enabled
-		String boolVal = getConfigValue(batch, LogisConfigConstants.PICK_CANCEL_ENABLED, "false");
+		String boolVal = getConfigValue(batch, LogisConfigConstants.PICK_CANCEL_ENABLED, LogisConstants.FALSE_STRING);
 		return ValueUtil.toBoolean(boolVal);
 	}
 	
@@ -444,7 +456,7 @@ public class BatchJobConfigUtil {
 	 */
 	public static boolean isPickResultEnabled(JobBatch batch) {
 		// job.cmm.pick.result.report.enabled
-		String boolVal = getConfigValue(batch, LogisConfigConstants.PICK_RESULT_REPORT_ENABLED, "false");
+		String boolVal = getConfigValue(batch, LogisConfigConstants.PICK_RESULT_REPORT_ENABLED, LogisConstants.FALSE_STRING);
 		return ValueUtil.toBoolean(boolVal);
 	}
 	
@@ -456,7 +468,7 @@ public class BatchJobConfigUtil {
 	 */
 	public static boolean isPickCancelStatusEnabled(JobBatch batch) {
 		// job.cmm.pick.cancel.status.enabled
-		String boolVal = getConfigValue(batch, LogisConfigConstants.PICK_CANCEL_STATUS_ENABLED, "false");
+		String boolVal = getConfigValue(batch, LogisConfigConstants.PICK_CANCEL_STATUS_ENABLED, LogisConstants.FALSE_STRING);
 		return ValueUtil.toBoolean(boolVal);
 	}
 
@@ -468,7 +480,7 @@ public class BatchJobConfigUtil {
 	 */
 	public static boolean isCanceledSkuInputEnabled(JobBatch batch) {
 		// job.cmm.pick.include.cancelled.enabled
-		String boolVal = getConfigValue(batch, LogisConfigConstants.PICK_INCLUDE_CANCALLED_ENABLED, "false");
+		String boolVal = getConfigValue(batch, LogisConfigConstants.PICK_INCLUDE_CANCALLED_ENABLED, LogisConstants.FALSE_STRING);
 		return ValueUtil.toBoolean(boolVal);
 	}
 
@@ -527,7 +539,7 @@ public class BatchJobConfigUtil {
 	 */
 	public static boolean isUseCellSideAtDevice(JobBatch batch) {
 		// job.cmm.device.side.enabled
-		String boolVal = getConfigValue(batch, LogisConfigConstants.DEVICE_SIDE_ENABLED, "false");
+		String boolVal = getConfigValue(batch, LogisConfigConstants.DEVICE_SIDE_ENABLED, LogisConstants.FALSE_STRING);
 		return ValueUtil.toBoolean(boolVal);
 	}
 
@@ -539,7 +551,7 @@ public class BatchJobConfigUtil {
 	 */
 	public static boolean isUseStationAtDevice(JobBatch batch) {
 		// job.cmm.device.station.enabled
-		String boolVal = getConfigValue(batch, LogisConfigConstants.DEVICE_STATION_ENABLED, "false");
+		String boolVal = getConfigValue(batch, LogisConfigConstants.DEVICE_STATION_ENABLED, LogisConstants.FALSE_STRING);
 		return ValueUtil.toBoolean(boolVal);
 	}
 	
@@ -551,7 +563,7 @@ public class BatchJobConfigUtil {
 	 */
 	public static boolean isInspectionEnabled(JobBatch batch) {
 		// job.cmm.inspection.enabled
-		String boolVal = getConfigValue(batch, LogisConfigConstants.INSPECTION_ENABLED, "false");
+		String boolVal = getConfigValue(batch, LogisConfigConstants.INSPECTION_ENABLED, LogisConstants.FALSE_STRING);
 		return ValueUtil.toBoolean(boolVal);
 	}
 	
@@ -563,7 +575,7 @@ public class BatchJobConfigUtil {
 	 */
 	public static boolean isWeightInspectionEnabled(JobBatch batch) {
 		// job.cmm.insepction.weight.enabled
-		String boolVal = getConfigValue(batch, LogisConfigConstants.INSPECTION_WEIGHT_ENABLED, "false");
+		String boolVal = getConfigValue(batch, LogisConfigConstants.INSPECTION_WEIGHT_ENABLED, LogisConstants.FALSE_STRING);
 		return ValueUtil.toBoolean(boolVal);
 	}
 
@@ -601,7 +613,7 @@ public class BatchJobConfigUtil {
 	 */
 	public static boolean isSingleSkuInputEnabled(JobBatch batch) {
 		// job.cmm.input.mode.single.enabled
-		String boolVal = getConfigValue(batch, LogisConfigConstants.INPUT_MODE_SINGLE_ENABLED, "false");
+		String boolVal = getConfigValue(batch, LogisConfigConstants.INPUT_MODE_SINGLE_ENABLED, LogisConstants.FALSE_STRING);
 		return ValueUtil.toBoolean(boolVal);
 	}
 	
@@ -613,7 +625,7 @@ public class BatchJobConfigUtil {
 	 */
 	public static boolean isBundleInputEnabled(JobBatch batch) {
 		// job.cmm.input.mode.bundle.enabled
-		String boolVal = getConfigValue(batch, LogisConfigConstants.INPUT_MODE_BUNDLE_ENABLED, "false");
+		String boolVal = getConfigValue(batch, LogisConfigConstants.INPUT_MODE_BUNDLE_ENABLED, LogisConstants.FALSE_STRING);
 		return ValueUtil.toBoolean(boolVal);
 	}
 	
@@ -625,7 +637,7 @@ public class BatchJobConfigUtil {
 	 */
 	public static boolean isSingleBoxInputEnabled(JobBatch batch) {
 		// job.cmm.input.mode.box.enabled
-		String boolVal = getConfigValue(batch, LogisConfigConstants.INPUT_MODE_BOX_ENABLED, "false");
+		String boolVal = getConfigValue(batch, LogisConfigConstants.INPUT_MODE_BOX_ENABLED, LogisConstants.FALSE_STRING);
 		return ValueUtil.toBoolean(boolVal);
 	}
 	
@@ -663,7 +675,7 @@ public class BatchJobConfigUtil {
 	 */
 	public static boolean isDeleteWhenOrderCancel(JobBatch batch) {
 		// job.cmm.order.delete.when.order_cancel
-		String boolVal = getConfigValue(batch, LogisConfigConstants.ORDER_DELETE_WHEN_ORDER_CANCEL, "false");
+		String boolVal = getConfigValue(batch, LogisConfigConstants.ORDER_DELETE_WHEN_ORDER_CANCEL, LogisConstants.FALSE_STRING);
 		return ValueUtil.toBoolean(boolVal);
 	}
 	
@@ -675,7 +687,7 @@ public class BatchJobConfigUtil {
 	 */
 	public static boolean isGwRebootWhenInstruction(JobBatch batch) {
 		// job.cmm.reboot.enabled.when.batch.start
-		String boolVal = getConfigValue(batch, LogisConfigConstants.GW_REBOOT_WHEN_BATCH_START_ENABLED, "false");
+		String boolVal = getConfigValue(batch, LogisConfigConstants.GW_REBOOT_WHEN_BATCH_START_ENABLED, LogisConstants.FALSE_STRING);
 		return ValueUtil.toBoolean(boolVal);
 	}
 	
@@ -687,7 +699,7 @@ public class BatchJobConfigUtil {
 	 */
 	public static boolean isIndOnAssignedCellWhenInstruction(JobBatch batch) {
 		// job.cmm.assigned-cell.indicator.enabled
-		String boolVal = getConfigValue(batch, LogisConfigConstants.ASSIGNED_CELL_INDICATION_ENABLED, "false");
+		String boolVal = getConfigValue(batch, LogisConfigConstants.ASSIGNED_CELL_INDICATION_ENABLED, LogisConstants.FALSE_STRING);
 		return ValueUtil.toBoolean(boolVal);
 	}
 
@@ -710,7 +722,7 @@ public class BatchJobConfigUtil {
 	 */
 	public static boolean isBatchFullboxWhenClosingEnabled(JobBatch batch) {
 		// job.cmm.batch-fullbox.when.closing.enabled
-		String boolVal = getConfigValue(batch, LogisConfigConstants.BATCH_FULLBOX_WHEN_CLOSING_ENABLED, "false");	
+		String boolVal = getConfigValue(batch, LogisConfigConstants.BATCH_FULLBOX_WHEN_CLOSING_ENABLED, LogisConstants.FALSE_STRING);	
 		return ValueUtil.toBoolean(boolVal);
 	}
 
