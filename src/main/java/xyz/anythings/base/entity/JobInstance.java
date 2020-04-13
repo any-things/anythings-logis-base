@@ -136,6 +136,9 @@ public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	private String boxedAt;
 	
 	@Ignore
+	private String stationCd;
+	
+	@Ignore
 	private String gwPath;
 	
 	@Ignore
@@ -422,6 +425,14 @@ public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.boxedAt = boxedAt;
 	}
 	
+	public String getStationCd() {
+		return stationCd;
+	}
+
+	public void setStationCd(String stationCd) {
+		this.stationCd = stationCd;
+	}
+
 	public String getGwPath() {
 		return gwPath;
 	}
