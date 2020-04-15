@@ -136,6 +136,10 @@ public class LogisConstants extends AnyConstants {
 	 */
 	public static final List<String> JOB_STATUS_WIP = ValueUtil.newStringList(JOB_STATUS_WAIT, JOB_STATUS_INPUT, JOB_STATUS_PICKING);
 	/**
+	 * 작업 상태 - INPUT, PICKING
+	 */
+	public static final List<String> JOB_STATUS_IP = ValueUtil.newStringList(JOB_STATUS_INPUT, JOB_STATUS_PICKING);	
+	/**
 	 * 작업 상태 - INPUT, PICKING, CANCEL
 	 */
 	public static final List<String> JOB_STATUS_IPC = ValueUtil.newStringList(JOB_STATUS_INPUT, JOB_STATUS_PICKING, JOB_STATUS_CANCEL);
