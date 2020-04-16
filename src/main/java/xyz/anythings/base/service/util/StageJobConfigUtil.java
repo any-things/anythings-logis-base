@@ -39,7 +39,7 @@ import xyz.elidom.util.BeanUtil;
  * - cmm.ind.button.default.color				표시기 버튼 기본 색상
  * 
  * - cmm.sku.barcode.max.length					스테이지 공통 - 바코드 최대 길이
- * - cmm.sku.search.code.fields					스테이지 공통 - 상품 조회를 위한 코드 필드명 리스트
+ * - cmm.sku.search.condition.fields			스테이지 공통 - 상품 조회를 위한 코드 필드명 리스트
  * - cmm.box.out.class.field					스테이지 공통 - 주문 필드 중에 박스 처리시에 출고 분류 코드로 사용할 필드 명
  * - cmm.cell.mapping.target.field				스테이지 공통 - 기본 셀 매핑 대상 필드 명
  * - cmm.indicator.type  						스테이지 공통 - 표시기 유형 (통신 프로토콜 기준)
@@ -47,7 +47,7 @@ import xyz.elidom.util.BeanUtil;
  * - cmm.order.ordergroup.field					스테이지 공통 - 주문 그룹 필드로 사용할 주문 테이블의 필드명
  * 
  * - das.sku.barcode.max.length					DAS 바코드 최대 길이
- * - das.sku.search.code.fields					DAS 상품 조회를 위한 코드 필드명 리스트
+ * - das.sku.search.condition.fields			DAS 상품 조회를 위한 코드 필드명 리스트
  * - das.box.out.class.field					DAS 주문 필드 중에 박스 처리시에 출고 분류 코드로 사용할 필드 명
  * - das.cell.mapping.target.field				DAS 기본 셀 매핑 대상 필드 명
  * - das.indicator.type  						DAS 표시기 유형 (통신 프로토콜 기준)
@@ -55,7 +55,7 @@ import xyz.elidom.util.BeanUtil;
  * - das.order.ordergroup.field					DAS 주문 그룹 필드로 사용할 주문 테이블의 필드명
  * 
  * - rtn.sku.barcode.max.length					반품 바코드 최대 길이
- * - rtn.sku.search.code.fields					반품 상품 조회를 위한 코드 필드명 리스트
+ * - rtn.sku.search.condition.fields			반품 상품 조회를 위한 코드 필드명 리스트
  * - rtn.box.out.class.field					반품 주문 필드 중에 박스 처리시에 출고 분류 코드로 사용할 필드 명
  * - rtn.cell.mapping.target.field				반품 기본 셀 매핑 대상 필드 명
  * - rtn.indicator.type  						반품 표시기 유형 (통신 프로토콜 기준)
@@ -63,7 +63,7 @@ import xyz.elidom.util.BeanUtil;
  * - rtn.order.ordergroup.field					반품 주문 그룹 필드로 사용할 주문 테이블의 필드명
  * 
  * - dps.sku.barcode.max.length					DPS 바코드 최대 길이
- * - dps.sku.search.code.fields					DPS 상품 조회를 위한 코드 필드명 리스트
+ * - dps.sku.search.condition.fields			DPS 상품 조회를 위한 코드 필드명 리스트
  * - dps.box.out.class.field					DPS 주문 필드 중에 박스 처리시에 출고 분류 코드로 사용할 필드 명
  * - dps.cell.mapping.target.field				DPS 기본 셀 매핑 대상 필드 명
  * - dps.indicator.type  						DPS 표시기 유형 (통신 프로토콜 기준)
@@ -409,8 +409,8 @@ public class StageJobConfigUtil {
 	 * @return
 	 */
 	public static String getSearchSkuFields(String stageCd, String jobType) {
-		// cmm.sku.search.code.fields
-		return getConfigValue(stageCd, jobType, "cmm.sku.search.code.fields", true);
+		// cmm.sku.search.condition.fields
+		return getConfigValue(stageCd, jobType, "cmm.sku.search.condition.fields", true);
 	}
 	
 	/**

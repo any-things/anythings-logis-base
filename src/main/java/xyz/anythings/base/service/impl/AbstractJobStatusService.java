@@ -48,7 +48,11 @@ public abstract class AbstractJobStatusService extends AbstractLogisService impl
 		String sql = this.batchQueryStore.getBatchProgressRateQuery();
 		Map<String, Object> params = ValueUtil.newMap("domainId,batchId", batch.getDomainId(), batch.getId());
 		
-		// 배치에 호기가 지정되어 있으면 지정된 호기에 대한 진행율 
+		// 배치에 호기가 지정되어 있으면 지정된 호기에 대한 진행율
+		if(ValueUtil.isNotEmpty(batch.getEquipType())) {
+			params.put("equipType", batch.getEquipType());
+		}
+		
 		if(ValueUtil.isNotEmpty(batch.getEquipCd())) {
 			params.put("equipCd", batch.getEquipCd());
 		}

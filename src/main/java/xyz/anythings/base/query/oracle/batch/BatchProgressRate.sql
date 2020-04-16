@@ -8,7 +8,7 @@ WITH T_JOBS AS (
               FROM JOB_INSTANCES
              WHERE DOMAIN_ID = :domainId
                AND BATCH_ID = :batchId
-             #if($equipCd)
+             #if($equipType)
                AND EQUIP_TYPE = :equipType
              #end
              #if($equipCd)

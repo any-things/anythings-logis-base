@@ -4,6 +4,7 @@ import xyz.anythings.base.LogisConfigConstants;
 import xyz.anythings.base.LogisConstants;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.service.impl.JobConfigProfileService;
+import xyz.anythings.sys.AnyConstants;
 import xyz.anythings.sys.util.AnyValueUtil;
 import xyz.elidom.sys.util.ThrowUtil;
 import xyz.elidom.sys.util.ValueUtil;
@@ -12,49 +13,51 @@ import xyz.elidom.util.BeanUtil;
 /**
  * 작업 배치 범위 내 작업 설정 값 조회 유틸리티
  * 작업 설정 리스트
- *  - job.cmm.sku.barcode.max.length				상품 바코드 최대 길이
- *  - job.cmm.sku.search.condition.fields			SKU 조회를 위한 코드 필드명 리스트
- *  - job.cmm.sku.search.select.fields				SKU 조회를 위한 조회 필드명 리스트
- *  - job.cmm.sku.skucd.validation.enabled			서버 사이드에서 상품 유효성 체크 여부
- *  - job.cmm.sku.weight.unit						상품 중량 정보를 g으로 사용할 지 kg으로 사용할 지 여부
- *  - job.cmm.server.validate.sku_cd.rule			서버 사이드에서 상품 유효성 체크를 위한 룰
- *  - job.cmm.server.validate.box_id.rule			서버 사이드에서 박스 ID 유효성 체크를 위한 룰
- *  - job.cmm.server.validate.cell_cd.rule			서버 사이드에서 로케이션 코드 유효성 체크를 위한 룰
- *  - job.cmm.server.validate.ind_cd.rule			서버 사이드에서 표시기 코드 유효성 체크를 위한 룰
- *  - job.cmm.server.validate.rack_cd.rule			서버 사이드에서 랙 코드 유효성 체크를 위한 룰
- *  - job.cmm.server.validate.invoice_no.rule		서버 사이드에서 송장번호 유효성 체크를 위한 룰
- *  - job.cmm.box.cell.mapping.point				박스 셀 매핑 시점
- *  - job.cmm.box.result.report.enabled				박스 실적 보고 여부 
- *  - job.cmm.box.result.report.point				박스 실적 전송 시점
- *  - job.cmm.box.cancel.enabled					박스 취소 기능 활성화 여부 
- *  - job.cmm.box.weight.enabled					박스 중량 관리 여부
- *  - job.cmm.box.out.class.field					주문 필드 중에 박스 처리시에 출고 분류 코드로 사용할 필드 명
- *  - job.cmm.box.action							박스 처리 후 액션
- *  - job.cmm.box.invoice-no.rule					옵션에 따라 송장 번호를 다르게 부여 
- *  - job.cmm.box.box_id.unique.scope				박스 ID 유일성 보장 범위
- *  - job.cmm.pick.cancel.enabled					확정 취소 기능 활성화 여부 
- *  - job.cmm.pick.result.report.enabled			확정 실적 보고 여부 
- *  - job.cmm.pick.cancel.status.enabled			표시기에서 분류 작업 취소시에 '취소' 상태로 관리할 지 여부
- *  - job.cmm.pick.include.cancelled.enabled		상품 투입시 취소된 상품을 조회할 지 여부
- *  - job.cmm.label.print.count						라벨 발행시 한 번에 동일 라벨을 몇 장 발행할 지 설정 
- *  - job.cmm.label.print.method					송장 라벨 발행 방법 
- *  - job.cmm.label.template						송장 라벨을 자체 출력시 송장 라벨 출력 템플릿 설정 MPS 매니저 > 개발자 > 커스텀 템플릿에 등록된 송장 라벨 명칭을 설정하면 됨
- *  - job.cmm.device.list							사용 디바이스 리스트
- *  - job.cmm.device.side.enabled					디바이스의 작업 위치 (앞,뒤,앞/뒤,전체 등) 정보를 사용할 지 여부
- *  - job.cmm.device.station.enabled				디바이스의 작업 영역 정보를 사용할 지 여부
- *  - job.cmm.inspection.enabled					출고 검수 활성화 여부
- *  - job.cmm.insepction.weight.enabled				중량 검수 활성화 여부
- *  - job.cmm.inspection.action						출고 검수 후 액션. 아래 출고 검수 활성화 시에만 의미가 있음.
- *  - job.cmm.input.work_scope						투입시 투입 범위
- *  - job.cmm.input.mode.single.enabled				단품 투입 활성화 여부
- *  - job.cmm.input.single.ind_on.mode				job.cmm.input.mode.single.enabled이 true인 경우에 단품 투입시 하나씩 표시기에 점등할 것인지 전체 표시기에 점등할 것인지 설정
- *  - job.cmm.input.mode.box.enabled				완박스 투입 활성화 여부
- *  - job.cmm.input.box.ind_on.mode					job.cmm.input.mode.box.enabled이 true인 경우에 완박스 투입시 하나씩 표시기에 점등할 것인지 전체 표시기에 점등할 것인지 설정
- *  - job.cmm.input.mode.bundle.enabled				번들 투입 활성화 여부
- *  - job.cmm.order.delete.when.order_cancel		주문 취소시 데이터 삭제 여부
- *  - job.cmm.assigned-cell.indicator.enabled		작업지시 시점에 표시기에 할당 셀 표시 활성화 여부
- *  - job.cmm.trade-statement.template				거래명세서 템플릿 이름을 설정
- *  - job.cmm.reboot.enabled.when.batch.start		작업배치 시에 게이트웨이 리부팅 할 지 여부
+ *  - job.cmm.sku.barcode.max.length								상품 바코드 최대 길이
+ *  - job.cmm.sku.search.condition.fields							SKU 조회를 위한 코드 필드명 리스트
+ *  - job.cmm.sku.search.select.fields								SKU 조회를 위한 조회 필드명 리스트
+ *  - job.cmm.sku.skucd.validation.enabled							서버 사이드에서 상품 유효성 체크 여부
+ *  - job.cmm.sku.weight.unit										상품 중량 정보를 g으로 사용할 지 kg으로 사용할 지 여부
+ *  - job.cmm.server.validate.sku_cd.rule							서버 사이드에서 상품 유효성 체크를 위한 룰
+ *  - job.cmm.server.validate.box_id.rule							서버 사이드에서 박스 ID 유효성 체크를 위한 룰
+ *  - job.cmm.server.validate.cell_cd.rule							서버 사이드에서 로케이션 코드 유효성 체크를 위한 룰
+ *  - job.cmm.server.validate.ind_cd.rule							서버 사이드에서 표시기 코드 유효성 체크를 위한 룰
+ *  - job.cmm.server.validate.rack_cd.rule							서버 사이드에서 랙 코드 유효성 체크를 위한 룰
+ *  - job.cmm.server.validate.invoice_no.rule						서버 사이드에서 송장번호 유효성 체크를 위한 룰
+ *  - job.cmm.box.cell.mapping.point								박스 셀 매핑 시점
+ *  - job.cmm.box.result.report.enabled								박스 실적 보고 여부 
+ *  - job.cmm.box.result.report.point								박스 실적 전송 시점
+ *  - job.cmm.box.cancel.enabled									박스 취소 기능 활성화 여부 
+ *  - job.cmm.box.weight.enabled									박스 중량 관리 여부
+ *  - job.cmm.box.out.class.field									주문 필드 중에 박스 처리시에 출고 분류 코드로 사용할 필드 명
+ *  - job.cmm.box.action											박스 처리 후 액션
+ *  - job.cmm.box.invoice-no.rule									옵션에 따라 송장 번호를 다르게 부여 
+ *  - job.cmm.box.box_id.unique.scope								박스 ID 유일성 보장 범위
+ *  - job.cmm.pick.cancel.enabled									확정 취소 기능 활성화 여부 
+ *  - job.cmm.pick.result.report.enabled							확정 실적 보고 여부 
+ *  - job.cmm.pick.cancel.status.enabled							표시기에서 분류 작업 취소시에 '취소' 상태로 관리할 지 여부
+ *  - job.cmm.pick.include.cancelled.enabled						상품 투입시 취소된 상품을 조회할 지 여부
+ *  - job.cmm.label.print.count										라벨 발행시 한 번에 동일 라벨을 몇 장 발행할 지 설정 
+ *  - job.cmm.label.print.method									송장 라벨 발행 방법 
+ *  - job.cmm.label.template										송장 라벨을 자체 출력시 송장 라벨 출력 템플릿 설정 MPS 매니저 > 개발자 > 커스텀 템플릿에 등록된 송장 라벨 명칭을 설정하면 됨
+ *  - job.cmm.device.list											사용 디바이스 리스트
+ *  - job.cmm.device.side.enabled									디바이스의 작업 위치 (앞,뒤,앞/뒤,전체 등) 정보를 사용할 지 여부
+ *  - job.cmm.device.station.enabled								디바이스의 작업 영역 정보를 사용할 지 여부
+ *  - job.cmm.inspection.enabled									출고 검수 활성화 여부
+ *  - job.cmm.insepction.weight.enabled								중량 검수 활성화 여부
+ *  - job.cmm.inspection.action										출고 검수 후 액션. 아래 출고 검수 활성화 시에만 의미가 있음.
+ *  - job.cmm.input.work_scope										투입시 투입 범위 (station : 작업 존 별 투입, rack : 호기별 투입, batch : 배치별 투입, batch_group : 배치 그룹별 투입)
+ *  - job.cmm.input.ind_on.mode										투입시 표시기 점등 모드 (all : 전체 상품 점등, qty : 투입 수량 만큼 점등) 
+ *  - job.cmm.input.mode.single.enabled								단품 투입 활성화 여부
+ *  - job.cmm.input.single.ind_on.mode								job.cmm.input.mode.single.enabled이 true인 경우에 단품 투입시 하나씩 표시기에 점등할 것인지 전체 표시기에 점등할 것인지 설정
+ *  - job.cmm.input.mode.box.enabled								완박스 투입 활성화 여부
+ *  - job.cmm.input.box.ind_on.mode									job.cmm.input.mode.box.enabled이 true인 경우에 완박스 투입시 하나씩 표시기에 점등할 것인지 전체 표시기에 점등할 것인지 설정
+ *  - job.cmm.input.mode.bundle.enabled								번들 투입 활성화 여부
+ *  - job.cmm.order.delete.when.order_cancel						주문 취소시 데이터 삭제 여부
+ *  - job.cmm.assigned-cell.indicator.enabled.when.batch.start		작업지시 시점에 표시기에 할당 셀 표시 활성화 여부
+ *  - job.cmm.assigned-cell.wait.duration.when.batch.start			작업지시 시점에 표시기에 할당 셀 표시시 대기 시간 (초)
+ *  - job.cmm.trade-statement.template								거래명세서 템플릿 이름을 설정
+ *  - job.cmm.reboot.enabled.when.batch.start						작업배치 시에 게이트웨이 리부팅 할 지 여부
  *	
  * @author shortstop
  */
@@ -606,6 +609,29 @@ public class BatchJobConfigUtil {
 	}
 	
 	/**
+	 * 투입시 표시기 점등 모드 (all : 전체 상품 점등, qty : 투입 수량 만큼 점등) : job.cmm.input.ind_on.mode
+	 * 
+	 * @param batch
+	 * @return
+	 */
+	public static String getInputIndOnMode(JobBatch batch) {
+		// job.cmm.input.ind_on.mode
+		return getConfigValue(batch, LogisConfigConstants.INPUT_IND_ON_MODE, LogisConstants.ALL_STRING);
+	}
+	
+	/**
+	 * 투입시 표시기 전체 점등 모드 여부
+	 * 
+	 * @param batch
+	 * @return
+	 */
+	public static boolean isInputIndOnAllMode(JobBatch batch) {
+		// job.cmm.input.ind_on.mode
+		String modeVal = getInputIndOnMode(batch);
+		return ValueUtil.isEqualIgnoreCase(modeVal, LogisConstants.ALL_STRING);
+	}
+	
+	/**
 	 * 단품 투입 활성화 여부
 	 * 
 	 * @param batch
@@ -651,7 +677,7 @@ public class BatchJobConfigUtil {
 	 */
 	public static String getIndOnModeWhenSkuInput(JobBatch batch) {
 		// job.cmm.input.single.ind_on.mode	
-		return getConfigValue(batch, LogisConfigConstants.INPUT_SINGLE_IND_ON_ENABLED, true);
+		return getConfigValue(batch, LogisConfigConstants.INPUT_SINGLE_IND_ON_MODE, true);
 	}
 	
 	/**
@@ -664,7 +690,7 @@ public class BatchJobConfigUtil {
 	 */
 	public static String getIndOnModeWhenSingleBoxInput(JobBatch batch) {
 		// job.cmm.input.box.ind_on.mode
-		return getConfigValue(batch, LogisConfigConstants.INPUT_IND_ON_MODE, true);
+		return getConfigValue(batch, LogisConfigConstants.INPUT_BOX_IND_ON_MODE, true);
 	}
 	
 	/**
@@ -698,9 +724,21 @@ public class BatchJobConfigUtil {
 	 * @return
 	 */
 	public static boolean isIndOnAssignedCellWhenInstruction(JobBatch batch) {
-		// job.cmm.assigned-cell.indicator.enabled
-		String boolVal = getConfigValue(batch, LogisConfigConstants.ASSIGNED_CELL_INDICATION_ENABLED, LogisConstants.FALSE_STRING);
+		// job.cmm.assigned-cell.indicator.enabled.when.batch.start
+		String boolVal = getConfigValue(batch, LogisConfigConstants.ASSIGNED_CELL_INDICATION_WHEN_BATCH_START_ENABLED, LogisConstants.FALSE_STRING);
 		return ValueUtil.toBoolean(boolVal);
+	}
+	
+	/**
+	 * 작업지시 시점에 표시기에 할당 셀 표시시 대기 시간 (ms)
+	 * 
+	 * @param batch
+	 * @return
+	 */
+	public static int getWaitDuarionIndOnAssignedCellWhenInstruction(JobBatch batch) {
+		// job.cmm.assigned-cell.wait.duration.when.batch.start
+		String duration = getConfigValue(batch, LogisConfigConstants.WAIT_DURATION_ASSIGNED_CELL_INDICATION_WHEN_BATCH_START, AnyConstants.ZERO_STRING);
+		return ValueUtil.toInteger(duration);
 	}
 
 	/**

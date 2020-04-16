@@ -165,7 +165,11 @@ public class LogisConfigConstants extends xyz.anythings.sys.ConfigConstants {
 	/**
 	 * 작업지시 시점에 표시기에 할당 셀 표시 활성화 여부
 	 */
-	public static final String ASSIGNED_CELL_INDICATION_ENABLED = "job.cmm.assigned-cell.indicator.enabled";
+	public static final String ASSIGNED_CELL_INDICATION_WHEN_BATCH_START_ENABLED = "job.cmm.assigned-cell.indicator.enabled.when.batch.start";
+	/**
+	 * 작업지시 시점에 표시기에 할당 셀 표시시 대기 시간 (ms)
+	 */
+	public static final String WAIT_DURATION_ASSIGNED_CELL_INDICATION_WHEN_BATCH_START = "job.cmm.assigned-cell.wait.duration.when.batch.start";
 	/**
 	 * 배치 마감시에 풀 박스 처리 안 된 모든 셀에 대해서 풀 박스 처리할 것인지 여부
 	 */
@@ -175,13 +179,21 @@ public class LogisConfigConstants extends xyz.anythings.sys.ConfigConstants {
 	 * 								6. 투입 모드 설정 
 	 **********************************************************************/
 	/**
-	 * 완박스 투입시 표시기 점등 모드 - 하나씩 점등 / 전체 점등
+	 * 투입시 투입 범위
 	 */
-	public static final String INPUT_IND_ON_MODE = "job.cmm.input.box.ind_on.mode";
+	public static final String INPUT_WORK_SCOPE = "job.cmm.input.work_scope";
+	/**
+	 * 투입시 표시기 점등 모드 (all : 전체 점등, qty : 수량 기반 점등)
+	 */
+	public static final String INPUT_IND_ON_MODE = "job.cmm.input.ind_on.mode";	
 	/**
 	 * 완박스 투입 활성화 여부
 	 */
 	public static final String INPUT_MODE_BOX_ENABLED = "job.cmm.input.mode.box.enabled";
+	/**
+	 * 완박스 투입시 표시기 점등 모드 - 하나씩 점등 / 전체 점등
+	 */
+	public static final String INPUT_BOX_IND_ON_MODE = "job.cmm.input.box.ind_on.mode";
 	/**
 	 * 번들 투입 활성화 여부
 	 */
@@ -193,11 +205,7 @@ public class LogisConfigConstants extends xyz.anythings.sys.ConfigConstants {
 	/**
 	 * 단품 투입시 표시기 점등 모드 - 하나씩 점등 / 전체 점등
 	 */
-	public static final String INPUT_SINGLE_IND_ON_ENABLED = "job.cmm.input.single.ind_on.mode";
-	/**
-	 * 투입시 투입 범위
-	 */
-	public static final String INPUT_WORK_SCOPE = "job.cmm.input.work_scope";
+	public static final String INPUT_SINGLE_IND_ON_MODE = "job.cmm.input.single.ind_on.mode";
 	
 	/**********************************************************************
 	 * 								7. 피킹 설정 
