@@ -49,6 +49,7 @@ import xyz.elidom.orm.system.annotation.service.ApiDesc;
 import xyz.elidom.orm.system.annotation.service.ServiceDesc;
 import xyz.elidom.sys.SysConstants;
 import xyz.elidom.sys.entity.Domain;
+import xyz.elidom.sys.util.ThrowUtil;
 import xyz.elidom.sys.util.ValueUtil;
 
 /**
@@ -329,6 +330,7 @@ public class DeviceProcessController extends DynamicControllerSupport {
 	 * @param comCd
 	 * @param skuCd
 	 * @param weightFlag
+	 * @param varQtyFlag
 	 * @return
 	 */
 	@RequestMapping(value = "/categorize/{batch_group_id}/{com_cd}/{sku_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -380,8 +382,8 @@ public class DeviceProcessController extends DynamicControllerSupport {
 			@PathVariable("equip_cd") String equipCd, 
 			@PathVariable("sub_equip_cd") String subEquipCd, 
 			@PathVariable("box_id") String boxId,
-			@RequestParam(name="skip_equip_check", required=false) boolean isSkipEquipCheck,
-			@RequestParam(name="skip_box_mapping", required=false) boolean isSkipBoxMapping) {
+			@RequestParam(name="skip_equip_check", required = false) boolean isSkipEquipCheck,
+			@RequestParam(name="skip_box_mapping", required = false) boolean isSkipBoxMapping) {
 		
 		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(Domain.currentDomainId(), equipType, equipCd);
 		JobBatch batch = equipBatchSet.getBatch();
@@ -406,8 +408,8 @@ public class DeviceProcessController extends DynamicControllerSupport {
 			@PathVariable("equip_cd") String equipCd,
 			@PathVariable("ind_cd") String indCd, 
 			@PathVariable("box_id") String boxId,
-			@RequestParam(name="skip_equip_check", required=false) boolean isSkipEquipCheck,
-			@RequestParam(name="skip_box_mapping", required=false) boolean isSkipBoxMapping) {
+			@RequestParam(name="skip_equip_check", required = false) boolean isSkipEquipCheck,
+			@RequestParam(name="skip_box_mapping", required = false) boolean isSkipBoxMapping) {
 		
 		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(Domain.currentDomainId(), equipType, equipCd);
 		JobBatch batch = equipBatchSet.getBatch();
@@ -441,8 +443,11 @@ public class DeviceProcessController extends DynamicControllerSupport {
 		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(Domain.currentDomainId(), equipType, equipCd);
 		JobBatch batch = equipBatchSet.getBatch();
 		
-		// 2. JobInstance 조회 
-		JobInstance job = AnyEntityUtil.findEntityById(true, JobInstance.class, jobInstanceId);
+		// 2. JobInstance 조회
+		JobInstance job = this.serviceDispatcher.getJobStatusService(batch).findPickingJob(batch.getDomainId(), jobInstanceId);
+		if(job == null) {
+			throw ThrowUtil.newNotFoundRecord("terms.label.job", jobInstanceId);
+		}
 		
 		// 3. 소분류 이벤트 생성 
 		ClassifyRunEvent event = new ClassifyRunEvent(batch, SysEvent.EVENT_STEP_ALONE
@@ -485,7 +490,10 @@ public class DeviceProcessController extends DynamicControllerSupport {
 		JobBatch batch = equipBatchSet.getBatch();
 		
 		// 2. JobInstance 조회 
-		JobInstance job = AnyEntityUtil.findEntityById(true, JobInstance.class, jobInstanceId);
+		JobInstance job = this.serviceDispatcher.getJobStatusService(batch).findPickingJob(batch.getDomainId(), jobInstanceId);
+		if(job == null) {
+			throw ThrowUtil.newNotFoundRecord("terms.label.job", jobInstanceId);
+		}
 		
 		// 3. 소분류 이벤트 생성 
 		ClassifyRunEvent event = new ClassifyRunEvent(batch, SysEvent.EVENT_STEP_ALONE
@@ -526,7 +534,10 @@ public class DeviceProcessController extends DynamicControllerSupport {
 		JobBatch batch = equipBatchSet.getBatch();
 		
 		// 2. JobInstance 조회 
-		JobInstance job = AnyEntityUtil.findEntityById(true, JobInstance.class, jobInstanceId);
+		JobInstance job = this.serviceDispatcher.getJobStatusService(batch).findPickingJob(batch.getDomainId(), jobInstanceId);
+		if(job == null) {
+			throw ThrowUtil.newNotFoundRecord("terms.label.job", jobInstanceId);
+		}
 		
 		// 3. 소분류 이벤트 생성 
 		ClassifyRunEvent event = new ClassifyRunEvent(batch, SysEvent.EVENT_STEP_ALONE
@@ -565,7 +576,10 @@ public class DeviceProcessController extends DynamicControllerSupport {
 		JobBatch batch = equipBatchSet.getBatch();
 		
 		// 2. JobInstance 조회 
-		JobInstance job = AnyEntityUtil.findEntityById(true, JobInstance.class, jobInstanceId);
+		JobInstance job = this.serviceDispatcher.getJobStatusService(batch).findPickingJob(batch.getDomainId(), jobInstanceId);
+		if(job == null) {
+			throw ThrowUtil.newNotFoundRecord("terms.label.job", jobInstanceId);
+		}
 		
 		// 3. 소분류 이벤트 생성 
 		ClassifyRunEvent event = new ClassifyRunEvent(batch, SysEvent.EVENT_STEP_ALONE
@@ -582,6 +596,8 @@ public class DeviceProcessController extends DynamicControllerSupport {
 	 * @param equipType
 	 * @param equipCd
 	 * @param jobInstanceId
+	 * @param reqQty
+	 * @param boxId
 	 * @return
 	 */
 	@RequestMapping(value = "/fullbox/{device_type}/{equip_type}/{equip_cd}/{job_instance_id}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -599,7 +615,10 @@ public class DeviceProcessController extends DynamicControllerSupport {
 		JobBatch batch = equipBatchSet.getBatch();
 		
 		// 2. JobInstance 조회 
-		JobInstance job = AnyEntityUtil.findEntityById(true, JobInstance.class, jobInstanceId);
+		JobInstance job = this.serviceDispatcher.getJobStatusService(batch).findPickingJob(batch.getDomainId(), jobInstanceId);
+		if(job == null) {
+			throw ThrowUtil.newNotFoundRecord("terms.label.job", jobInstanceId);
+		}
 		
 		// 3. 소분류 이벤트 생성 
 		ClassifyOutEvent event = new ClassifyOutEvent(batch, SysEvent.EVENT_STEP_ALONE
@@ -684,7 +703,7 @@ public class DeviceProcessController extends DynamicControllerSupport {
 	 * @param equipCd
 	 * @param page
 	 * @param limit
-	 * @param status 상태 - F: 완료인 것 만 보기, U: 미완료인 것만 보기
+	 * @param status 상태 - 빈 값: 전체 보기, U: 미완료인 것만 보기
 	 * @return
 	 */
 	@RequestMapping(value = "/search/input_list/{equip_type}/{equip_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -700,47 +719,27 @@ public class DeviceProcessController extends DynamicControllerSupport {
 		JobBatch batch = equipBatchSet.getBatch();
 		return this.serviceDispatcher.getJobStatusService(batch).paginateInputList(batch, equipCd, status, page, limit);
 	}
-	
-	/**
-	 * 투입 리스트 상세 조회 
-	 * 
-	 * @param equipType
-	 * @param equipCd
-	 * @param detailId
-	 * @return
-	 */
-	/*@RequestMapping(value = "/search/input_list/{equip_type}/{equip_cd}/{selected_input_id}/details", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiDesc(description = "Search Input list Details")
-	public Page<JobInput> searchInputListDetails(
-			@PathVariable("equip_type") String equipType,
-			@PathVariable("equip_cd") String equipCd,
-			@PathVariable("selected_input_id") String selectedInputId) {
 		
-		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(Domain.currentDomainId(), equipType, equipCd);
-		JobBatch batch = equipBatchSet.getBatch();
-		return this.serviceDispatcher.getJobStatusService(batch).searchInputList(batch, equipCd, null, selectedInputId);
-	}*/
-	
 	/**
 	 * 투입 리스트를 조회 (리스트) 
 	 * 
 	 * @param equipType
 	 * @param equipCd
-	 * @param equipZone
+	 * @param stationCd
 	 * @param selectedInputId
 	 * @return
 	 */
-	@RequestMapping(value = "/search/input_list/{equip_type}/{equip_cd}/{equip_zone}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/search/input_list/{equip_type}/{equip_cd}/{station_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Search Input list")
 	public List<JobInput> searchInputList(
 			@PathVariable("equip_type") String equipType,
 			@PathVariable("equip_cd") String equipCd,
-			@PathVariable("equip_zone") String equipZone,
+			@PathVariable("station_cd") String stationCd,
 			@RequestParam(name = "selected_input_id", required = false) String selectedInputId) {
 				
 		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(Domain.currentDomainId(), equipType, equipCd);
 		JobBatch batch = equipBatchSet.getBatch();
-		return this.serviceDispatcher.getJobStatusService(batch).searchInputList(batch, equipCd, equipZone, selectedInputId);
+		return this.serviceDispatcher.getJobStatusService(batch).searchInputList(batch, equipCd, stationCd, selectedInputId);
 	}
 	
 	/**

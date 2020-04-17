@@ -121,6 +121,15 @@ public interface IJobStatusService {
 	public List<JobInstance> searchPickingJobList(JobBatch batch, Map<String, Object> condition);
 	
 	/**
+	 * 3-1. 작업 조회 - 피킹 처리를 위한 작업 인스턴스 ID로 작업 데이터 조회
+	 *  
+	 * @param domainId 도메인 ID
+	 * @param jobInstanceId 작업 인스턴스 ID
+	 * @return
+	 */
+	public JobInstance findPickingJob(Long domainId, String jobInstanceId);
+	
+	/**
 	 * 3-1. 작업 조회 - 조회 조건으로 작업 리스트 조회
 	 * 
 	 * @param batch

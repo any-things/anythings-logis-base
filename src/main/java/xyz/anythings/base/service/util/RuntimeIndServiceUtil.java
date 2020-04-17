@@ -442,7 +442,7 @@ public class RuntimeIndServiceUtil {
 			}
 			
 			if(needUpdateJobStatus) {
-				BeanUtil.get(IQueryManager.class).updateBatch(jobList, "status", "indCd", "pickStartedAt");
+				BeanUtil.get(IQueryManager.class).updateBatch(jobList, "pickingQty", "indCd", "pickStartedAt", "status");
 			}
 			
 			// 분류 대상 작업 데이터를 표시기 점등 요청을 위한 프로토콜 모델로 변환한다.
