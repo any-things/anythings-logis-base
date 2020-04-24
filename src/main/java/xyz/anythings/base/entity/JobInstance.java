@@ -51,6 +51,9 @@ public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "shop_nm", length = 40)
 	private String shopNm;
 
+	@Column (name = "equip_group_cd", length = 30)
+	private String equipGroupCd;
+	
 	@Column (name = "equip_type", length = 20)
 	private String equipType;
 
@@ -223,6 +226,14 @@ public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setEquipType(String equipType) {
 		this.equipType = equipType;
+	}
+
+	public String getEquipGroupCd() {
+		return equipGroupCd;
+	}
+
+	public void setEquipGroupCd(String equipGroupCd) {
+		this.equipGroupCd = equipGroupCd;
 	}
 
 	public String getEquipCd() {

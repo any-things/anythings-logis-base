@@ -112,6 +112,9 @@ public class Order extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "equip_type", length = 30)
 	private String equipType;
 
+	@Column (name = "equip_group_cd", length = 30)
+	private String equipGroupCd;
+	
 	@Column (name = "equip_cd", length = 30)
 	private String equipCd;
 
@@ -341,6 +344,14 @@ public class Order extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setEquipCd(String equipCd) {
 		this.equipCd = equipCd;
+	}
+
+	public String getEquipGroupCd() {
+		return equipGroupCd;
+	}
+
+	public void setEquipGroupCd(String equipGroupCd) {
+		this.equipGroupCd = equipGroupCd;
 	}
 
 	public String getEquipNm() {

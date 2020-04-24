@@ -86,6 +86,9 @@ public class BoxPack extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	@Column (name = "stage_cd", length = 30)
 	private String stageCd;
+	
+	@Column (name = "equip_group_cd", length = 30)
+	private String equipGroupCd;
 
 	@Column (name = "equip_type", length = 20)
 	private String equipType;
@@ -170,21 +173,6 @@ public class BoxPack extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	@Column (name = "cancel_flag", length = 1)
 	private Boolean cancelFlag;
-
-	@Column (name = "prop01")
-	private String prop01;
-
-	@Column (name = "prop02")
-	private String prop02;
-
-	@Column (name = "prop03")
-	private String prop03;
-
-	@Column (name = "prop04")
-	private String prop04;
-
-	@Column (name = "prop05")
-	private String prop05;
   
 	public String getId() {
 		return id;
@@ -296,6 +284,14 @@ public class BoxPack extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setStageCd(String stageCd) {
 		this.stageCd = stageCd;
+	}
+
+	public String getEquipGroupCd() {
+		return equipGroupCd;
+	}
+
+	public void setEquipGroupCd(String equipGroupCd) {
+		this.equipGroupCd = equipGroupCd;
 	}
 
 	public String getEquipType() {
@@ -498,43 +494,4 @@ public class BoxPack extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.cancelFlag = cancelFlag;
 	}
 
-	public String getProp01() {
-		return prop01;
-	}
-
-	public void setProp01(String prop01) {
-		this.prop01 = prop01;
-	}
-
-	public String getProp02() {
-		return prop02;
-	}
-
-	public void setProp02(String prop02) {
-		this.prop02 = prop02;
-	}
-
-	public String getProp03() {
-		return prop03;
-	}
-
-	public void setProp03(String prop03) {
-		this.prop03 = prop03;
-	}
-
-	public String getProp04() {
-		return prop04;
-	}
-
-	public void setProp04(String prop04) {
-		this.prop04 = prop04;
-	}
-
-	public String getProp05() {
-		return prop05;
-	}
-
-	public void setProp05(String prop05) {
-		this.prop05 = prop05;
-	}	
 }
