@@ -111,7 +111,7 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	private Integer batchOrderQty;
 
 	@Column (name = "result_order_qty", length = 12)
-	private Integer resultOrderQty;
+	private Integer resultOrderQty;	
 
 	@Column (name = "parent_pcs", nullable = false, length = 12)
 	private Integer parentPcs;
@@ -121,6 +121,9 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	@Column (name = "result_pcs", length = 12)
 	private Integer resultPcs;
+	
+	@Column (name = "result_box_qty", length = 12)
+	private Integer resultBoxQty;
 
 	@Column (name = "progress_rate", length = 19)
 	private Float progressRate;
@@ -132,7 +135,7 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	private Float uph;
 	
 	@Column (name = "equip_runtime", length = 12)
-	private Integer equipRuntime;
+	private Float equipRuntime;
 
 	@Column (name = "instructed_at", type = xyz.elidom.dbist.annotation.ColumnType.DATETIME)
 	private Date instructedAt;
@@ -316,6 +319,14 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setResultPcs(Integer resultPcs) {
 		this.resultPcs = resultPcs;
+	}	
+
+	public Integer getResultBoxQty() {
+		return resultBoxQty;
+	}
+
+	public void setResultBoxQty(Integer resultBoxQty) {
+		this.resultBoxQty = resultBoxQty;
 	}
 
 	public Float getProgressRate() {
@@ -342,11 +353,11 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.uph = uph;
 	}
 
-	public Integer getEquipRuntime() {
+	public Float getEquipRuntime() {
 		return equipRuntime;
 	}
 
-	public void setEquipRuntime(Integer equipRuntime) {
+	public void setEquipRuntime(Float equipRuntime) {
 		this.equipRuntime = equipRuntime;
 	}
 
