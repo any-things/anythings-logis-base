@@ -55,6 +55,10 @@ public class BatchReceiveEvent extends BatchRootEvent {
 	 * @param domainId
 	 * @param eventType
 	 * @param eventStep
+	 * @param areaCd
+	 * @param stageCd
+	 * @param jobDate
+	 * @param comCd
 	 */
 	public BatchReceiveEvent(long domainId, short eventType, short eventStep, String areaCd, String stageCd, String jobDate, String comCd) {
 		this(domainId, eventStep, eventType);

@@ -32,6 +32,9 @@ public class BatchReceiptItem extends xyz.elidom.orm.entity.basic.ElidomStampHoo
 
 	@Column (name = "batch_id", length = 40)
 	private String batchId;
+	
+	@Column (name = "job_seq", length = 12)
+	private String jobSeq;
 
 	@Column (name = "com_cd", length = 30)
 	private String comCd;
@@ -74,9 +77,6 @@ public class BatchReceiptItem extends xyz.elidom.orm.entity.basic.ElidomStampHoo
 
 	@Column (name = "skip_flag", length = 1)
 	private Boolean skipFlag;
- 
-	@Column (name = "job_seq", length = 12)
-	private Integer jobSeq;
 	
 	public String getId() {
 		return id;
@@ -108,6 +108,14 @@ public class BatchReceiptItem extends xyz.elidom.orm.entity.basic.ElidomStampHoo
 
 	public void setBatchId(String batchId) {
 		this.batchId = batchId;
+	}
+	
+	public String getJobSeq() {
+		return jobSeq;
+	}
+
+	public void setJobSeq(String jobSeq) {
+		this.jobSeq = jobSeq;
 	}
 
 	public String getComCd() {
@@ -220,14 +228,6 @@ public class BatchReceiptItem extends xyz.elidom.orm.entity.basic.ElidomStampHoo
 	
 	public void setJobType(String jobType) {
 		this.jobType = jobType;
-	}
-
-	public Integer getJobSeq() {
-		return jobSeq;
-	}
-
-	public void setJobSeq(Integer jobSeq) {
-		this.jobSeq = jobSeq;
 	}
 	
 	/**
