@@ -19,4 +19,13 @@ public class EtcQueryStore extends LogisBaseQueryStore {
 		return this.getQueryByPath("etc/CurrentTime");
 	}
 	
+	/**
+	 * 데이터베이스 서버 기준 현재 날짜, 시간, 분을 각각 조회하는 쿼리 
+	 * 
+	 * @return
+	 */
+	public String getCurrentDateHourMinQuery() {
+		return this.getQueryByPath("etc/CurrentDateHourMin");
+	}
+	
 }

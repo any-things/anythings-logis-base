@@ -30,6 +30,9 @@ public class EquipGroup extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	@Column (name = "area_cd", length = 30)
 	private String areaCd;
+	
+	@Column (name = "stage_cd", length = 30)
+	private String stageCd;
 
 	@Column (name = "category", length = 20)
 	private String category;
@@ -75,6 +78,14 @@ public class EquipGroup extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setAreaCd(String areaCd) {
 		this.areaCd = areaCd;
+	}
+
+	public String getStageCd() {
+		return stageCd;
+	}
+
+	public void setStageCd(String stageCd) {
+		this.stageCd = stageCd;
 	}
 
 	public String getCategory() {

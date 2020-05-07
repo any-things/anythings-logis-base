@@ -7,6 +7,7 @@ import xyz.anythings.base.entity.BatchReceiptItem;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.event.EventConstants;
 import xyz.anythings.base.event.main.IdGenerationEvent;
+import xyz.anythings.base.model.CurrentDbTime;
 import xyz.anythings.base.query.store.EtcQueryStore;
 import xyz.anythings.sys.event.EventPublisher;
 import xyz.anythings.sys.util.AnyOrmUtil;
@@ -39,6 +40,17 @@ public class LogisBaseUtil {
 		IQueryManager queryMgr = BeanUtil.get(IQueryManager.class);
 		String query = BeanUtil.get(EtcQueryStore.class).getCurrentTimeQuery();
 		return queryMgr.selectBySql(query, new HashMap<String, Object>(1), Date.class);
+	}
+	
+	/**
+	 * 데이터베이스 현재 시간 정보를 CurrentDbTime 객체로 변환
+	 * 
+	 * @return
+	 */
+	public static CurrentDbTime currentDbDateTime() {
+		IQueryManager queryMgr = BeanUtil.get(IQueryManager.class);
+		String query = BeanUtil.get(EtcQueryStore.class).getCurrentDateHourMinQuery();
+		return queryMgr.selectBySql(query, new HashMap<String, Object>(1), CurrentDbTime.class);
 	}
 	
 	/**
