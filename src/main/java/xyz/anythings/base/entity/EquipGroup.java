@@ -36,6 +36,12 @@ public class EquipGroup extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	@Column (name = "category", length = 20)
 	private String category;
+	
+	@Column (name = "input_workers", length = 12)
+	private Integer inputWorkers;
+	
+	@Column (name = "total_workers", length = 12)
+	private Integer totalWorkers;
 
 	@Column (name = "remarks", length = 1000)
 	private String remarks;
@@ -96,11 +102,28 @@ public class EquipGroup extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.category = category;
 	}
 
+	public Integer getInputWorkers() {
+		return inputWorkers;
+	}
+
+	public void setInputWorkers(Integer inputWorkers) {
+		this.inputWorkers = inputWorkers;
+	}
+
+	public Integer getTotalWorkers() {
+		return totalWorkers;
+	}
+
+	public void setTotalWorkers(Integer totalWorkers) {
+		this.totalWorkers = totalWorkers;
+	}
+
 	public String getRemarks() {
 		return remarks;
 	}
 
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
-	}	
+	}
+
 }
