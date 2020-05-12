@@ -30,7 +30,7 @@ public class StockHist extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "cell_cd", nullable = false, length = 30)
 	private String cellCd;
 	
-	@Column (name = "com_cd", nullable = false, length = 30)
+	@Column (name = "com_cd", length = 30)
 	private String comCd;
 
 	@Column (name = "sku_cd", length = 30)
