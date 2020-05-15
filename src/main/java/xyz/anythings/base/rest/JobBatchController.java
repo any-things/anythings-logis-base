@@ -18,16 +18,23 @@ import org.springframework.web.bind.annotation.RestController;
 import xyz.anythings.base.entity.BatchReceipt;
 import xyz.anythings.base.entity.BatchReceiptItem;
 import xyz.anythings.base.entity.JobBatch;
+import xyz.anythings.base.entity.JobConfigSet;
 import xyz.anythings.base.model.BatchProgressRate;
 import xyz.anythings.base.service.impl.BatchService;
 import xyz.anythings.base.service.impl.LogisServiceDispatcher;
+import xyz.anythings.gw.entity.IndConfigSet;
 import xyz.anythings.sys.util.AnyEntityUtil;
+import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.elidom.dbist.dml.Page;
+import xyz.elidom.dbist.dml.Query;
+import xyz.elidom.orm.IQueryManager;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
 import xyz.elidom.orm.system.annotation.service.ServiceDesc;
 import xyz.elidom.sys.SysConstants;
 import xyz.elidom.sys.entity.Domain;
 import xyz.elidom.sys.system.service.AbstractRestService;
+import xyz.elidom.sys.util.ThrowUtil;
+import xyz.elidom.util.BeanUtil;
 import xyz.elidom.util.ValueUtil;
 
 @RestController
@@ -243,7 +250,7 @@ public class JobBatchController extends AbstractRestService {
 	public Map<String, Object> searchInstructionData(@PathVariable("id") String batchId) {
 		
 		// 1. 작업 배치 조회 
-		JobBatch batch = AnyEntityUtil.findEntityByIdWithLock(true, JobBatch.class, batchId);
+		JobBatch batch = this.findWithLock(true, batchId, false);
 		// 2. 작업 지시 데이터 조회
 		return this.serviceDispatcher.getInstructionService(batch).searchInstructionData(batch);
 	}
@@ -261,7 +268,7 @@ public class JobBatchController extends AbstractRestService {
 			@RequestBody(required = false) List<String> equipList) {
 		
 		// 1. 작업 배치 조회
-		JobBatch batch = AnyEntityUtil.findEntityByIdWithLock(true, JobBatch.class, batchId);
+		JobBatch batch = this.findWithLock(true, batchId, true);
 		// 2. 작업 지시  
 		int createdCount = this.serviceDispatcher.getInstructionService(batch).instructBatch(batch, equipList);
 		// 3. 작업 지시 결과 리턴
@@ -298,7 +305,7 @@ public class JobBatchController extends AbstractRestService {
 			@RequestBody(required = false) List<String> equipIdList) {
 		
 		// 1. 작업 배치 조회
-		JobBatch batch = AnyEntityUtil.findEntityByIdWithLock(true, JobBatch.class, batchId);
+		JobBatch batch = this.findWithLock(true, batchId, true);
 		// 2. 작업 지시 
 		int count = this.serviceDispatcher.getInstructionService(batch).instructTotalpicking(batch, equipIdList);
 		// 3. 작업 지시 결과 리턴
@@ -336,9 +343,9 @@ public class JobBatchController extends AbstractRestService {
 			@PathVariable("main_batch_id") String mainBatchId) {
 		
 		// 1. 병합할 메인 배치 정보 조회 
-		JobBatch mainBatch = AnyEntityUtil.findEntityByIdWithLock(true, JobBatch.class, mainBatchId);	
+		JobBatch mainBatch = this.findWithLock(true, mainBatchId, true);
 		// 2. 병합될 배치 정보 조회 
-		JobBatch sourceBatch = AnyEntityUtil.findEntityByIdWithLock(true, JobBatch.class, sourceBatchId);	
+		JobBatch sourceBatch = this.findWithLock(true, sourceBatchId, true);
 		// 3. 작업 배치 병합
 		int mergedCnt = this.serviceDispatcher.getInstructionService(mainBatch).mergeBatch(mainBatch, sourceBatch);
 		// 4. 결과 리턴
@@ -356,7 +363,7 @@ public class JobBatchController extends AbstractRestService {
 	public Map<String, Object> cancelInstructionBatch(@PathVariable("id") String batchId) {
 		
 		// 1. 작업 배치 조회 
-		JobBatch batch = AnyEntityUtil.findEntityByIdWithLock(true, JobBatch.class, batchId);
+		JobBatch batch = this.findWithLock(true, batchId, true);
 		// 2. 작업 지시 취소
 		int count = this.serviceDispatcher.getInstructionService(batch).cancelInstructionBatch(batch);
 		// 3. 작업 지시 결과 리턴
@@ -366,14 +373,14 @@ public class JobBatchController extends AbstractRestService {
 	/**
 	 * 배치 마감
 	 * 
-	 * @param id
+	 * @param batchId
 	 * @return
 	 */
 	@RequestMapping(value = "/{id}/close_batch", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Close batch")
-	public Map<String, Object> closeBatch(@RequestParam(name = "id", required = true) String id) {
+	public Map<String, Object> closeBatch(@RequestParam(name = "id", required = true) String batchId) {
 
-		JobBatch batch = AnyEntityUtil.findEntityByIdWithLock(true, JobBatch.class, id);
+		JobBatch batch = this.findWithLock(true, batchId, true);
 		this.batchService.closeBatch(batch, false);
 		return ValueUtil.newMap("result", SysConstants.OK_STRING);
 	}
@@ -386,10 +393,10 @@ public class JobBatchController extends AbstractRestService {
 	 */
 	@RequestMapping(value = "/{id}/close_batch_forcibly", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Close batch forcibly")
-	public Map<String, Object> closeBatchForcibly(@PathVariable("id") String id) {
+	public Map<String, Object> closeBatchForcibly(@PathVariable("id") String batchId) {
 		
 		// 1. JobBatch 조회 
-		JobBatch batch = AnyEntityUtil.findEntityByIdWithLock(true, JobBatch.class, id);
+		JobBatch batch = this.findWithLock(true, batchId, true);
 		// 2. 작업 배치 마감
 		this.batchService.closeBatch(batch, true);
 		// 3. 결과 리턴
@@ -404,10 +411,10 @@ public class JobBatchController extends AbstractRestService {
 	 */
 	@RequestMapping(value = "/{id}/cancel_batch", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Cancel received batch")
-	public Map<String, Object> cancelBatch(@PathVariable("id") String id) {
+	public Map<String, Object> cancelBatch(@PathVariable("id") String batchId) {
 		
 		// 1. JobBatch 조회 
-		JobBatch batch = AnyEntityUtil.findEntityByIdWithLock(true, JobBatch.class, id);
+		JobBatch batch = this.findWithLock(true, batchId, true);
 		// 2. 작업 배치 마감
 		int count = this.serviceDispatcher.getReceiveBatchService().cancelBatch(batch);
 		// 3. 작업 배치 수신 취소
@@ -431,4 +438,34 @@ public class JobBatchController extends AbstractRestService {
 		return ValueUtil.newMap("result,msg,count", SysConstants.OK_STRING, SysConstants.OK_STRING, count);
 	}
 
+	/**
+	 * 작업 배치를 락을 걸면서 조회
+	 * 
+	 * @param exceptionWhenEmpty
+	 * @param batchId
+	 * @param findConfigSet
+	 * @return
+	 */
+	private JobBatch findWithLock(boolean exceptionWhenEmpty, String batchId, boolean findConfigSet) {
+		Query condition = AnyOrmUtil.newConditionForExecution();
+		condition.addFilter("id", batchId);
+		condition.addSelect("domain_id","id","wms_batch_no","wcs_batch_no","batch_group_id","title","brand_cd","season_cd","com_cd","job_type","batch_type","job_date","job_seq","area_cd","stage_cd","equip_type","equip_group_cd","equip_cd","equip_nm","parent_order_qty","batch_order_qty","result_order_qty","parent_pcs","batch_pcs","result_pcs","result_box_qty","progress_rate","input_workers","total_workers","uph","equip_runtime","instructed_at","finished_at","last_input_seq","status","job_config_set_id","ind_config_set_id");
+		JobBatch batch = BeanUtil.get(IQueryManager.class).selectByConditionWithLock(JobBatch.class, condition);
+		
+		if(batch == null) {
+			throw ThrowUtil.newNotFoundRecord("terms.menu.JobBatch", batchId);
+		} else {
+			if(findConfigSet) {
+				if(ValueUtil.isNotEmpty(batch.getIndConfigSetId())) {
+					batch.setIndConfigSet(AnyEntityUtil.findEntityById(false, IndConfigSet.class, batch.getIndConfigSetId()));
+				}
+				
+				if(ValueUtil.isNotEmpty(batch.getJobConfigSetId())) {
+					batch.setJobConfigSet(AnyEntityUtil.findEntityById(false, JobConfigSet.class, batch.getJobConfigSetId()));
+				}
+			}
+		}
+		
+		return batch;
+	}
 }

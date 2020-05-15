@@ -45,7 +45,7 @@ public class BatchService extends AbstractLogisService {
 		List<Object> filterValues = ValueUtil.newList(domainId, stageCd, equipType, JobBatch.STATUS_RUNNING);
 		
 		if(ValueUtil.isNotEmpty(equipCd)) {
-			filterNames += "equipCd";
+			filterNames += ",equipCd";
 			filterValues.add(equipCd);
 		}
 		
