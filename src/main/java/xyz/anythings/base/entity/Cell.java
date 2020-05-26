@@ -1,10 +1,15 @@
 package xyz.anythings.base.entity;
 
+import java.util.Map;
+
 import xyz.elidom.dbist.annotation.Column;
 import xyz.elidom.dbist.annotation.GenerationRule;
 import xyz.elidom.dbist.annotation.Index;
 import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.Table;
+import xyz.elidom.orm.IQueryManager;
+import xyz.elidom.sys.util.ValueUtil;
+import xyz.elidom.util.BeanUtil;
 
 @Table(name = "cells", idStrategy = GenerationRule.UUID, uniqueFields="domainId,cellCd", indexes = {
 	@Index(name = "ix_cells_0", columnList = "domain_id,cell_cd", unique = true),
@@ -185,4 +190,14 @@ public class Cell extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.activeFlag = activeFlag;
 	}
 	
+	@Override
+	public void afterUpdate() {
+		super.afterUpdate();
+		
+		// 재고의 active_flag 업데이트
+		String sql = "update stocks set active_flag = :activeFlag where domain_id = :domainId and cell_cd = :cellCd";
+		Map<String, Object> params = ValueUtil.newMap("domainId,cellCd,activeFlag", this.domainId, this.cellCd, this.activeFlag);
+		BeanUtil.get(IQueryManager.class).executeBySql(sql, params);
+	}
+
 }

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import xyz.anythings.base.LogisConstants;
 import xyz.anythings.base.entity.BatchReceipt;
 import xyz.anythings.base.entity.BatchReceiptItem;
 import xyz.anythings.base.entity.JobBatch;
@@ -27,6 +28,7 @@ import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.dbist.dml.Query;
+import xyz.elidom.exception.server.ElidomValidationException;
 import xyz.elidom.orm.IQueryManager;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
 import xyz.elidom.orm.system.annotation.service.ServiceDesc;
@@ -380,9 +382,18 @@ public class JobBatchController extends AbstractRestService {
 	@ApiDesc(description = "Close batch")
 	public Map<String, Object> closeBatch(@RequestParam(name = "id", required = true) String batchId) {
 
+		// 1. JobBatch 조회 
 		JobBatch batch = this.findWithLock(true, batchId, true);
-		this.batchService.closeBatch(batch, false);
-		return ValueUtil.newMap("result", SysConstants.OK_STRING);
+		
+		// 2. 작업 배치 마감
+		try {
+			this.batchService.closeBatch(batch, false);
+		} catch (ElidomValidationException eve) {
+			return ValueUtil.newMap("result,msg", LogisConstants.NG_STRING, eve.getMessage()); 
+		}
+		// 3. 결과 리턴
+		return ValueUtil.newMap("result,msg", LogisConstants.OK_STRING, LogisConstants.OK_STRING);
+
 	}
 	
 	/**

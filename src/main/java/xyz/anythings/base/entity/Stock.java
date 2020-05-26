@@ -51,6 +51,10 @@ public class Stock extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	 * 트랜잭션 - 피킹 (pick) 
 	 */
 	public static final String TRX_PICK = "pick";
+	/**
+	 * 트랜잭션 - 작업 할당 (assign) 
+	 */
+	public static final String TRX_ASSIGN = "assign";
 
 	@PrimaryKey
 	@Column (name = "id", nullable = false, length = 40)
@@ -327,8 +331,16 @@ public class Stock extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		hist.setTranCd(this.lastTranCd);
 		hist.setPrevStockQty(this.prevStockQty);
 		hist.setStockQty(this.stockQty);
-		int inOutQty = ValueUtil.toInteger(this.stockQty, 0) - ValueUtil.toInteger(this.prevStockQty, 0);
+		int inOutQty = 0;
 		
+		// 작업 할당의 경우 할당 수량은 LoadQty로 판단 
+		if(ValueUtil.isEqualIgnoreCase(this.lastTranCd, Stock.TRX_ASSIGN)) {
+			inOutQty = ValueUtil.toInteger(this.prevLoadQty, 0) - ValueUtil.toInteger(this.loadQty, 0);
+		// 나머지는 재고 수량으로 판단
+		} else {
+			inOutQty = ValueUtil.toInteger(this.stockQty, 0) - ValueUtil.toInteger(this.prevStockQty, 0);
+		}
+
 		if(inOutQty > 0) {
 			hist.setInQty(inOutQty);
 		} else if(inOutQty < 0) {

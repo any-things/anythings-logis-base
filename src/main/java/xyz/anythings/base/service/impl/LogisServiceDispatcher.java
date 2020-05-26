@@ -99,7 +99,7 @@ public class LogisServiceDispatcher implements BeanFactoryAware {
 	 * @return
 	 */
 	public IBatchService getBatchService(JobBatch batch) {
-		return this.getBatchService(batch);
+		return this.getBatchService(batch.getJobType());
 	}
 	
 	/**
