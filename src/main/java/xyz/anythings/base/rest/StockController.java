@@ -190,7 +190,7 @@ public class StockController extends AbstractRestService {
 
 		// 2. 수량 단위가 박스 단위이면 박스 수량과 적치 수량을 곱해서 처리 
 		if(ValueUtil.isEqualIgnoreCase("B", qtyUnit)) {
-			SKU sku = AnyEntityUtil.findEntityBy(domainId, true, SKU.class, null, "comCd,skuCd", comCd, skuCd);
+			SKU sku = AnyEntityUtil.findEntityBy(domainId, true, SKU.class, "id,box_in_qty", "comCd,skuCd", comCd, skuCd);
 			loadQty = sku.getBoxInQty() * loadQty;
 		}
 

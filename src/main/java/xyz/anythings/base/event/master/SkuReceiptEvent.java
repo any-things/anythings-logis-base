@@ -38,7 +38,10 @@ public class SkuReceiptEvent extends SysEvent {
 	 * 수신 완료 수량
 	 */
 	private int receivedCount;
-	
+	/**
+	 * 가장 최근에 수신 받은 시각 
+	 */
+	private String lastReceivedAt;
 	
 	public SkuReceiptEvent() {
 		super();
@@ -89,6 +92,14 @@ public class SkuReceiptEvent extends SysEvent {
 
 	public void setReceivedCount(int receivedCount) {
 		this.receivedCount = receivedCount;
+	}
+
+	public String getLastReceivedAt() {
+		return lastReceivedAt;
+	}
+
+	public void setLastReceivedAt(String lastReceivedAt) {
+		this.lastReceivedAt = lastReceivedAt;
 	}
 
 }
