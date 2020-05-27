@@ -20,17 +20,17 @@ from (
 			a.equip_cd,
 			a.sku_cd, a.sku_nm,
 			c.order_qty,
-			NVL(a.pick_qty, 0) as alloc_qty,
-			NVL(a.picked_qty, 0) as picked_qty,
-			NVL(b.stock_qty, 0) as stock_qty
+			COALESCE(a.pick_qty, 0) as alloc_qty,
+			COALESCE(a.picked_qty, 0) as picked_qty,
+			COALESCE(b.stock_qty, 0) as stock_qty
 		from
 			(select
 				j.equip_type,
 				j.equip_cd,
 				j.sku_cd,
 				j.sku_nm,
-				NVL(sum(j.pick_qty), 0) as pick_qty,
-				NVL(sum(j.picked_qty), 0) as picked_qty
+				COALESCE(sum(j.pick_qty), 0) as pick_qty,
+				COALESCE(sum(j.picked_qty), 0) as picked_qty
 			from
 				job_instances j inner join job_batches b on j.batch_id = b.id
 			where
