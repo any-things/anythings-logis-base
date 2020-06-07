@@ -17,7 +17,7 @@ import xyz.elidom.dbist.annotation.Table;
 	@Index(name = "ix_stock_hists_2", columnList = "domain_id,cell_cd,tran_cd"),
 	@Index(name = "ix_stock_hists_3", columnList = "domain_id,created_at")
 })
-public class StockHist extends xyz.elidom.orm.entity.basic.ElidomStampHook {
+public class StockHist extends xyz.elidom.orm.entity.basic.DomainCreateStampHook {
 	/**
 	 * SerialVersion UID
 	 */

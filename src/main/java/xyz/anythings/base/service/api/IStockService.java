@@ -59,6 +59,26 @@ public interface IStockService {
 	public Stock findOrCreateStock(Long domainId, String cellCd, String comCd, String skuCd);
 	
 	/**
+	 * 셀 재고 조회 없으면 생성
+	 * 
+	 * @param domainId
+	 * @param cellCd
+	 * @param sku
+	 * @return
+	 */
+	public Stock findOrCreateStock(Long domainId, String cellCd, SKU sku);
+	
+	/**
+	 * 재고 생성
+	 * 
+	 * @param domainId
+	 * @param cellCd
+	 * @param sku
+	 * @return
+	 */
+	public Stock createStock(Long domainId, String cellCd, SKU sku);
+	
+	/**
 	 * 재고 생성
 	 * 
 	 * @param domainId

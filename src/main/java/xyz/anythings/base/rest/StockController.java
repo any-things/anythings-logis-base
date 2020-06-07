@@ -171,7 +171,9 @@ public class StockController extends AbstractRestService {
 			@PathVariable("sku_cd") String skuCd,
 			@RequestParam(name = "fixed_flag", required = false) Boolean fixedFlag) {
 		
-		Stock stock = this.stockService.findOrCreateStock(Domain.currentDomainId(), cellCd, comCd, skuCd);
+		Long domainId = Domain.currentDomainId();
+		SKU sku = AnyEntityUtil.findEntityBy(domainId, true, SKU.class, "id,com_cd,sku_cd,sku_barcd,sku_nm", "comCd,skuCd", comCd, skuCd);
+		Stock stock = this.stockService.findOrCreateStock(domainId, cellCd, sku);
 		return this.stockService.calcuateOrderStock(stock);
 	}
 	
@@ -187,20 +189,22 @@ public class StockController extends AbstractRestService {
 		
 		// 1. Validation
 		Long domainId = Domain.currentDomainId();
+		
+		// 2. SKU 조회
+		SKU sku = AnyEntityUtil.findEntityBy(domainId, true, SKU.class, "id,box_in_qty,com_cd,sku_cd,sku_barcd,sku_nm", "comCd,skuCd", comCd, skuCd);
 
-		// 2. 수량 단위가 박스 단위이면 박스 수량과 적치 수량을 곱해서 처리 
+		// 3. 수량 단위가 박스 단위이면 박스 수량과 적치 수량을 곱해서 처리 
 		if(ValueUtil.isEqualIgnoreCase("B", qtyUnit)) {
-			SKU sku = AnyEntityUtil.findEntityBy(domainId, true, SKU.class, "id,box_in_qty", "comCd,skuCd", comCd, skuCd);
 			loadQty = sku.getBoxInQty() * loadQty;
 		}
 
-		// 3. 재고 조회
-		Stock stock = this.stockService.findOrCreateStock(domainId, cellCd, comCd, skuCd);
+		// 4. 재고 조회
+		Stock stock = this.stockService.findOrCreateStock(domainId, cellCd, sku);
 		
-		// 4. 재고 보충
+		// 5. 재고 보충
 		stock = this.stockService.addStock(stock, Stock.TRX_IN, loadQty);
 
-		// 5. 재고 리턴
+		// 6. 재고 리턴
 		return stock;
 	}
 	
