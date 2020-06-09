@@ -13,13 +13,13 @@ import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.event.EventConstants;
 import xyz.anythings.base.event.main.BatchReceiveEvent;
 import xyz.anythings.base.service.api.IReceiveBatchService;
+import xyz.anythings.sys.AnyConstants;
 import xyz.anythings.sys.event.model.EventResultSet;
 import xyz.anythings.sys.event.model.SysEvent;
 import xyz.anythings.sys.service.AbstractExecutionService;
 import xyz.elidom.core.entity.Code;
 import xyz.elidom.core.entity.CodeDetail;
 import xyz.elidom.core.rest.CodeController;
-import xyz.elidom.exception.server.ElidomRuntimeException;
 import xyz.elidom.util.ValueUtil;
 
 /**
@@ -49,11 +49,7 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 	 * @return
 	 */
 	public BatchReceipt readyToReceive(Long domainId, String areaCd, String stageCd, String comCd, String jobDate, Object ... params) {
-		// 1. 모든 작업 유형을 찾는다. 공통 코드에서 찾음
-		Code code = this.codeCtrl.findByName(domainId, LogisConstants.JOB_TYPE);
-		List<CodeDetail> details = code.getItems();
-		
-		// 2. BatchReceipt 하나 생성
+		// 1. BatchReceipt 하나 생성
 		int jobSeq = BatchReceipt.newBatchReceiptJobSeq(domainId, areaCd, stageCd, comCd, jobDate);
 		BatchReceipt batchReceipt = new BatchReceipt();
 		batchReceipt.setComCd(comCd);
@@ -64,16 +60,31 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 		batchReceipt.setStatus(LogisConstants.COMMON_STATUS_WAIT);
 		this.queryManager.insert(batchReceipt);
 		
-		// 3. 각 작업 유형별로 이벤트 전달
-		for(CodeDetail detail : details) { 
-			String jobType = detail.getName();
-			this.readyToReceiveEvent(SysEvent.EVENT_STEP_BEFORE, domainId, jobType, areaCd, stageCd, comCd, jobDate, batchReceipt, params);
+		if(ValueUtil.isEmpty(params)) {
+			// 2. 모든 작업 유형을 찾는다. 공통 코드에서 찾음
+			Code code = this.codeCtrl.findByName(domainId, LogisConstants.JOB_TYPE);
+			List<CodeDetail> details = code.getItems();
+
+			// 3. 각 작업 유형별로 이벤트 전달
+			for(CodeDetail detail : details) { 
+				String jobType = detail.getName();
+				this.readyToReceiveEvent(SysEvent.EVENT_STEP_BEFORE, domainId, jobType, areaCd, stageCd, comCd, jobDate, batchReceipt);
+			}
+			
+		} else {
+			// 2. 관련 작업 유형 추출 
+			String jobTypes = ValueUtil.toString(params[0]);
+			String[] jobTypeArr = jobTypes.split(LogisConstants.COMMA);
+			
+			// 3. 각 작업 유형별로 이벤트 전달
+			for(int i = 0 ; i < jobTypeArr.length ; i++) {
+				this.readyToReceiveEvent(SysEvent.EVENT_STEP_BEFORE, domainId, jobTypeArr[i], areaCd, stageCd, comCd, jobDate, batchReceipt);
+			}
 		}
 		
 		// 4. 수신 정보가 있는지 체크 
 		if(ValueUtil.isEmpty(batchReceipt.getItems())) {
-			this.queryManager.delete(batchReceipt);
-			throw new ElidomRuntimeException("수신할 주문 정보가 없습니다.");
+			batchReceipt.setStatus(AnyConstants.COMMON_STATUS_FINISHED);
 		}
 		
 		// 5. 수신 정보가 있다면 리턴

@@ -208,9 +208,10 @@ public class JobBatchController extends AbstractRestService {
 			@PathVariable("area_cd") String areaCd,
 			@PathVariable("stage_cd") String stageCd,
 			@PathVariable("com_cd") String comCd, 
-			@PathVariable("job_date") String jobDate) {
+			@PathVariable("job_date") String jobDate,
+			@RequestParam(name = "job_type", required = false) String jobType) {
 
-		return this.serviceDispatcher.getReceiveBatchService().readyToReceive(Domain.currentDomainId(), areaCd, stageCd, comCd, jobDate);
+		return this.serviceDispatcher.getReceiveBatchService().readyToReceive(Domain.currentDomainId(), areaCd, stageCd, comCd, jobDate, jobType);
 	}
 	
 	/**
@@ -238,8 +239,6 @@ public class JobBatchController extends AbstractRestService {
 		summary.setItems(AnyEntityUtil.searchDetails(Domain.currentDomainId(), BatchReceiptItem.class, "batchReceiptId", batchSummaryId));
 		return summary;
 	}
-	
-	
 	
 	/**
 	 * 작업 지시 팝업 시 팝업 화면에 표시를 위해 호출하는 데이터
@@ -393,7 +392,6 @@ public class JobBatchController extends AbstractRestService {
 		}
 		// 3. 결과 리턴
 		return ValueUtil.newMap("result,msg", LogisConstants.OK_STRING, LogisConstants.OK_STRING);
-
 	}
 	
 	/**
