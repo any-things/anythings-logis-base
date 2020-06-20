@@ -204,7 +204,6 @@ public class Stock extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	}
 
 	public void setStockQty(Integer stockQty) {
-		this.prevStockQty = this.stockQty;
 		this.stockQty = stockQty;
 	}
 
@@ -304,25 +303,107 @@ public class Stock extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	public void setInputQty(Integer inputQty) {
 		this.inputQty = inputQty;
 	}
-
-	@Override
-	public void afterCreate() {
-		super.afterCreate();
+	
+	/**
+	 * DPS용 작업 할당 트랜잭션
+	 * 
+	 * @param assignQty
+	 */
+	public Stock assignJob(Integer assignQty) {
+		this.setLastTranCd(Stock.TRX_ASSIGN);
 		
-		StockHist hist = new StockHist();
-		hist.setCellCd(this.cellCd);
-		hist.setComCd(this.comCd);
-		hist.setSkuCd(this.skuCd);
-		hist.setTranCd(ValueUtil.isEmpty(this.lastTranCd) ? Stock.TRX_CREATE : this.lastTranCd);
-		hist.setPrevStockQty(0);
-		hist.setStockQty(this.stockQty);
-		hist.setInQty(this.stockQty);
-		BeanUtil.get(IQueryManager.class).insert(hist);
+		int allocQty = ValueUtil.toInteger(this.getAllocQty(), 0) + assignQty;
+		allocQty = allocQty >= 0 ? allocQty : 0;
+		this.setAllocQty(allocQty);
+		int loadQty = ValueUtil.toInteger(this.getLoadQty(), 0) - assignQty;
+		loadQty = loadQty >= 0 ? loadQty : 0;
+		this.setLoadQty(loadQty);
+		
+		BeanUtil.get(IQueryManager.class).update(this, "lastTranCd", "stockQty", "allocQty", "loadQty", "updatedAt");
+		return this;
+	}
+	
+	/**
+	 * 재고 보충
+	 * 
+	 * @param addQty
+	 */
+	public Stock addStock(Integer addQty) {
+		this.setLastTranCd(Stock.TRX_IN);
+		
+		int loadQty = ValueUtil.toInteger(this.getLoadQty(), 0) + addQty;
+		loadQty = loadQty >= 0 ? loadQty : 0;
+		this.setLoadQty(loadQty);
+		
+		if(ValueUtil.isEmpty(id)) {
+			BeanUtil.get(IQueryManager.class).insert(this);
+		} else {
+			BeanUtil.get(IQueryManager.class).update(this, "comCd", "skuCd", "skuBarcd", "skuNm", "lastTranCd", "loadQty", "stockQty", "updaterId", "updatedAt");
+		}
+		
+		return this;
+	}
+	
+	/**
+	 * 재고 마이너스 
+	 * 
+	 * @param removeQty
+	 * @return
+	 */
+	public Stock removeStock(Integer removeQty) {
+		this.setLastTranCd(Stock.TRX_OUT);
+
+		int loadQty = ValueUtil.toInteger(this.getLoadQty(), 0) - removeQty;
+		loadQty = loadQty >= 0 ? loadQty : 0;
+		this.setLoadQty(loadQty);
+		
+		if(ValueUtil.isEmpty(id)) {
+			BeanUtil.get(IQueryManager.class).insert(this);
+		} else {
+			BeanUtil.get(IQueryManager.class).update(this, "lastTranCd", "loadQty", "stockQty", "updaterId", "updatedAt");
+		}
+		
+		return this;		
+	}
+	
+	/**
+	 * 재고 조정
+	 * 
+	 * @param adjustQty
+	 * @return
+	 */
+	public Stock adjustStock(int adjustQty) {
+		this.setLastTranCd(Stock.TRX_ADJUST);
+
+		int loadQty = ValueUtil.toInteger(this.getLoadQty(), 0) + adjustQty;
+		loadQty = loadQty >= 0 ? loadQty : 0;
+		this.setLoadQty(loadQty);
+
+		BeanUtil.get(IQueryManager.class).update(this, "comCd", "skuCd", "skuBarcd", "skuNm", "lastTranCd", "loadQty", "stockQty", "updaterId", "updatedAt");
+		return this;
+	}
+	
+	@Override
+	public void beforeUpdate() {
+		super.beforeUpdate();
+		
+		this.stockQty = (this.stockQty == null) ? 0 : this.stockQty;
+		this.prevStockQty = this.stockQty;
+		this.loadQty = (this.loadQty == null) ? 0 : this.loadQty;
+		this.allocQty = (this.allocQty == null) ? 0 : this.allocQty;
+		this.pickedQty = (this.pickedQty == null) ? 0 : this.pickedQty;
+		
+		// 재고 자동 계산
+		this.stockQty = this.loadQty + this.allocQty;
 	}
 
 	@Override
 	public void afterUpdate() {
 		super.afterUpdate();
+		
+		if(ValueUtil.isEmpty(this.lastTranCd) || ValueUtil.isEmpty(this.skuCd)) {
+			return;
+		}
 		
 		StockHist hist = new StockHist();
 		hist.setCellCd(this.cellCd);
@@ -335,16 +416,18 @@ public class Stock extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		
 		// 작업 할당의 경우 할당 수량은 LoadQty로 판단 
 		if(ValueUtil.isEqualIgnoreCase(this.lastTranCd, Stock.TRX_ASSIGN)) {
-			inOutQty = ValueUtil.toInteger(this.prevLoadQty, 0) - ValueUtil.toInteger(this.loadQty, 0);
+			inOutQty = -1 * (this.prevLoadQty - this.loadQty);
+			
 		// 나머지는 재고 수량으로 판단
 		} else {
-			inOutQty = ValueUtil.toInteger(this.stockQty, 0) - ValueUtil.toInteger(this.prevStockQty, 0);
+			inOutQty = this.stockQty - this.prevStockQty;
 		}
 
 		if(inOutQty > 0) {
 			hist.setInQty(inOutQty);
+			
 		} else if(inOutQty < 0) {
-			hist.setOutQty(inOutQty);
+			hist.setOutQty(Math.abs(inOutQty));
 		}
 		
 		BeanUtil.get(IQueryManager.class).insert(hist);
