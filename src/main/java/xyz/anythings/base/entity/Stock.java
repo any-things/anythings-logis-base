@@ -55,6 +55,10 @@ public class Stock extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	 * 트랜잭션 - 작업 할당 (assign) 
 	 */
 	public static final String TRX_ASSIGN = "assign";
+	/**
+	 * 트랜잭션 - 단순 재고 업데이트 (update) 
+	 */
+	public static final String TRX_UPDATE = "update";	
 
 	@PrimaryKey
 	@Column (name = "id", nullable = false, length = 40)
@@ -134,6 +138,11 @@ public class Stock extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	 */
 	@Ignore
 	private Integer prevLoadQty;
+	/**
+	 * 이전 할당 수량
+	 */
+	@Ignore
+	private Integer prevAllocQty;	
   
 	public String getId() {
 		return id;
@@ -221,6 +230,7 @@ public class Stock extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	}
 
 	public void setAllocQty(Integer allocQty) {
+		this.prevAllocQty = this.allocQty;
 		this.allocQty = allocQty;
 	}
 
@@ -315,12 +325,35 @@ public class Stock extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		int allocQty = ValueUtil.toInteger(this.getAllocQty(), 0) + assignQty;
 		allocQty = allocQty >= 0 ? allocQty : 0;
 		this.setAllocQty(allocQty);
+		
 		int loadQty = ValueUtil.toInteger(this.getLoadQty(), 0) - assignQty;
 		loadQty = loadQty >= 0 ? loadQty : 0;
 		this.setLoadQty(loadQty);
 		
 		BeanUtil.get(IQueryManager.class).update(this, "lastTranCd", "stockQty", "allocQty", "loadQty", "updatedAt");
 		return this;
+	}
+	
+	/**
+	 * 피킹 처리
+	 * 
+	 * @param pickQty
+	 * @return
+	 */
+	public Stock pickJob(Integer pickQty) {
+		this.setLastTranCd(Stock.TRX_PICK);
+
+		int allocQty = ValueUtil.toInteger(this.getAllocQty(), 0) - pickQty;
+		allocQty = allocQty >= 0 ? allocQty : 0;
+		this.setAllocQty(allocQty);
+		
+		if(ValueUtil.isEmpty(id)) {
+			BeanUtil.get(IQueryManager.class).insert(this);
+		} else {
+			BeanUtil.get(IQueryManager.class).update(this, "lastTranCd", "allocQty", "stockQty", "updaterId", "updatedAt");
+		}
+		
+		return this;		
 	}
 	
 	/**
@@ -363,7 +396,7 @@ public class Stock extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 			BeanUtil.get(IQueryManager.class).update(this, "lastTranCd", "loadQty", "stockQty", "updaterId", "updatedAt");
 		}
 		
-		return this;		
+		return this;
 	}
 	
 	/**
@@ -401,7 +434,7 @@ public class Stock extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	public void afterUpdate() {
 		super.afterUpdate();
 		
-		if(ValueUtil.isEmpty(this.lastTranCd) || ValueUtil.isEmpty(this.skuCd)) {
+		if(ValueUtil.isEmpty(this.lastTranCd) || ValueUtil.isEqualIgnoreCase(this.lastTranCd, Stock.TRX_ASSIGN) || ValueUtil.isEmpty(this.skuCd)) {
 			return;
 		}
 		
@@ -414,9 +447,9 @@ public class Stock extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		hist.setStockQty(this.stockQty);
 		int inOutQty = 0;
 		
-		// 작업 할당의 경우 할당 수량은 LoadQty로 판단 
-		if(ValueUtil.isEqualIgnoreCase(this.lastTranCd, Stock.TRX_ASSIGN)) {
-			inOutQty = -1 * (this.prevLoadQty - this.loadQty);
+		// 피킹인 경우 
+		if(ValueUtil.isEqualIgnoreCase(this.lastTranCd, Stock.TRX_PICK)) {
+			inOutQty = -1 * (this.prevAllocQty - this.allocQty);
 			
 		// 나머지는 재고 수량으로 판단
 		} else {

@@ -91,6 +91,10 @@ public class StockController extends AbstractRestService {
 	@RequestMapping(value = "/update_multiple", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Create, Update or Delete multiple at one time")
 	public Boolean multipleUpdate(@RequestBody List<Stock> list) {
+		for(Stock stock : list) {
+			stock.setLastTranCd(Stock.TRX_UPDATE);
+		}
+		
 		return this.cudMultipleData(this.entityClass(), list);
 	}
 
