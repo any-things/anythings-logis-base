@@ -43,7 +43,7 @@ public interface IPreprocessService {
 	 * @param batch
 	 * @return 주문 가공 생성 개수
 	 */
-	public int generatePreprocess(JobBatch batch);
+	public int generatePreprocess(JobBatch batch, Object ... params);
 	
 	/**
 	 * 주문 가공 정보를 삭제한다.
