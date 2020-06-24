@@ -154,7 +154,7 @@ public class StockController extends AbstractRestService {
 		if(stock != null && stock.getOrderQty() > 0) {
 			stock.setEquipType(equipType);
 			stock.setEquipCd(equipCd);
-			stock.setOrderQty(stock.getOrderQty() - stock.getAllocQty() - stock.getPickedQty());
+			stock.setOrderQty(stock.getOrderQty() - stock.getAllocQty() - stock.getLoadQty());
 		} else {
 			stock = new Stock();
 			stock.setOrderQty(0);
