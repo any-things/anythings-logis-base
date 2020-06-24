@@ -45,7 +45,7 @@ public class PreprocessService extends AbstractLogisService {
 	 * @return 주문 가공 생성 개수
 	 */
 	public int generatePreprocess(JobBatch batch, Object ... params) {
-		return this.serviceDispatcher.getPreprocessService(batch).generatePreprocess(batch);
+		return this.serviceDispatcher.getPreprocessService(batch).generatePreprocess(batch, params);
 	}
 	
 	/**
