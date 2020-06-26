@@ -135,6 +135,9 @@ public class Order extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	@Column (name = "sku_barcd", length = 30)
 	private String skuBarcd;
+	
+	@Column (name = "sku_barcd2", length = 30)
+	private String skuBarcd2;
 
 	@Column (name = "sku_nm", length = 200)
 	private String skuNm;
@@ -400,6 +403,14 @@ public class Order extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setSkuBarcd(String skuBarcd) {
 		this.skuBarcd = skuBarcd;
+	}
+
+	public String getSkuBarcd2() {
+		return skuBarcd2;
+	}
+
+	public void setSkuBarcd2(String skuBarcd2) {
+		this.skuBarcd2 = skuBarcd2;
 	}
 
 	public String getSkuNm() {
