@@ -78,7 +78,8 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 			
 			// 3. 각 작업 유형별로 이벤트 전달
 			for(int i = 0 ; i < jobTypeArr.length ; i++) {
-				this.readyToReceiveEvent(SysEvent.EVENT_STEP_BEFORE, domainId, jobTypeArr[i], areaCd, stageCd, comCd, jobDate, batchReceipt);
+				String jobType = jobTypeArr[i];
+				this.readyToReceiveEvent(SysEvent.EVENT_STEP_BEFORE, domainId, jobType, areaCd, stageCd, comCd, jobDate, batchReceipt);
 			}
 		}
 		

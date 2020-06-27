@@ -1,5 +1,6 @@
 package xyz.anythings.base.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.transaction.annotation.Propagation;
@@ -113,7 +114,7 @@ public class BatchReceipt extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.status = status;
 	}
 	
-	public List<BatchReceiptItem> getItems(){
+	public List<BatchReceiptItem> getItems() {
 		return this.items;
 	}
 	
@@ -121,6 +122,13 @@ public class BatchReceipt extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.items = items;
 	}
 	
+	public void addItem(BatchReceiptItem item) {
+		if(this.items == null) {
+			this.items = new ArrayList<BatchReceiptItem>();
+		}
+		
+		this.items.add(item);
+	}
 	
 	/**
 	 * 배치 Receipt 의 현재 상태를 가져온다. 
@@ -155,7 +163,6 @@ public class BatchReceipt extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	public static int newBatchReceiptJobSeq(Long domainId, String areaCd, String stageCd, String comCd, String jobDate) {
 		IQueryManager queryManager = BeanUtil.get(IQueryManager.class);
 		
-		
 		Query condition = AnyOrmUtil.newConditionForExecution(domainId);
 		condition.addSelect("jobSeq");
 		condition.addFilter("comCd", comCd);
@@ -165,7 +172,6 @@ public class BatchReceipt extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		condition.addOrder("jobSeq", false);
 		
 		List<BatchReceipt> jobSeqList = queryManager.selectList(BatchReceipt.class, condition);
-		
 		return (ValueUtil.isEmpty(jobSeqList) ? 0 : ValueUtil.toInteger(jobSeqList.get(0).getJobSeq())) + 1;
 	}
 }
