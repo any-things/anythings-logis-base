@@ -25,7 +25,7 @@ public class JobConfig extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "category", length = 100)
 	private String category;
 
-	@Column (name = "name", nullable = false, length = 40)
+	@Column (name = "name", nullable = false, length = 100)
 	private String name;
 
 	@Column (name = "description", length = 255)
