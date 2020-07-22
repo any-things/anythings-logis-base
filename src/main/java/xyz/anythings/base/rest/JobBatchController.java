@@ -25,18 +25,14 @@ import xyz.anythings.base.service.impl.BatchService;
 import xyz.anythings.base.service.impl.LogisServiceDispatcher;
 import xyz.anythings.gw.entity.IndConfigSet;
 import xyz.anythings.sys.util.AnyEntityUtil;
-import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.elidom.dbist.dml.Page;
-import xyz.elidom.dbist.dml.Query;
 import xyz.elidom.exception.server.ElidomValidationException;
-import xyz.elidom.orm.IQueryManager;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
 import xyz.elidom.orm.system.annotation.service.ServiceDesc;
 import xyz.elidom.sys.SysConstants;
 import xyz.elidom.sys.entity.Domain;
 import xyz.elidom.sys.system.service.AbstractRestService;
 import xyz.elidom.sys.util.ThrowUtil;
-import xyz.elidom.util.BeanUtil;
 import xyz.elidom.util.ValueUtil;
 
 @RestController
@@ -456,10 +452,7 @@ public class JobBatchController extends AbstractRestService {
 	 * @return
 	 */
 	private JobBatch findWithLock(boolean exceptionWhenEmpty, String batchId, boolean findConfigSet) {
-		Query condition = AnyOrmUtil.newConditionForExecution();
-		condition.addFilter("id", batchId);
-		condition.addSelect("domain_id","id","wms_batch_no","wcs_batch_no","batch_group_id","title","brand_cd","season_cd","com_cd","job_type","batch_type","job_date","job_seq","area_cd","stage_cd","equip_type","equip_group_cd","equip_cd","equip_nm","parent_order_qty","batch_order_qty","result_order_qty","parent_pcs","batch_pcs","result_pcs","result_box_qty","progress_rate","input_workers","total_workers","uph","equip_runtime","instructed_at","finished_at","last_input_seq","status","job_config_set_id","ind_config_set_id");
-		JobBatch batch = BeanUtil.get(IQueryManager.class).selectByConditionWithLock(JobBatch.class, condition);
+		JobBatch batch = AnyEntityUtil.findEntityByIdByUnselectedWithLock(exceptionWhenEmpty, JobBatch.class, batchId, "jobConfigSet", "indConfigSet");
 		
 		if(batch == null) {
 			throw ThrowUtil.newNotFoundRecord("terms.menu.JobBatch", batchId);
