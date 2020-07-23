@@ -3,9 +3,6 @@ package xyz.anythings.base.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
 import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.elidom.dbist.annotation.Column;
@@ -145,7 +142,6 @@ public class BatchReceipt extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	 * 상태 업데이트 
 	 * @param status
 	 */
-	@Transactional(propagation=Propagation.REQUIRES_NEW) 
 	public void updateStatusImmediately(String status) {
 		this.setStatus(status);
 		BeanUtil.get(IQueryManager.class).update(this, "status");
