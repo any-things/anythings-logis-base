@@ -24,6 +24,7 @@ import xyz.anythings.base.model.BatchProgressRate;
 import xyz.anythings.base.service.impl.BatchService;
 import xyz.anythings.base.service.impl.LogisServiceDispatcher;
 import xyz.anythings.gw.entity.IndConfigSet;
+import xyz.anythings.sys.model.BaseResponse;
 import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.exception.server.ElidomValidationException;
@@ -234,6 +235,24 @@ public class JobBatchController extends AbstractRestService {
 		BatchReceipt summary = AnyEntityUtil.findEntityById(false, BatchReceipt.class, batchSummaryId);
 		summary.setItems(AnyEntityUtil.searchDetails(Domain.currentDomainId(), BatchReceiptItem.class, "batchReceiptId", batchSummaryId));
 		return summary;
+	}
+	
+	/**
+	 * 대상 분류 처리
+	 * 
+	 * @param batchId
+	 * @return
+	 */
+	@RequestMapping(value = "/{id}/target_class", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Target classing")
+	public BaseResponse targetClass(@PathVariable("id") String batchId) {
+		
+		// 1. 작업 배치 조회 
+		JobBatch batch = this.findWithLock(true, batchId, false);
+		// 2. 대상 분류 작업 호출
+		this.serviceDispatcher.getInstructionService(batch).targetClassing(batch);
+		// 3. 대상 분류 결과 리턴 
+		return new BaseResponse(true);
 	}
 	
 	/**

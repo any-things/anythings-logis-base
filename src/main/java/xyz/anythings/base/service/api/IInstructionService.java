@@ -16,6 +16,14 @@ import xyz.anythings.base.entity.JobBatch;
  * @author shortstop
  */
 public interface IInstructionService {
+	
+	/**
+	 * 대상 분류 처리
+	 * 
+	 * @param batch
+	 * @param params
+	 */
+	public void targetClassing(JobBatch batch, Object ... params);
 
 	/**
 	 * 작업 지시를 위한 거래처 별 호기/로케이션 할당 정보 조회
