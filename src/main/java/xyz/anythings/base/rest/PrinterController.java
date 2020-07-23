@@ -19,6 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import xyz.anythings.base.entity.Printer;
+import xyz.anythings.sys.event.EventPublisher;
+import xyz.anythings.sys.event.model.PrintEvent;
+import xyz.anythings.sys.model.BaseResponse;
 import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.dev.entity.DiyTemplate;
 import xyz.elidom.dev.rest.DiyTemplateController;
@@ -35,6 +38,14 @@ import xyz.elidom.util.ValueUtil;
 @ServiceDesc(description = "Printer Service API")
 public class PrinterController extends AbstractRestService {
 
+	/**
+	 * Event Publisher
+	 */
+	@Autowired
+	protected EventPublisher eventPublisher;
+	/**
+	 * DiyTemplate Controller
+	 */
 	@Autowired
 	private DiyTemplateController templateCtrl;
 	
@@ -88,6 +99,21 @@ public class PrinterController extends AbstractRestService {
 	@ApiDesc(description = "Create, Update or Delete multiple at one time")
 	public Boolean multipleUpdate(@RequestBody List<Printer> list) {
 		return this.cudMultipleData(this.entityClass(), list);
+	}
+	
+	/**
+	 * 라벨 인쇄 요청 처리
+	 * 
+	 * @param printEvent - printType : barcode (바코드) / normal (일반), printerId : 프린터 ID, printTemplate : 인쇄할 커스텀 템플릿 명, templateParams : 인쇄 템플릿을 실행시킬 파라미터
+	 * @return
+	 */
+	@RequestMapping(value = "/print_label", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Print Label")
+	public BaseResponse printLabel(@RequestBody PrintEvent printEvent) {
+		
+		// 인쇄 이벤트를 퍼블리시한다. anythings-printing 모듈을 import하면 그 쪽에서 처리할 수 있고 그렇지 않으면 PrintEvent를 받아서 자체 처리한다.
+		this.eventPublisher.publishEvent(printEvent);
+		return new BaseResponse(true);
 	}
 	
 	/**

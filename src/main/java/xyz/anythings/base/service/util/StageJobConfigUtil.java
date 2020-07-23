@@ -414,6 +414,18 @@ public class StageJobConfigUtil {
 	}
 	
 	/**
+	 * 스테이지 공통 - 주문 필드 중에 분류 코드로 사용할 필드 명
+	 * 
+	 * @param stageCd 스테이지 코드
+	 * @param jobType 작업 유형
+	 * @return
+	 */
+	public static String getPickingClassCodeField(String stageCd, String jobType) {
+		// cmm.order.class_cd.field
+		return getConfigValue(stageCd, jobType, "cmm.order.class_cd.field", true);
+	}
+	
+	/**
 	 * 스테이지 공통 - 주문 필드 중에 박스 처리시에 출고 분류 코드로 사용할 필드 명
 	 * 
 	 * @param stageCd 스테이지 코드
@@ -426,6 +438,7 @@ public class StageJobConfigUtil {
 	}
 	
 	/**
+	 * @deprecated getPickingClassCodeField로 대체
 	 * 스테이지 공통 - 기본 셀 매핑 대상 필드 명
 	 * 
 	 * @param stageCd 스테이지 코드
