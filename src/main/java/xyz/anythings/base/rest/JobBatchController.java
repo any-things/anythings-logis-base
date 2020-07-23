@@ -243,7 +243,7 @@ public class JobBatchController extends AbstractRestService {
 	 * @param batchId
 	 * @return
 	 */
-	@RequestMapping(value = "/{id}/target_class", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/{id}/target_class", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Target classing")
 	public BaseResponse targetClass(@PathVariable("id") String batchId) {
 		
