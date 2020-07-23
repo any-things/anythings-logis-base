@@ -14,7 +14,6 @@ import xyz.anythings.base.service.api.IJobConfigProfileService;
 import xyz.anythings.sys.service.AbstractExecutionService;
 import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.anythings.sys.util.AnyValueUtil;
-import xyz.elidom.exception.server.ElidomRuntimeException;
 import xyz.elidom.sys.SysConstants;
 import xyz.elidom.sys.entity.Domain;
 import xyz.elidom.util.ValueUtil;
@@ -135,7 +134,8 @@ public class JobConfigProfileService extends AbstractExecutionService implements
 				return null;
 			}
 		} else {
-			throw new ElidomRuntimeException("작업 배치 [" + batch.getId() + "]에 작업 설정 프로파일이 설정되지 않았습니다.");
+			return null;
+			// throw new ElidomRuntimeException("작업 배치 [" + batch.getId() + "]에 작업 설정 프로파일이 설정되지 않았습니다.");
 		}
 	}
 
