@@ -12,7 +12,7 @@ import xyz.elidom.dbist.annotation.Table;
 @Table(name = "box_types", idStrategy = GenerationRule.UUID, uniqueFields="domainId,boxTypeCd", indexes = {
 	@Index(name = "ix_box_types_0", columnList = "domain_id,box_type_cd", unique = true)
 })
-public class BoxType extends xyz.elidom.orm.entity.basic.ElidomStampHook implements IBucket{
+public class BoxType extends xyz.elidom.orm.entity.basic.ElidomStampHook implements IBucket {
 	/**
 	 * SerialVersion UID
 	 */
@@ -193,8 +193,10 @@ public class BoxType extends xyz.elidom.orm.entity.basic.ElidomStampHook impleme
 		// 미구현 
 		return null;
 	}
+	
 	@Override
 	public String getBucketType() {
 		return LogisCodeConstants.BOX_TYPE_BOX;
 	}
+
 }

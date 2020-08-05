@@ -14,8 +14,8 @@ from (
 		and j.equip_type = 'Rack'
 		and i.gw_cd = :gwCd
 		and j.status = 'RUN'
-)
+) a
 group by 
-  id, job_type, equip_type, equip_cd, status
+  a.id, a.job_type, a.equip_type, a.equip_cd, a.status
 order by
-  equip_cd asc
+  a.equip_cd asc
