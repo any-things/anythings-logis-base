@@ -148,5 +148,22 @@ public class PrinterController extends AbstractRestService {
 			rest.postForEntity(printAgentUrl, command, Boolean.class);
 		}
 	}
+	
+	/**
+	 * 라벨 command으로 라벨 인쇄, 라벨코맨드를 직접 제공하는 고객을 위한 API
+	 * 
+	 * @param printAgentUrl
+	 * @param printerName
+	 * @param labelKey
+	 * @param baseCommand
+	 */
+	public void printLabelImageByGetImage(String printAgentUrl, String printerName, String labelKey, String baseCommand) {
+		if(ValueUtil.isNotEmpty(printerName)) {
+			RestTemplate rest = new RestTemplate();
+			rest.getMessageConverters().add(0, new StringHttpMessageConverter(Charset.forName(SysConstants.CHAR_SET_UTF8)));
+			printAgentUrl = printAgentUrl + "/barcode/by_get_image?printer=" + printerName + "&label_key=" + labelKey;
+			rest.postForEntity(printAgentUrl, baseCommand, Boolean.class);
+		}
+	}
 
 }
