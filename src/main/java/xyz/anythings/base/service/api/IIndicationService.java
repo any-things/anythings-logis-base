@@ -149,6 +149,14 @@ public interface IIndicationService {
 	public void indicatorListOff(Long domainId, String stageCd, String equipType, String equipCd, String stationCd);
 	
 	/**
+	 * 1-8. 호기에 진행 중인 작업 배치에 작업 스테이션 영역의 피킹 중인 작업에 대한 표시기 소등 요청
+	 * 
+	 * @param batch
+	 * @param stationCd
+	 */
+	public void indicatorListOff(JobBatch batch, String stationCd);
+	
+	/**
 	 * 1-8. 표시기 소등 요청
 	 * 
 	 * @param domainId

@@ -3,6 +3,7 @@ package xyz.anythings.base.rest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,7 @@ import xyz.anythings.base.event.rest.DeviceProcessRestEvent;
 import xyz.anythings.base.model.BatchProgressRate;
 import xyz.anythings.base.model.Category;
 import xyz.anythings.base.model.EquipBatchSet;
+import xyz.anythings.base.service.api.IIndicationService;
 import xyz.anythings.base.service.impl.LogisServiceDispatcher;
 import xyz.anythings.base.service.util.LogisServiceUtil;
 import xyz.anythings.sys.event.model.SysEvent;
@@ -242,7 +244,7 @@ public class DeviceProcessController extends DynamicControllerSupport {
 	@RequestMapping(value = "/indicators/off/{equip_type}/{equip_cd}/{station_cd}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Indicators off all of zone")
 	public BaseResponse indicatorsOff(
-			@PathVariable("equip_type") String equipType, 
+			@PathVariable("equip_type") String equipType,
 			@PathVariable("equip_cd") String equipCd, 
 			@PathVariable("station_cd") String stationCd) {
 		
@@ -821,7 +823,7 @@ public class DeviceProcessController extends DynamicControllerSupport {
 	@RequestMapping(value = "/search/input_jobs/{job_input_id}/{equip_type}/{equip_cd}/{station_cd}/{ind_on_flag}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Search Input Job list")
 	public List<JobInstance> searchInputJobs(
-			@PathVariable("job_input_id") String jobInputId, 
+			@PathVariable("job_input_id") String jobInputId,
 			@PathVariable("equip_type") String equipType,
 			@PathVariable("equip_cd") String equipCd,
 			@PathVariable("station_cd") String stationCd,
@@ -832,18 +834,23 @@ public class DeviceProcessController extends DynamicControllerSupport {
 		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(domainId, equipType, equipCd);
 		JobBatch batch = equipBatchSet.getBatch();
 		
-		// 2. JobInput 조회 
+		// 2. JobInput 조회
 		JobInput input = AnyEntityUtil.findEntityBy(domainId, false, JobInput.class, null, "id,equipType,equipCd,stationCd", jobInputId, equipType, equipCd, stationCd);
 		
 		// 3. 서비스 호출 
-		List<JobInstance> retList = this.serviceDispatcher.getJobStatusService(batch).searchInputJobList(batch, input, stationCd);
+		List<JobInstance> jobList = this.serviceDispatcher.getJobStatusService(batch).searchInputJobList(batch, input, stationCd);
 		
-		// 4. TODO 표시기 점등
+		// 4. 표시기 점등
 		if(indOnFlag) {
-			
+			// 해당 스테이션에 존재하는 모든 피킹 중인 작업 리스트를 조회하여 소등 요청 후 점등
+			IIndicationService indSvc = this.serviceDispatcher.getIndicationService(batch);
+			indSvc.indicatorListOff(batch, stationCd);
+			List<JobInstance> jobsToIndOn = jobList.stream().filter(job -> job.isTodoJob()).collect(Collectors.toList());
+			indSvc.indicatorsOn(batch, false, jobsToIndOn);
 		}
 		
-		return retList;
+		// 5. 작업 리스트 리턴
+		return jobList;
 	}
 	
 	/**

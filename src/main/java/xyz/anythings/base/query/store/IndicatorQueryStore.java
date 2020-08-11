@@ -81,5 +81,23 @@ public class IndicatorQueryStore extends LogisBaseQueryStore {
 	public String getSearchGatewaysByEquip() {
 		return this.getQueryByPath("ind/SearchGateways");
 	}
+	
+	/**
+	 * 피킹 중인 게이트웨이, 표시기 리스트를 중복없이 조회 쿼리
+	 * 
+	 * @return
+	 */
+	public String searchPickingIndListQuery() {
+		return this.getQueryByPath("ind/SearchPickingIndicators");
+	}
+	
+	/**
+	 * 피킹 중인 게이트웨이, 표시기 리스트를 중복없이 조회 쿼리
+	 * 
+	 * @return
+	 */
+	public String getNextRelayInputSeqQuery() {
+		return this.getQueryByPath("ind/FindNextRelayInputSeq");
+	}
 
 }

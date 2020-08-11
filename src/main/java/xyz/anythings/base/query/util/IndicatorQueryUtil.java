@@ -90,7 +90,7 @@ public class IndicatorQueryUtil {
 	 */
 	public static List<String> searchIndCdList(Long domainId, String gwNm, String equipType, String equipCd, String stationCd) {
 		String sql = BeanUtil.get(IndicatorQueryStore.class).getIndCdListQuery();
-		return AnyEntityUtil.searchItems(domainId, false, String.class, sql, "domainId,gwNm,equipType,equipCd,stationCd", domainId, gwNm, equipType, equipCd, stationCd);
+		return AnyEntityUtil.searchItems(domainId, false, String.class, sql, "domainId,gwNm,equipType,equipCd,stationCd,activeFlag", domainId, gwNm, equipType, equipCd, stationCd, true);
 	}
 	
 	/**
@@ -226,7 +226,7 @@ public class IndicatorQueryUtil {
 		sideCd = LogisConstants.checkSideCdForQuery(domainId, sideCd);
 		String sql = BeanUtil.get(IndicatorQueryStore.class).getSearchIndicatorsQuery();
 		return AnyEntityUtil.searchItems(domainId, false, IndCommonReq.class, sql, "domainId,rackCd,equipZone,sideCd,activeFlag,indQueryFlag", domainId, rackCd, equipZoneCd, sideCd, true, true);
-	}	
+	}
 	
 	/**
 	 * 호기 및 호기 작업 존 별 라우터 Path 리스트 조회 
@@ -252,6 +252,19 @@ public class IndicatorQueryUtil {
 	public static List<IndCommonReq> searchIndByStation(Long domainId, String rackCd, String stationCd) {
 		String sql = BeanUtil.get(IndicatorQueryStore.class).getSearchIndicatorsQuery();
 		return AnyEntityUtil.searchItems(domainId, false, IndCommonReq.class, sql, "domainId,rackCd,stationCd,activeFlag,indQueryFlag", domainId, rackCd, stationCd, true, true);
+	}
+	
+	/**
+	 * 호기 및 장비 존 코드 사이드 코드로 표시기 리스트를 조회
+	 * 
+	 * @param domainId
+	 * @param batchId
+	 * @param stationCd
+	 * @return
+	 */
+	public static List<IndCommonReq> searchPickingIndList(Long domainId, String batchId, String stationCd) {
+		String sql = BeanUtil.get(IndicatorQueryStore.class).searchPickingIndListQuery();
+		return AnyEntityUtil.searchItems(domainId, false, IndCommonReq.class, sql, "domainId,batchId,stationCd,status", domainId, batchId, stationCd, LogisConstants.JOB_STATUS_PICKING);
 	}
 
 }
