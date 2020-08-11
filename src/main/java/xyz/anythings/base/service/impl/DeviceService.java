@@ -19,7 +19,6 @@ import xyz.anythings.base.event.IDeviceEvent;
 import xyz.anythings.base.event.device.DeviceEvent;
 import xyz.anythings.base.model.IDevice;
 import xyz.anythings.base.service.api.IDeviceService;
-import xyz.anythings.gw.GwConstants;
 import xyz.anythings.gw.service.mq.MqSender;
 import xyz.anythings.gw.service.mq.model.device.DeviceCommand;
 import xyz.anythings.gw.service.mq.model.device.DeviceCommandFactory;
@@ -171,13 +170,13 @@ public class DeviceService extends AbstractLogisService implements IDeviceServic
 	}
 	
 	@Async
-	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMPLETION, classes = IDeviceEvent.class)	
+	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMPLETION, classes = IDeviceEvent.class)
 	public void receiveDeviceEvent(IDeviceEvent event) {
 		String vHost = this.mqSender.getVirtualHost(event.getDomainId());
-		String destId = this.getDeviceDestId(vHost, event.getDeviceType(), event.getEquipType(), event.getEquipCd(), event.getStageCd(), event.getSideCd());
+		String destId = this.getDeviceDestId(vHost, event.getDeviceType(), event.getEquipType(), event.getEquipCd(), event.getStationCd(), event.getSideCd());
 		MessageProperties props = MwMessageUtil.newMessageProp(event.getStageCd(), destId, false);
-		DeviceCommand eqEvent = DeviceCommandFactory.createDeviceCommand(event.getDeviceType(), event.getEquipType(), event.getEquipCd(), event.getStationCd(), event.getSideCd(), event.getJobType(), event.getCommand(), props);
-		this.mqSender.send(event.getStageCd(), vHost, props, eqEvent);
+		DeviceCommand eqEvent = DeviceCommandFactory.createDeviceCommand(event.getDeviceType(), event.getEquipType(), event.getEquipCd(), event.getStationCd(), event.getSideCd(), event.getJobType(), event.getCommand(), event.getMessage());
+		this.mqSender.send(vHost, event.getStageCd(), props, eqEvent);
 	}
 
 	/**
@@ -203,15 +202,15 @@ public class DeviceService extends AbstractLogisService implements IDeviceServic
 		
 		if(ValueUtil.isNotEmpty(stationCd)) {
 			destId.append(SysConstants.SLASH).append(stationCd);
-		} else {
+		} /*else {
 			destId.append(SysConstants.SLASH).append(GwConstants.ALL_STRING);
-		}
+		}*/
 		
-		if(ValueUtil.isNotEmpty(sideCd)) {
+		/*if(ValueUtil.isNotEmpty(sideCd)) {
 			destId.append(SysConstants.SLASH).append(sideCd);
 		} else {
 			destId.append(SysConstants.SLASH).append(GwConstants.ALL_STRING);
-		}
+		}*/
 		
 		return destId.toString();
 	}

@@ -182,7 +182,7 @@ public class ClassifyRunEvent extends ClassifyEvent implements IClassifyRunEvent
 			}
 			
 			if(LogisConstants.isB2BJobType(jobInstance.getJobType()) && this.workCell == null) {
-				this.setWorkCell(AnyEntityUtil.findEntityBy(jobInstance.getDomainId(), true, true, WorkCell.class, null, "domainId,batchId,cellCd", jobInstance.getDomainId(), jobInstance.getBatchId(), this.cellCd));
+				this.setWorkCell(AnyEntityUtil.findEntityBy(jobInstance.getDomainId(), true, true, WorkCell.class, null, "batchId,cellCd", jobInstance.getBatchId(), this.cellCd));
 			}
 		}
 	}

@@ -70,7 +70,7 @@ public abstract class AbstractJobStatusService extends AbstractLogisService impl
 			params.put("equipCd", batch.getEquipCd());
 		}
 		
-		return AnyEntityUtil.findItem(batch.getDomainId(), false, JobInput.class, qry, params);  
+		return AnyEntityUtil.findItem(batch.getDomainId(), false, JobInput.class, qry, params);
 	}
 
 	@Override
@@ -128,7 +128,7 @@ public abstract class AbstractJobStatusService extends AbstractLogisService impl
 		Query query = AnyOrmUtil.newConditionForExecution(batch.getDomainId(), page, limit);
 		
 		// 2. 필터 조건에 검색 조건을 모두 추가
-		Iterator<String> keyIter = condition.keySet().iterator();		
+		Iterator<String> keyIter = condition.keySet().iterator();
 		while(keyIter.hasNext()) {
 			String key = keyIter.next();
 			Object val = condition.get(key);
@@ -206,7 +206,7 @@ public abstract class AbstractJobStatusService extends AbstractLogisService impl
 		
 		if(ValueUtil.isNotEmpty(batch.getEquipCd()) && !condition.containsKey("equipCd")) {
 			condition.put("equipCd", batch.getEquipCd());
-		}		
+		}
 	}
 
 }

@@ -11,7 +11,7 @@ FROM
 			DOMAIN_ID = :domainId 
 			AND BATCH_ID IN (SELECT ID FROM JOB_BATCHES WHERE DOMAIN_ID = :domainId AND BATCH_GROUP_ID = :batchGroupId AND STATUS = 'RUN') 
 			#if($stationCd)
-			AND STATION_CD = :stationCd 
+			AND SUB_EQUIP_CD IN (SELECT CELL_CD FROM CELLS WHERE DOMAIN_ID = :domainId AND STATION_CD = :stationCd) 
 			#end
 			#if($statuses)
 			AND STATUS IN (:statuses) 

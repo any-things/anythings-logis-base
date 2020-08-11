@@ -25,6 +25,7 @@ import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.JobInput;
 import xyz.anythings.base.entity.JobInstance;
 import xyz.anythings.base.entity.SKU;
+import xyz.anythings.base.entity.WorkCell;
 import xyz.anythings.base.event.IClassifyInEvent;
 import xyz.anythings.base.event.classfy.ClassifyInEvent;
 import xyz.anythings.base.event.classfy.ClassifyOutEvent;
@@ -274,7 +275,7 @@ public class DeviceProcessController extends DynamicControllerSupport {
 	}
 
 	/**
-	 * 투입 시퀀스, 장비 존 별 처리할 작업 / 처리한 작업 표시기 점등  
+	 * 투입 시퀀스, 장비 존 별 처리할 작업 / 처리한 작업 표시기 점등
 	 * 
 	 * @param jobInputId
 	 * @param stationCd
@@ -284,17 +285,17 @@ public class DeviceProcessController extends DynamicControllerSupport {
 	@RequestMapping(value = "/indicators/restore/{job_input_id}/{station_cd}/{mode}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Indicators off all of station area")
 	public BaseResponse restoreIndicators(
-			@PathVariable("job_input_id") String jobInputId, 
-			@PathVariable("station_cd") String stationCd, 
+			@PathVariable("job_input_id") String jobInputId,
+			@PathVariable("station_cd") String stationCd,
 			@PathVariable("mode") String todoOrDone) {
 		
-		// 1. JobInput 조회 
+		// 1. JobInput 조회
 		JobInput input = AnyEntityUtil.findEntityById(true, JobInput.class, jobInputId);
 		
-		// 1. 설비 정보로 부터 작업 배치 조회 
+		// 2. 설비 정보로 부터 작업 배치 조회
 		JobBatch batch = LogisServiceUtil.checkRunningBatch(input.getDomainId(), input.getBatchId());
 		
-		// 2. 작업 배치 내 표시기 진행 중인 작업에 대한 재점등
+		// 3. 작업 배치 내 표시기 진행 중인 작업에 대한 재점등
 		this.serviceDispatcher.getIndicationService(batch).restoreIndicatorsOn(batch, input.getInputSeq(), stationCd, todoOrDone);
 		return new BaseResponse(true);
 	}
@@ -365,7 +366,26 @@ public class DeviceProcessController extends DynamicControllerSupport {
 	 * 								박스 매핑 API 
 	 **********************************************************************/
 	/**
-	 * 셀과 박스 ID 매핑 
+	 * 셀과 박스 ID 매핑 현황 조회
+	 * 
+	 * @param equipType
+	 * @param equipCd
+	 * @return
+	 */
+	@RequestMapping(value = "/search/cell_mappings/{equip_type}/{equip_cd}", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Search Cell & Box Mapping")
+	public List<WorkCell> searchCellMappings(@PathVariable("equip_type") String equipType, @PathVariable("equip_cd") String equipCd) {
+		
+		Long domainId = Domain.currentDomainId();
+		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(domainId, equipType, equipCd);
+		JobBatch batch = equipBatchSet.getBatch();
+		Query condition = AnyOrmUtil.newConditionForExecution(domainId);
+		condition.addFilter("batchId", batch.getId());
+		return this.queryManager.selectList(WorkCell.class, condition);
+	}
+	
+	/**
+	 * 셀과 박스 ID 매핑 (셀 코드 사용)
 	 * 
 	 * @param equipType
 	 * @param equipCd
@@ -379,8 +399,8 @@ public class DeviceProcessController extends DynamicControllerSupport {
 	@ApiDesc(description = "Cell & Box Mapping")
 	public Object boxMappingByCellCd(
 			@PathVariable("equip_type") String equipType,
-			@PathVariable("equip_cd") String equipCd, 
-			@PathVariable("sub_equip_cd") String subEquipCd, 
+			@PathVariable("equip_cd") String equipCd,
+			@PathVariable("sub_equip_cd") String subEquipCd,
 			@PathVariable("box_id") String boxId,
 			@RequestParam(name="skip_equip_check", required = false) boolean isSkipEquipCheck,
 			@RequestParam(name="skip_box_mapping", required = false) boolean isSkipBoxMapping) {
@@ -453,7 +473,7 @@ public class DeviceProcessController extends DynamicControllerSupport {
 		ClassifyRunEvent event = new ClassifyRunEvent(batch, SysEvent.EVENT_STEP_ALONE
 				, deviceType.toLowerCase()
 				, LogisCodeConstants.CLASSIFICATION_ACTION_CONFIRM, job, job.getPickQty(), job.getPickQty());
-		   
+		
 		// 4. 이벤트 발생 
 		this.eventPublisher.publishEvent(event);
 		
@@ -485,12 +505,13 @@ public class DeviceProcessController extends DynamicControllerSupport {
 			@RequestParam(name = "req_qty", required = true) Integer reqQty,
 			@RequestParam(name = "res_qty", required = true) Integer resQty) {
 
-		// 1. Equip 으로 Batch조회 
-		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(Domain.currentDomainId(), equipType, equipCd);
+		// 1. Equip 으로 Batch조회
+		Long domainId = Domain.currentDomainId();
+		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(domainId, equipType, equipCd);
 		JobBatch batch = equipBatchSet.getBatch();
 		
 		// 2. JobInstance 조회 
-		JobInstance job = this.serviceDispatcher.getJobStatusService(batch).findPickingJob(batch.getDomainId(), jobInstanceId);
+		JobInstance job = this.serviceDispatcher.getJobStatusService(batch).findPickingJob(domainId, jobInstanceId);
 		if(job == null) {
 			throw ThrowUtil.newNotFoundRecord("terms.label.job", jobInstanceId);
 		}
@@ -502,15 +523,15 @@ public class DeviceProcessController extends DynamicControllerSupport {
 				, ValueUtil.isEmpty(reqQty) ? job.getPickQty() : reqQty
 				, ValueUtil.isEmpty(resQty) ? 1 : resQty);
 		
-		// 4. 이벤트 발생 
+		// 4. 이벤트 발생
 		this.eventPublisher.publishEvent(event);
 		
-		// 5. 이벤트 처리 결과 리턴 
+		// 5. 이벤트 처리 결과 리턴
 		if(!event.isExecuted()) {
 			throw new ElidomServiceException();
 		} else {
 			return new BaseResponse(true, null, event.getResult());
-		}	
+		}
 	}
 	
 	/**
@@ -551,8 +572,8 @@ public class DeviceProcessController extends DynamicControllerSupport {
 			throw new ElidomServiceException();
 		} else {
 			return new BaseResponse(true,null, event.getResult());
-		}	
-	}	
+		}
+	}
 	
 	/**
 	 * 소분류 확정 취소
@@ -719,7 +740,7 @@ public class DeviceProcessController extends DynamicControllerSupport {
 		JobBatch batch = equipBatchSet.getBatch();
 		return this.serviceDispatcher.getJobStatusService(batch).paginateInputList(batch, equipCd, status, page, limit);
 	}
-		
+	
 	/**
 	 * 투입 리스트를 조회 (리스트) 
 	 * 
@@ -736,7 +757,7 @@ public class DeviceProcessController extends DynamicControllerSupport {
 			@PathVariable("equip_cd") String equipCd,
 			@PathVariable("station_cd") String stationCd,
 			@RequestParam(name = "selected_input_id", required = false) String selectedInputId) {
-				
+		
 		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(Domain.currentDomainId(), equipType, equipCd);
 		JobBatch batch = equipBatchSet.getBatch();
 		return this.serviceDispatcher.getJobStatusService(batch).searchInputList(batch, equipCd, stationCd, selectedInputId);
@@ -965,14 +986,14 @@ public class DeviceProcessController extends DynamicControllerSupport {
 	@RequestMapping(value = "/search/box_list/{equip_type}/{equip_cd}/{box_pack_id}/{printer_id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Search box list")
 	public BaseResponse reprintBoxLabel(
-			@PathVariable("equip_type") String equipType, 
-			@PathVariable("equip_cd") String equipCd, 
-			@PathVariable("equip_zone") String equipZone, 
-			@PathVariable("box_pack_id") String boxPackId, 
+			@PathVariable("equip_type") String equipType,
+			@PathVariable("equip_cd") String equipCd,
+			@PathVariable("equip_zone") String equipZone,
+			@PathVariable("box_pack_id") String boxPackId,
 			@PathVariable("printer_id") String printerId) {
 		
 		// TODO
-		return null;	
+		return null;
 	}
 
 	/**********************************************************************
@@ -990,9 +1011,9 @@ public class DeviceProcessController extends DynamicControllerSupport {
 			, @PathVariable("job_type") String jobType
 			, @RequestParam Map<String,Object> paramMap) {
 		
-        String finalPath = this.getRequestFinalPath(request);
-        DeviceProcessRestEvent event = new DeviceProcessRestEvent(Domain.currentDomainId(), jobType, finalPath, RequestMethod.GET, paramMap);
-        return this.restEventPublisher(event);
+		String finalPath = this.getRequestFinalPath(request);
+		DeviceProcessRestEvent event = new DeviceProcessRestEvent(Domain.currentDomainId(), jobType, finalPath, RequestMethod.GET, paramMap);
+		return this.restEventPublisher(event);
 	}
 
 	/**
@@ -1007,10 +1028,10 @@ public class DeviceProcessController extends DynamicControllerSupport {
 			, @RequestParam Map<String,Object> paramMap
 			, @RequestBody(required=false) Map<String,Object> requestBody) {
 		
-        String finalPath = this.getRequestFinalPath(request);
-        DeviceProcessRestEvent event = new DeviceProcessRestEvent(Domain.currentDomainId(), jobType, finalPath, RequestMethod.PUT, paramMap);
-        event.setRequestPutBody(requestBody);
-        return this.restEventPublisher(event);
+		String finalPath = this.getRequestFinalPath(request);
+		DeviceProcessRestEvent event = new DeviceProcessRestEvent(Domain.currentDomainId(), jobType, finalPath, RequestMethod.PUT, paramMap);
+		event.setRequestPutBody(requestBody);
+		return this.restEventPublisher(event);
 	}
 
 	/**
@@ -1025,10 +1046,10 @@ public class DeviceProcessController extends DynamicControllerSupport {
 			, @RequestParam Map<String,Object> paramMap
 			, @RequestBody(required=false) List<Map<String,Object>> requestBody) {
 		
-        String finalPath = this.getRequestFinalPath(request);
-        DeviceProcessRestEvent event = new DeviceProcessRestEvent(Domain.currentDomainId(), jobType, finalPath, RequestMethod.POST, paramMap);
-        event.setRequestPostBody(requestBody);
-        return this.restEventPublisher(event);
+		String finalPath = this.getRequestFinalPath(request);
+		DeviceProcessRestEvent event = new DeviceProcessRestEvent(Domain.currentDomainId(), jobType, finalPath, RequestMethod.POST, paramMap);
+		event.setRequestPostBody(requestBody);
+		return this.restEventPublisher(event);
 	}
-			
+
 }
