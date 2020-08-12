@@ -45,7 +45,6 @@ import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.dbist.dml.Query;
-import xyz.elidom.exception.server.ElidomRuntimeException;
 import xyz.elidom.exception.server.ElidomServiceException;
 import xyz.elidom.orm.IQueryManager;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
@@ -720,31 +719,34 @@ public class DeviceProcessController extends DynamicControllerSupport {
 	 **********************************************************************/
 	
 	/**
-	 * 투입 리스트를 조회 (페이지네이션)
+	 * 호기 범위 내 혹은 작업 존 범위 내 상태별 투입 리스트를 조회 (페이지네이션)
 	 * 
 	 * @param equipType
 	 * @param equipCd
+	 * @param stationCd
+	 * @param status 상태 - 빈 값: 전체 보기, U: 미완료인 것만 보기
 	 * @param page
 	 * @param limit
-	 * @param status 상태 - 빈 값: 전체 보기, U: 미완료인 것만 보기
 	 * @return
 	 */
-	@RequestMapping(value = "/search/input_list/{equip_type}/{equip_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/search/input_pages/{equip_type}/{equip_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Search Input list")
-	public Page<JobInput> searchInputList(
+	public Page<JobInput> searchInputPages(
 			@PathVariable("equip_type") String equipType,
 			@PathVariable("equip_cd") String equipCd,
+			@RequestParam(name = "station_cd", required = false) String stationCd,
+			@RequestParam(name = "status", required = false) String status,
 			@RequestParam(name = "page", required = false) Integer page,
-			@RequestParam(name = "limit", required = false) Integer limit,
-			@RequestParam(name = "status", required = false) String status) {
+			@RequestParam(name = "limit", required = false) Integer limit) {
 		
 		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(Domain.currentDomainId(), equipType, equipCd);
 		JobBatch batch = equipBatchSet.getBatch();
-		return this.serviceDispatcher.getJobStatusService(batch).paginateInputList(batch, equipCd, status, page, limit);
+		return this.serviceDispatcher.getJobStatusService(batch).paginateInputList(batch, equipCd, stationCd, status, page, limit);
 	}
+
 	
 	/**
-	 * 투입 리스트를 조회 (리스트) 
+	 * 태블릿 피킹 화면 하단 작업 스테이션 별 투입 리스트 조회 (리스트) 
 	 * 
 	 * @param equipType
 	 * @param equipCd
@@ -774,60 +776,14 @@ public class DeviceProcessController extends DynamicControllerSupport {
 	 * @param stationCd
 	 * @return
 	 */
-	@RequestMapping(value = "/search/input_jobs/{equip_type}/{equip_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiDesc(description = "Search Input Job list")
-	public List<JobInstance> searchInputJobs(
-			@PathVariable("equip_type") String equipType,
-			@PathVariable("equip_cd") String equipCd,
-			@RequestParam(name = "job_input_id", required = false) String jobInputId,
-			@RequestParam(name = "station_cd", required = false) String stationCd) {
-		
-		// 1. 작업 배치 체크 및 조회
-		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(Domain.currentDomainId(), equipType, equipCd);
-		JobBatch batch = equipBatchSet.getBatch();
-		JobInput input = null;
-		
-		// 2. 투입 ID가 있다면 투입 정보 조회
-		if(ValueUtil.isNotEmpty(jobInputId)) {
-			input = this.queryManager.select(JobInput.class, jobInputId);
-		}
-		
-		// 3. 투입 정보를 찾지 못했다면 스테이션에 현재 진행 중인 투입 정보 조회
-		if(input == null) {
-			Query condition = AnyOrmUtil.newConditionForExecution(batch.getDomainId());
-			condition.addFilter("batchId", batch.getId());
-			condition.addFilter("stationCd", stationCd);
-			condition.addFilter("status", JobInput.INPUT_STATUS_RUNNING);
-			input = this.queryManager.selectByCondition(JobInput.class, condition);
-		}
-		
-		// 4. 투입 정보가 있다면 투입 정보로 피킹할 작업을 조회 
-		if(input != null) {
-			return this.serviceDispatcher.getJobStatusService(batch).searchInputJobList(batch, input, stationCd);
-		// 5. 투입 정보가 없다면 에러
-		} else {
-			throw new ElidomRuntimeException("작업 스테이션 [" + stationCd + "]에서 현재 진행 중인 투입 정보가 없어서 피킹 작업을 찾을 수 없습니다.");
-		}
-	}
-	
-	/**
-	 * 장비 존 별 투입 작업 리스트를 조회 (리스트) 
-	 * 
-	 * @param jobInputId
-	 * @param equipType
-	 * @param equipCd
-	 * @param stationCd
-	 * @param indOnFlag
-	 * @return
-	 */
-	@RequestMapping(value = "/search/input_jobs/{job_input_id}/{equip_type}/{equip_cd}/{station_cd}/{ind_on_flag}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/search/input_jobs/{job_input_id}/{equip_type}/{equip_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Search Input Job list")
 	public List<JobInstance> searchInputJobs(
 			@PathVariable("job_input_id") String jobInputId,
 			@PathVariable("equip_type") String equipType,
 			@PathVariable("equip_cd") String equipCd,
-			@PathVariable("station_cd") String stationCd,
-			@PathVariable("ind_on_flag") Boolean indOnFlag) {
+			@RequestParam(name = "station_cd", required = false) String stationCd,
+			@RequestParam(name = "ind_on_yn", required = false) String indOnYn) {
 		
 		// 1. 작업 배치 체크 및 조회
 		Long domainId = Domain.currentDomainId();
@@ -835,23 +791,27 @@ public class DeviceProcessController extends DynamicControllerSupport {
 		JobBatch batch = equipBatchSet.getBatch();
 		
 		// 2. JobInput 조회
-		JobInput input = AnyEntityUtil.findEntityBy(domainId, false, JobInput.class, null, "id,equipType,equipCd,stationCd", jobInputId, equipType, equipCd, stationCd);
+		JobInput input = AnyEntityUtil.findEntityBy(domainId, true, JobInput.class, null, "id", jobInputId);
 		
 		// 3. 서비스 호출 
 		List<JobInstance> jobList = this.serviceDispatcher.getJobStatusService(batch).searchInputJobList(batch, input, stationCd);
+		boolean indOnFlag = ValueUtil.isEqualIgnoreCase(indOnYn, LogisConstants.Y_CAP_STRING);
 		
 		// 4. 표시기 점등
 		if(indOnFlag) {
-			// 해당 스테이션에 존재하는 모든 피킹 중인 작업 리스트를 조회하여 소등 요청 후 점등
+			// 해당 스테이션에 존재하는 모든 피킹 중인 작업 리스트를 조회하여 소등
 			IIndicationService indSvc = this.serviceDispatcher.getIndicationService(batch);
 			indSvc.indicatorListOff(batch, stationCd);
-			List<JobInstance> jobsToIndOn = jobList.stream().filter(job -> job.isTodoJob()).collect(Collectors.toList());
+			
+			// 작업 리스트 중에 피킹 상태인 작업만 점등 
+			List<JobInstance> jobsToIndOn = jobList.stream().filter(job -> ValueUtil.isEqualIgnoreCase(job.getStatus(), LogisConstants.JOB_STATUS_PICKING)).collect(Collectors.toList());
 			indSvc.indicatorsOn(batch, false, jobsToIndOn);
 		}
 		
 		// 5. 작업 리스트 리턴
 		return jobList;
 	}
+
 	
 	/**
 	 * 상품 코드 스캔으로 상품 투입
