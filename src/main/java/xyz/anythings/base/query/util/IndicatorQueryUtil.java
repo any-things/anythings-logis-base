@@ -195,7 +195,7 @@ public class IndicatorQueryUtil {
 	 */
 	public static String findGatewayPathByIndCd(Long domainId, String indCd) {
 		String sql = BeanUtil.get(IndicatorQueryStore.class).getFindGwPathByInd();
-		return AnyEntityUtil.findItem(domainId, false, String.class, sql, "gw_nm", "domainId,indCd", domainId, indCd);
+		return AnyEntityUtil.findItem(domainId, false, String.class, sql, "domainId,indCd", domainId, indCd);
 	}
 	
 	/**
