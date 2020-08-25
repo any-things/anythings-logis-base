@@ -142,8 +142,8 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 	 */
 	public int cancelBatch(JobBatch batch) {
 		// 취소 이벤트 발생 - 각 모듈에서 알아서 처리
-		EventResultSet befResult = this.cancelBatchEvent(SysEvent.EVENT_STEP_BEFORE, batch);		
-		return (int)befResult.getResult();	
+		EventResultSet befResult = this.cancelBatchEvent(SysEvent.EVENT_STEP_BEFORE, batch);
+		return (int)befResult.getResult();
 	}
 		
 	/**
@@ -185,7 +185,7 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 	 */
 	private EventResultSet startToReceiveEvent(short eventStep, String jobType, BatchReceipt receipt, Object ... params) {
 		return this.publishBatchReceiveEvent(
-				EventConstants.EVENT_RECEIVE_TYPE_RECEIVE, 
+				EventConstants.EVENT_RECEIVE_TYPE_RECEIVE,
 				eventStep, 
 				receipt.getDomainId(),
 				jobType, 
@@ -265,5 +265,5 @@ public class ReceiveBatchService extends AbstractExecutionService implements IRe
 		receiptEvent = (BatchReceiveEvent)this.eventPublisher.publishEvent(receiptEvent);
 		return receiptEvent.getEventResultSet();
 	}
-	
+
 }

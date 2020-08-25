@@ -82,7 +82,7 @@ public class StockService extends AbstractLogisService implements IStockService 
 				stock.setSkuCd(skuCd);
 			}
 			
-			return stock;			
+			return stock;
 		}
 	}
 	
@@ -100,7 +100,7 @@ public class StockService extends AbstractLogisService implements IStockService 
 					stock.setComCd(sku.getComCd());
 					stock.setSkuCd(sku.getSkuCd());
 					stock.setSkuBarcd(sku.getSkuBarcd());
-					stock.setSkuNm(sku.getSkuNm());		
+					stock.setSkuNm(sku.getSkuNm());
 					
 				} else if(ValueUtil.isNotEqual(stock.getSkuCd(), sku.getSkuCd())) {
 					// 재고의 상품 정보와 sku의 상품 정보가 다른 경우 재고 수량이 존재하지 않으면 sku 정보로 재고 설정 
@@ -316,7 +316,7 @@ public class StockService extends AbstractLogisService implements IStockService 
 	public void finishStocktaking(Long domainId, String stocktakingId) {
 		// TODO Auto-generated method stub
 		
-	}	
+	}
 
 	@Override
 	public Stocktaking findLatestStocktaking(Long domainId, String date, String equipType, String equipCd) {

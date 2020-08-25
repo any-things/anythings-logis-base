@@ -90,9 +90,9 @@ public class BatchService extends AbstractLogisService {
 		List<JobBatch> batches = this.queryManager.selectList(JobBatch.class, condition);
 		if(batches.isEmpty()) {
 			throw ThrowUtil.newNotFoundRecord("terms.menu.JobBatch");
-		} 
+		}
 		
-		return batches.get(0);		
+		return batches.get(0);
 	}
 
 }

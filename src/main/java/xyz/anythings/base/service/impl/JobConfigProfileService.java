@@ -217,7 +217,7 @@ public class JobConfigProfileService extends AbstractExecutionService implements
 			
 			this.queryManager.insertBatch(targetItems);
 			targetSet.setItems(targetItems);
-		}		
+		}
 	}
 
 }

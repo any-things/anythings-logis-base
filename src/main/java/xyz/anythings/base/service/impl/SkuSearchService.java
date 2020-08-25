@@ -52,16 +52,16 @@ public class SkuSearchService extends AbstractLogisService implements ISkuSearch
 			}
 		}
 		
-		return skuCd;		
+		return skuCd;
 	}
 	
 	@Override
-	public List<SKU> searchListInBatchGroup(JobBatch batch, String skuCd, boolean todoOnly, boolean exceptionWhenEmpty) {		
+	public List<SKU> searchListInBatchGroup(JobBatch batch, String skuCd, boolean todoOnly, boolean exceptionWhenEmpty) {
 		return this.searchListInBatch(batch, batch.getComCd(), skuCd, todoOnly, exceptionWhenEmpty);
 	}
 	
 	@Override
-	public List<SKU> searchListInBatchGroup(JobBatch batch, String comCd, String skuCd, boolean todoOnly, boolean exceptionWhenEmpty) {		
+	public List<SKU> searchListInBatchGroup(JobBatch batch, String comCd, String skuCd, boolean todoOnly, boolean exceptionWhenEmpty) {
 		//skuCd = this.validateSkuCd(batch, skuCd);
 		String[] skuCodeFields = BatchJobConfigUtil.getSkuSearchConditionFields(batch);
 		
@@ -79,12 +79,12 @@ public class SkuSearchService extends AbstractLogisService implements ISkuSearch
 	}
 	
 	@Override
-	public List<SKU> searchListInBatch(JobBatch batch, String skuCd, boolean todoOnly, boolean exceptionWhenEmpty) {		
+	public List<SKU> searchListInBatch(JobBatch batch, String skuCd, boolean todoOnly, boolean exceptionWhenEmpty) {
 		return this.searchListInBatch(batch, batch.getComCd(), skuCd, todoOnly, exceptionWhenEmpty);
 	}
 	
 	@Override
-	public List<SKU> searchListInBatch(JobBatch batch, String comCd, String skuCd, boolean todoOnly, boolean exceptionWhenEmpty) {		
+	public List<SKU> searchListInBatch(JobBatch batch, String comCd, String skuCd, boolean todoOnly, boolean exceptionWhenEmpty) {
 		return this.searchListInBatch(batch, null, comCd, skuCd, todoOnly, exceptionWhenEmpty);
 	}
 	
@@ -134,7 +134,7 @@ public class SkuSearchService extends AbstractLogisService implements ISkuSearch
 	 * @param exceptionWhenEmpty
 	 * @return
 	 */
-	protected List<SKU> searchSkuList(String skuCd, String sql, Map<String, Object> params, boolean exceptionWhenEmpty) {		
+	protected List<SKU> searchSkuList(String skuCd, String sql, Map<String, Object> params, boolean exceptionWhenEmpty) {
 		List<SKU> skuList = this.queryManager.selectListBySql(sql, params, SKU.class, 0, 0);
 		
 		if(ValueUtil.isEmpty(skuList) && exceptionWhenEmpty) {

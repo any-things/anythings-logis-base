@@ -131,7 +131,7 @@ public class SampleOrderService {
 		String sql = "select sum(order_qty) as order_qty from orders where domain_id = :domainId and batch_id = :batchId";
 		int totalPcs = this.queryManger.selectBySql(sql, ValueUtil.newMap("domainId,batchId", batch.getDomainId(), batch.getId()), Integer.class);
 		batch.setParentPcs(totalPcs);
-		batch.setBatchPcs(totalPcs);		
+		batch.setBatchPcs(totalPcs);
 		batch.setStatus(JobBatch.STATUS_READY);
 		this.queryManger.insert(batch);
 		
@@ -148,7 +148,7 @@ public class SampleOrderService {
 	 */
 	private String newBatchId(OrderSampler sampler) {
 		String jobDate = sampler.getJobDate().replaceAll(LogisConstants.DASH, LogisConstants.EMPTY_STRING);
-		return "S" + sampler.getDomainId() + jobDate + sampler.getJobSeq();		
+		return "S" + sampler.getDomainId() + jobDate + sampler.getJobSeq();
 	}
 	
 	/**

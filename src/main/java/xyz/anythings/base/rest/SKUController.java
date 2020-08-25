@@ -121,6 +121,15 @@ public class SKUController extends AbstractRestService {
 		return AnyEntityUtil.findEntityBy(Domain.currentDomainId(), true, SKU.class, null, "comCd,skuCd", comCd, skuCd);
 	}
 	
+	@RequestMapping(value = "/search/{sku_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Search List by SkuCd")
+	public List<SKU> searchBySkuCd(@PathVariable("sku_cd") String skuCd) {
+		
+		String sql = "SELECT * FROM SKU WHERE SKU_CD = :skuCd OR SKU_BARCD = :skuCd OR SKU_BARCD2 = :skuCd OR SKU_BARCD3 = :skuCd";
+		Map<String, Object> condition = ValueUtil.newMap("skuCd", skuCd);
+		return this.queryManager.selectListBySql(sql, condition, SKU.class, 0, 0);
+	}
+	
 	@RequestMapping(value = "/search/{equip_type}/{equip_cd}/{sku_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Search by SKU")
 	public List<SKU> searchBySkuCd(
