@@ -167,6 +167,10 @@ public class LogisConfigConstants extends xyz.anythings.sys.ConfigConstants {
 	 */
 	public static final String ASSIGNED_CELL_INDICATION_WHEN_BATCH_START_ENABLED = "job.cmm.assigned-cell.indicator.enabled.when.batch.start";
 	/**
+	 * 작업지시 시점에 배치에 걸린 모든 셀의 표시기에 셀 코드 표시 활성화 여부
+	 */
+	public static final String CELL_CD_INDICATION_WHEN_BATCH_START_ENABLED = "job.cmm.cell_cd.indicator.enabled.when.batch.start";
+	/**
 	 * 작업지시 시점에 표시기에 할당 셀 표시시 대기 시간 (ms)
 	 */
 	public static final String WAIT_DURATION_ASSIGNED_CELL_INDICATION_WHEN_BATCH_START = "job.cmm.assigned-cell.wait.duration.when.batch.start";

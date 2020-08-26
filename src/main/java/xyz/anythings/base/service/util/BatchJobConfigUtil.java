@@ -730,6 +730,18 @@ public class BatchJobConfigUtil {
 	}
 	
 	/**
+	 * 작업지시 시점에 표시기에 해당 셀 코드 표시 활성화 여부
+	 * 
+	 * @param batch
+	 * @return
+	 */
+	public static boolean isIndOnCellCodeWhenInstruction(JobBatch batch) {
+		// job.cmm.cell_cd.indicator.enabled.when.batch.start
+		String boolVal = getConfigValue(batch, LogisConfigConstants.CELL_CD_INDICATION_WHEN_BATCH_START_ENABLED, LogisConstants.FALSE_STRING);
+		return ValueUtil.toBoolean(boolVal);
+	}
+	
+	/**
 	 * 작업지시 시점에 표시기에 할당 셀 표시시 대기 시간 (ms)
 	 * 
 	 * @param batch

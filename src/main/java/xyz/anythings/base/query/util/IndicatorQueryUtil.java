@@ -75,7 +75,7 @@ public class IndicatorQueryUtil {
 	 */
 	public static List<String> searchIndCdList(Long domainId, String gwNm, String equipType, String equipCd) {
 		String sql = BeanUtil.get(IndicatorQueryStore.class).getIndCdListQuery();
-		return AnyEntityUtil.searchItems(domainId, false, String.class, sql, "domainId,gwNm,equipType,equipCd", domainId, gwNm, equipType, equipCd);
+		return AnyEntityUtil.searchItems(domainId, false, String.class, sql, "domainId,gwNm,equipType,equipCd,activeFlag", domainId, gwNm, equipType, equipCd, true);
 	}
 	
 	/**
@@ -171,7 +171,7 @@ public class IndicatorQueryUtil {
 	 */
 	public static List<Gateway> searchGatewayListByEquip(Long domainId, String stageCd, String equipType, String equipCd, String stationCd) {
 		String sql = BeanUtil.get(IndicatorQueryStore.class).getSearchGatewaysByEquip();
-		return AnyEntityUtil.searchItems(domainId, true, Gateway.class, sql, "domainId,stageCd,equipType,equipCd,stationCd", domainId, stageCd, equipType, equipCd, stationCd);
+		return AnyEntityUtil.searchItems(domainId, false, Gateway.class, sql, "domainId,stageCd,equipType,equipCd,stationCd", domainId, stageCd, equipType, equipCd, stationCd);
 	}
 
 	/**

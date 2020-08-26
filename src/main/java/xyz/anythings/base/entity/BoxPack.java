@@ -68,6 +68,9 @@ public class BoxPack extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	@Column (name = "order_date", length = 10)
 	private String orderDate;
+	
+	@Column (name = "cust_order_no", length = 40)
+	private String custOrderNo;
 
 	@Column (name = "order_no", length = 40)
 	private String orderNo;
@@ -236,6 +239,14 @@ public class BoxPack extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setOrderDate(String orderDate) {
 		this.orderDate = orderDate;
+	}
+
+	public String getCustOrderNo() {
+		return custOrderNo;
+	}
+
+	public void setCustOrderNo(String custOrderNo) {
+		this.custOrderNo = custOrderNo;
 	}
 
 	public String getOrderNo() {
