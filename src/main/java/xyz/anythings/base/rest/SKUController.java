@@ -21,6 +21,7 @@ import xyz.anythings.base.model.EquipBatchSet;
 import xyz.anythings.base.service.api.ISkuSearchService;
 import xyz.anythings.base.service.util.LogisServiceUtil;
 import xyz.anythings.sys.event.EventPublisher;
+import xyz.anythings.sys.service.ICustomService;
 import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
@@ -41,6 +42,11 @@ public class SKUController extends AbstractRestService {
 	
 	@Autowired
 	protected EventPublisher eventPublisher;
+	/**
+	 * 커스텀 서비스 실행기
+	 */
+	@Autowired
+	protected ICustomService customService;
 
 	@Override
 	protected Class<?> entityClass() {
@@ -96,23 +102,32 @@ public class SKUController extends AbstractRestService {
 
 	@RequestMapping(value = "/receive/ready/{receive_type}/{com_cd}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Ready to Receive From Parent System")
-	public Map<String, Object> readyToReceive(@PathVariable("receive_type") String receiveType, @PathVariable("com_cd") String comCd) {
+	public Object readyToReceive(@PathVariable("receive_type") String receiveType, @PathVariable("com_cd") String comCd) {
 		
 		SkuReceiptEvent event = new SkuReceiptEvent(Domain.currentDomainId(), receiveType, comCd, SkuReceiptEvent.EVENT_STEP_BEFORE);
-		event.setPlanCount(100);
 		event = (SkuReceiptEvent)this.eventPublisher.publishEvent(event);
 		
-		return ValueUtil.newMap("com_cd,receive_type,plan_count", comCd, receiveType, event.getPlanCount());
+		Object retVal = this.customService.doCustomService(Domain.currentDomainId(), "custom-ready-to-receive-sku", ValueUtil.newMap("receiveType,comCd", receiveType, comCd));
+		if(retVal == null) {
+			return ValueUtil.newMap("com_cd,receive_type,plan_count", comCd, receiveType, event.getPlanCount());
+		} else {
+			return retVal;
+		}
 	}
 	
 	@RequestMapping(value = "/receive/start/{receive_type}/{com_cd}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Receive (Interface) From Parent System")
-	public Map<String, Object> startToReceive(@PathVariable("receive_type") String receiveType, @PathVariable("com_cd") String comCd) {
+	public Object startToReceive(@PathVariable("receive_type") String receiveType, @PathVariable("com_cd") String comCd) {
 		
 		SkuReceiptEvent event = new SkuReceiptEvent(Domain.currentDomainId(), receiveType, comCd, SkuReceiptEvent.EVENT_STEP_AFTER);
 		event = (SkuReceiptEvent)this.eventPublisher.publishEvent(event);
 		
-		return ValueUtil.newMap("com_cd,receive_type,plan_count,received_count,error_count", comCd, event.getPlanCount(), event.getReceivedCount(), event.getErrorCount());
+		Object retVal = this.customService.doCustomService(Domain.currentDomainId(), "custom-start-to-receive-sku", ValueUtil.newMap("receiveType,comCd", receiveType, comCd));
+		if(retVal == null) {
+			return ValueUtil.newMap("com_cd,receive_type,plan_count,received_count,error_count", comCd, receiveType, event.getPlanCount(), event.getReceivedCount(), event.getErrorCount());
+		} else {
+			return retVal;
+		}
 	}
 	
 	@RequestMapping(value = "/find/{com_cd}/{sku_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
