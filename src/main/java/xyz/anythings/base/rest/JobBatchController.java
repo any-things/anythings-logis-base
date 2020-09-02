@@ -225,7 +225,8 @@ public class JobBatchController extends AbstractRestService {
 	}
 	
 	/**
-	 * 배치 수신 상태 조회 
+	 * 배치 수신 상태 조회
+	 * 
 	 * @param batchSummaryId
 	 * @return
 	 */
@@ -383,7 +384,7 @@ public class JobBatchController extends AbstractRestService {
 		// 2. 작업 지시 취소
 		int count = this.serviceDispatcher.getInstructionService(batch).cancelInstructionBatch(batch);
 		// 3. 작업 지시 결과 리턴
-		return ValueUtil.newMap("result,count", SysConstants.OK_STRING, count);		
+		return ValueUtil.newMap("result,count", SysConstants.OK_STRING, count);
 	}
 	
 	/**
@@ -455,7 +456,7 @@ public class JobBatchController extends AbstractRestService {
 	@RequestMapping(value = "/{batch_group_id}/close_batches/by_group", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Complete batch by batch group id")
 	public Map<String, Object> closeBatchesByGroup(
-			@PathVariable("batch_group_id") String batchGroupId, 
+			@PathVariable("batch_group_id") String batchGroupId,
 			@RequestParam(name = "forcibly", required = false) boolean forcibly) {
 		
 		int count = this.batchService.closeBatchGroup(Domain.currentDomainId(), batchGroupId, forcibly);
@@ -471,10 +472,12 @@ public class JobBatchController extends AbstractRestService {
 	 * @return
 	 */
 	private JobBatch findWithLock(boolean exceptionWhenEmpty, String batchId, boolean findConfigSet) {
-		JobBatch batch = AnyEntityUtil.findEntityByIdByUnselectedWithLock(exceptionWhenEmpty, JobBatch.class, batchId, "jobConfigSet", "indConfigSet");
+		JobBatch batch = AnyEntityUtil.findEntityByIdByUnselectedWithLock(false, JobBatch.class, batchId, "jobConfigSet", "indConfigSet");
 		
 		if(batch == null) {
-			throw ThrowUtil.newNotFoundRecord("terms.menu.JobBatch", batchId);
+			if(exceptionWhenEmpty) {
+				throw ThrowUtil.newNotFoundRecord("terms.menu.JobBatch", batchId);
+			}
 		} else {
 			if(findConfigSet) {
 				if(ValueUtil.isNotEmpty(batch.getIndConfigSetId())) {
