@@ -12,11 +12,11 @@ public class BatchInstructEvent extends BatchRootEvent {
 	/**
 	 * 작업 지시 이벤트 타입
 	 * 배치 작업 지시				EventConstants.EVENT_INSTRUCT_TYPE_INSTRUCT 		= 10;
-	 * 배치 작업 지시 취소  			EventConstants.EVENT_INSTRUCT_TYPE_INSTRUCT_CANCEL 	= 20;	
+	 * 배치 작업 지시 취소  			EventConstants.EVENT_INSTRUCT_TYPE_INSTRUCT_CANCEL 	= 20;
 	 * 배치 작업 병합 				EventConstants.EVENT_INSTRUCT_TYPE_MERGE 			= 30;
-	 * 배치 대상 분류  				EventConstants.EVENT_INSTRUCT_TYPE_CLASSIFICATION 	= 40;	
-	 * 배치 작업 지시 후 박스 요청  	EventConstants.EVENT_INSTRUCT_TYPE_BOX_REQ 			= 50;	
-	 * 토털 피킹  					EventConstants.EVENT_INSTRUCT_TYPE_TOTAL_PICKING 	= 60;	
+	 * 배치 대상 분류  				EventConstants.EVENT_INSTRUCT_TYPE_CLASSIFICATION 	= 40;
+	 * 배치 작업 지시 후 박스 요청  	EventConstants.EVENT_INSTRUCT_TYPE_BOX_REQ 			= 50;
+	 * 토털 피킹  					EventConstants.EVENT_INSTRUCT_TYPE_TOTAL_PICKING 	= 60;
 	 * 추천 로케이션  				EventConstants.EVENT_INSTRUCT_TYPE_RECOMMEND_CELLS 	= 70;
 	 */	
 	private short eventType;
@@ -34,7 +34,7 @@ public class BatchInstructEvent extends BatchRootEvent {
 	 */
 	public BatchInstructEvent(long domainId, short eventType, short eventStep) {
 		super(domainId, eventStep);
-		this.setEventType(eventType);		
+		this.setEventType(eventType);
 	}
 
 	public short getEventType() {
