@@ -384,9 +384,9 @@ public class RuntimeIndServiceUtil {
 		if(ValueUtil.isNotEmpty(jobList)) {
 			
 			// 2. 검수 색깔은 빨간색으로 고정
-			for(JobInstance job : jobList) {
-				job.setColorCd(LogisConstants.COLOR_RED);
-			}
+			//for(JobInstance job : jobList) {
+			//	job.setColorCd(LogisConstants.COLOR_RED);
+			//}
 			
 			// 3. 점등 요청을 위한 데이터 모델 생성. 
 			Map<String, List<IIndOnInfo>> indOnList = buildIndOnList(false, batch, jobList, false);
