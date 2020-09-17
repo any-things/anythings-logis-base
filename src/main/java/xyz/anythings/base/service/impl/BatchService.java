@@ -95,4 +95,24 @@ public class BatchService extends AbstractLogisService {
 		return batches.get(0);
 	}
 
+	/**
+	 * 작업 배치 호기 전환이 가능한 지 여부 체크 
+	 * 
+	 * @param batch 작업 배치
+	 * @param toEquipCd 전환할 호기
+	 */
+	public void isPossibleChangeEquipment(JobBatch batch, String toEquipCd) {
+		this.serviceDispatcher.getBatchService(batch).isPossibleChangeEquipment(batch, toEquipCd);
+	}
+	
+	/**
+	 * 배치 호기 전환
+	 * 
+	 * @param batch 작업 배치
+	 * @param toEquipCd 전환할 호기
+	 */
+	public void changeEquipment(JobBatch batch, String toEquipCd) {
+		this.serviceDispatcher.getBatchService(batch).changeEquipment(batch, toEquipCd);
+	}
+
 }

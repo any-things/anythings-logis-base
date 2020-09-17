@@ -447,6 +447,26 @@ public class JobBatchController extends AbstractRestService {
 	}
 	
 	/**
+	 * 작업 배치 랙 전환 
+	 * 
+	 * @param batchId
+	 * @return
+	 */
+	@RequestMapping(value = "/{id}/change_equipment/{to_equip_cd}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Change rack of batch")
+	public Map<String, Object> changeRack(@PathVariable("id") String batchId, @PathVariable("to_equip_cd") String toEquipCd) {
+		
+		// 1. JobBatch 조회 
+		JobBatch batch = this.findWithLock(true, batchId, true);
+		// 2. 작업 배치 호기 전환 가능 여부 체크
+		this.batchService.isPossibleChangeEquipment(batch, toEquipCd);
+		// 3. 작업 배치 호기 전환 
+		this.batchService.changeEquipment(batch, toEquipCd);
+		// 4. 결과 리턴
+		return ValueUtil.newMap("result", SysConstants.OK_STRING);
+	}
+	
+	/**
 	 * 배치 그룹 ID로 배치 작업을 모두 찾아 배치 마감
 	 * 
 	 * @param batchGroupId

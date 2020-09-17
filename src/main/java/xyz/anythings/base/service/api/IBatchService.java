@@ -56,4 +56,20 @@ public interface IBatchService {
 	 */
 	public void isPossibleCancelBatch(JobBatch batch);
 	
+	/**
+	 * 작업 배치 호기 전환이 가능한 지 여부 체크 
+	 * 
+	 * @param batch 작업 배치
+	 * @param toEquipCd 전환할 호기
+	 */
+	public void isPossibleChangeEquipment(JobBatch batch, String toEquipCd);
+	
+	/**
+	 * 배치 호기 전환
+	 * 
+	 * @param batch 작업 배치
+	 * @param toEquipCd 전환할 호기
+	 */
+	public void changeEquipment(JobBatch batch, String toEquipCd);
+
 }
