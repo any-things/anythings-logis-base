@@ -36,8 +36,8 @@ public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "job_date", nullable = false, length = 10)
 	private String jobDate;
 
-	@Column (name = "job_seq", nullable = false, length = 12)
-	private Integer jobSeq;
+	@Column (name = "job_seq", nullable = false, length = 10)
+	private String jobSeq;
 
 	@Column (name = "job_type", nullable = false, length = 20)
 	private String jobType;
@@ -45,7 +45,7 @@ public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "com_cd", nullable = false, length = 30)
 	private String comCd;
 
-	@Column (name = "shop_cd", nullable = false, length = 30)
+	@Column (name = "shop_cd", length = 30)
 	private String shopCd;
 
 	@Column (name = "shop_nm", length = 40)
@@ -57,7 +57,7 @@ public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "equip_type", length = 20)
 	private String equipType;
 
-	@Column (name = "equip_cd", nullable = false, length = 30)
+	@Column (name = "equip_cd", length = 30)
 	private String equipCd;
 
 	@Column (name = "equip_nm", length = 40)
@@ -180,11 +180,11 @@ public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.jobDate = jobDate;
 	}
 
-	public Integer getJobSeq() {
+	public String getJobSeq() {
 		return jobSeq;
 	}
 
-	public void setJobSeq(Integer jobSeq) {
+	public void setJobSeq(String jobSeq) {
 		this.jobSeq = jobSeq;
 	}
 

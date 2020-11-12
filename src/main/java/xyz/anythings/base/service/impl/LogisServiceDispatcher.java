@@ -313,7 +313,7 @@ public class LogisServiceDispatcher implements BeanFactoryAware {
 	 * @return
 	 */
 	public IAssortService getPickService(String jobType) {
-		String assortSvcType = jobType.toLowerCase() + "PickService";
+		String assortSvcType = jobType.toLowerCase() + "PickingService";
 		return (IAssortService)this.beanFactory.getBean(assortSvcType);
 	}
 	

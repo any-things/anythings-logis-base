@@ -99,13 +99,15 @@ public class SampleOrderService {
 		batch.setComCd(sampler.getComCd());
 		batch.setStageCd(sampler.getStageCd());
 		batch.setEquipType(sampler.getEquipType());
-		batch.setEquipCd(sampler.getEquipCd());
 		
-		if(ValueUtil.isEqualIgnoreCase(sampler.getEquipType(), LogisConstants.EQUIP_TYPE_RACK)) {
-			Rack rack = Rack.findByRackCd(sampler.getDomainId(), sampler.getEquipCd(), true);
-			batch.setAreaCd(rack.getAreaCd());
-			batch.setEquipGroupCd(rack.getEquipGroupCd());
-			batch.setEquipNm(rack.getRackNm());
+		if(ValueUtil.isEqualIgnoreCase(sampler.getEquipType(), LogisConstants.EQUIP_TYPE_RACK) && ValueUtil.isNotEmpty(sampler.getEquipCd())) {
+			Rack rack = Rack.findByRackCd(sampler.getDomainId(), sampler.getEquipCd(), false);
+			if(rack != null) {
+				batch.setAreaCd(rack.getAreaCd());
+				batch.setEquipGroupCd(rack.getEquipGroupCd());
+				batch.setEquipCd(sampler.getEquipCd());
+				batch.setEquipNm(rack.getRackNm());
+			}
 		}
 		
 		batch.setParentOrderQty(sampler.getTotalOrderQty());

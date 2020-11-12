@@ -2,12 +2,15 @@ package xyz.anythings.base.service.impl;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import xyz.anythings.base.LogisConstants;
 import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.Rack;
 import xyz.anythings.base.event.EventConstants;
 import xyz.anythings.base.event.main.BatchInstructEvent;
 import xyz.anythings.sys.event.model.EventResultSet;
+import xyz.anythings.sys.service.ICustomService;
 import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.elidom.dbist.dml.Query;
@@ -20,6 +23,12 @@ import xyz.elidom.util.ValueUtil;
  */
 public class AbstractInstructionService extends AbstractLogisService {
 
+	/**
+	 * 커스텀 서비스
+	 */
+	@Autowired
+	protected ICustomService customService;
+	
 	/**
 	 * 배치 데이터에 대해 설비 정보 여부 를 찾아 대상 설비 리스트를 리턴
 	 * 
@@ -73,7 +82,7 @@ public class AbstractInstructionService extends AbstractLogisService {
 	protected <T> List<T> searchEquipListByEquipType(Class<T> clazz, JobBatch batch) {
 		return AnyEntityUtil.searchEntitiesBy(batch.getDomainId(), false, clazz, null
 				, "areaCd,stageCd,activeFlag,jobType,batchId"
-				, batch.getAreaCd(), batch.getStageCd(), Boolean.TRUE, batch.getJobType(), batch.getId());	
+				, batch.getAreaCd(), batch.getStageCd(), Boolean.TRUE, batch.getJobType(), batch.getId());
 	}	
 	
 	/************** 배치 작업 지시 이벤트 처리  **************/

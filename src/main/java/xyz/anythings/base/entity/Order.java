@@ -28,7 +28,7 @@ public class Order extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	/**
 	 * 상태 W : 대기 
 	 */
-	public static final String STATUS_WAIT = "W";	
+	public static final String STATUS_WAIT = "W";
 	
 	/**
 	 * 상태 C : 수신 취소  
