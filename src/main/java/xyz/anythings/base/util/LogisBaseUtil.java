@@ -61,7 +61,8 @@ public class LogisBaseUtil {
 	 * @return
 	 */
 	public static synchronized String newJobBatchId(Long domainId, String stageCd) {
-		// 사이트 별 이벤트 생성 룰이 있다면 사용  
+		
+		// 사이트 별 이벤트 생성 룰이 있다면 사용
 		IdGenerationEvent event = new IdGenerationEvent(domainId, stageCd, EventConstants.EVENT_ID_GENERATION_BATCH_ID);
 		event = (IdGenerationEvent)BeanUtil.get(EventPublisher.class).publishEvent(event);
 		
@@ -69,14 +70,14 @@ public class LogisBaseUtil {
 			return ValueUtil.toString(event.getResult());
 		}
 		
-		// 없다면 기본 배치 ID 생성 룰 사용 
+		// 없다면 기본 배치 ID 생성 룰 사용
 		String newBatchId = null;
 		IQueryManager queryMgr = BeanUtil.get(IQueryManager.class);
 		int count = 1;
 		
 		while(count > 0) {
 			String currentTime = DateUtil.dateTimeStr(new Date(), DATE_FORMAT_FOR_BATCH_ID);
-			newBatchId = domainId + SysConstants.DASH + currentTime;	
+			newBatchId = domainId + SysConstants.DASH + currentTime;
 			Query condition = AnyOrmUtil.newConditionForExecution(domainId, SysConstants.ENTITY_FIELD_ID);
 			condition.addFilter("id", newBatchId);
 			count = queryMgr.selectSize(JobBatch.class, condition);
@@ -88,7 +89,6 @@ public class LogisBaseUtil {
 		
 		return newBatchId;
 	}
-	
 	
 	/**
 	 * 작업 배치 ID 

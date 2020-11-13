@@ -12,6 +12,9 @@ where
 	#if($equipCd) 
 	and equip_cd = :equipCd
 	#end
+	#if($cellCd) 
+	and cell_cd = :cellCd
+	#end
 	#if($comCd)
 	and com_cd = :comCd
 	#end

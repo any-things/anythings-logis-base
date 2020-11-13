@@ -1,5 +1,6 @@
 package xyz.anythings.base.rest;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,14 +19,17 @@ import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.SKU;
 import xyz.anythings.base.entity.Stock;
 import xyz.anythings.base.model.EquipBatchSet;
+import xyz.anythings.base.service.api.ISkuSearchService;
 import xyz.anythings.base.service.api.IStockService;
 import xyz.anythings.base.service.util.LogisServiceUtil;
 import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
 import xyz.elidom.orm.system.annotation.service.ServiceDesc;
+import xyz.elidom.sys.SysMessageConstants;
 import xyz.elidom.sys.entity.Domain;
 import xyz.elidom.sys.system.service.AbstractRestService;
+import xyz.elidom.sys.util.MessageUtil;
 import xyz.elidom.sys.util.ThrowUtil;
 import xyz.elidom.util.ValueUtil;
 
@@ -41,6 +45,11 @@ public class StockController extends AbstractRestService {
 	 */
 	@Autowired
 	private IStockService stockService;
+	/**
+	 * 상품 조회 서비스
+	 */
+	@Autowired
+	private ISkuSearchService skuSearchService;
 
 	@Override
 	protected Class<?> entityClass() {
@@ -112,6 +121,60 @@ public class StockController extends AbstractRestService {
 		return stock;
 	}
 	
+	@RequestMapping(value = "/sku/search/{equip_type}/{equip_cd}/{sku_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Search by SKU")
+	public List<SKU> searchBySkuCd(
+			@PathVariable("equip_type") String equipType,
+			@PathVariable("equip_cd") String equipCd,
+			@PathVariable("sku_cd") String skuCd) {
+		
+		Long domainId = Domain.currentDomainId();
+		// 1. 배치 진행 여부 확인 
+		boolean runningBatchExist = LogisServiceUtil.isRunningBatchExist(domainId, equipType, equipCd);
+		
+		// 2. 배치 진행 상태에 따라 검색 가능한 대상 SKU가 달라짐.
+		if(runningBatchExist) {
+			// 2.1. 작업 진행 중일 때 배치에 포함된 상품 리스트 검색 
+			EquipBatchSet equipBatch = LogisServiceUtil.checkRunningBatch(domainId, equipType, equipCd);
+			List<SKU> skuList = this.skuSearchService.searchList(equipBatch.getBatch(), skuCd);
+			
+			if(ValueUtil.isEmpty(skuList)) {
+				throw ThrowUtil.newValidationErrorWithNoLog("진행 중인 배치에 해당 상품 주문이 존재하지 않습니다.");
+			} else {
+				return skuList;
+			}
+		
+		// 3. 배치가 진행 중이지 않은 경우 고정 로케이션에서 조회
+		} else {
+			// 3.1 상품 마스터에서 상품 검색
+			String query = "select com_cd, sku_barcd, sku_cd, sku_nm, box_in_qty from sku where (sku_cd = :skuCd or sku_barcd = :skuCd)";
+			List<SKU> skuList = this.queryManager.selectListBySql(query, ValueUtil.newMap("skuCd", skuCd), SKU.class, 0, 0);
+			
+			// 3.2
+			if(ValueUtil.isEmpty(skuList)) {
+				List<String> terms = ValueUtil.toList(MessageUtil.getTerm("terms.label.sku", "SKU"), skuCd);
+				throw ThrowUtil.newValidationErrorWithNoLog(true, SysMessageConstants.NOT_FOUND, terms);
+			}
+			
+			// 3.3 상품별 고정 로케이션 상품인지 판별
+			List<SKU> retSkuList = new ArrayList<SKU>();
+			for(SKU sku : skuList) {
+				List<Stock> fixStocks = this.stockService.searchStocksBySku(domainId, equipType, null, true, sku.getComCd(), sku.getSkuCd());
+				if(ValueUtil.isNotEmpty(fixStocks)) {
+					retSkuList.add(sku);
+				}
+			}
+			
+			// 3.4 고정 로케이션에 해당 상품이 존재하지 않습니다.
+			if(ValueUtil.isEmpty(retSkuList)) {
+				throw ThrowUtil.newValidationErrorWithNoLog("고정 로케이션에 해당 상품 재고가 존재하지 않습니다.");
+			}
+			
+			// 3.5 결과 리턴
+			return skuList;
+		}
+	}
+	
 	@RequestMapping(value = "/search_by_sku/{equip_type}/{equip_cd}/{com_cd}/{sku_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "DPS Search Stocks By SKU")
 	public List<Stock> searchStocksBySku(
@@ -120,7 +183,13 @@ public class StockController extends AbstractRestService {
 			@PathVariable("com_cd") String comCd,
 			@PathVariable("sku_cd") String skuCd) {
 		
-		return this.stockService.searchStocksBySku(Domain.currentDomainId(), equipType, equipCd, comCd, skuCd);
+		List<Stock> stocks = this.stockService.searchStocksBySku(Domain.currentDomainId(), equipType, equipCd, comCd, skuCd);
+		
+		if(ValueUtil.isEmpty(stocks)) {
+			throw ThrowUtil.newValidationErrorWithNoLog("해당 상품으로 재고를 찾을 수 없습니다.");
+		} else {
+			return stocks;
+		}
 	}
 	
 	@RequestMapping(value = "/recommend_cells/{equip_type}/{equip_cd}/{com_cd}/{sku_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -133,6 +202,7 @@ public class StockController extends AbstractRestService {
 			@RequestParam(name = "fixed_flag", required = false) Boolean fixedFlag) {
 		
 		//return this.stockService.searchRecommendCells(Domain.currentDomainId(), equipType, equipCd, comCd, skuCd, fixedFlag);
+		// TODO custom service로 연결
 		return this.stockService.searchRecommendCells(Domain.currentDomainId(), equipType, null, comCd, skuCd, fixedFlag);
 	}
 	
@@ -145,24 +215,33 @@ public class StockController extends AbstractRestService {
 			@PathVariable("sku_cd") String skuCd) {
 
 		Long domainId = Domain.currentDomainId();
-		EquipBatchSet equipBatchSet = LogisServiceUtil.findBatchByEquip(domainId, equipType, equipCd);
-		JobBatch batch = equipBatchSet.getBatch();
+		// 1. 배치 진행 여부 확인 
+		boolean runningBatchExist = LogisServiceUtil.isRunningBatchExist(domainId, equipType, equipCd);
 		
-		//Stock stock = this.stockService.calculateSkuOrderStock(domainId, batch.getId(), equipType, equipCd, comCd, skuCd);
-		Stock stock = this.stockService.calculateSkuOrderStock(domainId, batch.getId(), equipType, null, comCd, skuCd);
-		
-		if(stock != null && stock.getOrderQty() > 0) {
-			stock.setEquipType(equipType);
-			stock.setEquipCd(equipCd);
-			stock.setOrderQty(stock.getOrderQty() - stock.getAllocQty() - stock.getLoadQty());
+		// 2. 배치 진행 중이면 보충 가능
+		if(runningBatchExist) {
+			EquipBatchSet equipBatchSet = LogisServiceUtil.findBatchByEquip(domainId, equipType, equipCd);
+			JobBatch batch = equipBatchSet.getBatch();
+			Stock stock = this.stockService.calculateSkuOrderStock(domainId, batch.getId(), equipType, null, comCd, skuCd);
+			
+			if(stock != null && stock.getOrderQty() > 0) {
+				stock.setEquipType(equipType);
+				stock.setEquipCd(equipCd);
+				stock.setOrderQty(stock.getOrderQty() - stock.getAllocQty() - stock.getStockQty());
+				
+			} else {
+				stock = new Stock();
+				stock.setOrderQty(0);
+				stock.setStockQty(0);
+				stock.setInputQty(0);
+			}
+			
+			return stock;
+			
+		// 3. 배치 진행 중이 아니면 고정 로케이션 보충만 가능
 		} else {
-			stock = new Stock();
-			stock.setOrderQty(0);
-			stock.setStockQty(0);
-			stock.setInputQty(0);
+			throw ThrowUtil.newValidationErrorWithNoLog("지금은 고정 셀 보충만 가능합니다. 고정 셀 상품을 선택해주세요.");
 		}
-		
-		return stock;
 	}
 	
 	@RequestMapping(value = "/calc_order_stock/{equip_type}/{equip_cd}/{cell_cd}/{com_cd}/{sku_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

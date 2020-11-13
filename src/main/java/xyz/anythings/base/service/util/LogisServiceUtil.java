@@ -7,10 +7,12 @@ import xyz.anythings.base.entity.Rack;
 import xyz.anythings.base.entity.TrayBox;
 import xyz.anythings.base.model.EquipBatchSet;
 import xyz.anythings.sys.util.AnyEntityUtil;
+import xyz.elidom.orm.IQueryManager;
 import xyz.elidom.sys.SysConstants;
 import xyz.elidom.sys.SysMessageConstants;
 import xyz.elidom.sys.util.ThrowUtil;
 import xyz.elidom.sys.util.ValueUtil;
+import xyz.elidom.util.BeanUtil;
 
 /**
  * 물류 서비스 유틸리티
@@ -109,7 +111,7 @@ public class LogisServiceUtil {
 	}
 
 	/**
-	 * regionCd로 호기 정보를 조회하고 현재 실행 가능한 상태인지 체크한 후 리턴  
+	 * regionCd로 호기 정보를 조회하고 현재 실행 가능한 상태인지 체크한 후 리턴
 	 * 
 	 * @param domainId
 	 * @param rackCd
@@ -206,7 +208,7 @@ public class LogisServiceUtil {
 			throw ThrowUtil.newValidationErrorWithNoLog(true, SysMessageConstants.DOES_NOT_PROCEED, "terms.label.job_batch");
 		}
 		
-		return batch;		
+		return batch;
 	}
 	
 	/**
@@ -229,14 +231,27 @@ public class LogisServiceUtil {
 		return batch;
 	}
 	
-	
+	/**
+	 * 진행 중인 배치가 존재하는 지 판단만 한다. 존재하지 않아도 에러가 발생하지 않는다.
+	 * 
+	 * @param domainId
+	 * @param equipType
+	 * @param equipCd
+	 * @return
+	 */
+	public static boolean isRunningBatchExist(Long domainId, String equipType, String equipCd) {
+		String sql = "select id from job_batches where domain_id = :domainId and status = :status and equip_type = :equipType and equip_cd = :equipCd";
+		int runBatchCount = BeanUtil.get(IQueryManager.class).selectSizeBySql(sql, ValueUtil.newMap("domainId,status,equipType,equipCd", domainId, JobBatch.STATUS_RUNNING, equipType, equipCd));
+		return runBatchCount > 0;
+	}
 	
 	/***********************************************************************************************/
-	/*   버킷 ( BOX , TRAY ) 엔티티 조회    */
+	/*									버킷 ( BOX , TRAY ) 엔티티 조회								   */
 	/***********************************************************************************************/
 
 	/**
-	 * 트레이 박스 검색 
+	 * 트레이 박스 검색
+	 * 
 	 * @param domainId
 	 * @param trayCd
 	 * @param withLock
@@ -253,7 +268,8 @@ public class LogisServiceUtil {
 	}
 
 	/**
-	 * 박스 유형 검색 
+	 * 박스 유형 검색
+	 * 
 	 * @param domainId
 	 * @param trayCd
 	 * @param withLock
@@ -268,4 +284,5 @@ public class LogisServiceUtil {
 		}
 		return boxType;
 	}
+
 }

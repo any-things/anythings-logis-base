@@ -15,6 +15,7 @@ import xyz.anythings.base.entity.Order;
 import xyz.anythings.base.entity.OrderSampler;
 import xyz.anythings.base.entity.Rack;
 import xyz.anythings.base.entity.SKU;
+import xyz.anythings.base.util.LogisBaseUtil;
 import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.elidom.dbist.dml.Query;
 import xyz.elidom.orm.IQueryManager;
@@ -149,8 +150,9 @@ public class SampleOrderService {
 	 * @return
 	 */
 	private String newBatchId(OrderSampler sampler) {
-		String jobDate = sampler.getJobDate().replaceAll(LogisConstants.DASH, LogisConstants.EMPTY_STRING);
-		return "S" + sampler.getDomainId() + jobDate + sampler.getJobSeq();
+		//String jobDate = sampler.getJobDate().replaceAll(LogisConstants.DASH, LogisConstants.EMPTY_STRING);
+		//return "S" + sampler.getDomainId() + jobDate + sampler.getJobSeq();
+		return LogisBaseUtil.newJobBatchId(sampler.getDomainId(), sampler.getStageCd());
 	}
 	
 	/**

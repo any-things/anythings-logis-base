@@ -91,7 +91,7 @@ public class StockService extends AbstractLogisService implements IStockService 
 		Stock stock = this.findStock(domainId, cellCd, false);
 		
 		if(stock == null) {
-			stock = this.createStock(domainId, cellCd, sku.getComCd(), sku.getSkuCd(), sku.getSkuNm());
+			stock = this.createStock(domainId, cellCd, sku);
 			
 		} else {
 			if(sku != null) {
