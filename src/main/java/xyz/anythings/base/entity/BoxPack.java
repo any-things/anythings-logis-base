@@ -60,8 +60,8 @@ public class BoxPack extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "job_date", nullable = false, length = 10)
 	private String jobDate;
 
-	@Column (name = "job_seq", length = 12)
-	private Integer jobSeq;
+	@Column (name = "job_seq", length = 10)
+	private String jobSeq;
 
 	@Column (name = "job_type", length = 20)
 	private String jobType;
@@ -217,11 +217,11 @@ public class BoxPack extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.jobDate = jobDate;
 	}
 
-	public Integer getJobSeq() {
+	public String getJobSeq() {
 		return jobSeq;
 	}
 
-	public void setJobSeq(Integer jobSeq) {
+	public void setJobSeq(String jobSeq) {
 		this.jobSeq = jobSeq;
 	}
 

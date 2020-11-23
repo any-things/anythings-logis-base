@@ -198,5 +198,5 @@ public class BoxItem extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setStatus(String status) {
 		this.status = status;
-	}	
+	}
 }
