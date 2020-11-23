@@ -424,7 +424,8 @@ public class BatchJobConfigUtil {
 	 */
 	public static String getBoxIdUniqueScope(JobBatch batch, String defaultValue) {
 		// job.cmm.box.box_id.unique.scope
-		return getBoxIdUniqueScope(batch, defaultValue);
+		String val = getBoxIdUniqueScope(batch, false);
+		return ValueUtil.isEmpty(val) ? defaultValue : val;
 	}
 	
 	/**

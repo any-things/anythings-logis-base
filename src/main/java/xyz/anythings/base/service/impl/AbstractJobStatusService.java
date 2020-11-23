@@ -78,7 +78,7 @@ public abstract class AbstractJobStatusService extends AbstractLogisService impl
 	public Integer findNextInputSeq(JobBatch batch) {
 		
 		// 작업 배치의 마지막 투입 시퀀스를 조회 후 하나 올려서 리턴
-		JobBatch findBatch = AnyEntityUtil.findEntityByIdWithLock(true, JobBatch.class, batch.getId());
+		JobBatch findBatch = AnyEntityUtil.findEntityByIdWithLock(true, JobBatch.class, batch.getId(), "id", "lastInputSeq");
 		int lastInputSeq = (findBatch.getLastInputSeq() == null) ? 1 : findBatch.getLastInputSeq() + 1;
 		batch.setLastInputSeq(lastInputSeq);
 		this.queryManager.update(batch, "lastInputSeq");
