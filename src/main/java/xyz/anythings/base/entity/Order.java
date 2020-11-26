@@ -172,13 +172,13 @@ public class Order extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	/**
 	 * 소분류 용
 	 */
-	@Column (name = "class_cd", length = 30)
+	@Column (name = "class_cd", length = 40)
 	private String classCd;
 	
 	/**
 	 * 방면 분류 용
 	 */
-	@Column (name = "box_class_cd", length = 30)
+	@Column (name = "box_class_cd", length = 40)
 	private String boxClassCd;
 
 	@Column (name = "pack_type", length = 20)

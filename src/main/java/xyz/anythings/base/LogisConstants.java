@@ -105,7 +105,11 @@ public class LogisConstants extends AnyConstants {
 	/**
 	 * 검수 완료 상태 : Examinated
 	 */
-	public static final String JOB_STATUS_EXAMINATED = "E";	
+	public static final String JOB_STATUS_EXAMINATED = "E";
+	/**
+	 * 출고 완료 상태 : Final Out
+	 */
+	public static final String JOB_STATUS_FINAL_OUT = "O";
 	/**
 	 * 실적 보고 완료 상태 : Reported
 	 */

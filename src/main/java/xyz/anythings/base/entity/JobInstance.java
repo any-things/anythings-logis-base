@@ -15,7 +15,10 @@ import xyz.elidom.sys.util.ValueUtil;
 	@Index(name = "ix_job_instances_3", columnList = "box_id,invoice_id,batch_id"),
 	@Index(name = "ix_job_instances_4", columnList = "status,equip_type,equip_cd,sub_equip_cd,batch_id"),
 	@Index(name = "ix_job_instances_5", columnList = "status,job_date,job_seq,batch_id"),
-	@Index(name = "ix_job_instances_6", columnList = "input_seq,sub_equip_cd,sku_cd,status,batch_id")
+	@Index(name = "ix_job_instances_6", columnList = "input_seq,sub_equip_cd,sku_cd,status,batch_id"),
+	@Index(name = "ix_job_instances_7", columnList = "status,box_type_cd,batch_id"),
+	@Index(name = "ix_job_instances_8", columnList = "class_cd,box_class_cd,batch_id"),
+	@Index(name = "ix_job_instances_9", columnList = "report_status,batch_id")
 })
 public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	/**
@@ -45,12 +48,14 @@ public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "com_cd", nullable = false, length = 30)
 	private String comCd;
 
+	// TODO orderer_cd, orderer_nm으로 변경 필요
 	@Column (name = "shop_cd", length = 30)
 	private String shopCd;
 
 	@Column (name = "shop_nm", length = 40)
 	private String shopNm;
 
+	// TODO 삭제
 	@Column (name = "equip_group_cd", length = 30)
 	private String equipGroupCd;
 	
@@ -60,6 +65,7 @@ public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "equip_cd", length = 30)
 	private String equipCd;
 
+	// TODO 삭제
 	@Column (name = "equip_nm", length = 40)
 	private String equipNm;
 
@@ -68,86 +74,236 @@ public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	@Column (name = "ind_cd", length = 30)
 	private String indCd;
-
-	@Column (name = "order_no", nullable = false, length = 40)
-	private String orderNo;
-
-	@Column (name = "sku_cd", nullable = false, length = 30)
-	private String skuCd;
-
-	@Column (name = "sku_nm", length = 200)
-	private String skuNm;
-
-	@Column (name = "input_seq", length = 12)
-	private Integer inputSeq;
-
-	@Column (name = "box_type_cd", length = 30)
-	private String boxTypeCd;
-
-	@Column (name = "box_id", length = 30)
-	private String boxId;
-
-	@Column (name = "invoice_id", length = 40)
-	private String invoiceId;
-
-	@Column (name = "box_pack_id", length = 40)
-	private String boxPackId;
-
-	@Column (name = "box_in_qty", length = 12)
-	private Integer boxInQty;
 	
-	@Column (name = "pick_qty", length = 12)
-	private Integer pickQty;
-
-	@Column (name = "picking_qty", length = 12)
-	private Integer pickingQty;
-
-	@Column (name = "picked_qty", length = 12)
-	private Integer pickedQty;
-
 	@Column (name = "color_cd", length = 10)
 	private String colorCd;
 
+	/**
+	 * 주문 유형
+	 */
 	@Column (name = "order_type", length = 20)
 	private String orderType;
+	
+	/**
+	 * 원주문 번호
+	 */
+	@Column (name = "cust_order_no", length = 40)
+	private String custOrderNo;
+	
+	/**
+	 * 주문 번호
+	 */
+	@Column (name = "order_no", nullable = false, length = 40)
+	private String orderNo;
+	
+	/**
+	 * 송장 번호
+	 */
+	@Column (name = "invoice_id", length = 40)
+	private String invoiceId;
+	
+	/**
+	 * 박스 유형
+	 */
+	@Column (name = "box_type_cd", length = 30)
+	private String boxTypeCd;
+	
+	/**
+	 * 투입 순번
+	 */
+	@Column (name = "input_seq", length = 10)
+	private Integer inputSeq;
+	
+	/**
+	 * 박스 ID
+	 */
+	@Column (name = "box_id", length = 30)
+	private String boxId;
+	
+	/**
+	 * 순수 박스 중량 값
+	 */
+	@Column (name = "box_net_wt", length = 15)
+	private Float boxNetWt;
+	
+	/**
+	 * 박스 계산 중량 값
+	 */
+	@Column (name = "box_expect_wt", length = 15)
+	private Float boxExpectWt;
+	
+	/**
+	 * 박스 측정 중량 값
+	 */
+	@Column (name = "box_real_wt", length = 15)
+	private Float boxRealWt;
+	
+	// TODO 삭제
+	@Column (name = "box_pack_id", length = 40)
+	private String boxPackId;
+
+	/**
+	 * 상품 코드
+	 */
+	@Column (name = "sku_cd", nullable = false, length = 30)
+	private String skuCd;
+	
+	/**
+	 * 상품 바코드
+	 */
+	@Column (name = "sku_barcd", length = 30)
+	private String skuBarcd;
+
+	/**
+	 * 상품 명
+	 */
+	@Column (name = "sku_nm", length = 200)
+	private String skuNm;
+	
+	/**
+	 * 상품 표준 중량
+	 */
+	@Column (name = "sku_wt", length = 15)
+	private Float skuWt;
+	
+	/**
+	 * 상품 포장 유형
+	 */
+	@Column (name = "pack_type", length = 20)
+	private String packType;
+
+	/**
+	 * 상품 박스 입수
+	 */
+	@Column (name = "box_in_qty", length = 10)
+	private Integer boxInQty;
+	
+	/**
+	 * 피킹 예정 수량
+	 */
+	@Column (name = "pick_qty", length = 10)
+	private Integer pickQty;
+
+	/**
+	 * 파킹 중 수량
+	 */
+	@Column (name = "picking_qty", length = 10)
+	private Integer pickingQty;
+
+	/**
+	 * 피킹 완료 수량
+	 */
+	@Column (name = "picked_qty", length = 10)
+	private Integer pickedQty;
 
 	/**
 	 * 소 분류 용
 	 */
-	@Column (name = "class_cd", length = 30)
+	@Column (name = "class_cd", length = 40)
 	private String classCd;
 	
 	/**
 	 * 방면 분류 용
 	 */
-	@Column (name = "box_class_cd", length = 30)
+	@Column (name = "box_class_cd", length = 40)
 	private String boxClassCd;
 
+	/**
+	 * 피킹 작업 상태 - 작업 대기 > 투입 > 피킹 시작 > 피킹 완료 > 주문 완료 > 검수 완료 > 출고 완료
+	 */
 	@Column (name = "status", length = 10)
 	private String status;
+	
+	/**
+	 * 중량 검수 상태
+	 */
+	@Column (name = "auto_insp_status", length = 1)
+	private String autoInspStatus;
+	
+	/**
+	 * 수기 검수 상태
+	 */
+	@Column (name = "manual_insp_status", length = 1)
+	private String manualInspStatus;
+	
+	/**
+	 * 실적 전송 상태
+	 */
+	@Column (name = "report_status", length = 1)
+	private String reportStatus;
+	
+	/**
+	 * 부분 취소 여부
+	 */
+	@Column (name = "cancel_flag", length = 1)
+	private Boolean cancelFlag;
 
+	/**
+	 * 박스 투입 시각
+	 */
 	@Column (name = "input_at", length = 22)
 	private String inputAt;
 
+	/**
+	 * 피킹 시작 시각
+	 */
 	@Column (name = "pick_started_at", length = 22)
 	private String pickStartedAt;
 
+	/**
+	 * 피킹 완료 시각
+	 */
 	@Column (name = "pick_ended_at", length = 22)
 	private String pickEndedAt;
 
+	/**
+	 * 박싱 완료 시각
+	 */
 	@Column (name = "boxed_at", length = 22)
 	private String boxedAt;
 	
+	/**
+	 * 자동 검수 (예: 중량 검수) 시각
+	 */
+	@Column (name = "auto_inspected_at", length = 22)
+	private String autoInspectedAt;
+
+	/**
+	 * 수기 검수 시각
+	 */
+	@Column (name = "manual_inspected_at", length = 22)
+	private String manualInspectedAt;
+	
+	/**
+	 * 최종 출고 시각
+	 */
+	@Column (name = "final_out_at", length = 22)
+	private String finalOutAt;
+	
+	/**
+	 * 실적 전송 시각
+	 */
+	@Column (name = "reported_at", length = 22)
+	private String reportedAt;
+	
+	/**
+	 * 작업 스테이션 
+	 */
 	@Ignore
 	private String stationCd;
 	
+	/**
+	 * 게이트웨이 패스
+	 */
 	@Ignore
 	private String gwPath;
 	
+	/**
+	 * 작업 사이드
+	 */
 	@Ignore
 	private String sideCd;
-	
-  
+
 	public String getId() {
 		return id;
 	}
@@ -220,20 +376,20 @@ public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.shopNm = shopNm;
 	}
 
-	public String getEquipType() {
-		return equipType;
-	}
-
-	public void setEquipType(String equipType) {
-		this.equipType = equipType;
-	}
-
 	public String getEquipGroupCd() {
 		return equipGroupCd;
 	}
 
 	public void setEquipGroupCd(String equipGroupCd) {
 		this.equipGroupCd = equipGroupCd;
+	}
+
+	public String getEquipType() {
+		return equipType;
+	}
+
+	public void setEquipType(String equipType) {
+		this.equipType = equipType;
 	}
 
 	public String getEquipCd() {
@@ -268,52 +424,36 @@ public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.indCd = indCd;
 	}
 
+	public String getColorCd() {
+		return colorCd;
+	}
+
+	public void setColorCd(String colorCd) {
+		this.colorCd = colorCd;
+	}
+
+	public String getOrderType() {
+		return orderType;
+	}
+
+	public void setOrderType(String orderType) {
+		this.orderType = orderType;
+	}
+
+	public String getCustOrderNo() {
+		return custOrderNo;
+	}
+
+	public void setCustOrderNo(String custOrderNo) {
+		this.custOrderNo = custOrderNo;
+	}
+
 	public String getOrderNo() {
 		return orderNo;
 	}
 
 	public void setOrderNo(String orderNo) {
 		this.orderNo = orderNo;
-	}
-
-	public String getSkuCd() {
-		return skuCd;
-	}
-
-	public void setSkuCd(String skuCd) {
-		this.skuCd = skuCd;
-	}
-
-	public String getSkuNm() {
-		return skuNm;
-	}
-
-	public void setSkuNm(String skuNm) {
-		this.skuNm = skuNm;
-	}
-
-	public Integer getInputSeq() {
-		return inputSeq;
-	}
-
-	public void setInputSeq(Integer inputSeq) {
-		this.inputSeq = inputSeq;
-	}
-
-	public String getBoxTypeCd() {
-		return boxTypeCd;
-	}
-
-	public void setBoxTypeCd(String boxTypeCd) {
-		this.boxTypeCd = boxTypeCd;
-	}
-
-	public String getBoxId() {
-		return boxId;
-	}
-
-	public void setBoxId(String boxId) {
-		this.boxId = boxId;
 	}
 
 	public String getInvoiceId() {
@@ -324,12 +464,100 @@ public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.invoiceId = invoiceId;
 	}
 
+	public String getBoxTypeCd() {
+		return boxTypeCd;
+	}
+
+	public void setBoxTypeCd(String boxTypeCd) {
+		this.boxTypeCd = boxTypeCd;
+	}
+
+	public Integer getInputSeq() {
+		return inputSeq;
+	}
+
+	public void setInputSeq(Integer inputSeq) {
+		this.inputSeq = inputSeq;
+	}
+
+	public String getBoxId() {
+		return boxId;
+	}
+
+	public void setBoxId(String boxId) {
+		this.boxId = boxId;
+	}
+
+	public Float getBoxNetWt() {
+		return boxNetWt;
+	}
+
+	public void setBoxNetWt(Float boxNetWt) {
+		this.boxNetWt = boxNetWt;
+	}
+
+	public Float getBoxExpectWt() {
+		return boxExpectWt;
+	}
+
+	public void setBoxExpectWt(Float boxExpectWt) {
+		this.boxExpectWt = boxExpectWt;
+	}
+
+	public Float getBoxRealWt() {
+		return boxRealWt;
+	}
+
+	public void setBoxRealWt(Float boxRealWt) {
+		this.boxRealWt = boxRealWt;
+	}
+
 	public String getBoxPackId() {
 		return boxPackId;
 	}
 
 	public void setBoxPackId(String boxPackId) {
 		this.boxPackId = boxPackId;
+	}
+
+	public String getSkuCd() {
+		return skuCd;
+	}
+
+	public void setSkuCd(String skuCd) {
+		this.skuCd = skuCd;
+	}
+
+	public String getSkuBarcd() {
+		return skuBarcd;
+	}
+
+	public void setSkuBarcd(String skuBarcd) {
+		this.skuBarcd = skuBarcd;
+	}
+
+	public String getSkuNm() {
+		return skuNm;
+	}
+
+	public void setSkuNm(String skuNm) {
+		this.skuNm = skuNm;
+	}
+
+	public Float getSkuWt() {
+		return skuWt;
+	}
+
+	public void setSkuWt(Float skuWt) {
+		this.skuWt = skuWt;
+	}
+
+	public String getPackType() {
+		return packType;
+	}
+
+	public void setPackType(String packType) {
+		this.packType = packType;
 	}
 
 	public Integer getBoxInQty() {
@@ -364,26 +592,10 @@ public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.pickedQty = pickedQty;
 	}
 
-	public String getColorCd() {
-		return colorCd;
-	}
-
-	public void setColorCd(String colorCd) {
-		this.colorCd = colorCd;
-	}
-
-	public String getOrderType() {
-		return orderType;
-	}
-
-	public void setOrderType(String orderType) {
-		this.orderType = orderType;
-	}
-	
 	public String getClassCd() {
-		return this.classCd;
+		return classCd;
 	}
-	
+
 	public void setClassCd(String classCd) {
 		this.classCd = classCd;
 	}
@@ -402,6 +614,38 @@ public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public String getAutoInspStatus() {
+		return autoInspStatus;
+	}
+
+	public void setAutoInspStatus(String autoInspStatus) {
+		this.autoInspStatus = autoInspStatus;
+	}
+
+	public String getManualInspStatus() {
+		return manualInspStatus;
+	}
+
+	public void setManualInspStatus(String manualInspStatus) {
+		this.manualInspStatus = manualInspStatus;
+	}
+
+	public String getReportStatus() {
+		return reportStatus;
+	}
+
+	public void setReportStatus(String reportStatus) {
+		this.reportStatus = reportStatus;
+	}
+
+	public Boolean getCancelFlag() {
+		return cancelFlag;
+	}
+
+	public void setCancelFlag(Boolean cancelFlag) {
+		this.cancelFlag = cancelFlag;
 	}
 
 	public String getInputAt() {
@@ -435,7 +679,39 @@ public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	public void setBoxedAt(String boxedAt) {
 		this.boxedAt = boxedAt;
 	}
-	
+
+	public String getAutoInspectedAt() {
+		return autoInspectedAt;
+	}
+
+	public void setAutoInspectedAt(String autoInspectedAt) {
+		this.autoInspectedAt = autoInspectedAt;
+	}
+
+	public String getManualInspectedAt() {
+		return manualInspectedAt;
+	}
+
+	public void setManualInspectedAt(String manualInspectedAt) {
+		this.manualInspectedAt = manualInspectedAt;
+	}
+
+	public String getFinalOutAt() {
+		return finalOutAt;
+	}
+
+	public void setFinalOutAt(String finalOutAt) {
+		this.finalOutAt = finalOutAt;
+	}
+
+	public String getReportedAt() {
+		return reportedAt;
+	}
+
+	public void setReportedAt(String reportedAt) {
+		this.reportedAt = reportedAt;
+	}
+
 	public String getStationCd() {
 		return stationCd;
 	}
@@ -451,11 +727,11 @@ public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	public void setGwPath(String gwPath) {
 		this.gwPath = gwPath;
 	}
-	
+
 	public String getSideCd() {
-		return this.sideCd;
+		return sideCd;
 	}
-	
+
 	public void setSideCd(String sideCd) {
 		this.sideCd = sideCd;
 	}

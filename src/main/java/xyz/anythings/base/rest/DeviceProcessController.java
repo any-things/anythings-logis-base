@@ -811,7 +811,6 @@ public class DeviceProcessController extends DynamicControllerSupport {
 		// 5. 작업 리스트 리턴
 		return jobList;
 	}
-
 	
 	/**
 	 * 상품 코드 스캔으로 상품 투입
@@ -840,6 +839,27 @@ public class DeviceProcessController extends DynamicControllerSupport {
 		IClassifyInEvent inputEvent = new ClassifyInEvent(equipBatchSet.getBatch(), 
 				SysEvent.EVENT_STEP_ALONE, false, LogisCodeConstants.CLASSIFICATION_INPUT_TYPE_SKU, skuCd, 1);
 		inputEvent.setComCd(comCd);
+		return this.serviceDispatcher.getClassificationService(equipBatchSet.getBatch()).input(inputEvent);
+	}
+	
+	/**
+	 * 박스 코드 스캔으로 박스 투입
+	 * 
+	 * @param equipType 설비 유형
+	 * @param equipCd 설비 코드
+	 * @param boxId 박스 ID
+	 * @return
+	 */
+	@RequestMapping(value = "/input/box/{equip_type}/{equip_cd}/{box_id}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Input Box")
+	public Object inputBox(
+			@PathVariable("equip_type") String equipType, 
+			@PathVariable("equip_cd") String equipCd, 
+			@PathVariable("box_id") String boxId) {
+		
+		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(Domain.currentDomainId(), equipType, equipCd);
+		IClassifyInEvent inputEvent = new ClassifyInEvent(equipBatchSet.getBatch(),
+				SysEvent.EVENT_STEP_ALONE, false, LogisCodeConstants.CLASSIFICATION_INPUT_TYPE_BOX, boxId, 1);
 		return this.serviceDispatcher.getClassificationService(equipBatchSet.getBatch()).input(inputEvent);
 	}
 	
