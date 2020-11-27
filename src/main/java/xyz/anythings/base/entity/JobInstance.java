@@ -195,6 +195,12 @@ public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	 */
 	@Column (name = "picked_qty", length = 10)
 	private Integer pickedQty;
+	
+	/**
+	 * 검수 수량
+	 */
+	@Column (name = "inspected_qty", length = 10)
+	private Integer inspectedQty;
 
 	/**
 	 * 소 분류 용
@@ -590,6 +596,14 @@ public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setPickedQty(Integer pickedQty) {
 		this.pickedQty = pickedQty;
+	}
+
+	public Integer getInspectedQty() {
+		return inspectedQty;
+	}
+
+	public void setInspectedQty(Integer inspectedQty) {
+		this.inspectedQty = inspectedQty;
 	}
 
 	public String getClassCd() {

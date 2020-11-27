@@ -16,7 +16,7 @@ public class LogisConstants extends AnyConstants {
 	/**
 	 * 사이드 F : 앞
 	 */
-	public static final String SIDE_FRONT = "F";	
+	public static final String SIDE_FRONT = "F";
 	/**
 	 * 사이드 R : 뒤
 	 */
@@ -227,6 +227,14 @@ public class LogisConstants extends AnyConstants {
 	 */
 	public static final String EQUIP_STATUS_BREAK_DOWN = "2";
 
+	/**
+	 * 합 / 불 상태 합격 - P
+	 */
+	public static final String PASS_STATUS = "P";
+	/**
+	 * 합 / 불 상태 불합격 - F
+	 */
+	public static final String FAIL_STATUS = "F";
 	
 	/**
 	 * 작업 유형이 DAS 작업 타입인지 체크 
