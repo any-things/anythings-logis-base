@@ -150,8 +150,6 @@ public class SampleOrderService {
 	 * @return
 	 */
 	private String newBatchId(OrderSampler sampler) {
-		//String jobDate = sampler.getJobDate().replaceAll(LogisConstants.DASH, LogisConstants.EMPTY_STRING);
-		//return "S" + sampler.getDomainId() + jobDate + sampler.getJobSeq();
 		return LogisBaseUtil.newJobBatchId(sampler.getDomainId(), sampler.getStageCd());
 	}
 	
@@ -216,6 +214,9 @@ public class SampleOrderService {
 	 */
 	private List<Order> createOrder(JobBatch batch, OrderSampler sampler, int orderIndex, int orderLineSeq, List<BoxType> boxTypeList, List<SKU> skuList) {
 		
+		// 주문 유형
+		boolean isSinglePack = ValueUtil.isEqualIgnoreCase(sampler.getOrderType(), "OT");
+		
 		// 박스 유형, 송장 번호 
 		String boxTypeCd = null;
 		String invoiceId = null;
@@ -244,6 +245,10 @@ public class SampleOrderService {
 			remainOrderQty = remainOrderQty - order.getOrderQty();
 			orderLineIdx++;
 			orderLineSeq++;
+			
+			if(isSinglePack) {
+				remainOrderQty = 0;
+			}
 		}
 		
 		// 생성한 주문 리스트 리턴

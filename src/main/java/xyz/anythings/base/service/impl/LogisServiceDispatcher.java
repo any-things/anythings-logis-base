@@ -240,7 +240,7 @@ public class LogisServiceDispatcher implements BeanFactoryAware {
 	 */
 	public IClassificationService getClassificationService(String jobType) {
 		// FIXME 아래 분기하는 것 외 다른 방법 찾기
-		String svcType = ValueUtil.isEqualIgnoreCase(jobType, LogisConstants.JOB_TYPE_DPS) ? "PickService" : "AssortService";
+		String svcType = ValueUtil.isEqualIgnoreCase(jobType, LogisConstants.JOB_TYPE_DPS) ? "PickingService" : "AssortService";
 		String classSvcType = jobType.toLowerCase() + svcType;
 		return (IClassificationService)this.beanFactory.getBean(classSvcType);
 	}
