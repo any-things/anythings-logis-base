@@ -20,6 +20,7 @@ import xyz.elidom.orm.system.annotation.service.ApiDesc;
 import xyz.elidom.orm.system.annotation.service.ServiceDesc;
 import xyz.elidom.sys.entity.Domain;
 import xyz.elidom.sys.system.service.AbstractRestService;
+import xyz.elidom.sys.util.ValueUtil;
 
 @RestController
 @Transactional
@@ -27,6 +28,11 @@ import xyz.elidom.sys.system.service.AbstractRestService;
 @RequestMapping("/rest/racks")
 @ServiceDesc(description = "Rack Service API")
 public class RackController extends AbstractRestService {
+
+	/**
+	 * Index - Default Sort - '[{"field" : "rackCd", "ascending": true}, {"field" : "rank", "ascending": true}]'
+	 */
+	private static final String INDEX_DEFAULT_SORT = "[{\"field\" : \"rackCd\", \"ascending\": true}]";
 
 	@Override
 	protected Class<?> entityClass() {
@@ -40,6 +46,11 @@ public class RackController extends AbstractRestService {
 			@RequestParam(name = "select", required = false) String select,
 			@RequestParam(name = "sort", required = false) String sort,
 			@RequestParam(name = "query", required = false) String query) {
+		
+		if(ValueUtil.isEmpty(sort)) {
+			sort = INDEX_DEFAULT_SORT;
+		}
+		
 		return this.search(this.entityClass(), page, limit, select, sort, query);
 	}
 

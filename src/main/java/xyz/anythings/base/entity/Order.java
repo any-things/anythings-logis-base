@@ -11,6 +11,11 @@ import xyz.elidom.orm.IQueryManager;
 import xyz.elidom.sys.util.ThrowUtil;
 import xyz.elidom.util.BeanUtil;
 
+/**
+ * 입/출고 주문 정보
+ * 
+ * @author shortstop
+ */
 @Table(name = "orders", idStrategy = GenerationRule.UUID, indexes = {
 	@Index(name = "ix_orders_0", columnList = "domain_id,batch_id,order_no"),
 	@Index(name = "ix_orders_1", columnList = "domain_id,batch_id,wms_batch_no,wcs_batch_no"),
@@ -26,27 +31,27 @@ public class Order extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	private static final long serialVersionUID = 166602676775758234L;
 	
 	/**
-	 * 상태 W : 대기 
+	 * 상태 W : 대기
 	 */
 	public static final String STATUS_WAIT = "W";
 	
 	/**
-	 * 상태 C : 수신 취소  
+	 * 상태 C : 수신 취소
 	 */
 	public static final String STATUS_CANCEL = "C";
 	
 	/**
-	 * 상태 T : 대상 분류    
+	 * 상태 T : 대상 분류
 	 */
 	public static final String STATUS_TYPE = "T";
 	
 	/**
-	 * 상태 I : 작업 지시   
+	 * 상태 I : 작업 지시
 	 */
 	public static final String STATUS_INSTRUCT = "I";
 	
 	/**
-	 * 상태 A : 작업 할당 
+	 * 상태 A : 작업 할당
 	 */
 	public static final String STATUS_ASSIGN = "A";
 	
@@ -60,117 +65,242 @@ public class Order extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	 */
 	public static final String STATUS_FINISHED = "F";
 
+	/**
+	 * ID
+	 */
 	@PrimaryKey
 	@Column (name = "id", nullable = false, length = 40)
 	private String id;
 
+	/**
+	 * 배치 ID
+	 */
 	@Column (name = "batch_id", nullable = false, length = 40)
 	private String batchId;
 
+	/**
+	 * WMS 배치 ID
+	 */
 	@Column (name = "wms_batch_no", length = 40)
 	private String wmsBatchNo;
 
+	/**
+	 * WCS 배치 ID
+	 */
 	@Column (name = "wcs_batch_no", length = 40)
 	private String wcsBatchNo;
 
+	/**
+	 * 작업 일자
+	 */
 	@Column (name = "job_date", nullable = false, length = 10)
 	private String jobDate;
 
+	/**
+	 * 작업 차수
+	 */
 	@Column (name = "job_seq", length = 10)
 	private String jobSeq;
 
+	/**
+	 * 입/출고 유형 - IN / OUT
+	 */
+	@Column (name = "inout_mode", length = 5)
+	private String inoutMode;
+	
+	/**
+	 * 작업 유형 - DAS / DPS / P-DAS ...
+	 */
 	@Column (name = "job_type", length = 20)
 	private String jobType;
-
+	
+	/**
+	 * 출고 - 주문 일자, 입고 - 입고 예정일
+	 */
 	@Column (name = "order_date", length = 10)
 	private String orderDate;
-
-	@Column (name = "order_no", nullable = false, length = 40)
-	private String orderNo;
-
-	@Column (name = "order_line_no", length = 40)
-	private String orderLineNo;
-
-	@Column (name = "order_detail_id", length = 40)
-	private String orderDetailId;
-
-	@Column (name = "cust_order_no", length = 40)
-	private String custOrderNo;
-
-	@Column (name = "cust_order_line_no", length = 40)
-	private String custOrderLineNo;
-
-	@Column (name = "com_cd", length = 30)
-	private String comCd;
-
-	@Column (name = "area_cd", length = 30)
-	private String areaCd;
-
-	@Column (name = "stage_cd", length = 30)
-	private String stageCd;
-
-	@Column (name = "equip_type", length = 30)
-	private String equipType;
-
-	@Column (name = "equip_group_cd", length = 30)
-	private String equipGroupCd;
 	
-	@Column (name = "equip_cd", length = 30)
-	private String equipCd;
-
-	@Column (name = "equip_nm", length = 40)
-	private String equipNm;
-
-	@Column (name = "sub_equip_cd", length = 30)
-	private String subEquipCd;
-
-	@Column (name = "shop_cd", length = 30)
-	private String shopCd;
-
-	@Column (name = "shop_nm", length = 40)
-	private String shopNm;
-
-	@Column (name = "sku_cd", nullable = false, length = 30)
-	private String skuCd;
-
-	@Column (name = "sku_barcd", length = 30)
-	private String skuBarcd;
-	
-	@Column (name = "sku_barcd2", length = 30)
-	private String skuBarcd2;
-
-	@Column (name = "sku_nm", length = 200)
-	private String skuNm;
-
-	@Column (name = "box_type_cd", length = 30)
-	private String boxTypeCd;
-
-	@Column (name = "box_in_qty", length = 12)
-	private Integer boxInQty;
-
-	@Column (name = "order_qty", nullable = false, length = 12)
-	private Integer orderQty;
-
-	@Column (name = "picked_qty", length = 12)
-	private Integer pickedQty;
-
-	@Column (name = "boxed_qty", length = 12)
-	private Integer boxedQty;
-
-	@Column (name = "cancel_qty", length = 12)
-	private Integer cancelQty;
-
-	@Column (name = "box_id", length = 40)
-	private String boxId;
-
-	@Column (name = "invoice_id", length = 40)
-	private String invoiceId;
-
+	/**
+	 * 주문 유형 - 작업 유형에 따라 다름
+	 * ex) DPS : 단포 / 합포 ...
+	 * ex) DAS : 출고 / 반품 ...
+	 * ex) 기타 ...
+	 */
 	@Column (name = "order_type", length = 20)
 	private String orderType;
 
 	/**
-	 * 소분류 용
+	 * 주문 번호
+	 */
+	@Column (name = "order_no", nullable = false, length = 40)
+	private String orderNo;
+
+	/**
+	 * 주문 라인 번호
+	 */
+	@Column (name = "order_line_no", length = 40)
+	private String orderLineNo;
+
+	/**
+	 * 주문 상세 ID - 주문 번호 + 주문 라인 번호
+	 */
+	@Column (name = "order_detail_id", length = 40)
+	private String orderDetailId;
+
+	/**
+	 * 원주문 번호
+	 */
+	@Column (name = "cust_order_no", length = 40)
+	private String custOrderNo;
+
+	/**
+	 * 원주문 라인 번호
+	 */
+	@Column (name = "cust_order_line_no", length = 40)
+	private String custOrderLineNo;
+	
+	/**
+	 * 박스 ID
+	 */
+	@Column (name = "box_id", length = 40)
+	private String boxId;
+
+	/**
+	 * 송장 번호
+	 */
+	@Column (name = "invoice_id", length = 40)
+	private String invoiceId;
+	
+	/**
+	 * 주문 처리에 사용할 박스 유형
+	 */
+	@Column (name = "box_type_cd", length = 30)
+	private String boxTypeCd;
+
+	/**
+	 * 화주사
+	 */
+	@Column (name = "com_cd", length = 30)
+	private String comCd;
+
+	/**
+	 * 구역 코드
+	 */
+	@Column (name = "area_cd", length = 30)
+	private String areaCd;
+
+	/**
+	 * 주문을 작업할 스테이지
+	 */
+	@Column (name = "stage_cd", length = 30)
+	private String stageCd;
+
+	/**
+	 * 주문을 처리할 설비 유형
+	 */
+	@Column (name = "equip_type", length = 30)
+	private String equipType;
+
+	/**
+	 * 주문을 처리할 설비 그룹
+	 */
+	@Column (name = "equip_group_cd", length = 30)
+	private String equipGroupCd;
+	
+	/**
+	 * 주문을 처리할 설비 코드
+	 */
+	@Column (name = "equip_cd", length = 30)
+	private String equipCd;
+
+	/**
+	 * 주문을 처리할 설비 이름
+	 */
+	@Column (name = "equip_nm", length = 40)
+	private String equipNm;
+
+	/**
+	 * 주문을 처리할 설비 서브 코드
+	 */
+	@Column (name = "sub_equip_cd", length = 30)
+	private String subEquipCd;
+
+	/**
+	 * 거래처 코드
+	 * B2B : 거래처 코드 / B2C : 수령인
+	 */
+	@Column (name = "shop_cd", length = 30)
+	private String shopCd;
+
+	/**
+	 * 거래처 명
+	 * B2B : 거래처 명 / B2C : 주문자
+	 */
+	@Column (name = "shop_nm", length = 40)
+	private String shopNm;
+	
+	/**
+	 * 상품 코드
+	 */
+	@Column (name = "sku_cd", nullable = false, length = 30)
+	private String skuCd;
+
+	/**
+	 * 상품 바코드
+	 */
+	@Column (name = "sku_barcd", length = 30)
+	private String skuBarcd;
+	
+	/**
+	 * 상품 바코드 2
+	 */
+	@Column (name = "sku_barcd2", length = 30)
+	private String skuBarcd2;
+
+	/**
+	 * 상품명
+	 */
+	@Column (name = "sku_nm", length = 200)
+	private String skuNm;
+
+	/**
+	 * 박스 입수
+	 */
+	@Column (name = "box_in_qty", length = 12)
+	private Integer boxInQty;
+	
+	/**
+	 * 상품별 (혹은 박스별) 포장 유형
+	 */
+	@Column (name = "pack_type", length = 20)
+	private String packType;
+
+	/**
+	 * 주문 수량 (출고 - 출고 수량 / 입고 - 입고 수량)
+	 */
+	@Column (name = "order_qty", nullable = false, length = 12)
+	private Integer orderQty;
+
+	/**
+	 * 주문 처리 실적 수량
+	 */
+	@Column (name = "picked_qty", length = 12)
+	private Integer pickedQty;
+
+	/**
+	 * 박스 처리 수량
+	 */
+	@Column (name = "boxed_qty", length = 12)
+	private Integer boxedQty;
+
+	/**
+	 * 취소 수량
+	 */
+	@Column (name = "cancel_qty", length = 12)
+	private Integer cancelQty;
+
+	/**
+	 * 소분류 용 구분 코드
 	 */
 	@Column (name = "class_cd", length = 40)
 	private String classCd;
@@ -181,30 +311,42 @@ public class Order extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "box_class_cd", length = 40)
 	private String boxClassCd;
 
-	@Column (name = "pack_type", length = 20)
-	private String packType;
-
-	@Column (name = "vehicle_no", length = 40)
-	private String vehicleNo;
-
+	/**
+	 * 제품 LOT 번호
+	 */
 	@Column (name = "lot_no", length = 40)
 	private String lotNo;
 
+	/**
+	 * From Zone Cd
+	 */
 	@Column (name = "from_zone_cd", length = 30)
 	private String fromZoneCd;
 
+	/**
+	 * From Cell Cd
+	 */
 	@Column (name = "from_cell_cd", length = 30)
 	private String fromCellCd;
 
+	/**
+	 * To Zone Cd
+	 */
 	@Column (name = "to_zone_cd", length = 30)
 	private String toZoneCd;
 
+	/**
+	 * To Cell Cd
+	 */
 	@Column (name = "to_cell_cd", length = 30)
 	private String toCellCd;
 
+	/**
+	 * 상태
+	 */
 	@Column (name = "status", length = 10)
 	private String status;
-  
+
 	public String getId() {
 		return id;
 	}
@@ -253,6 +395,14 @@ public class Order extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.jobSeq = jobSeq;
 	}
 
+	public String getInoutMode() {
+		return inoutMode;
+	}
+
+	public void setInoutMode(String inoutMode) {
+		this.inoutMode = inoutMode;
+	}
+
 	public String getJobType() {
 		return jobType;
 	}
@@ -267,6 +417,14 @@ public class Order extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setOrderDate(String orderDate) {
 		this.orderDate = orderDate;
+	}
+
+	public String getOrderType() {
+		return orderType;
+	}
+
+	public void setOrderType(String orderType) {
+		this.orderType = orderType;
 	}
 
 	public String getOrderNo() {
@@ -309,6 +467,30 @@ public class Order extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.custOrderLineNo = custOrderLineNo;
 	}
 
+	public String getBoxId() {
+		return boxId;
+	}
+
+	public void setBoxId(String boxId) {
+		this.boxId = boxId;
+	}
+
+	public String getInvoiceId() {
+		return invoiceId;
+	}
+
+	public void setInvoiceId(String invoiceId) {
+		this.invoiceId = invoiceId;
+	}
+
+	public String getBoxTypeCd() {
+		return boxTypeCd;
+	}
+
+	public void setBoxTypeCd(String boxTypeCd) {
+		this.boxTypeCd = boxTypeCd;
+	}
+
 	public String getComCd() {
 		return comCd;
 	}
@@ -340,14 +522,6 @@ public class Order extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	public void setEquipType(String equipType) {
 		this.equipType = equipType;
 	}
-	
-	public String getEquipCd() {
-		return equipCd;
-	}
-
-	public void setEquipCd(String equipCd) {
-		this.equipCd = equipCd;
-	}
 
 	public String getEquipGroupCd() {
 		return equipGroupCd;
@@ -355,6 +529,14 @@ public class Order extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setEquipGroupCd(String equipGroupCd) {
 		this.equipGroupCd = equipGroupCd;
+	}
+
+	public String getEquipCd() {
+		return equipCd;
+	}
+
+	public void setEquipCd(String equipCd) {
+		this.equipCd = equipCd;
 	}
 
 	public String getEquipNm() {
@@ -421,20 +603,20 @@ public class Order extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.skuNm = skuNm;
 	}
 
-	public String getBoxTypeCd() {
-		return boxTypeCd;
-	}
-
-	public void setBoxTypeCd(String boxTypeCd) {
-		this.boxTypeCd = boxTypeCd;
-	}
-
 	public Integer getBoxInQty() {
 		return boxInQty;
 	}
 
 	public void setBoxInQty(Integer boxInQty) {
 		this.boxInQty = boxInQty;
+	}
+
+	public String getPackType() {
+		return packType;
+	}
+
+	public void setPackType(String packType) {
+		this.packType = packType;
 	}
 
 	public Integer getOrderQty() {
@@ -469,30 +651,6 @@ public class Order extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.cancelQty = cancelQty;
 	}
 
-	public String getBoxId() {
-		return boxId;
-	}
-
-	public void setBoxId(String boxId) {
-		this.boxId = boxId;
-	}
-
-	public String getInvoiceId() {
-		return invoiceId;
-	}
-
-	public void setInvoiceId(String invoiceId) {
-		this.invoiceId = invoiceId;
-	}
-
-	public String getOrderType() {
-		return orderType;
-	}
-
-	public void setOrderType(String orderType) {
-		this.orderType = orderType;
-	}
-
 	public String getClassCd() {
 		return classCd;
 	}
@@ -507,22 +665,6 @@ public class Order extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setBoxClassCd(String boxClassCd) {
 		this.boxClassCd = boxClassCd;
-	}
-
-	public String getPackType() {
-		return packType;
-	}
-
-	public void setPackType(String packType) {
-		this.packType = packType;
-	}
-
-	public String getVehicleNo() {
-		return vehicleNo;
-	}
-
-	public void setVehicleNo(String vehicleNo) {
-		this.vehicleNo = vehicleNo;
 	}
 
 	public String getLotNo() {
@@ -571,22 +713,23 @@ public class Order extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setStatus(String status) {
 		this.status = status;
-	}	
-	
+	}
+
 	/**
 	 * ID로 작업 배치 조회
 	 *
 	 * @param stageCd Stage ID
-	 * @param id 배치 ID
+	 * @param batchId 배치 ID
 	 * @param withLock 테이블 락을 걸지 여부
 	 * @param exceptionWhenEmpty 조회 결과가 null이면 예외 발생 여부
 	 * @return
 	 */
-	public static Order find(Long domainId, String batchId,String skuCd, boolean withLock, boolean exceptionWhenEmpty) {
+	public static Order find(Long domainId, String batchId, String skuCd, boolean withLock, boolean exceptionWhenEmpty) {
 		Query condition = AnyOrmUtil.newConditionForExecution(domainId);
 		condition.addFilter("batch_id", batchId);
-		if(!skuCd.isEmpty())
+		if(!skuCd.isEmpty()) {
 			condition.addFilter("sku_cd", skuCd);
+		}
 		
 		Order order = withLock ?
 				BeanUtil.get(IQueryManager.class).selectByConditionWithLock(Order.class, condition) :
@@ -598,4 +741,5 @@ public class Order extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 		return order;
 	}
+
 }

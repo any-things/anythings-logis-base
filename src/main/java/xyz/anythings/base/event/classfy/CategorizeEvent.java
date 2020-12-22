@@ -1,5 +1,7 @@
 package xyz.anythings.base.event.classfy;
 
+import java.util.List;
+
 import xyz.anythings.base.event.ICategorizeEvent;
 import xyz.anythings.base.event.main.BatchRootEvent;
 
@@ -14,6 +16,10 @@ public class CategorizeEvent extends BatchRootEvent implements ICategorizeEvent 
 	 */
 	private String batchGroupId;
 	/**
+	 * 중분류 대상 배치 ID 리스트 
+	 */
+	private List<String> batchIdList;
+	/**
 	 * 투입 유형 
 	 */
 	private String inputType;
@@ -21,9 +27,13 @@ public class CategorizeEvent extends BatchRootEvent implements ICategorizeEvent 
 	 * 투입 코드
 	 */
 	private String inputCode;
+	/**
+	 * 고객사 코드
+	 */
+	private String comCd;
 	
 	/**
-	 * 중분류 이벤트 생성자 
+	 * 중분류 이벤트 생성자 1
 	 * 
 	 * @param domainId
 	 * @param eventStep
@@ -40,6 +50,28 @@ public class CategorizeEvent extends BatchRootEvent implements ICategorizeEvent 
 		this.setBatchGroupId(batchGroupId);
 		this.setJobType(jobType);
 		this.setInputType(inputType);
+		this.setInputCode(inputCode);
+	}
+	
+	/**
+	 * 중분류 이벤트 생성자 2
+	 * 
+	 * @param domainId
+	 * @param eventStep
+	 * @param stageCd
+	 * @param batchIdList
+	 * @param jobType
+	 * @param comCd
+	 * @param inputType
+	 * @param inputCode
+	 */
+	public CategorizeEvent(long domainId, short eventStep, String stageCd, List<String> batchIdList, String jobType, String comCd, String inputCode) {
+		super(domainId, eventStep);
+		
+		this.setStageCd(stageCd);
+		this.setBatchIdList(batchIdList);
+		this.setJobType(jobType);
+		this.setComCd(comCd);
 		this.setInputCode(inputCode);
 	}
 
@@ -71,6 +103,26 @@ public class CategorizeEvent extends BatchRootEvent implements ICategorizeEvent 
 	@Override
 	public void setInputCode(String inputCode) {
 		this.inputCode = inputCode;
+	}
+
+	@Override
+	public List<String> getBatchIdList() {
+		return batchIdList;
+	}
+
+	@Override
+	public void setBatchIdList(List<String> batchIdList) {
+		this.batchIdList = batchIdList;
+	}
+
+	@Override
+	public String getComCd() {
+		return comCd;
+	}
+
+	@Override
+	public void setComCd(String comCd) {
+		this.comCd = comCd;
 	}
 
 }

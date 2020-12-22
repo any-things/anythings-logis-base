@@ -60,7 +60,7 @@ public class OrderPreprocess extends xyz.elidom.orm.entity.basic.ElidomStampHook
 
 	@Column (name = "total_pcs", nullable = false, length = 12)
 	private Integer totalPcs;
-  
+
 	public String getId() {
 		return id;
 	}
@@ -179,5 +179,5 @@ public class OrderPreprocess extends xyz.elidom.orm.entity.basic.ElidomStampHook
 
 	public void setTotalPcs(Integer totalPcs) {
 		this.totalPcs = totalPcs;
-	}	
+	}
 }

@@ -48,14 +48,12 @@ public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "com_cd", nullable = false, length = 30)
 	private String comCd;
 
-	// TODO orderer_cd, orderer_nm으로 변경 필요
 	@Column (name = "shop_cd", length = 30)
 	private String shopCd;
 
 	@Column (name = "shop_nm", length = 40)
 	private String shopNm;
 
-	// TODO 삭제
 	@Column (name = "equip_group_cd", length = 30)
 	private String equipGroupCd;
 	
@@ -64,10 +62,6 @@ public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	@Column (name = "equip_cd", length = 30)
 	private String equipCd;
-
-	// TODO 삭제
-	@Column (name = "equip_nm", length = 40)
-	private String equipNm;
 
 	@Column (name = "sub_equip_cd", length = 30)
 	private String subEquipCd;
@@ -138,10 +132,6 @@ public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "box_real_wt", length = 15)
 	private Float boxRealWt;
 	
-	// TODO 삭제
-	@Column (name = "box_pack_id", length = 40)
-	private String boxPackId;
-
 	/**
 	 * 상품 코드
 	 */
@@ -293,7 +283,7 @@ public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	private String reportedAt;
 	
 	/**
-	 * 작업 스테이션 
+	 * 작업 스테이션
 	 */
 	@Ignore
 	private String stationCd;
@@ -406,14 +396,6 @@ public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.equipCd = equipCd;
 	}
 
-	public String getEquipNm() {
-		return equipNm;
-	}
-
-	public void setEquipNm(String equipNm) {
-		this.equipNm = equipNm;
-	}
-
 	public String getSubEquipCd() {
 		return subEquipCd;
 	}
@@ -516,14 +498,6 @@ public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setBoxRealWt(Float boxRealWt) {
 		this.boxRealWt = boxRealWt;
-	}
-
-	public String getBoxPackId() {
-		return boxPackId;
-	}
-
-	public void setBoxPackId(String boxPackId) {
-		this.boxPackId = boxPackId;
 	}
 
 	public String getSkuCd() {

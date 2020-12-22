@@ -15,13 +15,25 @@ public class CategoryItem {
 	 */
 	private String equipType;
 	/**
-	 * 설비 코드 
+	 * 설비 코드
 	 */
 	private String equipCd;
 	/**
-	 * 설비 명 
+	 * 설비 명
 	 */
 	private String equipNm;
+	/**
+	 * 주문 수량
+	 */
+	private int orderQty;
+	/**
+	 * 확정 수량
+	 */
+	private int pickedQty;
+	/**
+	 * 분류 예정 수량
+	 */
+	private int assortQty;
 	/**
 	 * 팔레트 수량 
 	 */
@@ -38,7 +50,16 @@ public class CategoryItem {
 	public CategoryItem() {
 	}
 	
-	public CategoryItem(Integer jobSeq, String equipType, String equipCd, String equipNm, int palletQty, int boxQty, Integer pcsQty) {
+	public CategoryItem(String equipType, String equipCd, String equipNm, int orderQty, int pickedQty, int assortQty) {
+		this.equipType = equipType;
+		this.equipCd = equipCd;
+		this.equipNm = equipNm;
+		this.orderQty = orderQty;
+		this.pickedQty = pickedQty;
+		this.assortQty = assortQty;
+	}
+	
+	public CategoryItem(Integer jobSeq, String equipType, String equipCd, String equipNm, int palletQty, int boxQty, int pcsQty) {
 		this.jobSeq = jobSeq;
 		this.equipType = equipType;
 		this.equipCd = equipCd;
@@ -47,7 +68,7 @@ public class CategoryItem {
 		this.boxQty = boxQty;
 		this.pcsQty = pcsQty;
 	}
-	
+
 	public Integer getJobSeq() {
 		return jobSeq;
 	}
@@ -55,7 +76,7 @@ public class CategoryItem {
 	public void setJobSeq(Integer jobSeq) {
 		this.jobSeq = jobSeq;
 	}
-	
+
 	public String getEquipType() {
 		return equipType;
 	}
@@ -80,27 +101,51 @@ public class CategoryItem {
 		this.equipNm = equipNm;
 	}
 
-	public Integer getPalletQty() {
+	public int getOrderQty() {
+		return orderQty;
+	}
+
+	public void setOrderQty(int orderQty) {
+		this.orderQty = orderQty;
+	}
+
+	public int getPickedQty() {
+		return pickedQty;
+	}
+
+	public void setPickedQty(int pickedQty) {
+		this.pickedQty = pickedQty;
+	}
+
+	public int getAssortQty() {
+		return assortQty;
+	}
+
+	public void setAssortQty(int assortQty) {
+		this.assortQty = assortQty;
+	}
+
+	public int getPalletQty() {
 		return palletQty;
 	}
-	
-	public void setPalletQty(Integer palletQty) {
+
+	public void setPalletQty(int palletQty) {
 		this.palletQty = palletQty;
 	}
-	
-	public Integer getBoxQty() {
+
+	public int getBoxQty() {
 		return boxQty;
 	}
-	
-	public void setBoxQty(Integer boxQty) {
+
+	public void setBoxQty(int boxQty) {
 		this.boxQty = boxQty;
 	}
-	
-	public Integer getPcsQty() {
+
+	public int getPcsQty() {
 		return pcsQty;
 	}
-	
-	public void setPcsQty(Integer pcsQty) {
+
+	public void setPcsQty(int pcsQty) {
 		this.pcsQty = pcsQty;
 	}
 

@@ -124,6 +124,14 @@ public class LogisConstants extends AnyConstants {
 	public static final String JOB_STATUS_DELETED = "D";
 	
 	/**
+	 * 작업 상태 - WAIT, PICKING
+	 */
+	public static final List<String> JOB_STATUS_WP = ValueUtil.newStringList(JOB_STATUS_WAIT, JOB_STATUS_PICKING);
+	/**
+	 * 작업 상태 - WAIT, PICKING, FINISH
+	 */
+	public static final List<String> JOB_STATUS_WPF = ValueUtil.newStringList(JOB_STATUS_WAIT, JOB_STATUS_PICKING, JOB_STATUS_FINISH);
+	/**
 	 * 작업 상태 - PICKING, FINISH
 	 */
 	public static final List<String> JOB_STATUS_PF = ValueUtil.newStringList(JOB_STATUS_PICKING, JOB_STATUS_FINISH);
@@ -155,6 +163,14 @@ public class LogisConstants extends AnyConstants {
 	 * 작업 상태 - WAIT, INPUT, PICKING, FINISH, CANCEL
 	 */
 	public static final List<String> JOB_STATUS_WIPFC = ValueUtil.newStringList(JOB_STATUS_WAIT, JOB_STATUS_INPUT, JOB_STATUS_PICKING, JOB_STATUS_FINISH, JOB_STATUS_CANCEL);
+	/**
+	 * 작업 상태 - FINISH, BOXED
+	 */
+	public static final List<String> JOB_STATUS_FB = ValueUtil.newStringList(JOB_STATUS_FINISH, JOB_STATUS_BOXED);
+	/**
+	 * 작업 상태 - BOXED, EXAMINED, REPORTED
+	 */
+	public static final List<String> JOB_STATUS_BER = ValueUtil.newStringList(JOB_STATUS_BOXED, JOB_STATUS_EXAMINATED, JOB_STATUS_REPORTED);
 	/**
 	 * 작업 상태 - FINISH, BOXED, EXAMINED, REPORTED
 	 */

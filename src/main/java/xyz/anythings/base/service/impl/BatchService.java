@@ -30,16 +30,42 @@ public class BatchService extends AbstractLogisService {
 	@Autowired
 	private BatchQueryStore batchQueryStore;
 	
+	/**
+	 * 새로운 배치 ID 생성
+	 * 
+	 * @param domainId
+	 * @param stageCd
+	 * @param params
+	 * @return
+	 */
 	public String newJobBatchId(Long domainId, String stageCd, Object... params) {
 		return LogisBaseUtil.newJobBatchId(domainId, stageCd);
 	}
 
+	/**
+	 * 해당 일의 작업 진행율
+	 * 
+	 * @param domainId
+	 * @param stageCd
+	 * @param jobDate
+	 * @return
+	 */
 	public BatchProgressRate dailyProgressRate(Long domainId, String stageCd, String jobDate) {
+		// TODO 이벤트 혹은 커스텀 서비스로 커스터마이징 가능하도록 수정
 		String sql = this.batchQueryStore.getDailyProgressRateQuery();
 		Map<String, Object> params = ValueUtil.newMap("domainId,jobDate,stageCd", domainId, jobDate, stageCd);
 		return this.queryManager.selectBySql(sql, params, BatchProgressRate.class);
 	}
 
+	/**
+	 * 설비에서 진행 중인 배치 조회
+	 *  
+	 * @param domainId
+	 * @param stageCd
+	 * @param equipType
+	 * @param equipCd
+	 * @return
+	 */
 	public JobBatch findRunningBatch(Long domainId, String stageCd, String equipType, String equipCd) {
 		String filterNames = "domainId,stageCd,equipType,status";
 		List<Object> filterValues = ValueUtil.newList(domainId, stageCd, equipType, JobBatch.STATUS_RUNNING);
@@ -52,37 +78,106 @@ public class BatchService extends AbstractLogisService {
 		return AnyEntityUtil.findEntityBy(domainId, false, JobBatch.class, filterNames, filterValues.toArray());
 	}
 
+	/**
+	 * 스테이지에서 작업 유형 별 진행 중인 작업 배치 리스트 조회
+	 * 
+	 * @param domainId
+	 * @param stageCd
+	 * @param jobType
+	 * @param jobDate
+	 * @return
+	 */
 	public List<JobBatch> searchRunningBatchList(Long domainId, String stageCd, String jobType, String jobDate) {
 		return AnyEntityUtil.searchEntitiesBy(domainId, false, JobBatch.class, "stageCd,jobType,jobDate", stageCd, jobType, jobDate);
 	}
 
+	/**
+	 * 스테이지에서 작업 유형 별 진행 중인 메인 작업 배치 리스트 조회
+	 * 
+	 * @param domainId
+	 * @param stageCd
+	 * @param jobType
+	 * @param jobDate
+	 * @return
+	 */
 	public List<JobBatch> searchRunningMainBatchList(Long domainId, String stageCd, String jobType, String jobDate) {
 		String sql = "select * from job_batches where domain_id = :domainId and stage_cd = :stageCd and job_type = :jobType and job_date = :jobDate and id = batch_group_id";
 		return AnyEntityUtil.searchItems(domainId, false, JobBatch.class, sql, "domainId,stageCd,jobType,jobDate", domainId, stageCd, jobType, jobDate);
 	}
 	
+	/**
+	 * 스테이지 별 진행 중인 메인 작업 배치 리스트 조회
+	 * 
+	 * @param domainId
+	 * @param stageCd
+	 * @return
+	 */
+	public List<JobBatch> searchRunningMainBatchList(Long domainId, String stageCd) {
+		String sql = "select * from job_batches where domain_id = :domainId and stage_cd = :stageCd and id = batch_group_id";
+		return AnyEntityUtil.searchItems(domainId, false, JobBatch.class, sql, "domainId,stageCd", domainId, stageCd);
+	}
+	
+	/**
+	 * 작업 배치가 마감 가능한 지 체크
+	 * 
+	 * @param batch
+	 * @param closeForcibly
+	 */
 	public void isPossibleCloseBatch(JobBatch batch, boolean closeForcibly) {
 		this.serviceDispatcher.getBatchService(batch).isPossibleCloseBatch(batch, closeForcibly);
 	}
 
+	/**
+	 * 작업 배치 마감
+	 * 
+	 * @param batch
+	 * @param forcibly
+	 */
 	public void closeBatch(JobBatch batch, boolean forcibly) {
 		this.serviceDispatcher.getBatchService(batch).closeBatch(batch, forcibly);
 	}
 
+	/**
+	 * 배치 그룹이 마감 가능한 지 체크
+	 * 
+	 * @param domainId
+	 * @param batchGroupId
+	 * @param closeForcibly
+	 */
 	public void isPossibleCloseBatchGroup(Long domainId, String batchGroupId, boolean closeForcibly) {
 		JobBatch batch = this.findByBatchGroupId(domainId, batchGroupId);
 		this.serviceDispatcher.getBatchService(batch).isPossibleCloseBatchGroup(domainId, batchGroupId, closeForcibly);
 	}
 
+	/**
+	 * 작업 배치 그룹 마감
+	 * 
+	 * @param domainId
+	 * @param batchGroupId
+	 * @param forcibly
+	 * @return
+	 */
 	public int closeBatchGroup(Long domainId, String batchGroupId, boolean forcibly) {
 		JobBatch batch = this.findByBatchGroupId(domainId, batchGroupId);
 		return this.serviceDispatcher.getBatchService(batch).closeBatchGroup(domainId, batchGroupId, forcibly);
 	}
 
+	/**
+	 * 작업 배치 취소 가능한 지 여부
+	 * 
+	 * @param batch
+	 */
 	public void isPossibleCancelBatch(JobBatch batch) {
 		this.serviceDispatcher.getBatchService(batch).isPossibleCancelBatch(batch);
 	}
 
+	/**
+	 * 배치 그룹 ID로 메인 작업 배치 조회
+	 * 
+	 * @param domainId
+	 * @param batchGroupId
+	 * @return
+	 */
 	private JobBatch findByBatchGroupId(Long domainId, String batchGroupId) {
 		Query condition = AnyOrmUtil.newConditionForExecution(domainId, 1, 1);
 		condition.addFilter("batchGroupId", batchGroupId);

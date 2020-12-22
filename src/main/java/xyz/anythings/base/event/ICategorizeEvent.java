@@ -1,5 +1,7 @@
 package xyz.anythings.base.event;
 
+import java.util.List;
+
 /**
  * 중분류 이벤트
  * 
@@ -20,6 +22,34 @@ public interface ICategorizeEvent extends IBatchBasedEvent {
 	 * @param batchGroupId
 	 */
 	public void setBatchGroupId(String batchGroupId);
+	
+	/**
+	 * 배치 ID 리스트
+	 * 
+	 * @return
+	 */
+	public List<String> getBatchIdList();
+	
+	/**
+	 * 배치 ID 리스트 설정
+	 * 
+	 * @param batchIdList
+	 */
+	public void setBatchIdList(List<String> batchIdList);
+	
+	/**
+	 * 고객사 코드
+	 * 
+	 * @return
+	 */
+	public String getComCd();
+	
+	/**
+	 * 고객사 코드 설정
+	 * 
+	 * @param comCd
+	 */
+	public void setComCd(String comCd);
 
 	/**
 	 * 투입 유형 리턴 - 아래 상수 참조 (상품 낱개 투입, 상품 완박스 투입, 상품 묶음 투입, 박스 투입)

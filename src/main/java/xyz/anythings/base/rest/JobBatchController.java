@@ -19,11 +19,10 @@ import xyz.anythings.base.LogisConstants;
 import xyz.anythings.base.entity.BatchReceipt;
 import xyz.anythings.base.entity.BatchReceiptItem;
 import xyz.anythings.base.entity.JobBatch;
-import xyz.anythings.base.entity.JobConfigSet;
 import xyz.anythings.base.model.BatchProgressRate;
 import xyz.anythings.base.service.impl.BatchService;
 import xyz.anythings.base.service.impl.LogisServiceDispatcher;
-import xyz.anythings.gw.entity.IndConfigSet;
+import xyz.anythings.base.service.util.LogisServiceUtil;
 import xyz.anythings.sys.model.BaseResponse;
 import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.elidom.dbist.dml.Page;
@@ -33,7 +32,6 @@ import xyz.elidom.orm.system.annotation.service.ServiceDesc;
 import xyz.elidom.sys.SysConstants;
 import xyz.elidom.sys.entity.Domain;
 import xyz.elidom.sys.system.service.AbstractRestService;
-import xyz.elidom.sys.util.ThrowUtil;
 import xyz.elidom.util.ValueUtil;
 
 @RestController
@@ -165,11 +163,26 @@ public class JobBatchController extends AbstractRestService {
 	@RequestMapping(value = "/running_main_batch/{stage_cd}/{job_type}/{job_date}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Find running main batch of stage")
 	public List<JobBatch> findRunningMainBatches(
-			@PathVariable(name = "stage_cd") String stageCd, 
+			@PathVariable(name = "stage_cd") String stageCd,
 			@PathVariable(name = "job_type") String jobType,
 			@PathVariable(name = "job_date") String jobDate) {
 		
 		return this.batchService.searchRunningMainBatchList(Domain.currentDomainId(), stageCd, jobType, jobDate);
+	}
+	
+	/**
+	 * 현재 설비에서 진행 중인 메인 작업 배치 리스트 조회
+	 * 
+	 * @param stageCd
+	 * @param jobType
+	 * @param jobDate
+	 * @return
+	 */
+	@RequestMapping(value = "/running_main_batch/{stage_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Find running main batch of stage")
+	public List<JobBatch> findRunningMainBatches(@PathVariable(name = "stage_cd") String stageCd) {
+		
+		return this.batchService.searchRunningMainBatchList(Domain.currentDomainId(), stageCd);
 	}
 	
 	/**
@@ -249,7 +262,7 @@ public class JobBatchController extends AbstractRestService {
 	public BaseResponse targetClass(@PathVariable("id") String batchId) {
 		
 		// 1. 작업 배치 조회 
-		JobBatch batch = this.findWithLock(true, batchId, false);
+		JobBatch batch = LogisServiceUtil.findBatchWithLock(Domain.currentDomainId(), batchId, true, false);
 		// 2. 대상 분류 작업 호출
 		this.serviceDispatcher.getInstructionService(batch).targetClassing(batch);
 		// 3. 대상 분류 결과 리턴 
@@ -267,7 +280,7 @@ public class JobBatchController extends AbstractRestService {
 	public Map<String, Object> searchInstructionData(@PathVariable("id") String batchId) {
 		
 		// 1. 작업 배치 조회 
-		JobBatch batch = this.findWithLock(true, batchId, false);
+		JobBatch batch = LogisServiceUtil.findBatchWithLock(Domain.currentDomainId(), batchId, true, false);
 		// 2. 작업 지시 데이터 조회
 		return this.serviceDispatcher.getInstructionService(batch).searchInstructionData(batch);
 	}
@@ -285,7 +298,7 @@ public class JobBatchController extends AbstractRestService {
 			@RequestBody(required = false) List<String> equipList) {
 		
 		// 1. 작업 배치 조회
-		JobBatch batch = this.findWithLock(true, batchId, true);
+		JobBatch batch = LogisServiceUtil.findBatchWithLock(Domain.currentDomainId(), batchId, true, true);
 		// 2. 작업 지시  
 		int createdCount = this.serviceDispatcher.getInstructionService(batch).instructBatch(batch, equipList);
 		// 3. 작업 지시 결과 리턴
@@ -322,7 +335,7 @@ public class JobBatchController extends AbstractRestService {
 			@RequestBody(required = false) List<String> equipIdList) {
 		
 		// 1. 작업 배치 조회
-		JobBatch batch = this.findWithLock(true, batchId, true);
+		JobBatch batch = LogisServiceUtil.findBatchWithLock(Domain.currentDomainId(), batchId, true, true);
 		// 2. 작업 지시 
 		int count = this.serviceDispatcher.getInstructionService(batch).instructTotalpicking(batch, equipIdList);
 		// 3. 작업 지시 결과 리턴
@@ -360,9 +373,10 @@ public class JobBatchController extends AbstractRestService {
 			@PathVariable("main_batch_id") String mainBatchId) {
 		
 		// 1. 병합할 메인 배치 정보 조회 
-		JobBatch mainBatch = this.findWithLock(true, mainBatchId, true);
+		Long domainId = Domain.currentDomainId();
+		JobBatch mainBatch = LogisServiceUtil.findBatchWithLock(domainId, mainBatchId, true, true);
 		// 2. 병합될 배치 정보 조회 
-		JobBatch sourceBatch = this.findWithLock(true, sourceBatchId, true);
+		JobBatch sourceBatch = LogisServiceUtil.findBatchWithLock(domainId, sourceBatchId, true, true);
 		// 3. 작업 배치 병합
 		int mergedCnt = this.serviceDispatcher.getInstructionService(mainBatch).mergeBatch(mainBatch, sourceBatch);
 		// 4. 결과 리턴
@@ -380,7 +394,7 @@ public class JobBatchController extends AbstractRestService {
 	public Map<String, Object> cancelInstructionBatch(@PathVariable("id") String batchId) {
 		
 		// 1. 작업 배치 조회 
-		JobBatch batch = this.findWithLock(true, batchId, true);
+		JobBatch batch = LogisServiceUtil.findBatchWithLock(Domain.currentDomainId(), batchId, true, true);
 		// 2. 작업 지시 취소
 		int count = this.serviceDispatcher.getInstructionService(batch).cancelInstructionBatch(batch);
 		// 3. 작업 지시 결과 리턴
@@ -398,7 +412,7 @@ public class JobBatchController extends AbstractRestService {
 	public Map<String, Object> closeBatch(@RequestParam(name = "id", required = true) String batchId) {
 
 		// 1. JobBatch 조회 
-		JobBatch batch = this.findWithLock(true, batchId, true);
+		JobBatch batch = LogisServiceUtil.findBatchWithLock(Domain.currentDomainId(), batchId, true, true);
 		
 		// 2. 작업 배치 마감
 		try {
@@ -421,7 +435,7 @@ public class JobBatchController extends AbstractRestService {
 	public Map<String, Object> closeBatchForcibly(@PathVariable("id") String batchId) {
 		
 		// 1. JobBatch 조회 
-		JobBatch batch = this.findWithLock(true, batchId, true);
+		JobBatch batch = LogisServiceUtil.findBatchWithLock(Domain.currentDomainId(), batchId, true, true);
 		// 2. 작업 배치 마감
 		this.batchService.closeBatch(batch, true);
 		// 3. 결과 리턴
@@ -439,7 +453,7 @@ public class JobBatchController extends AbstractRestService {
 	public Map<String, Object> cancelBatch(@PathVariable("id") String batchId) {
 		
 		// 1. JobBatch 조회 
-		JobBatch batch = this.findWithLock(true, batchId, true);
+		JobBatch batch = LogisServiceUtil.findBatchWithLock(Domain.currentDomainId(), batchId, true, true);
 		// 2. 작업 배치 마감
 		int count = this.serviceDispatcher.getReceiveBatchService().cancelBatch(batch);
 		// 3. 작업 배치 수신 취소
@@ -457,7 +471,7 @@ public class JobBatchController extends AbstractRestService {
 	public Map<String, Object> changeRack(@PathVariable("id") String batchId, @PathVariable("to_equip_cd") String toEquipCd) {
 		
 		// 1. JobBatch 조회 
-		JobBatch batch = this.findWithLock(true, batchId, true);
+		JobBatch batch = LogisServiceUtil.findBatchWithLock(Domain.currentDomainId(), batchId, true, true);
 		// 2. 작업 배치 호기 전환 가능 여부 체크
 		this.batchService.isPossibleChangeEquipment(batch, toEquipCd);
 		// 3. 작업 배치 호기 전환 
@@ -483,33 +497,4 @@ public class JobBatchController extends AbstractRestService {
 		return ValueUtil.newMap("result,msg,count", SysConstants.OK_STRING, SysConstants.OK_STRING, count);
 	}
 
-	/**
-	 * 작업 배치를 락을 걸면서 조회
-	 * 
-	 * @param exceptionWhenEmpty
-	 * @param batchId
-	 * @param findConfigSet
-	 * @return
-	 */
-	private JobBatch findWithLock(boolean exceptionWhenEmpty, String batchId, boolean findConfigSet) {
-		JobBatch batch = AnyEntityUtil.findEntityByIdByUnselectedWithLock(false, JobBatch.class, batchId, "jobConfigSet", "indConfigSet");
-		
-		if(batch == null) {
-			if(exceptionWhenEmpty) {
-				throw ThrowUtil.newNotFoundRecord("terms.menu.JobBatch", batchId);
-			}
-		} else {
-			if(findConfigSet) {
-				if(ValueUtil.isNotEmpty(batch.getIndConfigSetId())) {
-					batch.setIndConfigSet(AnyEntityUtil.findEntityById(false, IndConfigSet.class, batch.getIndConfigSetId()));
-				}
-				
-				if(ValueUtil.isNotEmpty(batch.getJobConfigSetId())) {
-					batch.setJobConfigSet(AnyEntityUtil.findEntityById(false, JobConfigSet.class, batch.getJobConfigSetId()));
-				}
-			}
-		}
-		
-		return batch;
-	}
 }

@@ -1,188 +1,308 @@
 package xyz.anythings.base.entity;
 
+import java.util.List;
+
+import xyz.elidom.core.entity.Code;
+import xyz.elidom.core.entity.CodeDetail;
+import xyz.elidom.core.rest.CodeController;
 import xyz.elidom.dbist.annotation.Column;
 import xyz.elidom.dbist.annotation.GenerationRule;
-import xyz.elidom.dbist.annotation.Index;
+import xyz.elidom.dbist.annotation.Ignore;
 import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.Table;
+import xyz.elidom.orm.IQueryManager;
+import xyz.elidom.orm.OrmConstants;
+import xyz.elidom.orm.entity.basic.AbstractStamp;
+import xyz.elidom.sys.SysConstants;
+import xyz.elidom.util.BeanUtil;
+import xyz.elidom.util.ValueUtil;
 
-@Table(name = "box_packs", idStrategy = GenerationRule.UUID, indexes = {
-	@Index(name = "ix_box_packs_0", columnList = "domain_id,batch_id,wcs_batch_no,wms_batch_no"),
-	@Index(name = "ix_box_packs_1", columnList = "domain_id,stage_cd,job_date,job_seq"),
-	@Index(name = "ix_box_packs_2", columnList = "domain_id,batch_id,equip_type,equip_cd,sub_equip_cd,status"),
-	@Index(name = "ix_box_packs_3", columnList = "domain_id,order_no,box_id,invoice_id"),
-	@Index(name = "ix_box_packs_4", columnList = "domain_id,batch_id,class_cd,box_class_cd,shop_cd")
-})
-public class BoxPack extends xyz.elidom.orm.entity.basic.ElidomStampHook {
+/**
+ * box_packs 뷰 용 (읽기 전용)
+ * CREATE OR REPLACE VIEW box_packs AS
+ * select 
+ * 	batch_id || '_' || class_cd || '_' || COALESCE(invoice_id, box_id) as id,
+ * 	domain_id, 
+ * 	stage_cd, 
+ * 	batch_id, 
+ * 	job_date, 
+ * 	job_seq,
+ * 	max(job_type) as job_type,
+ * 	com_cd, 
+ * 	equip_cd,
+ * 	max(sub_equip_cd) as sub_equip_cd,
+ * 	order_type, 
+ * 	max(cust_order_no) as cust_order_no,
+ * 	order_no,
+ * 	max(shop_cd) as shop_cd,
+ * 	max(shop_nm) as shop_nm,
+ * 	invoice_id, 
+ * 	max(box_type_cd) as box_type_cd, 
+ * 	box_id, 
+ * 	class_cd, 
+ * 	box_class_cd, 
+ * 	max(status) as status,
+ * 	max(input_seq) as input_seq,
+ * 	max(box_net_wt) as box_net_wt,
+ * 	max(box_expect_wt) as box_expect_wt,
+ * 	max(box_real_wt) as box_real_wt,
+ * 	max(auto_insp_status) as auto_insp_status,
+ * 	max(manual_insp_status) as manual_insp_status,
+ * 	max(report_status) as report_status,
+ * 	max(input_at) as input_at,
+ * 	min(pick_started_at) as pick_started_at,
+ * 	max(boxed_at) as boxed_at,
+ * 	max(auto_inspected_at) as auto_inspected_at,
+ * 	max(manual_inspected_at) as manual_inspected_at,
+ * 	max(final_out_at) as final_out_at,
+ * 	max(reported_at) as reported_at,
+ * 	sum(pick_qty) as pick_qty, 
+ * 	sum(picked_qty) as picked_qty,
+ * 	sum(inspected_qty) as inspected_qty
+ * from
+ * 	job_instances
+ * where
+ * 	domain_id = :domainId
+ * 	and (status is not null and status in ('I', 'P', 'F', 'B', 'E', 'O'))
+ *  and (invoice_id is not null or box_id is not null)
+ * group by
+ * 	domain_id, stage_cd, batch_id, job_date, job_seq,
+ * 	com_cd, equip_cd, order_type, invoice_id, 
+ * 	box_id, class_cd, box_class_cd
+ * order by
+ * 	job_date desc, job_seq desc, input_seq desc
+ * 
+ * @author shortstop
+ */
+@Table(name = "box_packs", ignoreDdl = true, idStrategy = GenerationRule.NONE)
+public class BoxPack extends AbstractStamp {
 	/**
 	 * SerialVersion UID
 	 */
-	private static final long serialVersionUID = 258512479109046063L;
-	
-	/**
-	 * 박싱 대기
-	 */
-	public static final String BOX_STATUS_WAIT = "W";
-	/**
-	 * 분류 중
-	 */
-	public static final String BOX_STATUS_ASSORT = "A";
-	/**
-	 * 박싱 완료
-	 */
-	public static final String BOX_STATUS_BOXED = "B";
-	/**
-	 * 검수 완료
-	 */
-	public static final String BOX_STATUS_EXAMED = "E";
-	/**
-	 * 포장 완료
-	 */
-	public static final String BOX_STATUS_PACKED = "P";
-	/**
-	 * 전송 완료
-	 */
-	public static final String BOX_STATUS_REPORTED = "R";
+	private static final long serialVersionUID = 886823091901247512L;
 
 	@PrimaryKey
-	@Column (name = "id", nullable = false, length = 40)
+	@Column (name = "id", length = 100)
 	private String id;
+	
+	@Column(name = OrmConstants.TABLE_FIELD_DOMAIN_ID)
+	private Long domainId;
 
-	@Column (name = "batch_id", nullable = false, length = 40)
+	@Column (name = "batch_id", length = 40)
 	private String batchId;
+	
+	@Column (name = "stage_cd", length = 30)
+	private String stageCd;
 
-	@Column (name = "wcs_batch_no", length = 30)
-	private String wcsBatchNo;
-
-	@Column (name = "wms_batch_no", length = 30)
-	private String wmsBatchNo;
-
-	@Column (name = "job_date", nullable = false, length = 10)
+	@Column (name = "job_date", length = 10)
 	private String jobDate;
 
 	@Column (name = "job_seq", length = 10)
 	private String jobSeq;
-
+	
 	@Column (name = "job_type", length = 20)
 	private String jobType;
 
-	@Column (name = "order_date", length = 10)
-	private String orderDate;
-	
-	@Column (name = "cust_order_no", length = 40)
-	private String custOrderNo;
-
-	@Column (name = "order_no", length = 40)
-	private String orderNo;
-
-	@Column (name = "com_cd", nullable = false, length = 30)
+	@Column (name = "com_cd", length = 30)
 	private String comCd;
-
-	@Column (name = "shop_cd", length = 30)
-	private String shopCd;
-
-	@Column (name = "shop_nm", length = 40)
-	private String shopNm;
-
-	@Column (name = "area_cd", length = 30)
-	private String areaCd;
-
-	@Column (name = "stage_cd", length = 30)
-	private String stageCd;
-	
-	@Column (name = "equip_group_cd", length = 30)
-	private String equipGroupCd;
-
-	@Column (name = "equip_type", length = 20)
-	private String equipType;
-
+	/**
+	 * 랙 코드
+	 */
 	@Column (name = "equip_cd", length = 30)
 	private String equipCd;
-
-	@Column (name = "equip_nm", length = 40)
-	private String equipNm;
-
+	/**
+	 * 셀 코드
+	 */
 	@Column (name = "sub_equip_cd", length = 30)
 	private String subEquipCd;
-
-	@Column (name = "invoice_id", length = 40)
-	private String invoiceId;
-	
 	/**
 	 * 주문 유형
 	 */
 	@Column (name = "order_type", length = 20)
-	private String orderType;	
-
-	@Column (name = "box_type_cd", length = 30)
-	private String boxTypeCd;
-
-	@Column (name = "box_id", length = 40)
-	private String boxId;
-
-	@Column (name = "box_seq", length = 12)
-	private Integer boxSeq;
-
-	@Column (name = "sku_qty", length = 12)
-	private Integer skuQty;
-
-	@Column (name = "pick_qty", length = 12)
-	private Integer pickQty;
-
-	@Column (name = "picked_qty", length = 12)
-	private Integer pickedQty;
-
-	@Column (name = "box_wt", length = 19)
-	private Float boxWt;
-
-	@Column (name = "box_wt_min", length = 19)
-	private Float boxWtMin;
-
-	@Column (name = "box_wt_max", length = 19)
-	private Float boxWtMax;
+	private String orderType;
+	
+	/**
+	 * 원주문 번호
+	 */
+	@Column (name = "cust_order_no", length = 40)
+	private String custOrderNo;
+	
+	/**
+	 * 주문 번호
+	 */
+	@Column (name = "order_no", length = 40)
+	private String orderNo;
+	
+	/**
+	 * 송장 번호
+	 */
+	@Column (name = "invoice_id", length = 40)
+	private String invoiceId;
+	
+	/**
+	 * 거래처 코드
+	 */
+	@Column (name = "shop_cd", length = 30)
+	private String shopCd;
 
 	/**
-	 * 소분류 용
+	 * 거래처 명
 	 */
-	@Column (name = "class_cd", length = 30)
+	@Column (name = "shop_nm", length = 40)
+	private String shopNm;
+	
+	/**
+	 * 박스 유형
+	 */
+	@Column (name = "box_type_cd", length = 30)
+	private String boxTypeCd;
+	
+	/**
+	 * 투입 순번
+	 */
+	@Column (name = "input_seq", length = 10)
+	private Integer inputSeq;
+	
+	/**
+	 * 박스 ID
+	 */
+	@Column (name = "box_id", length = 30)
+	private String boxId;
+	
+	/**
+	 * 순수 박스 중량 값
+	 */
+	@Column (name = "box_net_wt", length = 15)
+	private Float boxNetWt;
+	
+	/**
+	 * 박스 계산 중량 값
+	 */
+	@Column (name = "box_expect_wt", length = 15)
+	private Float boxExpectWt;
+	
+	/**
+	 * 박스 측정 중량 값
+	 */
+	@Column (name = "box_real_wt", length = 15)
+	private Float boxRealWt;
+
+	/**
+	 * 피킹 예정 수량
+	 */
+	@Column (name = "pick_qty", length = 10)
+	private Integer pickQty;
+
+	/**
+	 * 피킹 완료 수량
+	 */
+	@Column (name = "picked_qty", length = 10)
+	private Integer pickedQty;
+	
+	/**
+	 * 검수 수량
+	 */
+	@Column (name = "inspected_qty", length = 10)
+	private Integer inspectedQty;
+
+	/**
+	 * 소 분류 용
+	 */
+	@Column (name = "class_cd", length = 40)
 	private String classCd;
 	
 	/**
 	 * 방면 분류 용
 	 */
-	@Column (name = "box_class_cd", length = 30)
+	@Column (name = "box_class_cd", length = 40)
 	private String boxClassCd;
 
-	@Column (name = "pack_type", length = 20)
-	private String packType;
-
-	@Column (name = "insp_type", length = 20)
-	private String inspType;
-
-	@Column (name = "pass_flag", length = 1)
-	private Boolean passFlag;
-
+	/**
+	 * 피킹 작업 상태 - 작업 대기 > 투입 > 피킹 시작 > 피킹 완료 > 주문 완료 > 검수 완료 > 출고 완료
+	 */
 	@Column (name = "status", length = 10)
 	private String status;
+	
+	/**
+	 * 중량 검수 상태
+	 */
+	@Column (name = "auto_insp_status", length = 1)
+	private String autoInspStatus;
+	
+	/**
+	 * 수기 검수 상태
+	 */
+	@Column (name = "manual_insp_status", length = 1)
+	private String manualInspStatus;
+	
+	/**
+	 * 실적 전송 상태
+	 */
+	@Column (name = "report_status", length = 1)
+	private String reportStatus;
+	
+	/**
+	 * 박스 투입 시각
+	 */
+	@Column (name = "input_at", length = 22)
+	private String inputAt;
 
-	@Column (name = "inspector_id", length = 32)
-	private String inspectorId;
+	/**
+	 * 피킹 시작 시각
+	 */
+	@Column (name = "pick_started_at", length = 22)
+	private String pickStartedAt;
 
-	@Column (name = "insp_started_at", length = 22)
-	private String inspStartedAt;
+	/**
+	 * 박싱 완료 시각
+	 */
+	@Column (name = "boxed_at", length = 22)
+	private String boxedAt;
+	
+	/**
+	 * 자동 검수 (예: 중량 검수) 시각
+	 */
+	@Column (name = "auto_inspected_at", length = 22)
+	private String autoInspectedAt;
 
-	@Column (name = "insp_ended_at", length = 22)
-	private String inspEndedAt;
+	/**
+	 * 수기 검수 시각
+	 */
+	@Column (name = "manual_inspected_at", length = 22)
+	private String manualInspectedAt;
+	
+	/**
+	 * 최종 출고 시각
+	 */
+	@Column (name = "final_out_at", length = 22)
+	private String finalOutAt;
+	
+	/**
+	 * 실적 전송 시각
+	 */
+	@Column (name = "reported_at", length = 22)
+	private String reportedAt;
+	
+	@Ignore
+	private String statusStr;
+	
+	@Ignore
+	private List<BoxItem> items;
 
-	@Column (name = "cancel_flag", length = 1)
-	private Boolean cancelFlag;
-  
 	public String getId() {
 		return id;
 	}
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public Long getDomainId() {
+		return domainId;
+	}
+
+	public void setDomainId(Long domainId) {
+		this.domainId = domainId;
 	}
 
 	public String getBatchId() {
@@ -193,20 +313,12 @@ public class BoxPack extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.batchId = batchId;
 	}
 
-	public String getWcsBatchNo() {
-		return wcsBatchNo;
+	public String getStageCd() {
+		return stageCd;
 	}
 
-	public void setWcsBatchNo(String wcsBatchNo) {
-		this.wcsBatchNo = wcsBatchNo;
-	}
-
-	public String getWmsBatchNo() {
-		return wmsBatchNo;
-	}
-
-	public void setWmsBatchNo(String wmsBatchNo) {
-		this.wmsBatchNo = wmsBatchNo;
+	public void setStageCd(String stageCd) {
+		this.stageCd = stageCd;
 	}
 
 	public String getJobDate() {
@@ -233,12 +345,36 @@ public class BoxPack extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.jobType = jobType;
 	}
 
-	public String getOrderDate() {
-		return orderDate;
+	public String getComCd() {
+		return comCd;
 	}
 
-	public void setOrderDate(String orderDate) {
-		this.orderDate = orderDate;
+	public void setComCd(String comCd) {
+		this.comCd = comCd;
+	}
+
+	public String getEquipCd() {
+		return equipCd;
+	}
+
+	public void setEquipCd(String equipCd) {
+		this.equipCd = equipCd;
+	}
+
+	public String getSubEquipCd() {
+		return subEquipCd;
+	}
+
+	public void setSubEquipCd(String subEquipCd) {
+		this.subEquipCd = subEquipCd;
+	}
+
+	public String getOrderType() {
+		return orderType;
+	}
+
+	public void setOrderType(String orderType) {
+		this.orderType = orderType;
 	}
 
 	public String getCustOrderNo() {
@@ -257,12 +393,12 @@ public class BoxPack extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.orderNo = orderNo;
 	}
 
-	public String getComCd() {
-		return comCd;
+	public String getInvoiceId() {
+		return invoiceId;
 	}
 
-	public void setComCd(String comCd) {
-		this.comCd = comCd;
+	public void setInvoiceId(String invoiceId) {
+		this.invoiceId = invoiceId;
 	}
 
 	public String getShopCd() {
@@ -281,84 +417,20 @@ public class BoxPack extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.shopNm = shopNm;
 	}
 
-	public String getAreaCd() {
-		return areaCd;
-	}
-
-	public void setAreaCd(String areaCd) {
-		this.areaCd = areaCd;
-	}
-
-	public String getStageCd() {
-		return stageCd;
-	}
-
-	public void setStageCd(String stageCd) {
-		this.stageCd = stageCd;
-	}
-
-	public String getEquipGroupCd() {
-		return equipGroupCd;
-	}
-
-	public void setEquipGroupCd(String equipGroupCd) {
-		this.equipGroupCd = equipGroupCd;
-	}
-
-	public String getEquipType() {
-		return equipType;
-	}
-
-	public void setEquipType(String equipType) {
-		this.equipType = equipType;
-	}
-
-	public String getEquipCd() {
-		return equipCd;
-	}
-
-	public void setEquipCd(String equipCd) {
-		this.equipCd = equipCd;
-	}
-
-	public String getEquipNm() {
-		return equipNm;
-	}
-
-	public void setEquipNm(String equipNm) {
-		this.equipNm = equipNm;
-	}
-
-	public String getSubEquipCd() {
-		return subEquipCd;
-	}
-
-	public void setSubEquipCd(String subEquipCd) {
-		this.subEquipCd = subEquipCd;
-	}
-
-	public String getInvoiceId() {
-		return invoiceId;
-	}
-
-	public void setInvoiceId(String invoiceId) {
-		this.invoiceId = invoiceId;
-	}
-	
-	public String getOrderType() {
-		return orderType;
-	}
-
-	public void setOrderType(String orderType) {
-		this.orderType = orderType;
-	}
-
 	public String getBoxTypeCd() {
 		return boxTypeCd;
 	}
 
 	public void setBoxTypeCd(String boxTypeCd) {
 		this.boxTypeCd = boxTypeCd;
+	}
+
+	public Integer getInputSeq() {
+		return inputSeq;
+	}
+
+	public void setInputSeq(Integer inputSeq) {
+		this.inputSeq = inputSeq;
 	}
 
 	public String getBoxId() {
@@ -369,20 +441,28 @@ public class BoxPack extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.boxId = boxId;
 	}
 
-	public Integer getBoxSeq() {
-		return boxSeq;
+	public Float getBoxNetWt() {
+		return boxNetWt;
 	}
 
-	public void setBoxSeq(Integer boxSeq) {
-		this.boxSeq = boxSeq;
+	public void setBoxNetWt(Float boxNetWt) {
+		this.boxNetWt = boxNetWt;
 	}
 
-	public Integer getSkuQty() {
-		return skuQty;
+	public Float getBoxExpectWt() {
+		return boxExpectWt;
 	}
 
-	public void setSkuQty(Integer skuQty) {
-		this.skuQty = skuQty;
+	public void setBoxExpectWt(Float boxExpectWt) {
+		this.boxExpectWt = boxExpectWt;
+	}
+
+	public Float getBoxRealWt() {
+		return boxRealWt;
+	}
+
+	public void setBoxRealWt(Float boxRealWt) {
+		this.boxRealWt = boxRealWt;
 	}
 
 	public Integer getPickQty() {
@@ -401,28 +481,12 @@ public class BoxPack extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.pickedQty = pickedQty;
 	}
 
-	public Float getBoxWt() {
-		return boxWt;
+	public Integer getInspectedQty() {
+		return inspectedQty;
 	}
 
-	public void setBoxWt(Float boxWt) {
-		this.boxWt = boxWt;
-	}
-
-	public Float getBoxWtMin() {
-		return boxWtMin;
-	}
-
-	public void setBoxWtMin(Float boxWtMin) {
-		this.boxWtMin = boxWtMin;
-	}
-
-	public Float getBoxWtMax() {
-		return boxWtMax;
-	}
-
-	public void setBoxWtMax(Float boxWtMax) {
-		this.boxWtMax = boxWtMax;
+	public void setInspectedQty(Integer inspectedQty) {
+		this.inspectedQty = inspectedQty;
 	}
 
 	public String getClassCd() {
@@ -441,30 +505,6 @@ public class BoxPack extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.boxClassCd = boxClassCd;
 	}
 
-	public String getPackType() {
-		return packType;
-	}
-
-	public void setPackType(String packType) {
-		this.packType = packType;
-	}
-
-	public String getInspType() {
-		return inspType;
-	}
-
-	public void setInspType(String inspType) {
-		this.inspType = inspType;
-	}
-
-	public Boolean getPassFlag() {
-		return passFlag;
-	}
-
-	public void setPassFlag(Boolean passFlag) {
-		this.passFlag = passFlag;
-	}
-
 	public String getStatus() {
 		return status;
 	}
@@ -473,36 +513,116 @@ public class BoxPack extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.status = status;
 	}
 
-	public String getInspectorId() {
-		return inspectorId;
+	public String getAutoInspStatus() {
+		return autoInspStatus;
 	}
 
-	public void setInspectorId(String inspectorId) {
-		this.inspectorId = inspectorId;
+	public void setAutoInspStatus(String autoInspStatus) {
+		this.autoInspStatus = autoInspStatus;
 	}
 
-	public String getInspStartedAt() {
-		return inspStartedAt;
+	public String getManualInspStatus() {
+		return manualInspStatus;
 	}
 
-	public void setInspStartedAt(String inspStartedAt) {
-		this.inspStartedAt = inspStartedAt;
+	public void setManualInspStatus(String manualInspStatus) {
+		this.manualInspStatus = manualInspStatus;
 	}
 
-	public String getInspEndedAt() {
-		return inspEndedAt;
+	public String getReportStatus() {
+		return reportStatus;
 	}
 
-	public void setInspEndedAt(String inspEndedAt) {
-		this.inspEndedAt = inspEndedAt;
+	public void setReportStatus(String reportStatus) {
+		this.reportStatus = reportStatus;
 	}
 
-	public Boolean getCancelFlag() {
-		return cancelFlag;
+	public String getInputAt() {
+		return inputAt;
 	}
 
-	public void setCancelFlag(Boolean cancelFlag) {
-		this.cancelFlag = cancelFlag;
+	public void setInputAt(String inputAt) {
+		this.inputAt = inputAt;
 	}
 
+	public String getPickStartedAt() {
+		return pickStartedAt;
+	}
+
+	public void setPickStartedAt(String pickStartedAt) {
+		this.pickStartedAt = pickStartedAt;
+	}
+
+	public String getBoxedAt() {
+		return boxedAt;
+	}
+
+	public void setBoxedAt(String boxedAt) {
+		this.boxedAt = boxedAt;
+	}
+
+	public String getAutoInspectedAt() {
+		return autoInspectedAt;
+	}
+
+	public void setAutoInspectedAt(String autoInspectedAt) {
+		this.autoInspectedAt = autoInspectedAt;
+	}
+
+	public String getManualInspectedAt() {
+		return manualInspectedAt;
+	}
+
+	public void setManualInspectedAt(String manualInspectedAt) {
+		this.manualInspectedAt = manualInspectedAt;
+	}
+
+	public String getFinalOutAt() {
+		return finalOutAt;
+	}
+
+	public void setFinalOutAt(String finalOutAt) {
+		this.finalOutAt = finalOutAt;
+	}
+
+	public String getReportedAt() {
+		return reportedAt;
+	}
+
+	public void setReportedAt(String reportedAt) {
+		this.reportedAt = reportedAt;
+	}
+
+	public String getStatusStr() {
+		if(this.statusStr == null && this.status != null) {
+			Code code = BeanUtil.get(CodeController.class).findOne(SysConstants.SHOW_BY_NAME_METHOD, "JOB_STATUS");
+			if(code != null) {
+				List<CodeDetail> codeItems = code.getItems();
+				for(CodeDetail item : codeItems) {
+					if(ValueUtil.isEqualIgnoreCase(item.getName(), this.status)) {
+						this.statusStr = item.getDescription();
+						break;
+					}
+				}
+			}
+		}
+		
+		return statusStr;
+	}
+
+	public void setStatusStr(String statusStr) {
+		this.statusStr = statusStr;
+	}
+
+	public List<BoxItem> getItems() {
+		return items;
+	}
+
+	public void setItems(List<BoxItem> items) {
+		this.items = items;
+	}
+
+	public void searchBoxItems() {
+		this.items = BeanUtil.get(IQueryManager.class).selectList(BoxItem.class, ValueUtil.newMap("boxPackId", this.getId()));
+	}
 }

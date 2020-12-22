@@ -20,7 +20,7 @@ import xyz.anythings.base.entity.JobBatch;
 import xyz.anythings.base.entity.OrderPreprocess;
 import xyz.anythings.base.entity.Rack;
 import xyz.anythings.base.service.impl.PreprocessService;
-import xyz.anythings.sys.util.AnyEntityUtil;
+import xyz.anythings.base.service.util.LogisServiceUtil;
 import xyz.anythings.sys.util.AnyValueUtil;
 import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.dbist.dml.Query;
@@ -28,6 +28,7 @@ import xyz.elidom.exception.server.ElidomValidationException;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
 import xyz.elidom.orm.system.annotation.service.ServiceDesc;
 import xyz.elidom.sys.SysConstants;
+import xyz.elidom.sys.entity.Domain;
 import xyz.elidom.sys.system.service.AbstractRestService;
 import xyz.elidom.sys.util.MessageUtil;
 import xyz.elidom.sys.util.ThrowUtil;
@@ -261,7 +262,7 @@ public class OrderPreprocessController extends AbstractRestService {
 	 * @return
 	 */
 	private JobBatch checkBatch(String batchId) {
-		JobBatch batch = AnyEntityUtil.findEntityByIdWithLock(true, JobBatch.class, batchId);
+		JobBatch batch = LogisServiceUtil.findBatch(Domain.currentDomainId(), batchId, true, true);
 		
 		if(!LogisConstants.isB2BJobType(batch.getJobType())) {
 			throw ThrowUtil.newNotSupportedMethodYet();

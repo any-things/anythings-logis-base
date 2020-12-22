@@ -138,6 +138,14 @@ public interface IIndicationService {
 	public void indicatorOffAll(JobBatch batch);
 	
 	/**
+	 * 1-8. 작업 배치 전체 표시기 강제 소등 요청
+	 * 
+	 * @param batch
+	 * @param forceOff
+	 */
+	public void indicatorOffAll(JobBatch batch, boolean forceOff);
+	
+	/**
 	 * 1-8. 호기의 작업 스테이션 영역의 표시기 소등 요청
 	 * 
 	 * @param domainId

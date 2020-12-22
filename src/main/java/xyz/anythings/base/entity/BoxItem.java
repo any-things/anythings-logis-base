@@ -1,69 +1,109 @@
 package xyz.anythings.base.entity;
 
 import xyz.elidom.dbist.annotation.Column;
-import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.GenerationRule;
+import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.Table;
+import xyz.elidom.orm.entity.basic.AbstractStamp;
 
-@Table(name = "box_items", idStrategy = GenerationRule.UUID)
-public class BoxItem extends xyz.elidom.orm.entity.basic.ElidomStampHook {
+/**
+ * box_items 뷰 용 (읽기 전용)
+ * 
+ * CREATE OR REPLACE VIEW box_items AS	
+ * select
+ * 	max(j.id) as id,
+ * 	batch_id || '_' || j.class_cd || '_' || COALESCE(j.invoice_id, j.box_id) as box_pack_id, 
+ * 	c.station_cd,
+ * 	sub_equip_cd, 
+ * 	sku_cd, 
+ * 	max(sku_barcd) as sku_barcd, 
+ * 	max(sku_nm) as sku_nm, 
+ * 	max(pack_type) as pack_type,
+ * 	max(sku_wt) as sku_wt,
+ * 	sum(pick_qty) as pick_qty,
+ * 	sum(picked_qty) as picked_qty,
+ *  sum(inspected_qty) as inspected_qty
+ * from
+ * 	job_instances j left outer join cells c on j.domain_id = c.domain_id and j.sub_equip_cd = c.cell_cd
+ * where
+ * 	j.domain_id = :domainId
+ * group by
+ * 	j.domain_id, j.batch_id, j.class_cd, j.invoice_id, j.box_id, j.sku_cd, j.sub_equip_cd, c.station_cd
+ * 
+ * @author shortstop
+ */
+@Table(name = "box_items", ignoreDdl = true, idStrategy = GenerationRule.NONE)
+public class BoxItem extends AbstractStamp {
+	
 	/**
 	 * SerialVersion UID
 	 */
-	private static final long serialVersionUID = 434956497492551752L;
+	private static final long serialVersionUID = 886823091901249876L;
 
 	@PrimaryKey
-	@Column (name = "id", nullable = false, length = 40)
+	@Column (name = "id", length = 40)
 	private String id;
-
-	@Column (name = "box_pack_id", nullable = false, length = 40)
+	
+	/**
+	 * BoxPack ID
+	 */
+	@Column (name = "box_pack_id", length = 100)
 	private String boxPackId;
+	
+	/**
+	 * 작업 스테이션
+	 */
+	@Column (name = "station_cd", length = 30)
+	private String stationCd;
+	
+	/**
+	 * 셀 코드
+	 */
+	@Column (name = "sub_equip_cd", length = 30)
+	private String subEquipCd;
 
-	@Column (name = "order_id", length = 40)
-	private String orderId;
-
-	@Column (name = "order_no", length = 40)
-	private String orderNo;
-
-	@Column (name = "order_line_no", length = 40)
-	private String orderLineNo;
-
-	@Column (name = "order_detail_id", length = 40)
-	private String orderDetailId;
-
-	@Column (name = "com_cd", length = 30)
-	private String comCd;
-
-	@Column (name = "shop_cd", length = 30)
-	private String shopCd;
-
-	@Column (name = "sku_cd", nullable = false, length = 30)
+	/**
+	 * 상품 코드
+	 */
+	@Column (name = "sku_cd", length = 30)
 	private String skuCd;
+	
+	/**
+	 * 상품 바코드
+	 */
+	@Column (name = "sku_barcd", length = 30)
+	private String skuBarcd;
 
+	/**
+	 * 상품 명
+	 */
 	@Column (name = "sku_nm", length = 200)
 	private String skuNm;
-
-	@Column (name = "sku_wt", length = 19)
+	
+	/**
+	 * 상품 표준 중량
+	 */
+	@Column (name = "sku_wt", length = 15)
 	private Float skuWt;
 
-	@Column (name = "pack_type", length = 20)
-	private String packType;
-
-	@Column (name = "pick_qty", length = 12)
+	/**
+	 * 피킹 예정 수량
+	 */
+	@Column (name = "pick_qty", length = 10)
 	private Integer pickQty;
 
-	@Column (name = "picked_qty", length = 12)
+	/**
+	 * 피킹 완료 수량
+	 */
+	@Column (name = "picked_qty", length = 10)
 	private Integer pickedQty;
+	
+	/**
+	 * 검수 수량
+	 */
+	@Column (name = "inspected_qty", length = 10)
+	private Integer inspectedQty;
 
-	@Column (name = "cancel_qty", length = 12)
-	private Integer cancelQty;
-
-	@Column (name = "pass_flag", length = 1)
-	private Boolean passFlag;
-
-	@Column (name = "status", length = 10)
-	private String status;
-  
 	public String getId() {
 		return id;
 	}
@@ -80,52 +120,20 @@ public class BoxItem extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.boxPackId = boxPackId;
 	}
 
-	public String getOrderId() {
-		return orderId;
+	public String getStationCd() {
+		return stationCd;
 	}
 
-	public void setOrderId(String orderId) {
-		this.orderId = orderId;
+	public void setStationCd(String stationCd) {
+		this.stationCd = stationCd;
 	}
 
-	public String getOrderNo() {
-		return orderNo;
+	public String getSubEquipCd() {
+		return subEquipCd;
 	}
 
-	public void setOrderNo(String orderNo) {
-		this.orderNo = orderNo;
-	}
-
-	public String getOrderLineNo() {
-		return orderLineNo;
-	}
-
-	public void setOrderLineNo(String orderLineNo) {
-		this.orderLineNo = orderLineNo;
-	}
-
-	public String getOrderDetailId() {
-		return orderDetailId;
-	}
-
-	public void setOrderDetailId(String orderDetailId) {
-		this.orderDetailId = orderDetailId;
-	}
-
-	public String getComCd() {
-		return comCd;
-	}
-
-	public void setComCd(String comCd) {
-		this.comCd = comCd;
-	}
-
-	public String getShopCd() {
-		return shopCd;
-	}
-
-	public void setShopCd(String shopCd) {
-		this.shopCd = shopCd;
+	public void setSubEquipCd(String subEquipCd) {
+		this.subEquipCd = subEquipCd;
 	}
 
 	public String getSkuCd() {
@@ -134,6 +142,14 @@ public class BoxItem extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setSkuCd(String skuCd) {
 		this.skuCd = skuCd;
+	}
+
+	public String getSkuBarcd() {
+		return skuBarcd;
+	}
+
+	public void setSkuBarcd(String skuBarcd) {
+		this.skuBarcd = skuBarcd;
 	}
 
 	public String getSkuNm() {
@@ -152,14 +168,6 @@ public class BoxItem extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.skuWt = skuWt;
 	}
 
-	public String getPackType() {
-		return packType;
-	}
-
-	public void setPackType(String packType) {
-		this.packType = packType;
-	}
-
 	public Integer getPickQty() {
 		return pickQty;
 	}
@@ -176,27 +184,12 @@ public class BoxItem extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.pickedQty = pickedQty;
 	}
 
-	public Integer getCancelQty() {
-		return cancelQty;
+	public Integer getInspectedQty() {
+		return inspectedQty;
 	}
 
-	public void setCancelQty(Integer cancelQty) {
-		this.cancelQty = cancelQty;
+	public void setInspectedQty(Integer inspectedQty) {
+		this.inspectedQty = inspectedQty;
 	}
 
-	public Boolean getPassFlag() {
-		return passFlag;
-	}
-
-	public void setPassFlag(Boolean passFlag) {
-		this.passFlag = passFlag;
-	}
-
-	public String getStatus() {
-		return status;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
-	}
 }

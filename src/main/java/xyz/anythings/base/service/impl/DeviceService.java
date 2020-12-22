@@ -194,7 +194,7 @@ public class DeviceService extends AbstractLogisService implements IDeviceServic
 		StringBuffer destId = new StringBuffer();
 		destId.append(virtualHost)
 			  .append(SysConstants.SLASH)
-			  .append(deviceType)
+			  .append(deviceType.toUpperCase())
 			  .append(SysConstants.SLASH)
 			  .append(equipType)
 			  .append(SysConstants.SLASH)

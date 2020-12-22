@@ -28,6 +28,7 @@ import xyz.anythings.base.entity.JobInstance;
 import xyz.anythings.base.entity.SKU;
 import xyz.anythings.base.entity.WorkCell;
 import xyz.anythings.base.event.IClassifyInEvent;
+import xyz.anythings.base.event.classfy.CategorizeEvent;
 import xyz.anythings.base.event.classfy.ClassifyInEvent;
 import xyz.anythings.base.event.classfy.ClassifyOutEvent;
 import xyz.anythings.base.event.classfy.ClassifyRunEvent;
@@ -38,6 +39,7 @@ import xyz.anythings.base.model.EquipBatchSet;
 import xyz.anythings.base.service.api.IIndicationService;
 import xyz.anythings.base.service.impl.LogisServiceDispatcher;
 import xyz.anythings.base.service.util.LogisServiceUtil;
+import xyz.anythings.sys.event.model.PrintEvent;
 import xyz.anythings.sys.event.model.SysEvent;
 import xyz.anythings.sys.model.BaseResponse;
 import xyz.anythings.sys.rest.DynamicControllerSupport;
@@ -78,7 +80,7 @@ public class DeviceProcessController extends DynamicControllerSupport {
 	private LogisServiceDispatcher serviceDispatcher;
 	
 	/**********************************************************************
-	 * 								공통 API 
+	 * 								공통 API
 	 **********************************************************************/
 	/**
 	 * 장비 업데이트 하라는 메시지를 장비 타입별로 publish
@@ -131,7 +133,7 @@ public class DeviceProcessController extends DynamicControllerSupport {
 	}
 	
 	/**
-	 * 작업 배치의 주문 요약 정보
+	 * 작업 배치의 작업 진행 요약 정보 조회
 	 * 
 	 * @param equipType
 	 * @param equipCd
@@ -210,7 +212,7 @@ public class DeviceProcessController extends DynamicControllerSupport {
 	}
 	
 	/**********************************************************************
-	 * 								표시기 점/소등 API  
+	 * 								표시기 점/소등 API
 	 **********************************************************************/
 	
 	/**
@@ -247,11 +249,14 @@ public class DeviceProcessController extends DynamicControllerSupport {
 			@PathVariable("equip_cd") String equipCd, 
 			@PathVariable("station_cd") String stationCd) {
 		
-		// 1. 설비 정보로 부터 작업 배치 조회 
+		// 1. 작업장 코드 체크
+		stationCd = ValueUtil.isEqualIgnoreCase(stationCd, LogisConstants.ALL_CAP_STRING) ? null : stationCd;
+		
+		// 2. 설비 정보로 부터 작업 배치 조회 
 		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(Domain.currentDomainId(), equipType, equipCd);
 		JobBatch batch = equipBatchSet.getBatch();
 		
-		// 2. 작업 배치 내 작업 스테이션 영역의 표시기 소등
+		// 3. 작업 배치 내 작업 스테이션 영역의 표시기 소등
 		this.serviceDispatcher.getIndicationService(batch).indicatorListOff(batch.getDomainId(), batch.getStageCd(), equipType, equipCd, stationCd);
 		return new BaseResponse(true);
 	}
@@ -302,69 +307,88 @@ public class DeviceProcessController extends DynamicControllerSupport {
 	}
 	
 	/**********************************************************************
-	 * 								중분류 API  
+	 * 								중분류 API
 	 **********************************************************************/
 	
 	/**
-	 * 중분류 화면에서 배치 그룹 ID 하나를 선택하기 위해 스테이지 내 진행 중인 WMS 배치 ID 리스트를 조회
-	 * 스테이지 내에 진행 중인 작업 배치 리스트를 스테이지 / 설비 그룹 / 작업 유형 / WMS 배치 ID로 그루핑하여 조회 
+	 * 스테이지 내에 진행 중인 작업 배치 리스트를 조회 
 	 * 
 	 * @param stageCd
 	 * @param jobType
-	 * @param jobDate
+	 * @param equipType
 	 * @return
 	 */
-	@RequestMapping(value = "/running_batches/{stage_cd}/{job_type}/{job_date}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/search_running_batches/{stage_cd}/{job_type}/{equip_type}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Search running batch list of stage")
 	public List<JobBatch> searchRunningBatchGroups(
-			@PathVariable("stage_cd") String stageCd, 
-			@PathVariable("job_type") String jobType, 
-			@PathVariable("job_date") String jobDate) {
+			@PathVariable("stage_cd") String stageCd,
+			@PathVariable("job_type") String jobType,
+			@PathVariable("equip_type") String equipType) {
 		
-		// TODO 
-		return null;
+		String sql = "select * from job_batches where domain_id = :domainId and status = 'RUN' and batch_group_id in (select distinct batch_group_id from job_batches where domain_id = :domainId and stage_cd = :stageCd and equip_type = :equipType and status = 'RUN')";
+		Map<String, Object> params = ValueUtil.newMap("domainId,stageCd,jobType,equipType", Domain.currentDomainId(), stageCd, jobType, equipType);
+		return this.queryManager.selectListBySql(sql, params, JobBatch.class, 0, 0);
+	}
+	
+	/**
+	 * 스테이지 내에 작업 유형, 설비 유형별 진행 중인 메인 배치를 조회
+	 * 
+	 * @param stageCd
+	 * @param jobType
+	 * @param equipType
+	 * @return
+	 */
+	@RequestMapping(value = "/find_running_main_batch/{stage_cd}/{job_type}/{equip_type}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Find running main batch list")
+	public List<JobBatch> findMainRunningBatch(
+			@PathVariable("stage_cd") String stageCd,
+			@PathVariable("job_type") String jobType,
+			@PathVariable("equip_type") String equipType) {
+		
+		String sql = "select * from job_batches where domain_id = :domainId and stage_cd = :stageCd and job_type = :jobType and equip_type = :equipType and status = 'RUN' and id = batch_group_id";
+		Map<String, Object> params = ValueUtil.newMap("domainId,stageCd,jobType,equipType", Domain.currentDomainId(), stageCd, jobType, equipType);
+		return this.queryManager.selectListBySql(sql, params, JobBatch.class, 0, 0);
 	}
 
 	/**
 	 * 중분류 처리
 	 * 
-	 * @param batchGroupId
+	 * @param jobDate
+	 * @param stageCd
+	 * @param jobType
+	 * @param equipType
+	 * @param equipCd
 	 * @param comCd
 	 * @param skuCd
-	 * @param weightFlag
-	 * @param varQtyFlag
 	 * @return
 	 */
-	@RequestMapping(value = "/categorize/{batch_group_id}/{com_cd}/{sku_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiDesc(description = "Categorize by batchGroupId, comCd, skuCd")
+	@RequestMapping(value = "/categorize/{job_date}/{stage_cd}/{job_type}/{equip_type}/{equip_cd}/{com_cd}/{sku_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Categorize by equipType, equipCd, comCd, skuCd")
 	public Category categorize(
-			@PathVariable("batch_group_id") String batchGroupId,
-			@PathVariable("com_cd") String comCd, 
-			@PathVariable("sku_cd") String skuCd, 
-			@RequestParam(name = "weight", required = false) Boolean weightFlag,
-			@RequestParam(name = "var_qty_flag", required = false) Boolean varQtyFlag) {
+			@PathVariable("job_date") String jobDate,
+			@PathVariable("stage_cd") String stageCd,
+			@PathVariable("job_type") String jobType,
+			@PathVariable("equip_type") String equipType,
+			@PathVariable("equip_cd") String equipCd,
+			@PathVariable("com_cd") String comCd,
+			@PathVariable("sku_cd") String skuCd) {
 		
-		// TODO 
-		return null;
-	}
-	
-	/**
-	 * 중분류 처리 - 중량 업데이트 
-	 * 
-	 * @param batchGroupId
-	 * @param skuInfo
-	 * @return
-	 */
-	@RequestMapping(value = "/categorize/{batch_group_id}/apply_weight", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiDesc(description = "Categorize - apply SKU Weight!")
-	public Object updateSkuWeight(@PathVariable("batch_group_id") String batchGroupId, @RequestBody SKU skuInfo) {
+		String sql = "select id from job_batches where domain_id = :domainId and status = :status and batch_group_id in (select distinct batch_group_id from job_batches where domain_id = :domainId and job_date = :jobDate and stage_cd = :stageCd and job_type = :jobType and equip_type = :equipType and equip_cd = :equipCd)";
+		Map<String, Object> params = ValueUtil.newMap("domainId,jobDate,stageCd,jobType,equipType,equipCd,status", Domain.currentDomainId(), jobDate, stageCd, jobType, equipType, equipCd, JobBatch.STATUS_RUNNING);
+		List<String> batchIdList = this.queryManager.selectListBySql(sql, params, String.class, 0, 0);
 		
-		// TODO 
-		return null;
+		if(batchIdList.size() < 1) {
+			throw ThrowUtil.newValidationErrorWithNoLog(true, "NOT_FOUND_RUNNING_BATCH");
+		}
+		
+		CategorizeEvent event = new CategorizeEvent(Domain.currentDomainId(), SysEvent.EVENT_STEP_ALONE, stageCd, batchIdList, jobType, comCd, skuCd);
+		this.eventPublisher.publishEvent(event);
+		Category category = (Category)event.getResult();
+		return category;
 	}
 	
 	/**********************************************************************
-	 * 								박스 매핑 API 
+	 * 								박스 매핑 API
 	 **********************************************************************/
 	/**
 	 * 셀과 박스 ID 매핑 현황 조회
@@ -382,6 +406,7 @@ public class DeviceProcessController extends DynamicControllerSupport {
 		JobBatch batch = equipBatchSet.getBatch();
 		Query condition = AnyOrmUtil.newConditionForExecution(domainId);
 		condition.addFilter("batchId", batch.getId());
+		condition.addOrder("cellCd", true);
 		return this.queryManager.selectList(WorkCell.class, condition);
 	}
 	
@@ -437,19 +462,40 @@ public class DeviceProcessController extends DynamicControllerSupport {
 		String sql = "select cell_cd from cells where domain_id = :domainId and equip_type = :equipType and equip_cd = :equipCd and indCd = :indCd";
 		Map<String, Object> params = ValueUtil.newMap("domainId,equipType,equipCd,indCd", batch.getDomainId(), equipType, equipCd, indCd);
 		String subEquipCd = this.queryManager.selectBySql(sql, params, String.class);
-		return this.serviceDispatcher.getClassificationService(batch).boxCellMapping(batch, subEquipCd, boxId);
+		return this.serviceDispatcher.getBoxingService(batch).assignBoxToCell(batch, subEquipCd, boxId);
 	}
 	
-	/**********************************************************************
-	 * 								소분류 처리 API  
-	 **********************************************************************/
-	
 	/**
-	 * 작업 처리 ID (jobInstanceId)로 소분류 작업 처리 
+	 * 셀과 박스 ID 매핑 해제
 	 * 
 	 * @param equipType
 	 * @param equipCd
-	 * @param jobProcessId
+	 * @param subEquipCd
+	 * @return
+	 */
+	@RequestMapping(value = "/cancel/cell_box/{equip_type}/{equip_cd}/{sub_equip_cd}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Cancel Cell & Box Mapping")
+	public Object cancelBoxMapping(
+			@PathVariable("equip_type") String equipType,
+			@PathVariable("equip_cd") String equipCd,
+			@PathVariable("sub_equip_cd") String subEquipCd) {
+		
+		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(Domain.currentDomainId(), equipType, equipCd);
+		JobBatch batch = equipBatchSet.getBatch();
+		return this.serviceDispatcher.getBoxingService(batch).resetBoxToCell(batch, subEquipCd);
+	}
+	
+	/**********************************************************************
+	 * 								소분류 처리 API
+	 **********************************************************************/
+	
+	/**
+	 * 작업 처리 ID (jobInstanceId)로 소분류 작업 처리
+	 * 
+	 * @param deviceType
+	 * @param equipType
+	 * @param equipCd
+	 * @param jobInstanceId
 	 * @return
 	 */
 	@RequestMapping(value = "/classify/confirm/{device_type}/{equip_type}/{equip_cd}/{job_instance_id}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -489,6 +535,7 @@ public class DeviceProcessController extends DynamicControllerSupport {
 	/**
 	 * 작업 ID (jobInstanceId)로 소분류 작업 분할 처리
 	 * 
+	 * @param deviceType
 	 * @param equipType
 	 * @param equipCd
 	 * @param jobInstanceId
@@ -537,7 +584,7 @@ public class DeviceProcessController extends DynamicControllerSupport {
 	
 	/**
 	 * 작업 ID (jobInstanceId)로 소분류 작업 취소 처리
-	 * 
+	 * @param deviceType
 	 * @param equipType
 	 * @param equipCd
 	 * @param jobInstanceId
@@ -555,20 +602,20 @@ public class DeviceProcessController extends DynamicControllerSupport {
 		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(Domain.currentDomainId(), equipType, equipCd);
 		JobBatch batch = equipBatchSet.getBatch();
 		
-		// 2. JobInstance 조회 
+		// 2. JobInstance 조회
 		JobInstance job = this.serviceDispatcher.getJobStatusService(batch).findPickingJob(batch.getDomainId(), jobInstanceId);
 		if(job == null) {
 			throw ThrowUtil.newNotFoundRecord("terms.label.job", jobInstanceId);
 		}
 		
-		// 3. 소분류 이벤트 생성 
+		// 3. 소분류 이벤트 생성
 		ClassifyRunEvent event = new ClassifyRunEvent(batch, SysEvent.EVENT_STEP_ALONE
 				, deviceType.toLowerCase(), LogisCodeConstants.CLASSIFICATION_ACTION_CANCEL, job);
 		
-		// 4. 이벤트 발생 
+		// 4. 이벤트 발생
 		this.eventPublisher.publishEvent(event);
 		
-		// 5. 이벤트 처리 결과 리턴 
+		// 5. 이벤트 처리 결과 리턴
 		if(!event.isExecuted()) {
 			throw new ElidomServiceException();
 		} else {
@@ -597,13 +644,13 @@ public class DeviceProcessController extends DynamicControllerSupport {
 		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(Domain.currentDomainId(), equipType, equipCd);
 		JobBatch batch = equipBatchSet.getBatch();
 		
-		// 2. JobInstance 조회 
+		// 2. JobInstance 조회
 		JobInstance job = this.serviceDispatcher.getJobStatusService(batch).findPickingJob(batch.getDomainId(), jobInstanceId);
 		if(job == null) {
 			throw ThrowUtil.newNotFoundRecord("terms.label.job", jobInstanceId);
 		}
 		
-		// 3. 소분류 이벤트 생성 
+		// 3. 소분류 이벤트 생성
 		ClassifyRunEvent event = new ClassifyRunEvent(batch, SysEvent.EVENT_STEP_ALONE
 				, deviceType.toLowerCase(), LogisCodeConstants.CLASSIFICATION_ACTION_UNDO_PICK, job);
 		
@@ -615,6 +662,7 @@ public class DeviceProcessController extends DynamicControllerSupport {
 	/**
 	 * 풀 박스
 	 * 
+	 * @param deviceType
 	 * @param equipType
 	 * @param equipCd
 	 * @param jobInstanceId
@@ -632,27 +680,32 @@ public class DeviceProcessController extends DynamicControllerSupport {
 			@RequestParam(name = "req_qty", required = false) Integer reqQty,
 			@RequestParam(name = "box_id", required = false) String boxId) {
 		
-		// 1. 설비 정보로 Batch조회 
-		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(Domain.currentDomainId(), equipType, equipCd);
+		// 1. 설비 정보로 Batch조회
+		Long domainId = Domain.currentDomainId();
+		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(domainId, equipType, equipCd);
 		JobBatch batch = equipBatchSet.getBatch();
 		
-		// 2. JobInstance 조회 
-		JobInstance job = this.serviceDispatcher.getJobStatusService(batch).findPickingJob(batch.getDomainId(), jobInstanceId);
+		// 2. JobInstance 조회
+		JobInstance job = this.serviceDispatcher.getJobStatusService(batch).findPickingJob(domainId, jobInstanceId);
 		if(job == null) {
 			throw ThrowUtil.newNotFoundRecord("terms.label.job", jobInstanceId);
 		}
 		
-		// 3. 소분류 이벤트 생성 
+		// 3. 소분류 이벤트 생성
 		ClassifyOutEvent event = new ClassifyOutEvent(batch, SysEvent.EVENT_STEP_ALONE
 				, deviceType.toLowerCase()
 				, LogisCodeConstants.CLASSIFICATION_ACTION_FULL, job
 				, ValueUtil.isEmpty(reqQty) ? 0 : reqQty
 				, 1);
 		
-		event.getWorkCell().setBoxId(boxId);
-		event.setBoxId(boxId);
+		// 4. 박스 ID가 존재하면
+		WorkCell workCell = event.getWorkCell();
+		if(ValueUtil.isNotEmpty(boxId) && ValueUtil.isEmpty(workCell.getBoxId())) {
+			workCell.setBoxId(boxId);
+			event.setBoxId(boxId);
+		}
 		
-		// 4. 액션 실행
+		// 5. 액션 실행
 		this.serviceDispatcher.getClassificationService(batch).classify(event);
 		return new BaseResponse(true, SysConstants.OK_STRING, null);
 	}
@@ -668,7 +721,7 @@ public class DeviceProcessController extends DynamicControllerSupport {
 	@ApiDesc(description = "Batch fullbox")
 	public BaseResponse batchFullbox(@PathVariable("equip_type") String equipType,  @PathVariable("equip_cd") String equipCd) {
 		
-		// 1. 설비 정보로 작업 배치 조회 
+		// 1. 설비 정보로 작업 배치 조회
 		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(Domain.currentDomainId(), equipType, equipCd);
 		JobBatch batch = equipBatchSet.getBatch();
 		
@@ -702,7 +755,7 @@ public class DeviceProcessController extends DynamicControllerSupport {
 		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(Domain.currentDomainId(), equipType, equipCd);
 		JobBatch batch = equipBatchSet.getBatch();
 		
-		// 2. 박스 조회 
+		// 2. 박스 조회
 		BoxPack box = AnyEntityUtil.findEntityById(false, BoxPack.class, boxId);
 		
 		if(box == null) {
@@ -715,7 +768,7 @@ public class DeviceProcessController extends DynamicControllerSupport {
 	}
 	
 	/**********************************************************************
-	 * 								작업 데이터 조회 API  
+	 * 								작업 데이터 조회 API
 	 **********************************************************************/
 	
 	/**
@@ -743,10 +796,34 @@ public class DeviceProcessController extends DynamicControllerSupport {
 		JobBatch batch = equipBatchSet.getBatch();
 		return this.serviceDispatcher.getJobStatusService(batch).paginateInputList(batch, equipCd, stationCd, status, page, limit);
 	}
-
 	
 	/**
-	 * 태블릿 피킹 화면 하단 작업 스테이션 별 투입 리스트 조회 (리스트) 
+	 * 호기 범위 내 혹은 작업 존 범위 내 상태별 미 투입 리스트를 조회 (페이지네이션)
+	 * 
+	 * @param equipType
+	 * @param equipCd
+	 * @param stationCd
+	 * @param status 상태 - 빈 값: 전체 보기, U: 미완료인 것만 보기
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	@RequestMapping(value = "/search/not_input_pages/{equip_type}/{equip_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Search Not Input list")
+	public Page<JobInput> searchNotInputPages(
+			@PathVariable("equip_type") String equipType,
+			@PathVariable("equip_cd") String equipCd,
+			@RequestParam(name = "station_cd", required = false) String stationCd,
+			@RequestParam(name = "page", required = false) Integer page,
+			@RequestParam(name = "limit", required = false) Integer limit) {
+		
+		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(Domain.currentDomainId(), equipType, equipCd);
+		JobBatch batch = equipBatchSet.getBatch();
+		return this.serviceDispatcher.getJobStatusService(batch).paginateNotInputList(batch, equipCd, stationCd, page, limit);
+	}
+	
+	/**
+	 * 태블릿 피킹 화면 하단 작업 스테이션 별 투입 리스트 조회 (리스트)
 	 * 
 	 * @param equipType
 	 * @param equipCd
@@ -770,10 +847,11 @@ public class DeviceProcessController extends DynamicControllerSupport {
 	/**
 	 * 작업 배치내 작업 중인 투입 정보의 작업 리스트를 조회
 	 * 
+	 * @param jobInputId
 	 * @param equipType
 	 * @param equipCd
-	 * @param jobInputId
 	 * @param stationCd
+	 * @param indOnYn
 	 * @return
 	 */
 	@RequestMapping(value = "/search/input_jobs/{job_input_id}/{equip_type}/{equip_cd}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -827,7 +905,7 @@ public class DeviceProcessController extends DynamicControllerSupport {
 	@RequestMapping(value = "/input/sku/{equip_type}/{equip_cd}/{com_cd}/{sku_cd}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Input SKU")
 	public Object inputSKU(
-			@PathVariable("equip_type") String equipType, 
+			@PathVariable("equip_type") String equipType,
 			@PathVariable("equip_cd") String equipCd, 
 			@PathVariable("com_cd") String comCd,
 			@PathVariable("sku_cd") String skuCd,
@@ -853,8 +931,8 @@ public class DeviceProcessController extends DynamicControllerSupport {
 	@RequestMapping(value = "/input/box/{equip_type}/{equip_cd}/{box_id}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Input Box")
 	public Object inputBox(
-			@PathVariable("equip_type") String equipType, 
-			@PathVariable("equip_cd") String equipCd, 
+			@PathVariable("equip_type") String equipType,
+			@PathVariable("equip_cd") String equipCd,
 			@PathVariable("box_id") String boxId) {
 		
 		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(Domain.currentDomainId(), equipType, equipCd);
@@ -864,7 +942,7 @@ public class DeviceProcessController extends DynamicControllerSupport {
 	}
 	
 	/**********************************************************************
-	 * 								박스 관련 API  
+	 * 								박스 관련 API
 	 **********************************************************************/
 	
 	/**
@@ -880,14 +958,17 @@ public class DeviceProcessController extends DynamicControllerSupport {
 	@RequestMapping(value = "/paginate/box_list/{equip_type}/{equip_cd}/{equip_zone}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Paginate box list")
 	public Page<BoxPack> paginateBoxList(
-			@PathVariable("equip_type") String equipType, 
+			@PathVariable("equip_type") String equipType,
 			@PathVariable("equip_cd") String equipCd, 
 			@PathVariable("equip_zone") String equipZone,
 			@RequestParam(name = "page", required = false) Integer page,
 			@RequestParam(name = "limit", required = false) Integer limit) {
 		
-		// TODO
-		return null;
+		Long domainId = Domain.currentDomainId();
+		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(Domain.currentDomainId(), equipType, equipCd);
+		Query condition = AnyOrmUtil.newConditionForExecution(domainId, page, limit);
+		condition.addFilter("batchId", equipBatchSet.getBatch().getId());
+		return this.queryManager.selectPage(BoxPack.class, condition);
 	}
 	
 	/**
@@ -902,13 +983,15 @@ public class DeviceProcessController extends DynamicControllerSupport {
 	@RequestMapping(value = "/paginate/box_list/{batch_id}/{equip_zone}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Paginate box list")
 	public Page<BoxPack> paginateBoxList(
-			@PathVariable("batch_id") String batchId, 
-			@PathVariable("equip_zone") String equipZone, 
+			@PathVariable("batch_id") String batchId,
+			@PathVariable("equip_zone") String equipZone,
 			@RequestParam(name = "page", required = false) Integer page,
 			@RequestParam(name = "limit", required = false) Integer limit) {
 		
-		// TODO
-		return null;
+		Long domainId = Domain.currentDomainId();
+		Query condition = AnyOrmUtil.newConditionForExecution(domainId, page, limit);
+		condition.addFilter("batchId", batchId);
+		return this.queryManager.selectPage(BoxPack.class, condition);
 	}
 	
 	/**
@@ -922,12 +1005,15 @@ public class DeviceProcessController extends DynamicControllerSupport {
 	@RequestMapping(value = "/search/box_list/{equip_type}/{equip_cd}/{equip_zone}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Search box list")
 	public List<BoxPack> searchBoxList(
-			@PathVariable("equip_type") String equipType, 
-			@PathVariable("equip_cd") String equipCd, 
+			@PathVariable("equip_type") String equipType,
+			@PathVariable("equip_cd") String equipCd,
 			@PathVariable("equip_zone") String equipZone) {
 		
-		// TODO
-		return null;
+		Long domainId = Domain.currentDomainId();
+		EquipBatchSet equipBatchSet = LogisServiceUtil.checkRunningBatch(Domain.currentDomainId(), equipType, equipCd);
+		Query condition = AnyOrmUtil.newConditionForExecution(domainId);
+		condition.addFilter("batchId", equipBatchSet.getBatch().getId());
+		return this.queryManager.selectList(BoxPack.class, condition);
 	}
 	
 	/**
@@ -940,11 +1026,13 @@ public class DeviceProcessController extends DynamicControllerSupport {
 	@RequestMapping(value = "/search/box_list/{batch_id}/{equip_zone}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Search box list")
 	public List<BoxPack> searchBoxList(
-			@PathVariable("batch_id") String batchId, 
+			@PathVariable("batch_id") String batchId,
 			@PathVariable("equip_zone") String equipZone) {
 		
-		// TODO
-		return null;
+		Long domainId = Domain.currentDomainId();
+		Query condition = AnyOrmUtil.newConditionForExecution(domainId);
+		condition.addFilter("batchId", batchId);
+		return this.queryManager.selectList(BoxPack.class, condition);
 	}
 	
 	/**
@@ -957,8 +1045,12 @@ public class DeviceProcessController extends DynamicControllerSupport {
 	@ApiDesc(description = "Search box items")
 	public List<BoxItem> searchBoxItems(@PathVariable("box_pack_id") String boxPackId) {
 		
-		// TODO
-		return null;
+		BoxPack boxPack = this.queryManager.select(BoxPack.class, boxPackId);
+		if(boxPack != null) {
+			boxPack.searchBoxItems();
+		}
+		
+		return boxPack == null ? null : boxPack.getItems();
 	}
 
 	/**
@@ -970,26 +1062,31 @@ public class DeviceProcessController extends DynamicControllerSupport {
 	 * @param printerId
 	 * @return
 	 */
-	@RequestMapping(value = "/search/box_list/{equip_type}/{equip_cd}/{box_pack_id}/{printer_id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiDesc(description = "Search box list")
+	@RequestMapping(value = "/reprint/box_label/{equip_type}/{equip_cd}/{box_pack_id}/{printer_id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Reprint Box Label")
 	public BaseResponse reprintBoxLabel(
 			@PathVariable("equip_type") String equipType,
 			@PathVariable("equip_cd") String equipCd,
-			@PathVariable("equip_zone") String equipZone,
 			@PathVariable("box_pack_id") String boxPackId,
 			@PathVariable("printer_id") String printerId) {
 		
-		// TODO
-		return null;
+		BoxPack boxPack = this.queryManager.select(BoxPack.class, boxPackId);
+		if(boxPack != null) {
+			PrintEvent printEvent = new PrintEvent(boxPack.getDomainId(), boxPack.getJobType(), printerId, null, ValueUtil.newMap("box", boxPack));
+			this.eventPublisher.publishEvent(printEvent);
+			return new BaseResponse(true, ValueUtil.toString(printEvent.getResult()));
+		} else {
+			return new BaseResponse(false, "Not Found Box By Id [" + boxPackId + "]");
+		}
 	}
 
 	/**********************************************************************
-	 * 								Dynamic API  
+	 * 								Dynamic API
 	 **********************************************************************/
 
 	/**
-	 * 디바이스 관련 각 모듈에 특화된 REST GET 서비스 
-	 * DeviceProcessRestEvent 이벤트를 발생시켜 각 모듈에서 해당 로직 처리 
+	 * 디바이스 관련 각 모듈에 특화된 REST GET 서비스
+	 * DeviceProcessRestEvent 이벤트를 발생시켜 각 모듈에서 해당 로직 처리
 	 */
 	@RequestMapping(value = "/dynamic/{job_type}/**", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Device Process Rest GET API")
@@ -1004,8 +1101,8 @@ public class DeviceProcessController extends DynamicControllerSupport {
 	}
 
 	/**
-	 * 디바이스 관련 각 모듈에 특화된 REST PUT 서비스 
-	 * DeviceProcessRestEvent 이벤트를 발생시켜 각 모듈에서 해당 로직 처리 
+	 * 디바이스 관련 각 모듈에 특화된 REST PUT 서비스
+	 * DeviceProcessRestEvent 이벤트를 발생시켜 각 모듈에서 해당 로직 처리
 	 */
 	@RequestMapping(value = "/dynamic/{job_type}/**", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Device Process Rest PUT API")
@@ -1022,8 +1119,8 @@ public class DeviceProcessController extends DynamicControllerSupport {
 	}
 
 	/**
-	 * 디바이스 관련 각 모듈에 특화된 REST POST 서비스 
-	 * DeviceProcessRestEvent 이벤트를 발생시켜 각 모듈에서 해당 로직 처리 
+	 * 디바이스 관련 각 모듈에 특화된 REST POST 서비스
+	 * DeviceProcessRestEvent 이벤트를 발생시켜 각 모듈에서 해당 로직 처리
 	 */
 	@RequestMapping(value = "/dynamic/{job_type}/**", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiDesc(description = "Device Process Rest POST API")

@@ -3,9 +3,11 @@ package xyz.anythings.base.service.util;
 import xyz.anythings.base.LogisConstants;
 import xyz.anythings.base.entity.BoxType;
 import xyz.anythings.base.entity.JobBatch;
+import xyz.anythings.base.entity.JobConfigSet;
 import xyz.anythings.base.entity.Rack;
 import xyz.anythings.base.entity.TrayBox;
 import xyz.anythings.base.model.EquipBatchSet;
+import xyz.anythings.gw.entity.IndConfigSet;
 import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.elidom.orm.IQueryManager;
 import xyz.elidom.sys.SysConstants;
@@ -22,7 +24,7 @@ import xyz.elidom.util.BeanUtil;
 public class LogisServiceUtil {
 	
 	/**
-	 * 작업 배치 
+	 * 작업 배치 조회
 	 * 
 	 * @param domainId
 	 * @param batchId
@@ -31,12 +33,50 @@ public class LogisServiceUtil {
 	 * @return
 	 */
 	public static JobBatch findBatch(Long domainId, String batchId, boolean withLock, boolean exceptionWhenEmpty) {
-		JobBatch batch = AnyEntityUtil.findEntityBy(domainId, false, withLock, JobBatch.class, null, SysConstants.ENTITY_FIELD_ID, batchId);
-
+		JobBatch batch = null;
+		
+		if(withLock) {
+			batch = findBatchWithLock(domainId, batchId, exceptionWhenEmpty, true);
+			
+		} else {
+			batch = AnyEntityUtil.findEntityBy(domainId, false, withLock, JobBatch.class, null, SysConstants.ENTITY_FIELD_ID, batchId);
+		}
+		
 		if(batch == null && exceptionWhenEmpty) {
 			throw ThrowUtil.newNotFoundRecord("terms.menu.JobBatch", batchId);
 		}
 
+		return batch;
+	}
+	
+	/**
+	 * 작업 배치를 락을 걸면서 조회
+	 * 
+	 * @param domainId
+	 * @param batchId
+	 * @param exceptionWhenEmpty
+	 * @param findConfigSet
+	 * @return
+	 */
+	public static JobBatch findBatchWithLock(Long domainId, String batchId, boolean exceptionWhenEmpty, boolean findConfigSet) {
+		JobBatch batch = AnyEntityUtil.findEntityByIdByUnselectedWithLock(false, JobBatch.class, batchId, "jobConfigSet", "indConfigSet");
+		
+		if(batch == null) {
+			if(exceptionWhenEmpty) {
+				throw ThrowUtil.newNotFoundRecord("terms.menu.JobBatch", batchId);
+			}
+		} else {
+			if(findConfigSet) {
+				if(ValueUtil.isNotEmpty(batch.getIndConfigSetId())) {
+					batch.setIndConfigSet(AnyEntityUtil.findEntityById(false, IndConfigSet.class, batch.getIndConfigSetId()));
+				}
+				
+				if(ValueUtil.isNotEmpty(batch.getJobConfigSetId())) {
+					batch.setJobConfigSet(AnyEntityUtil.findEntityById(false, JobConfigSet.class, batch.getJobConfigSetId()));
+				}
+			}
+		}
+		
 		return batch;
 	}
 	
@@ -86,7 +126,7 @@ public class LogisServiceUtil {
 			equipBatchSet.setBatch(batch);
 			
 		} else {
-			// TODO 기타 설비 추가 필요 함 .
+			// TODO 기타 설비 추가 필요함
 		}
 		
 		return equipBatchSet;

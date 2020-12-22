@@ -71,12 +71,25 @@ public interface IJobStatusService {
 	 * 
 	 * @param batch
 	 * @param equipCd
+	 * @param stationCd
 	 * @param status
 	 * @param page
 	 * @param limit
 	 * @return
 	 */
 	public Page<JobInput> paginateInputList(JobBatch batch, String equipCd, String stationCd, String status, int page, int limit);
+	
+	/**
+	 * 2-1. 작업 존 내 미 투입 정보 조회 (페이지네이션)
+	 * 
+	 * @param batch
+	 * @param equipCd
+	 * @param stationCd
+	 * @param page
+	 * @param limit
+	 * @return
+	 */
+	public Page<JobInput> paginateNotInputList(JobBatch batch, String equipCd, String stationCd, int page, int limit);
 	
 	/**
 	 * 2-2. 투입 정보 조회 - 가장 최근에 투입된 투입 정보 조회
