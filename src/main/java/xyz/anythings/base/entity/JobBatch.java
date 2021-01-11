@@ -20,6 +20,11 @@ import xyz.elidom.orm.IQueryManager;
 import xyz.elidom.util.BeanUtil;
 import xyz.elidom.util.ValueUtil;
 
+/**
+ * 작업 배치
+ * 
+ * @author shortstop
+ */
 @Table(name = "job_batches", idStrategy = GenerationRule.UUID, indexes = {
 	@Index(name = "ix_job_batches_0", columnList = "domain_id,job_type,job_date,job_seq,status"),
 	@Index(name = "ix_job_batches_1", columnList = "domain_id,wms_batch_no"),
@@ -45,7 +50,7 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	 */
 	public static final String STATUS_READY = "READY";
 	/**
-	 * 작업 지시 가능 상태 : READY
+	 * 메인 배치에 병합된 상태 : MERGED
 	 */
 	public static final String STATUS_MERGED = "MERGED";
 	/**
@@ -65,93 +70,178 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "id", nullable = false, length = 40)
 	private String id;
 
+	/**
+	 * Wave No.
+	 */
 	@Column (name = "wms_batch_no", length = 40)
 	private String wmsBatchNo;
-
+	/**
+	 * Wave로 부터  분리된 경우 WCS의 배치 번호
+	 */
 	@Column (name = "wcs_batch_no", length = 40)
 	private String wcsBatchNo;
-
+	/**
+	 * 배치 그룹 ID
+	 */
 	@Column (name = "batch_group_id", length = 40)
 	private String batchGroupId;
-
+	/**
+	 * 화주사 코드
+	 */
 	@Column (name = "com_cd", length = 30)
 	private String comCd;
-
+	/**
+	 * 작업 유형
+	 */
 	@Column (name = "job_type", nullable = false, length = 20)
 	private String jobType;
-
+	/**
+	 * 분류 작업 일자
+	 */
 	@Column (name = "job_date", nullable = false, length = 10)
 	private String jobDate;
-
+	/**
+	 * 작업 차수
+	 */
 	@Column (name = "job_seq", length = 12)
 	private String jobSeq;
-
+	/**
+	 * 창고 구역 코드
+	 */
 	@Column (name = "area_cd", length = 30)
 	private String areaCd;
-
+	/**
+	 * 창고 스테이지 코드
+	 */
 	@Column (name = "stage_cd", length = 30)
 	private String stageCd;
-
+	/**
+	 * 설비 유형
+	 */
 	@Column (name = "equip_type", length = 20)
 	private String equipType;
-	
+	/**
+	 * 설비 그룹 코드
+	 */
 	@Column (name = "equip_group_cd", length = 30)
 	private String equipGroupCd;
-	
+	/**
+	 * 설비 코드
+	 */
 	@Column (name = "equip_cd", length = 30)
 	private String equipCd;
-
+	/**
+	 * 설비 명
+	 */
 	@Column (name = "equip_nm", length = 40)
 	private String equipNm;
 
+	/**
+	 * 원 Wave의 주문 수
+	 */
 	@Column (name = "parent_order_qty", nullable = false, length = 12)
 	private Integer parentOrderQty;
-
+	/**
+	 * 작업 배치 주문 수
+	 */
 	@Column (name = "batch_order_qty", nullable = false, length = 12)
 	private Integer batchOrderQty;
-
+	/**
+	 * 작업 배치 주문 처리 수
+	 */
 	@Column (name = "result_order_qty", length = 12)
-	private Integer resultOrderQty;	
-
+	private Integer resultOrderQty;
+	/**
+	 * 작업 배치 박스 처리 수
+	 */
+	@Column (name = "result_box_qty", length = 12)
+	private Integer resultBoxQty;
+	/**
+	 * 오 피킹 주문 건수
+	 */
+	@Column (name = "wrong_picking_qty", length = 12)
+	private Integer wrongPickingQty;
+	
+	/**
+	 * 원 Wave의 상품 수
+	 */
+	@Column (name = "parent_sku_qty", length = 12)
+	private Integer parentSkuQty;
+	/**
+	 * 작업 배치 상품 수
+	 */
+	@Column (name = "batch_sku_qty", length = 12)
+	private Integer batchSkuQty;
+	/**
+	 * 작업 배치 상품 
+	 */
+	@Column (name = "result_sku_qty", length = 12)
+	private Integer resultSkuQty;
+	/**
+	 * 원 Wave의 pcs
+	 */
 	@Column (name = "parent_pcs", nullable = false, length = 12)
 	private Integer parentPcs;
-
+	/**
+	 * 작업 배치 pcs
+	 */
 	@Column (name = "batch_pcs", nullable = false, length = 12)
 	private Integer batchPcs;
-
+	/**
+	 * 작업 배치 처리 pcs
+	 */
 	@Column (name = "result_pcs", length = 12)
 	private Integer resultPcs;
 	
-	@Column (name = "result_box_qty", length = 12)
-	private Integer resultBoxQty;
-
+	/**
+	 * 작업 진행율
+	 */
 	@Column (name = "progress_rate", length = 19)
 	private Float progressRate;
-	
+	/**
+	 * 투입 작업자 수
+	 */
 	@Column (name = "input_workers", length = 12)
 	private Integer inputWorkers;
-	
+	/**
+	 * 시간당 분류 PCS (Unit Per Hour)
+	 */
 	@Column (name = "uph", length = 19)
 	private Float uph;
-	
+	/**
+	 * 설비 가동시간
+	 */
 	@Column (name = "equip_runtime", length = 12)
 	private Float equipRuntime;
-
+	/**
+	 * 작업지시시간
+	 */
 	@Column (name = "instructed_at", type = xyz.elidom.dbist.annotation.ColumnType.DATETIME)
 	private Date instructedAt;
-
+	/**
+	 * 배치완료시간
+	 */
 	@Column (name = "finished_at", type = xyz.elidom.dbist.annotation.ColumnType.DATETIME)
 	private Date finishedAt;
 
+	/**
+	 * 배치의 마지막 투입 시퀀스
+	 */
 	@Column (name = "last_input_seq", length = 12)
 	private Integer lastInputSeq;
-
+	/**
+	 * 배치 상태
+	 */
 	@Column (name = "status", length = 10)
 	private String status;
-	
+	/**
+	 * 작업 설정 셋 ID
+	 */
 	@Column (name = "job_config_set_id", length = 40)
 	private String jobConfigSetId;
-	
+	/**
+	 * 표시기 설정 셋 ID
+	 */
 	@Column (name = "ind_config_set_id", length = 40)
 	private String indConfigSetId;
 
@@ -296,6 +386,46 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	public void setResultOrderQty(Integer resultOrderQty) {
 		this.resultOrderQty = resultOrderQty;
 	}
+	
+	public Integer getResultBoxQty() {
+		return resultBoxQty;
+	}
+
+	public void setResultBoxQty(Integer resultBoxQty) {
+		this.resultBoxQty = resultBoxQty;
+	}
+
+	public Integer getWrongPickingQty() {
+		return wrongPickingQty;
+	}
+
+	public void setWrongPickingQty(Integer wrongPickingQty) {
+		this.wrongPickingQty = wrongPickingQty;
+	}
+
+	public Integer getParentSkuQty() {
+		return parentSkuQty;
+	}
+
+	public void setParentSkuQty(Integer parentSkuQty) {
+		this.parentSkuQty = parentSkuQty;
+	}
+
+	public Integer getBatchSkuQty() {
+		return batchSkuQty;
+	}
+
+	public void setBatchSkuQty(Integer batchSkuQty) {
+		this.batchSkuQty = batchSkuQty;
+	}
+
+	public Integer getResultSkuQty() {
+		return resultSkuQty;
+	}
+
+	public void setResultSkuQty(Integer resultSkuQty) {
+		this.resultSkuQty = resultSkuQty;
+	}
 
 	public Integer getParentPcs() {
 		return parentPcs;
@@ -319,14 +449,6 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setResultPcs(Integer resultPcs) {
 		this.resultPcs = resultPcs;
-	}	
-
-	public Integer getResultBoxQty() {
-		return resultBoxQty;
-	}
-
-	public void setResultBoxQty(Integer resultBoxQty) {
-		this.resultBoxQty = resultBoxQty;
 	}
 
 	public Float getProgressRate() {
@@ -456,7 +578,7 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.setStatus(status);
 		
 		if(ValueUtil.isEqual(JobBatch.STATUS_CANCEL, status)) {
-			this.setJobSeq("0");
+			this.setJobSeq(LogisConstants.ZERO_STRING);
 			BeanUtil.get(IQueryManager.class).update(this, "jobSeq", "status");
 		} else {
 			BeanUtil.get(IQueryManager.class).update(this, "status");
@@ -483,7 +605,7 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		condition.addFilter("jobDate", jobDate);
 		condition.addOrder("jobSeq", false);
 		List<JobBatch> jobSeqList = queryManager.selectList(JobBatch.class, condition);
-		String maxJobSeq = (ValueUtil.isEmpty(jobSeqList) ? "0" : jobSeqList.get(0).getJobSeq());
+		String maxJobSeq = (ValueUtil.isEmpty(jobSeqList) ? LogisConstants.ZERO_STRING : jobSeqList.get(0).getJobSeq());
 		return ValueUtil.toInteger(maxJobSeq);
 	}
 	
@@ -516,6 +638,9 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		batch.setParentPcs(receiptItem.getTotalPcs());
 		batch.setBatchOrderQty(receiptItem.getTotalOrders());
 		batch.setBatchPcs(receiptItem.getTotalPcs());
+		batch.setWrongPickingQty(0);
+		batch.setBatchSkuQty(0);
+		batch.setResultSkuQty(0);
 		batch.setStatus(JobBatch.STATUS_RECEIVE);
 		BeanUtil.get(IQueryManager.class).insert(batch);
 		return batch;
