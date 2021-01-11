@@ -34,18 +34,27 @@ public class EquipGroup extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "stage_cd", length = 30)
 	private String stageCd;
 
-	@Column (name = "category", length = 20)
-	private String category;
-	
-	@Column (name = "input_workers", length = 12)
-	private Integer inputWorkers;
-	
-	@Column (name = "total_workers", length = 12)
-	private Integer totalWorkers;
+	/**
+	 * 표준 투입 작업자 수
+	 */
+	@Column (name = "std_workers", length = 12)
+	private Float stdWorkers;
+	/**
+	 * 평균 투입 작업자 수 - 실 데이터 기반으로 매일 업데이트
+	 */
+	@Column (name = "avg_workers", length = 12)
+	private Float avgWorkers;
+	/**
+	 * 표준 인당 UPH
+	 */
+	@Column (name = "std_uph", length = 12)
+	private Float stdUph;
+	/**
+	 * 평균 인당 UPH - 실 데이터 기반으로 매일 업데이트
+	 */
+	@Column (name = "avg_uph", length = 12)
+	private Float avgUph;
 
-	@Column (name = "remarks", length = 1000)
-	private String remarks;
-  
 	public String getId() {
 		return id;
 	}
@@ -94,36 +103,36 @@ public class EquipGroup extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.stageCd = stageCd;
 	}
 
-	public String getCategory() {
-		return category;
+	public Float getStdWorkers() {
+		return stdWorkers;
 	}
 
-	public void setCategory(String category) {
-		this.category = category;
+	public void setStdWorkers(Float stdWorkers) {
+		this.stdWorkers = stdWorkers;
 	}
 
-	public Integer getInputWorkers() {
-		return inputWorkers;
+	public Float getAvgWorkers() {
+		return avgWorkers;
 	}
 
-	public void setInputWorkers(Integer inputWorkers) {
-		this.inputWorkers = inputWorkers;
+	public void setAvgWorkers(Float avgWorkers) {
+		this.avgWorkers = avgWorkers;
 	}
 
-	public Integer getTotalWorkers() {
-		return totalWorkers;
+	public Float getStdUph() {
+		return stdUph;
 	}
 
-	public void setTotalWorkers(Integer totalWorkers) {
-		this.totalWorkers = totalWorkers;
+	public void setStdUph(Float stdUph) {
+		this.stdUph = stdUph;
 	}
 
-	public String getRemarks() {
-		return remarks;
+	public Float getAvgUph() {
+		return avgUph;
 	}
 
-	public void setRemarks(String remarks) {
-		this.remarks = remarks;
+	public void setAvgUph(Float avgUph) {
+		this.avgUph = avgUph;
 	}
 
 }
