@@ -8,7 +8,7 @@ import xyz.elidom.dbist.annotation.Table;
 
 @Table(name = "worker_actuals", idStrategy = GenerationRule.UUID, indexes = {
 	@Index(name = "ix_worker_actuals_0", columnList = "domain_id,worker_id,job_date,work_type"),
-	@Index(name = "ix_worker_actuals_1", columnList = "domain_id,worker_id,area_cd,stage_cd,equip_type,equip_cd"),
+	@Index(name = "ix_worker_actuals_1", columnList = "domain_id,worker_id,equip_type,equip_cd"),
 	@Index(name = "ix_worker_actuals_2", columnList = "domain_id,worker_id,started_at,finished_at")
 })
 public class WorkerActual extends xyz.elidom.orm.entity.basic.ElidomStampHook {
@@ -26,30 +26,18 @@ public class WorkerActual extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	
 	@Column (name = "worker_name", length = 30)
 	private String workerName;
-	
-	@Column (name = "job_date", length = 10)
-	private String jobDate;
 
 	@Column (name = "work_type", length = 20)
 	private String workType;
-
-	@Column (name = "area_cd", length = 30)
-	private String areaCd;
-
-	@Column (name = "stage_cd", length = 30)
-	private String stageCd;
+	
+	@Column (name = "job_date", length = 10)
+	private String jobDate;
 
 	@Column (name = "equip_type", length = 20)
 	private String equipType;
 
 	@Column (name = "equip_cd", length = 30)
 	private String equipCd;
-
-	@Column (name = "equip_nm", length = 30)
-	private String equipNm;
-
-	@Column (name = "sub_equip_cd", length = 30)
-	private String subEquipCd;
 
 	@Column (name = "actual_qty", length = 12)
 	private Integer actualQty;
@@ -59,7 +47,7 @@ public class WorkerActual extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	@Column (name = "finished_at", length = 30)
 	private String finishedAt;
-  
+
 	public String getId() {
 		return id;
 	}
@@ -72,24 +60,16 @@ public class WorkerActual extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		return workerId;
 	}
 
+	public void setWorkerId(String workerId) {
+		this.workerId = workerId;
+	}
+
 	public String getWorkerName() {
 		return workerName;
 	}
 
 	public void setWorkerName(String workerName) {
 		this.workerName = workerName;
-	}
-
-	public void setWorkerId(String workerId) {
-		this.workerId = workerId;
-	}
-
-	public String getJobDate() {
-		return jobDate;
-	}
-
-	public void setJobDate(String jobDate) {
-		this.jobDate = jobDate;
 	}
 
 	public String getWorkType() {
@@ -100,20 +80,12 @@ public class WorkerActual extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.workType = workType;
 	}
 
-	public String getAreaCd() {
-		return areaCd;
+	public String getJobDate() {
+		return jobDate;
 	}
 
-	public void setAreaCd(String areaCd) {
-		this.areaCd = areaCd;
-	}
-
-	public String getStageCd() {
-		return stageCd;
-	}
-
-	public void setStageCd(String stageCd) {
-		this.stageCd = stageCd;
+	public void setJobDate(String jobDate) {
+		this.jobDate = jobDate;
 	}
 
 	public String getEquipType() {
@@ -130,22 +102,6 @@ public class WorkerActual extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setEquipCd(String equipCd) {
 		this.equipCd = equipCd;
-	}
-
-	public String getEquipNm() {
-		return equipNm;
-	}
-
-	public void setEquipNm(String equipNm) {
-		this.equipNm = equipNm;
-	}
-
-	public String getSubEquipCd() {
-		return subEquipCd;
-	}
-
-	public void setSubEquipCd(String subEquipCd) {
-		this.subEquipCd = subEquipCd;
 	}
 
 	public Integer getActualQty() {
@@ -170,5 +126,6 @@ public class WorkerActual extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setFinishedAt(String finishedAt) {
 		this.finishedAt = finishedAt;
-	}	
+	}
+
 }
