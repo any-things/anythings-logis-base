@@ -3,7 +3,6 @@ package xyz.anythings.base.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-import xyz.anythings.sys.util.AnyEntityUtil;
 import xyz.anythings.sys.util.AnyOrmUtil;
 import xyz.elidom.dbist.annotation.Column;
 import xyz.elidom.dbist.annotation.GenerationRule;
@@ -128,17 +127,6 @@ public class BatchReceipt extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	}
 	
 	/**
-	 * 배치 Receipt 의 현재 상태를 가져온다. 
-	 * @param batchReceipt
-	 * @return
-	 */
-	public String getCurrentStatus() {
-		BatchReceipt checkReceipt = AnyEntityUtil.findEntityById(false, BatchReceipt.class, this.getId());
-		this.setStatus(checkReceipt.getStatus());
-		return checkReceipt.getStatus();
-	}
-	
-	/**
 	 * 상태 업데이트 
 	 * @param status
 	 */
@@ -148,7 +136,8 @@ public class BatchReceipt extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	}
 	
 	/**
-	 * BatchReceipt JobSeq 데이터 구하기 
+	 * BatchReceipt JobSeq 데이터 구하기
+	 * 
 	 * @param domainId
 	 * @param areaCd
 	 * @param stageCd
@@ -170,4 +159,5 @@ public class BatchReceipt extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		List<BatchReceipt> jobSeqList = queryManager.selectList(BatchReceipt.class, condition);
 		return (ValueUtil.isEmpty(jobSeqList) ? 0 : ValueUtil.toInteger(jobSeqList.get(0).getJobSeq())) + 1;
 	}
+
 }
