@@ -16,6 +16,10 @@ public class SampleOrderEvent extends SysEvent {
 	 */
 	private JobBatch batch;
 	/**
+	 * 배치 생성 여부
+	 */
+	private boolean createBatchFlag = true;
+	/**
 	 * 주문 샘플러
 	 */
 	private OrderSampler orderSampler;
@@ -34,6 +38,14 @@ public class SampleOrderEvent extends SysEvent {
 
 	public void setBatch(JobBatch batch) {
 		this.batch = batch;
+	}
+
+	public boolean isCreateBatchFlag() {
+		return createBatchFlag;
+	}
+
+	public void setCreateBatchFlag(boolean createBatchFlag) {
+		this.createBatchFlag = createBatchFlag;
 	}
 
 	public OrderSampler getOrderSampler() {
