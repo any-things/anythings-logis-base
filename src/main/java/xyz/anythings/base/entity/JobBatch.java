@@ -29,7 +29,8 @@ import xyz.elidom.util.ValueUtil;
 	@Index(name = "ix_job_batches_0", columnList = "domain_id,job_type,job_date,job_seq,status"),
 	@Index(name = "ix_job_batches_1", columnList = "domain_id,wms_batch_no"),
 	@Index(name = "ix_job_batches_2", columnList = "domain_id,batch_group_id"),
-	@Index(name = "ix_job_batches_3", columnList = "domain_id,equip_type,equip_cd")
+	@Index(name = "ix_job_batches_3", columnList = "domain_id,equip_group_cd,equip_type,equip_cd"),
+	@Index(name = "ix_job_batches_4", columnList = "domain_id,area_cd,stage_cd")
 })
 public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	/**
@@ -202,7 +203,7 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	 * 투입 작업자 수
 	 */
 	@Column (name = "input_workers", length = 12)
-	private Integer inputWorkers;
+	private Float inputWorkers;
 	/**
 	 * 시간당 분류 PCS (Unit Per Hour)
 	 */
@@ -459,11 +460,11 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.progressRate = progressRate;
 	}
 
-	public Integer getInputWorkers() {
+	public Float getInputWorkers() {
 		return inputWorkers;
 	}
 
-	public void setInputWorkers(Integer inputWorkers) {
+	public void setInputWorkers(Float inputWorkers) {
 		this.inputWorkers = inputWorkers;
 	}
 

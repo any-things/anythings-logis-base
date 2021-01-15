@@ -30,7 +30,7 @@ public class BatchReceiptItem extends xyz.elidom.orm.entity.basic.ElidomStampHoo
 	@Column (name = "batch_id", length = 40)
 	private String batchId;
 	
-	@Column (name = "job_seq", length = 12)
+	@Column (name = "job_seq", length = 10)
 	private String jobSeq;
 
 	@Column (name = "com_cd", length = 30)
@@ -60,10 +60,13 @@ public class BatchReceiptItem extends xyz.elidom.orm.entity.basic.ElidomStampHoo
 	@Column (name = "total_orders", length = 12)
 	private Integer totalOrders;
 
+	@Column (name = "total_sku", length = 12)
+	private Integer totalSku;
+	
 	@Column (name = "total_pcs", length = 12)
 	private Integer totalPcs;
 
-	@Column (name = "total_records", nullable = false, length = 12)
+	@Column (name = "total_records", length = 12)
 	private Integer totalRecords;
 
 	@Column (name = "status", length = 10)
@@ -179,6 +182,14 @@ public class BatchReceiptItem extends xyz.elidom.orm.entity.basic.ElidomStampHoo
 		this.totalOrders = totalOrders;
 	}
 
+	public Integer getTotalSku() {
+		return totalSku;
+	}
+
+	public void setTotalSku(Integer totalSku) {
+		this.totalSku = totalSku;
+	}
+
 	public Integer getTotalPcs() {
 		return totalPcs;
 	}
@@ -228,7 +239,8 @@ public class BatchReceiptItem extends xyz.elidom.orm.entity.basic.ElidomStampHoo
 	}
 	
 	/**
-	 * 상태 업데이트 
+	 * 상태 업데이트
+	 * 
 	 * @param status
 	 * @param errMsg
 	 */
@@ -237,5 +249,5 @@ public class BatchReceiptItem extends xyz.elidom.orm.entity.basic.ElidomStampHoo
 		this.setMessage(errMsg);
 		
 		BeanUtil.get(IQueryManager.class).update(this, "status", "message");
-	}	
+	}
 }
