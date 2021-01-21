@@ -341,4 +341,15 @@ public interface IIndicationService {
 	 * @return
 	 */
 	public String prevIndicatorColor(JobInstance job);
+	
+	/**
+	 * 표시기 교체
+	 * 
+	 * @param domainId
+	 * @param stageCd
+	 * @param gwPath
+	 * @param fromIndCd
+	 * @param toIndCd
+	 */
+	public void changeIndicator(Long domainId, String stageCd, String gwPath, String fromIndCd, String toIndCd);
 }

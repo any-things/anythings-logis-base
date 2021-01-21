@@ -1,7 +1,9 @@
 package xyz.anythings.base.rest;
 
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,12 +15,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import xyz.anythings.base.LogisConstants;
 import xyz.anythings.base.entity.Cell;
-
+import xyz.anythings.base.service.impl.LogisServiceDispatcher;
+import xyz.anythings.gw.entity.Gateway;
+import xyz.anythings.gw.entity.Indicator;
+import xyz.anythings.sys.util.AnyEntityUtil;
+import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
 import xyz.elidom.orm.system.annotation.service.ServiceDesc;
+import xyz.elidom.sys.SysConstants;
+import xyz.elidom.sys.entity.Domain;
 import xyz.elidom.sys.system.service.AbstractRestService;
-import xyz.elidom.dbist.dml.Page;
+import xyz.elidom.sys.util.ValueUtil;
 
 @RestController
 @Transactional
@@ -27,6 +36,12 @@ import xyz.elidom.dbist.dml.Page;
 @ServiceDesc(description = "Cell Service API")
 public class CellController extends AbstractRestService {
 
+	/**
+	 * 물류 서비스 디스패처
+	 */
+	@Autowired
+	protected LogisServiceDispatcher serviceDispatcher;
+	
 	@Override
 	protected Class<?> entityClass() {
 		return Cell.class;
@@ -77,6 +92,34 @@ public class CellController extends AbstractRestService {
 	@ApiDesc(description = "Create, Update or Delete multiple at one time")
 	public Boolean multipleUpdate(@RequestBody List<Cell> list) {
 		return this.cudMultipleData(this.entityClass(), list);
+	}
+	
+	@RequestMapping(value = "/change_indicator/{from_ind_cd}/{to_ind_cd}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiDesc(description = "Change Indicator")
+	public Map<String, Object> changeIndicator(@PathVariable("from_ind_cd") String fromIndCd, @PathVariable("to_ind_cd") String toIndCd) {
+		// 1. 도메인 ID 추출
+		Long domainId = Domain.currentDomainId();
+		
+		// 2. 이전 표시기 조회
+		Indicator fromIndicator = AnyEntityUtil.findEntityBy(domainId, false, Indicator.class, "*", "indCd", fromIndCd);
+		if(fromIndicator == null) {
+			return ValueUtil.newMap("success,result,msg", false, LogisConstants.NG_STRING, "지시기 [" + fromIndCd + "] 가 존재하지 않습니다.");
+		}
+		
+		// 3. 이전 표시기 코드로 셀 조회
+		Cell cell = AnyEntityUtil.findEntityBy(domainId, false, Cell.class, "*", "indCd", fromIndCd);
+		if(cell == null) {
+			return ValueUtil.newMap("success,result,msg", false, LogisConstants.NG_STRING, "지시기에 로케이션이 매핑되어 있지 않아서 셀을 찾을 수 없습니다.");
+		}
+		
+		// 4. 표시기의 게이트웨이 조회
+		Gateway gw = AnyEntityUtil.findEntityBy(domainId, false, Gateway.class, "*", "gwCd", fromIndicator.getGwCd());
+		
+		// 5. 표시기 교체 API 호출
+		this.serviceDispatcher.getIndicationService("DAS").changeIndicator(domainId, gw.getStageCd(), gw.getGwNm(), fromIndCd, toIndCd);
+
+		// 6. 결과 리턴 
+		return ValueUtil.newMap("success,result", true, SysConstants.OK_STRING);
 	}
 
 }
