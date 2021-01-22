@@ -21,6 +21,7 @@ import xyz.anythings.base.service.impl.LogisServiceDispatcher;
 import xyz.anythings.gw.entity.Gateway;
 import xyz.anythings.gw.entity.Indicator;
 import xyz.anythings.sys.util.AnyEntityUtil;
+import xyz.anythings.sys.util.AnyValueUtil;
 import xyz.elidom.dbist.dml.Page;
 import xyz.elidom.orm.system.annotation.service.ApiDesc;
 import xyz.elidom.orm.system.annotation.service.ServiceDesc;
@@ -100,25 +101,30 @@ public class CellController extends AbstractRestService {
 		// 1. 도메인 ID 추출
 		Long domainId = Domain.currentDomainId();
 		
-		// 2. 이전 표시기 조회
-		Indicator fromIndicator = AnyEntityUtil.findEntityBy(domainId, false, Indicator.class, "*", "indCd", fromIndCd);
-		if(fromIndicator == null) {
-			return ValueUtil.newMap("success,result,msg", false, LogisConstants.NG_STRING, "지시기 [" + fromIndCd + "] 가 존재하지 않습니다.");
+		// 2. To 표시기 코드 Validation 체크
+		if(!AnyValueUtil.checkValidateByRegExpr("^[0-9]{6}$", toIndCd)) {
+			return ValueUtil.newMap("success,result,msg", false, LogisConstants.NG_STRING, "지시기 코드 [" + toIndCd + "]가 유효하지 않습니다.");
 		}
 		
-		// 3. 이전 표시기 코드로 셀 조회
+		// 3. 이전 표시기 조회
+		Indicator fromIndicator = AnyEntityUtil.findEntityBy(domainId, false, Indicator.class, "*", "indCd", fromIndCd);
+		if(fromIndicator == null) {
+			return ValueUtil.newMap("success,result,msg", false, LogisConstants.NG_STRING, "지시기 [" + fromIndCd + "]가 존재하지 않습니다.");
+		}
+		
+		// 4. 이전 표시기 코드로 셀 조회
 		Cell cell = AnyEntityUtil.findEntityBy(domainId, false, Cell.class, "*", "indCd", fromIndCd);
 		if(cell == null) {
 			return ValueUtil.newMap("success,result,msg", false, LogisConstants.NG_STRING, "지시기에 로케이션이 매핑되어 있지 않아서 셀을 찾을 수 없습니다.");
 		}
 		
-		// 4. 표시기의 게이트웨이 조회
+		// 5. 표시기의 게이트웨이 조회
 		Gateway gw = AnyEntityUtil.findEntityBy(domainId, false, Gateway.class, "*", "gwCd", fromIndicator.getGwCd());
 		
-		// 5. 표시기 교체 API 호출
+		// 6. 표시기 교체 API 호출
 		this.serviceDispatcher.getIndicationService("DAS").changeIndicator(domainId, gw.getStageCd(), gw.getGwNm(), fromIndCd, toIndCd);
 
-		// 6. 결과 리턴 
+		// 7. 결과 리턴 
 		return ValueUtil.newMap("success,result", true, SysConstants.OK_STRING);
 	}
 

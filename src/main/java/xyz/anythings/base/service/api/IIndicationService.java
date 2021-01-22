@@ -31,6 +31,7 @@ import xyz.anythings.gw.service.api.IIndRequestService;
  *  	16) 작업 배치별, 게이트웨이 별 작업 리스트 조회 후 표시기 재점등 - 게이트웨이 리부팅 시
  *  	17) 투입 정보, 장비 별 작업 리스트 조회 후 표시기 재점등 - 모바일 장비 화면에서 재점등
  *  	18) 이전 표시기 버튼 색상으로 다음 표시기 색상을 결정
+ *  	19) 표시기 교체
  *  
  * @author shortstop
  */

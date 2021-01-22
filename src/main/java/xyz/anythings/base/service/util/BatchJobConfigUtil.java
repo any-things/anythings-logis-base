@@ -262,7 +262,7 @@ public class BatchJobConfigUtil {
 	 * @return
 	 */
 	public static String getIndCdValidationRule(JobBatch batch) {
-		// job.cmm.server.validate.ind_cd.rule			
+		// job.cmm.server.validate.ind_cd.rule
 		return getConfigValue(batch, LogisConfigConstants.VALIDATION_RULE_INDCD, true);
 	}
 	

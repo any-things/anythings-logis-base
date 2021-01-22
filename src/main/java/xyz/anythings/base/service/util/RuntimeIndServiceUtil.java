@@ -77,7 +77,7 @@ public class RuntimeIndServiceUtil {
 				indOnList.add(indOnInfo);
 				indOnInfoList.put(gwPath, indOnList);
 			}
-					
+		
 			if(ValueUtil.isNotEmpty(indOnInfoList)) {
 				// 3. 표시기 점등 요청
 				sendSvc.requestIndListOn(batch.getDomainId(), batch.getStageCd(), batch.getJobType(), GwConstants.IND_ACTION_TYPE_NOBOX, indOnInfoList);
@@ -86,7 +86,7 @@ public class RuntimeIndServiceUtil {
 			}
 		}
 		
-		return 0;		
+		return 0;
 	}
 	
 	/**
@@ -194,7 +194,7 @@ public class RuntimeIndServiceUtil {
 						String bizId = ValueUtil.isEmpty(cell.getJobInstanceId()) ? cell.getIndCd() : cell.getJobInstanceId();
 						indSendService.requestIndEndDisplay(cell.getDomainId(), batch.getStageCd(), batch.getJobType(), gwPath, cell.getIndCd(), bizId, true);
 					}
-				}			
+				}
 			}
 		}
 		
@@ -239,7 +239,7 @@ public class RuntimeIndServiceUtil {
 	}
 	
 	/**
-	 * 작업 리스트 정보로 표시기 점등 
+	 * 작업 리스트 정보로 표시기 점등
 	 * 
 	 * @param needUpdateJobStatus Job 데이터의 상태 변경이 필요한 지 여부
 	 * @param batch
