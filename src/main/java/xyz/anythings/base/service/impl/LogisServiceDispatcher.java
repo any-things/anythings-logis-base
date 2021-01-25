@@ -24,7 +24,6 @@ import xyz.anythings.base.service.api.IPreprocessService;
 import xyz.anythings.base.service.api.IReceiveBatchService;
 import xyz.anythings.base.service.api.ISkuSearchService;
 import xyz.anythings.base.service.api.IStockService;
-import xyz.elidom.util.ValueUtil;
 
 /**
  * 작업 유형에 따른 서비스를 찾아주는 컴포넌트
@@ -240,7 +239,7 @@ public class LogisServiceDispatcher implements BeanFactoryAware {
 	 */
 	public IClassificationService getClassificationService(String jobType) {
 		// FIXME 아래 분기하는 것 외 다른 방법 찾기
-		String svcType = ValueUtil.isEqualIgnoreCase(jobType, LogisConstants.JOB_TYPE_DPS) ? "PickingService" : "AssortService";
+		String svcType = (LogisConstants.isDpsJobType(jobType) || LogisConstants.isSngJobType(jobType)) ? "PickingService" : "AssortService";
 		String classSvcType = jobType.toLowerCase() + svcType;
 		return (IClassificationService)this.beanFactory.getBean(classSvcType);
 	}

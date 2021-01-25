@@ -80,6 +80,10 @@ public class LogisConstants extends AnyConstants {
 	 * 분류 작업 유형 : QPS
 	 */
 	public static final String JOB_TYPE_QPS = "QPS";
+	/**
+	 * 분류 작업 유형 : SNG (단포)
+	 */
+	public static final String JOB_TYPE_SNG = "SNG";
 	
 	/**
 	 * 박스요청 대기 상태 : Box Waiting
@@ -93,7 +97,7 @@ public class LogisConstants extends AnyConstants {
 	/**
 	 * 작업 투입 상태 : Input
 	 */
-	public static final String JOB_STATUS_INPUT = "I";	
+	public static final String JOB_STATUS_INPUT = "I";
 	/**
 	 * 작업 피킹 상태 : Picking
 	 */
@@ -257,7 +261,7 @@ public class LogisConstants extends AnyConstants {
 	public static final String FAIL_STATUS = "F";
 	
 	/**
-	 * 작업 유형이 DAS 작업 타입인지 체크 
+	 * 작업 유형이 DAS 작업 타입인지 체크
 	 * 
 	 * @param jobType
 	 * @return
@@ -267,7 +271,7 @@ public class LogisConstants extends AnyConstants {
 	}
 	
 	/**
-	 * 작업 유형이 반품 작업 타입인지 체크 
+	 * 작업 유형이 반품 작업 타입인지 체크
 	 * 
 	 * @param jobType
 	 * @return
@@ -277,7 +281,7 @@ public class LogisConstants extends AnyConstants {
 	}
 	
 	/**
-	 * 작업 유형이 DPS 작업 타입인지 체크 
+	 * 작업 유형이 DPS 작업 타입인지 체크
 	 * 
 	 * @param jobType
 	 * @return
@@ -287,7 +291,17 @@ public class LogisConstants extends AnyConstants {
 	}
 	
 	/**
-	 * 작업 유형이 QPS 작업 타입인지 체크 
+	 * 작업 유형이 SNG 작업 타입인지 체크
+	 * 
+	 * @param jobType
+	 * @return
+	 */
+	public static boolean isSngJobType(String jobType) {
+		return ValueUtil.isEqualIgnoreCase(JOB_TYPE_SNG, jobType);
+	}
+	
+	/**
+	 * 작업 유형이 QPS 작업 타입인지 체크
 	 * 
 	 * @param jobType
 	 * @return
@@ -346,4 +360,5 @@ public class LogisConstants extends AnyConstants {
 	public static boolean isDeviceSideCdEnabled(Long domainId) {
 		return ValueUtil.toBoolean(SettingUtil.getValue(domainId, LogisConfigConstants.DEVICE_SIDE_ENABLED, AnyConstants.FALSE_STRING));
 	}
+
 }
