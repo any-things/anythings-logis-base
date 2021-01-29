@@ -226,15 +226,27 @@ public class Order extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	private String subEquipCd;
 
 	/**
-	 * 거래처 코드
-	 * B2B : 거래처 코드 / B2C : 수령인
+	 * 주문자 코드
+	 * B2B : 매장 코드 / B2C : 수령인
+	 */
+	@Column (name = "orderer_id", length = 30)
+	private String ordererId;
+
+	/**
+	 * 주문자 명
+	 * B2B : 매장 명 / B2C : 주문자
+	 */
+	@Column (name = "orderer_nm", length = 40)
+	private String ordererNm;
+	
+	/**
+	 * 판매처 코드
 	 */
 	@Column (name = "shop_cd", length = 30)
 	private String shopCd;
 
 	/**
-	 * 거래처 명
-	 * B2B : 거래처 명 / B2C : 주문자
+	 * 판매처 명
 	 */
 	@Column (name = "shop_nm", length = 40)
 	private String shopNm;
@@ -579,6 +591,22 @@ public class Order extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setSubEquipCd(String subEquipCd) {
 		this.subEquipCd = subEquipCd;
+	}
+
+	public String getOrdererId() {
+		return ordererId;
+	}
+
+	public void setOrdererId(String ordererId) {
+		this.ordererId = ordererId;
+	}
+
+	public String getOrdererNm() {
+		return ordererNm;
+	}
+
+	public void setOrdererNm(String ordererNm) {
+		this.ordererNm = ordererNm;
 	}
 
 	public String getShopCd() {
