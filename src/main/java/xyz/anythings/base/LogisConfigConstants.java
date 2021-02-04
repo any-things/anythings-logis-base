@@ -5,7 +5,7 @@ package xyz.anythings.base;
  *
  * @author shortstop
  */
-public class LogisConfigConstants extends xyz.anythings.sys.ConfigConstants {	
+public class LogisConfigConstants extends xyz.anythings.sys.ConfigConstants {
 	
 	/**********************************************************************
 	 * 								1. 인터페이스 관련 설정

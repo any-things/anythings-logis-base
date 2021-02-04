@@ -83,7 +83,7 @@ public class LogisConstants extends AnyConstants {
 	/**
 	 * 분류 작업 유형 : SNG (단포)
 	 */
-	public static final String JOB_TYPE_SNG = "SNG";
+	public static final String JOB_TYPE_SPS = "SPS";
 	
 	/**
 	 * 박스요청 대기 상태 : Box Waiting
@@ -297,7 +297,7 @@ public class LogisConstants extends AnyConstants {
 	 * @return
 	 */
 	public static boolean isSngJobType(String jobType) {
-		return ValueUtil.isEqualIgnoreCase(JOB_TYPE_SNG, jobType);
+		return ValueUtil.isEqualIgnoreCase(JOB_TYPE_SPS, jobType);
 	}
 	
 	/**
