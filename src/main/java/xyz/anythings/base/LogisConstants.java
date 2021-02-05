@@ -81,7 +81,7 @@ public class LogisConstants extends AnyConstants {
 	 */
 	public static final String JOB_TYPE_QPS = "QPS";
 	/**
-	 * 분류 작업 유형 : SNG (단포)
+	 * 분류 작업 유형 : SPS (단포)
 	 */
 	public static final String JOB_TYPE_SPS = "SPS";
 	
