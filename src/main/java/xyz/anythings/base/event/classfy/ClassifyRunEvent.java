@@ -6,6 +6,7 @@ import xyz.anythings.base.entity.JobInstance;
 import xyz.anythings.base.entity.WorkCell;
 import xyz.anythings.base.event.IClassifyRunEvent;
 import xyz.anythings.sys.util.AnyEntityUtil;
+import xyz.elidom.util.ValueUtil;
 
 /**
  * 소분류 분류 이벤트 구현
@@ -181,7 +182,7 @@ public class ClassifyRunEvent extends ClassifyEvent implements IClassifyRunEvent
 				this.setJobBatch(AnyEntityUtil.findEntityById(true, JobBatch.class, jobInstance.getBatchId()));
 			}
 			
-			if(LogisConstants.isB2BJobType(jobInstance.getJobType()) && this.workCell == null) {
+			if(LogisConstants.isB2BJobType(jobInstance.getJobType()) && ValueUtil.isNotEmpty(this.cellCd) && this.workCell == null) {
 				this.setWorkCell(AnyEntityUtil.findEntityBy(jobInstance.getDomainId(), true, true, WorkCell.class, null, "batchId,cellCd", jobInstance.getBatchId(), this.cellCd));
 			}
 		}

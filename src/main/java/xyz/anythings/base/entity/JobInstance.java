@@ -9,6 +9,11 @@ import xyz.elidom.dbist.annotation.PrimaryKey;
 import xyz.elidom.dbist.annotation.Table;
 import xyz.elidom.sys.util.ValueUtil;
 
+/**
+ * 작업 인스턴스
+ * 
+ * @author shortstop
+ */
 @Table(name = "job_instances", idStrategy = GenerationRule.UUID, indexes = {
 	@Index(name = "ix_job_instances_1", columnList = "batch_id,domain_id"),
 	@Index(name = "ix_job_instances_2", columnList = "order_no,batch_id"),
@@ -48,12 +53,6 @@ public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	@Column (name = "com_cd", nullable = false, length = 30)
 	private String comCd;
 
-	@Column (name = "shop_cd", length = 30)
-	private String shopCd;
-
-	@Column (name = "shop_nm", length = 40)
-	private String shopNm;
-
 	@Column (name = "equip_group_cd", length = 30)
 	private String equipGroupCd;
 	
@@ -77,6 +76,27 @@ public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	 */
 	@Column (name = "order_type", length = 20)
 	private String orderType;
+	/**
+	 * B2B : 매장 코드, B2C : 판매처 코드
+	 */
+	@Column (name = "shop_cd", length = 30)
+	private String shopCd;
+	/**
+	 * B2B : 매장 명, B2C : 판매처 명
+	 */
+	@Column (name = "shop_nm", length = 40)
+	private String shopNm;
+	/**
+	 * 주문자 ID
+	 */
+	@Column (name = "orderer_id", length = 30)
+	private String ordererId;
+	
+	/**
+	 * 주문자 명
+	 */
+	@Column (name = "orderer_nm", length = 30)
+	private String ordererNm;
 	
 	/**
 	 * 원주문 번호
@@ -356,22 +376,6 @@ public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 		this.comCd = comCd;
 	}
 
-	public String getShopCd() {
-		return shopCd;
-	}
-
-	public void setShopCd(String shopCd) {
-		this.shopCd = shopCd;
-	}
-
-	public String getShopNm() {
-		return shopNm;
-	}
-
-	public void setShopNm(String shopNm) {
-		this.shopNm = shopNm;
-	}
-
 	public String getEquipGroupCd() {
 		return equipGroupCd;
 	}
@@ -426,6 +430,38 @@ public class JobInstance extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 
 	public void setOrderType(String orderType) {
 		this.orderType = orderType;
+	}
+	
+	public String getShopCd() {
+		return shopCd;
+	}
+
+	public void setShopCd(String shopCd) {
+		this.shopCd = shopCd;
+	}
+
+	public String getShopNm() {
+		return shopNm;
+	}
+
+	public void setShopNm(String shopNm) {
+		this.shopNm = shopNm;
+	}
+
+	public String getOrdererId() {
+		return ordererId;
+	}
+
+	public void setOrdererId(String ordererId) {
+		this.ordererId = ordererId;
+	}
+
+	public String getOrdererNm() {
+		return ordererNm;
+	}
+
+	public void setOrdererNm(String ordererNm) {
+		this.ordererNm = ordererNm;
 	}
 
 	public String getCustOrderNo() {
