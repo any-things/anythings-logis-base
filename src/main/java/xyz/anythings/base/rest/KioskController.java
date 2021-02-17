@@ -106,8 +106,8 @@ public class KioskController extends AbstractRestService {
 			return null;
 		}
 		
-		JobBatch batch = AnyEntityUtil.findEntityBy(domainId, false, JobBatch.class, "equip_nm", "domainId,equipType,equipCd,status", domainId, equipType, equipCd, JobBatch.STATUS_RUNNING);
-		Kiosk kiosk = AnyEntityUtil.findEntityBy(domainId, false, Kiosk.class, "id,domain_id,kiosk_cd,kiosk_nm,equip_type,equip_cd,side_cd,status", "domainId,kioskIp", domainId, kioskIp);
+		JobBatch batch = AnyEntityUtil.findEntityBy(domainId, false, JobBatch.class, "stage_cd,equip_nm", "equipType,equipCd,status", equipType, equipCd, JobBatch.STATUS_RUNNING);
+		Kiosk kiosk = AnyEntityUtil.findEntityBy(domainId, false, Kiosk.class, "id,domain_id,stage_cd,kiosk_cd,kiosk_nm,equip_type,equip_cd,side_cd,status", "kioskIp", kioskIp);
 
 		String kioskNm = (batch == null) ? kioskCd : batch.getEquipNm();
 		if(ValueUtil.isNotEmpty(sideCd)) {
@@ -123,10 +123,6 @@ public class KioskController extends AbstractRestService {
 			kiosk.setStageCd(batch.getStageCd());
 		}
 		
-		if(batch != null) {
-			kiosk.setStageCd(batch.getStageCd());
-		}
-		
 		kiosk.setDomainId(domainId);
 		kiosk.setKioskCd(kioskCd);
 		kiosk.setKioskNm(kioskNm);
@@ -135,7 +131,13 @@ public class KioskController extends AbstractRestService {
 		kiosk.setEquipCd(equipCd);
 		kiosk.setSideCd(sideCd);
 		kiosk.setStatus(LogisConstants.EQUIP_STATUS_OK);
-		this.queryManager.upsert(kiosk);
+		
+		if(ValueUtil.isEmpty(kiosk.getId())) {
+			this.queryManager.insert(kiosk);
+		} else {
+			this.queryManager.update(kiosk);
+		}
+		
 		return kiosk;
 	}
 	

@@ -105,8 +105,8 @@ public class PDAController extends AbstractRestService {
 			return null;
 		}
 		
-		JobBatch batch = AnyEntityUtil.findEntityBy(domainId, false, JobBatch.class, "equip_nm", "domainId,equipType,equipCd,status", domainId, equipType, equipCd, JobBatch.STATUS_RUNNING);
-		PDA pda = AnyEntityUtil.findEntityBy(domainId, false, PDA.class, "id,domain_id,pda_cd,pda_nm,equip_type,equip_cd,station_cd,status", "domainId,pdaIp", domainId, pdaIp);
+		JobBatch batch = AnyEntityUtil.findEntityBy(domainId, false, JobBatch.class, "stage_cd,equip_nm", "equipType,equipCd,status", equipType, equipCd, JobBatch.STATUS_RUNNING);
+		PDA pda = AnyEntityUtil.findEntityBy(domainId, false, PDA.class, "id,domain_id,stage_cd,pda_cd,pda_nm,equip_type,equip_cd,station_cd,status", "pdaIp", pdaIp);
 		
 		String pdaNm = (batch == null) ? pdaCd : batch.getEquipNm();
 		if(ValueUtil.isNotEmpty(stationCd)) {

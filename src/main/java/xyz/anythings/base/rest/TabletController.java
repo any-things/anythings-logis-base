@@ -105,8 +105,8 @@ public class TabletController extends AbstractRestService {
 			return null;
 		}
 		
-		JobBatch batch = AnyEntityUtil.findEntityBy(domainId, false, JobBatch.class, "equip_nm", "domainId,equipType,equipCd,status", domainId, equipType, equipCd, JobBatch.STATUS_RUNNING);
-		Tablet tablet = AnyEntityUtil.findEntityBy(domainId, false, Tablet.class, "id,domain_id,tablet_cd,tablet_nm,equip_type,equip_cd,station_cd,status", "domainId,tabletIp", domainId, tabletIp);
+		JobBatch batch = AnyEntityUtil.findEntityBy(domainId, false, JobBatch.class, "stage_cd,equip_nm", "equipType,equipCd,status", equipType, equipCd, JobBatch.STATUS_RUNNING);
+		Tablet tablet = AnyEntityUtil.findEntityBy(domainId, false, Tablet.class, "id,domain_id,stage_cd,tablet_cd,tablet_nm,equip_type,equip_cd,station_cd,status", "tabletIp", tabletIp);
 		
 		String tabletNm = (batch == null) ? tabletCd : batch.getEquipNm();
 		if(ValueUtil.isNotEmpty(stationCd)) {
