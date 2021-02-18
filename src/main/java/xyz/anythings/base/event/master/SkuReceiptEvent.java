@@ -42,6 +42,11 @@ public class SkuReceiptEvent extends SysEvent {
 	 * 가장 최근에 수신 받은 시각 
 	 */
 	private String lastReceivedAt;
+	/**
+	 * 3rd-party 주문 제공자
+	 */
+	protected String thirdPartyProvider;
+
 	
 	public SkuReceiptEvent() {
 		super();
@@ -102,4 +107,11 @@ public class SkuReceiptEvent extends SysEvent {
 		this.lastReceivedAt = lastReceivedAt;
 	}
 
+	public String getThirdPartyProvider() {
+		return thirdPartyProvider;
+	}
+
+	public void setThirdPartyProvider(String thirdPartyProvider) {
+		this.thirdPartyProvider = thirdPartyProvider;
+	}
 }
