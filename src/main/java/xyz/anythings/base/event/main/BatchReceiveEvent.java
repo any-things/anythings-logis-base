@@ -20,19 +20,27 @@ public class BatchReceiveEvent extends BatchRootEvent {
 	 */
 	private short eventType;
 	/**
-	 * Area 코드 
+	 * Area 코드
 	 */
 	protected String areaCd;
 	/**
-	 * 화주 코드 
+	 * 화주 코드
 	 */
 	protected String comCd;
 	/**
-	 * 작업 일자 
+	 * 작업 일자
 	 */
 	protected String jobDate;
 	/**
-	 * 리셉트 데이터 
+	 * 작업 차수
+	 */
+	protected String jobSeq;
+	/**
+	 * 3rd-party 주문 제공자
+	 */
+	protected String thirdPartyProvider;
+	/**
+	 * 리셉트 데이터
 	 */
 	private BatchReceipt receiptData;
 	
@@ -107,6 +115,22 @@ public class BatchReceiveEvent extends BatchRootEvent {
 
 	public void setJobDate(String jobDate) {
 		this.jobDate = jobDate;
+	}
+
+	public String getJobSeq() {
+		return jobSeq;
+	}
+
+	public void setJobSeq(String jobSeq) {
+		this.jobSeq = jobSeq;
+	}
+
+	public String getThirdPartyProvider() {
+		return thirdPartyProvider;
+	}
+
+	public void setThirdPartyProvider(String thirdPartyProvider) {
+		this.thirdPartyProvider = thirdPartyProvider;
 	}
 
 }
