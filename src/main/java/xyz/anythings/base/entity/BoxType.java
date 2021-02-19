@@ -28,7 +28,7 @@ public class BoxType extends xyz.elidom.orm.entity.basic.ElidomStampHook impleme
 	@Column (name = "box_type_nm", nullable = false, length = 40)
 	private String boxTypeNm;
 
-	@Column (name = "box_color", nullable = false, length = 10)
+	@Column (name = "box_color", length = 10)
 	private String boxColor;
 
 	@Column (name = "box_wt", length = 19)
