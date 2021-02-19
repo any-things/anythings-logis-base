@@ -140,12 +140,12 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	/**
 	 * 원 Wave의 주문 수
 	 */
-	@Column (name = "parent_order_qty", nullable = false, length = 12)
+	@Column (name = "parent_order_qty", length = 12)
 	private Integer parentOrderQty;
 	/**
 	 * 작업 배치 주문 수
 	 */
-	@Column (name = "batch_order_qty", nullable = false, length = 12)
+	@Column (name = "batch_order_qty", length = 12)
 	private Integer batchOrderQty;
 	/**
 	 * 작업 배치 주문 처리 수
@@ -181,12 +181,12 @@ public class JobBatch extends xyz.elidom.orm.entity.basic.ElidomStampHook {
 	/**
 	 * 원 Wave의 pcs
 	 */
-	@Column (name = "parent_pcs", nullable = false, length = 12)
+	@Column (name = "parent_pcs", length = 12)
 	private Integer parentPcs;
 	/**
 	 * 작업 배치 pcs
 	 */
-	@Column (name = "batch_pcs", nullable = false, length = 12)
+	@Column (name = "batch_pcs", length = 12)
 	private Integer batchPcs;
 	/**
 	 * 작업 배치 처리 pcs
