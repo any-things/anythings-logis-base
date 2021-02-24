@@ -166,6 +166,16 @@ public interface IIndicationService {
 	public void indicatorListOff(JobBatch batch, String stationCd);
 	
 	/**
+	 * 1-8. 표시기 리스트 소등 처리
+	 * 
+	 * @param domainId
+	 * @param stageCd
+	 * @param gwPath
+	 * @param indCdList
+	 */
+	public void indicatorListOff(Long domainId, String stageCd, String gwPath, List<String> indCdList);
+	
+	/**
 	 * 1-8. 표시기 소등 요청
 	 * 
 	 * @param domainId
