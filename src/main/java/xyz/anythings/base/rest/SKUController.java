@@ -37,9 +37,22 @@ import xyz.elidom.sys.util.ValueUtil;
 @ServiceDesc(description = "SKU Service API")
 public class SKUController extends AbstractRestService {
 	
+	/**
+	 * 상품 수신 카운트 조회 커스텀 서비스
+	 */
+	private static final String DIY_SKU_READY_TO_RECEIVE = "diy-ready-to-receive-sku";
+	/**
+	 * 상품 수신 커스텀 서비스
+	 */
+	private static final String DIY_SKU_START_TO_RECEIVE = "diy-start-to-receive-sku";
+	/**
+	 * 상품 조회 서비스
+	 */
 	@Autowired
 	private ISkuSearchService skuSearchService;
-	
+	/**
+	 * 이벤트 퍼블리셔
+	 */
 	@Autowired
 	protected EventPublisher eventPublisher;
 	/**
@@ -107,7 +120,7 @@ public class SKUController extends AbstractRestService {
 		SkuReceiptEvent event = new SkuReceiptEvent(Domain.currentDomainId(), receiveType, comCd, SkuReceiptEvent.EVENT_STEP_BEFORE);
 		event = (SkuReceiptEvent)this.eventPublisher.publishEvent(event);
 		
-		Object retVal = this.customService.doCustomService(Domain.currentDomainId(), "custom-ready-to-receive-sku", ValueUtil.newMap("receiveType,comCd", receiveType, comCd));
+		Object retVal = this.customService.doCustomService(Domain.currentDomainId(), DIY_SKU_READY_TO_RECEIVE, ValueUtil.newMap("receiveType,comCd", receiveType, comCd));
 		if(retVal == null) {
 			return ValueUtil.newMap("com_cd,receive_type,plan_count", comCd, receiveType, event.getPlanCount());
 		} else {
@@ -122,7 +135,7 @@ public class SKUController extends AbstractRestService {
 		SkuReceiptEvent event = new SkuReceiptEvent(Domain.currentDomainId(), receiveType, comCd, SkuReceiptEvent.EVENT_STEP_AFTER);
 		event = (SkuReceiptEvent)this.eventPublisher.publishEvent(event);
 		
-		Object retVal = this.customService.doCustomService(Domain.currentDomainId(), "custom-start-to-receive-sku", ValueUtil.newMap("receiveType,comCd", receiveType, comCd));
+		Object retVal = this.customService.doCustomService(Domain.currentDomainId(), DIY_SKU_START_TO_RECEIVE, ValueUtil.newMap("receiveType,comCd", receiveType, comCd));
 		if(retVal == null) {
 			return ValueUtil.newMap("com_cd,receive_type,plan_count,received_count,error_count", comCd, receiveType, event.getPlanCount(), event.getReceivedCount(), event.getErrorCount());
 		} else {
