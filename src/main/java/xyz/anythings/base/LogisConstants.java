@@ -84,6 +84,10 @@ public class LogisConstants extends AnyConstants {
 	 * 분류 작업 유형 : SPS (단포)
 	 */
 	public static final String JOB_TYPE_SPS = "SPS";
+	/**
+	 * 분류 작업 유형 : OPS (오더 피킹)
+	 */
+	public static final String JOB_TYPE_OPS = "OPS";
 	
 	/**
 	 * 박스요청 대기 상태 : Box Waiting
