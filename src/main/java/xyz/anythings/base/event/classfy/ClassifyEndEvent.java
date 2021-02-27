@@ -43,7 +43,7 @@ public class ClassifyEndEvent extends ClassifyEvent implements IClassifyEndEvent
 	public ClassifyEndEvent(IClassifyEvent classifyEvent, short eventStep) {
 		super(eventStep);
 		this.classifyEvent = classifyEvent;
-		this.jobBatch = classifyEvent.getJobBatch();
+		this.setJobBatch(classifyEvent.getJobBatch());
 	}
 
 	@Override
