@@ -102,8 +102,8 @@ public class CellController extends AbstractRestService {
 		Long domainId = Domain.currentDomainId();
 		
 		// 2. To 표시기 코드 Validation 체크
-		if(!AnyValueUtil.checkValidateByRegExpr("^[0-9]{6}$", toIndCd)) {
-			return ValueUtil.newMap("success,result,msg", false, LogisConstants.NG_STRING, "지시기 코드 [" + toIndCd + "]가 유효하지 않습니다.");
+		if(!AnyValueUtil.checkValidateByRegExpr("^[A-Z0-9]{6}$", toIndCd)) {
+			return ValueUtil.newMap("success,result,msg", false, LogisConstants.NG_STRING, "지시기 코드[" + toIndCd + "]가 유효하지 않습니다.");
 		}
 		
 		// 3. 이전 표시기 조회
@@ -112,19 +112,40 @@ public class CellController extends AbstractRestService {
 			return ValueUtil.newMap("success,result,msg", false, LogisConstants.NG_STRING, "지시기 [" + fromIndCd + "]가 존재하지 않습니다.");
 		}
 		
-		// 4. 이전 표시기 코드로 셀 조회
+		// 4. To 표시기 조회
+		Indicator newInd = AnyEntityUtil.findEntityBy(domainId, false, Indicator.class, "*", "indCd", toIndCd);
+		if(newInd != null) {
+			return ValueUtil.newMap("success,result,msg", false, LogisConstants.NG_STRING, "지시기 [" + toIndCd + "]가 이미 존재합니다.");
+		}
+		
+		// 5. 이전 표시기 코드로 셀 조회
 		Cell cell = AnyEntityUtil.findEntityBy(domainId, false, Cell.class, "*", "indCd", fromIndCd);
 		if(cell == null) {
 			return ValueUtil.newMap("success,result,msg", false, LogisConstants.NG_STRING, "지시기에 로케이션이 매핑되어 있지 않아서 셀을 찾을 수 없습니다.");
 		}
 		
-		// 5. 표시기의 게이트웨이 조회
+		// 6. 표시기의 게이트웨이 조회
 		Gateway gw = AnyEntityUtil.findEntityBy(domainId, false, Gateway.class, "*", "gwCd", fromIndicator.getGwCd());
 		
-		// 6. 표시기 교체 API 호출
+		// 7. 표시기 교체 API 호출, TODO 표시기 교체 ACK를 받은 후에 8~10까지 실행하도록 수정
 		this.serviceDispatcher.getIndicationService("DAS").changeIndicator(domainId, gw.getStageCd(), gw.getGwNm(), fromIndCd, toIndCd);
+		
+		// 8. From 표시기 삭제
+		this.queryManager.delete(fromIndicator);
+		
+		// 9. To 표시기 추가
+		newInd = new Indicator();
+		newInd.setDomainId(domainId);
+		newInd.setGwCd(gw.getGwCd());
+		newInd.setIndCd(toIndCd);
+		newInd.setIndNm(cell.getCellCd());
+		this.queryManager.insert(newInd);
+		
+		// 10. 셀에 표시기 업데이트
+		cell.setIndCd(toIndCd);
+		this.queryManager.update(cell, "indCd", "updaterId", "updatedAt");
 
-		// 7. 결과 리턴 
+		// 11. 결과 리턴 
 		return ValueUtil.newMap("success,result", true, SysConstants.OK_STRING);
 	}
 
