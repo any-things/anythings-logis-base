@@ -95,7 +95,8 @@ public class AnythingsLogisBaseInitializer {
 	@EventListener({ ContextRefreshedEvent.class })
 	public void refresh(ContextRefreshedEvent event) {
 		this.logger.info("Anythings Logistics Base module refreshing...");
-		
+		this.configSet.addConfig(this.module.getName(), this.module);
+		this.scanServices();		
 		this.logger.info("Anythings Logistics Base module refreshed!");
 	}
 	
@@ -103,8 +104,6 @@ public class AnythingsLogisBaseInitializer {
     void ready(ApplicationReadyEvent event) {
 		this.logger.info("Anythings Logistics Base module initializing...");
 		
-		this.configSet.addConfig(this.module.getName(), this.module);
-		this.scanServices();
 		this.initQueryStores();
 		this.initStageConfigProfiles();
 		this.initBatchIndConfigProfiles();
