@@ -92,7 +92,7 @@ public class LogisConfigConstants extends xyz.anythings.sys.ConfigConstants {
 	public static final String IF_RECEIVE_ORDER_TYPE = "parent.system.if.receive.order.type";
 	
 	/**********************************************************************
-	 * 								2. SKU 조회 관련 설정 
+	 * 								2. SKU 조회 관련 설정
 	 **********************************************************************/
 	/**
 	 * 바코드 최대 길이 - 상품 스캔시 최대 입력 길이
@@ -112,7 +112,7 @@ public class LogisConfigConstants extends xyz.anythings.sys.ConfigConstants {
 	public static final String SKU_WEIGHT_UNIT = "job.cmm.sku.weight.unit";
 	
 	/**********************************************************************
-	 * 								3. 각종 스캔 코드 유효성 체크 
+	 * 								3. 각종 스캔 코드 유효성 체크
 	 **********************************************************************/
 	/**
 	 * 서버 사이드에서 상품 유효성 체크 여부
@@ -121,7 +121,7 @@ public class LogisConfigConstants extends xyz.anythings.sys.ConfigConstants {
 	/**
 	 * 서버 사이드에서 상품 유효성 체크를 위한 룰
 	 */
-	public static final String VALIDATION_RULE_SKUCD = "job.cmm.server.validate.sku_cd.rule";	
+	public static final String VALIDATION_RULE_SKUCD = "job.cmm.server.validate.sku_cd.rule";
 	/**
 	 * 서버 사이드에서 박스 ID 유효성 체크를 위한 룰
 	 */
@@ -144,7 +144,7 @@ public class LogisConfigConstants extends xyz.anythings.sys.ConfigConstants {
 	public static final String VALIDATION_RULE_INVNO = "job.cmm.server.validate.invoice_no.rule";
 	
 	/**********************************************************************
-	 * 								4. 주문 설정 
+	 * 								4. 주문 설정
 	 **********************************************************************/
 	/**
 	 * 주문 테이블의 분류 코드(class_cd)와 매핑할 주문 필드명
@@ -156,7 +156,7 @@ public class LogisConfigConstants extends xyz.anythings.sys.ConfigConstants {
 	public static final String ORDER_DELETE_WHEN_ORDER_CANCEL = "job.cmm.order.delete.when.order_cancel";
 	
 	/**********************************************************************
-	 * 								5. 작업 지시 설정 
+	 * 								5. 작업 지시 설정
 	 **********************************************************************/
 	/**
 	 * 작업지시 시점에 게이트웨이 리부팅 할 지 여부
@@ -177,10 +177,15 @@ public class LogisConfigConstants extends xyz.anythings.sys.ConfigConstants {
 	/**
 	 * 배치 마감시에 풀 박스 처리 안 된 모든 셀에 대해서 풀 박스 처리할 것인지 여부
 	 */
-	public static final String BATCH_FULLBOX_WHEN_CLOSING_ENABLED = "job.cmm.batch-fullbox.when.closing.enabled";	
+	public static final String BATCH_FULLBOX_WHEN_CLOSING_ENABLED = "job.cmm.batch-fullbox.when.closing.enabled";
+	
+	/**
+	 * 게이트웨이 리부팅 시에 표시기 상태 자동 복원할 지 여부
+	 */
+	public static final String INDICATOR_RESTORE_WHEN_GW_REBOOT = "job.cmm.indicators.restore.when.gw.reboot";
 	
 	/**********************************************************************
-	 * 								6. 투입 모드 설정 
+	 * 								6. 투입 모드 설정
 	 **********************************************************************/
 	/**
 	 * 투입시 투입 범위
@@ -189,7 +194,7 @@ public class LogisConfigConstants extends xyz.anythings.sys.ConfigConstants {
 	/**
 	 * 투입시 표시기 점등 모드 (all : 전체 점등, qty : 수량 기반 점등)
 	 */
-	public static final String INPUT_IND_ON_MODE = "job.cmm.input.ind_on.mode";	
+	public static final String INPUT_IND_ON_MODE = "job.cmm.input.ind_on.mode";
 	/**
 	 * 완박스 투입 활성화 여부
 	 */
@@ -212,12 +217,12 @@ public class LogisConfigConstants extends xyz.anythings.sys.ConfigConstants {
 	public static final String INPUT_SINGLE_IND_ON_MODE = "job.cmm.input.single.ind_on.mode";
 	
 	/**********************************************************************
-	 * 								7. 피킹 설정 
+	 * 								7. 피킹 설정
 	 **********************************************************************/
 	/**
 	 * 확정 취소 기능 활성화 여부
 	 */
-	public static final String PICK_CANCEL_ENABLED = "job.cmm.pick.cancel.enabled"; 
+	public static final String PICK_CANCEL_ENABLED = "job.cmm.pick.cancel.enabled";
 	/**
 	 * 표시기에서 분류 작업 취소시에 '취소' 상태로 관리할 지 여부
 	 */
@@ -260,7 +265,7 @@ public class LogisConfigConstants extends xyz.anythings.sys.ConfigConstants {
 	public static final String LABEL_TEMPLATE = "job.cmm.label.template";
 
 	/**********************************************************************
-	 * 								9. 박스 설정 
+	 * 								9. 박스 설정
 	 **********************************************************************/
 	/**
 	 * 박스 처리 후 액션
@@ -273,7 +278,7 @@ public class LogisConfigConstants extends xyz.anythings.sys.ConfigConstants {
 	/**
 	 * 박스 취소 기능 활성화 여부
 	 */
-	public static final String BOX_CANCEL_ENABLED = "job.cmm.box.cancel.enabled";	
+	public static final String BOX_CANCEL_ENABLED = "job.cmm.box.cancel.enabled";
 	/**
 	 * 옵션에 따라 송장 번호를 다르게 부여
 	 */
@@ -285,7 +290,7 @@ public class LogisConfigConstants extends xyz.anythings.sys.ConfigConstants {
 	/**
 	 * 박스 - 셀 매핑 선 매핑 여부
 	 */
-	public static final String BOX_CELL_MAPPING_POINT = "job.cmm.box.cell.mapping.point";	
+	public static final String BOX_CELL_MAPPING_POINT = "job.cmm.box.cell.mapping.point";
 	/**
 	 * 박스 실적 보고 여부
 	 */
@@ -304,7 +309,7 @@ public class LogisConfigConstants extends xyz.anythings.sys.ConfigConstants {
 	public static final String BOX_TRADE_STATEMENT_TEMPLATE = "job.cmm.trade-statement.template";
 	
 	/**********************************************************************
-	 * 								10. 디바이스 설정 
+	 * 								10. 디바이스 설정
 	 **********************************************************************/
 	/**
 	 * 작업 장비에서 장비 리스트
@@ -348,7 +353,7 @@ public class LogisConfigConstants extends xyz.anythings.sys.ConfigConstants {
 	public static final String DAS_RELAY_JOB_MAX_NO = "job.das.pick.relay.max.no";
 
 	/**********************************************************************
-	 * 								12. 반품 설정 
+	 * 								12. 반품 설정
 	 **********************************************************************/
 	/**
 	 * 반품 설정 - 셀 - 박스 매핑 시점 (P: 주문 가공시, A: 분류 시)
@@ -360,7 +365,7 @@ public class LogisConfigConstants extends xyz.anythings.sys.ConfigConstants {
 	public static final String RTN_PREPROCESS_CELL_MAPPING_FIELD = "job.rtn.preproces.cell.mapping.field";
 	
 	/**********************************************************************
-	 * 								13. DPS 설정 
+	 * 								13. DPS 설정
 	 **********************************************************************/
 	/**
 	 * DPS 설정 - DPS 셀에 할당할 대상 필드 (매장, 상품, 주문번호…)
@@ -414,7 +419,6 @@ public class LogisConfigConstants extends xyz.anythings.sys.ConfigConstants {
 	 * DPS 설정 - 작업 할당 스케줄러 사용 여부
 	 */
 	public static final String DPS_JOB_ASSIGN_SCHEDULING_ENABLE = "dps.job-assign.scheduling.enabled";
-
 	/**
 	 * DPS 설정 - 박스 요청 프로세스 사용 여부
 	 */

@@ -187,7 +187,7 @@ public class BatchJobConfigUtil {
 	 * @return
 	 */
 	public static String getSkuWeightUnit(JobBatch batch) {
-		// job.cmm.sku.weight.unit		
+		// job.cmm.sku.weight.unit
 		return getConfigValue(batch, LogisConfigConstants.SKU_WEIGHT_UNIT, true);
 	}
 
@@ -198,7 +198,7 @@ public class BatchJobConfigUtil {
 	 * @return
 	 */
 	public static String getSkuCdValidationRule(JobBatch batch) {
-		// job.cmm.server.validate.sku_cd.rule		
+		// job.cmm.server.validate.sku_cd.rule
 		return getConfigValue(batch, LogisConfigConstants.VALIDATION_RULE_SKUCD, true);
 	}
 	
@@ -221,7 +221,7 @@ public class BatchJobConfigUtil {
 	 * @return
 	 */
 	public static String getBoxIdValidationRule(JobBatch batch) {
-		// job.cmm.server.validate.box_id.rule					
+		// job.cmm.server.validate.box_id.rule
 		return getConfigValue(batch, LogisConfigConstants.VALIDATION_RULE_BOXID, true);
 	}
 	
@@ -682,7 +682,7 @@ public class BatchJobConfigUtil {
 	 * @return
 	 */
 	public static String getIndOnModeWhenSkuInput(JobBatch batch) {
-		// job.cmm.input.single.ind_on.mode	
+		// job.cmm.input.single.ind_on.mode
 		return getConfigValue(batch, LogisConfigConstants.INPUT_SINGLE_IND_ON_MODE, true);
 	}
 	
@@ -778,7 +778,19 @@ public class BatchJobConfigUtil {
 	 */
 	public static boolean isBatchFullboxWhenClosingEnabled(JobBatch batch) {
 		// job.cmm.batch-fullbox.when.closing.enabled
-		String boolVal = getConfigValue(batch, LogisConfigConstants.BATCH_FULLBOX_WHEN_CLOSING_ENABLED, LogisConstants.FALSE_STRING);	
+		String boolVal = getConfigValue(batch, LogisConfigConstants.BATCH_FULLBOX_WHEN_CLOSING_ENABLED, LogisConstants.FALSE_STRING);
+		return ValueUtil.toBoolean(boolVal);
+	}
+
+	/**
+	 * 게이트웨이 리부팅 시에 표시기 상태 자동 복원할 지 여부
+	 * 
+	 * @param batch
+	 * @return
+	 */
+	public static boolean isIndicatorsRestoreWhenGwReboot(JobBatch batch) {
+		// job.cmm.indicators.restore.when.gw.reboot
+		String boolVal = getConfigValue(batch, LogisConfigConstants.INDICATOR_RESTORE_WHEN_GW_REBOOT, LogisConstants.FALSE_STRING);
 		return ValueUtil.toBoolean(boolVal);
 	}
 
